@@ -1,0 +1,1334 @@
+import React, { useState, useMemo, useEffect } from 'react';
+import { Search, Package, DollarSign, TrendingUp, Truck, CheckCircle, Clock, XCircle, ChevronDown, Plus, X, ExternalLink, ChevronUp, Edit2, Trash2 } from 'lucide-react';
+import { supabase } from '../lib/supabase';
+
+const LandCruiserTracker = () => {
+  const [parts, setParts] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  // Load parts from Supabase on mount
+  useEffect(() => {
+    loadParts();
+  }, []);
+
+  const loadParts = async () => {
+    try {
+      setLoading(true);
+      const { data, error } = await supabase
+        .from('parts')
+        .select('*')
+        .order('id', { ascending: true });
+
+      if (error) throw error;
+
+      if (data && data.length > 0) {
+        // Convert database format to app format
+        const formattedParts = data.map(part => ({
+          id: part.id,
+          delivered: part.delivered,
+          shipped: part.shipped,
+          purchased: part.purchased,
+          part: part.part,
+          partNumber: part.part_number || '',
+          vendor: part.vendor || '',
+          price: parseFloat(part.price) || 0,
+          shipping: parseFloat(part.shipping) || 0,
+          duties: parseFloat(part.duties) || 0,
+          total: parseFloat(part.total) || 0,
+          tracking: part.tracking || ''
+        }));
+        setParts(formattedParts);
+      } else {
+        // If no data, initialize with default data
+        await initializeDefaultData();
+      }
+    } catch (error) {
+      console.error('Error loading parts:', error);
+      alert('Error loading parts from database');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const initializeDefaultData = async () => {
+    const defaultParts = [
+      { id: 1, delivered: true, shipped: true, purchased: true, part: "Cup Holder", partNumber: "-", vendor: "Etsy", price: 52.00, shipping: 0, duties: 0, total: 52.00, tracking: "9434609206094903332736" },
+      { id: 2, delivered: false, shipped: true, purchased: true, part: "Sony Stereo", partNumber: "XAV-AX6000", vendor: "Best Buy", price: 436.99, shipping: 0, duties: 0, total: 436.99, tracking: "480723763892" },
+      { id: 3, delivered: true, shipped: true, purchased: true, part: "FR Fender Rubber", partNumber: "53878-90K00", vendor: "Partsnext", price: 17.54, shipping: 3.29, duties: 132.65, total: 20.83, tracking: "1Z48537W0440715302" },
+      { id: 4, delivered: true, shipped: true, purchased: true, part: "FL Fender Rubber", partNumber: "53879-90K00", vendor: "Partsnext", price: 17.54, shipping: 0, duties: 0, total: 17.54, tracking: "1Z48537W0440715302" },
+      { id: 5, delivered: true, shipped: true, purchased: true, part: "RR Fender Rubber", partNumber: "61783-90K00", vendor: "Partsnext", price: 10.68, shipping: 3.29, duties: 0, total: 13.97, tracking: "1Z48537W0440715302" },
+      { id: 6, delivered: true, shipped: true, purchased: true, part: "RL Fender Rubber", partNumber: "61784-90K00", vendor: "Partsnext", price: 10.68, shipping: 0, duties: 0, total: 10.68, tracking: "1Z48537W0440715302" },
+      { id: 7, delivered: true, shipped: true, purchased: true, part: "Front Grille", partNumber: "53101-60050", vendor: "Partsnext", price: 126.20, shipping: 106.03, duties: 0, total: 232.23, tracking: "1Z48537W0440715302" },
+      { id: 8, delivered: true, shipped: true, purchased: true, part: "Gear Shift Knob", partNumber: "33504-24010-C1", vendor: "Partsnext", price: 31.95, shipping: 0, duties: 0, total: 31.95, tracking: "1Z48537W0440715302" },
+      { id: 9, delivered: true, shipped: true, purchased: true, part: "Accelerator Pad", partNumber: "78111-95110", vendor: "Partsnext", price: 7.02, shipping: 0, duties: 0, total: 7.02, tracking: "1Z48537W0440715302" },
+      { id: 10, delivered: true, shipped: true, purchased: true, part: "Clutch & Brake Pad", partNumber: "31321-14020", vendor: "Partsnext", price: 4.36, shipping: 3.29, duties: 0, total: 7.65, tracking: "1Z48537W0440715302" },
+      { id: 11, delivered: false, shipped: false, purchased: true, part: "Steering Wheel (Older)", partNumber: "-", vendor: "eBay", price: 210.00, shipping: 90.00, duties: 0, total: 300.00, tracking: "" },
+      { id: 12, delivered: true, shipped: true, purchased: true, part: "Steering Wheel (Original)", partNumber: "-", vendor: "eBay", price: 226.00, shipping: 65.00, duties: 0, total: 291.00, tracking: "885304602390" },
+      { id: 13, delivered: true, shipped: true, purchased: true, part: "Transfer Case Knob", partNumber: "36303-60211-C0", vendor: "eBay", price: 21.60, shipping: 18.35, duties: 0, total: 39.95, tracking: "885344165215" },
+      { id: 14, delivered: true, shipped: true, purchased: true, part: "Winch Cover", partNumber: "38286-60111", vendor: "eBay", price: 211.10, shipping: 0, duties: 0, total: 211.10, tracking: "885474166695" },
+      { id: 15, delivered: true, shipped: true, purchased: true, part: "Fog Light Switch", partNumber: "84160-90K01", vendor: "eBay", price: 42.99, shipping: 0, duties: 0, total: 42.99, tracking: "9400108106245393635087" },
+      { id: 16, delivered: true, shipped: true, purchased: true, part: "Diesel Badge", partNumber: "75315-90A02", vendor: "eBay", price: 33.90, shipping: 0, duties: 0, total: 33.90, tracking: "9400150206242016493978" },
+      { id: 17, delivered: true, shipped: true, purchased: true, part: "Hitch", partNumber: "-", vendor: "eBay", price: 55.87, shipping: 0, duties: 0, total: 55.87, tracking: "885492205088" },
+      { id: 18, delivered: true, shipped: true, purchased: true, part: "4 Pin Trailer Connector", partNumber: "-", vendor: "eBay", price: 29.99, shipping: 8.35, duties: 0, total: 38.34, tracking: "9400108106245426390983" },
+      { id: 19, delivered: true, shipped: true, purchased: true, part: "Rear Bumper Step (Split)", partNumber: "51987-60021", vendor: "eBay", price: 85.00, shipping: 18.00, duties: 0, total: 103.00, tracking: "2450562144" },
+      { id: 20, delivered: true, shipped: true, purchased: true, part: "Key", partNumber: "90999-00212", vendor: "eBay", price: 16.99, shipping: 0, duties: 0, total: 16.99, tracking: "9234690403371000425709" },
+      { id: 21, delivered: false, shipped: true, purchased: true, part: "FR/FL Fender Rubber", partNumber: "53851-90K00-01", vendor: "eBay", price: 65.24, shipping: 22.00, duties: 0, total: 87.24, tracking: "ECSDT00000000052" },
+      { id: 22, delivered: false, shipped: false, purchased: true, part: "Rear Door Latch", partNumber: "69206-10050-B0", vendor: "eBay", price: 10.21, shipping: 19.53, duties: 0, total: 29.74, tracking: "" },
+      { id: 23, delivered: false, shipped: true, purchased: true, part: "Rear Door Card (LH)", partNumber: "64790-60020-S7", vendor: "eBay", price: 88.85, shipping: 51.81, duties: 0, total: 140.66, tracking: "https://www.fedex.com/fedextrack/?trknbr=885730110967&trkqual=2460984000~885730110967~FX" },
+      { id: 24, delivered: false, shipped: true, purchased: true, part: "Rear Door Card (RH)", partNumber: "64780-60050-S7", vendor: "eBay", price: 62.62, shipping: 43.43, duties: 0, total: 106.05, tracking: "https://www.fedex.com/fedextrack/?trknbr=885730110967&trkqual=2460984000~885730110967~FX" },
+      { id: 25, delivered: true, shipped: true, purchased: true, part: "RH Belt Cover", partNumber: "71811-60020-B0", vendor: "Toyota", price: 29.01, shipping: 0, duties: 0, total: 29.01, tracking: "Local" },
+      { id: 26, delivered: true, shipped: true, purchased: true, part: "LH Belt Cover", partNumber: "71812-60040-B0", vendor: "Toyota", price: 36.38, shipping: 0, duties: 0, total: 36.38, tracking: "Local" },
+      { id: 27, delivered: true, shipped: true, purchased: true, part: "Fuel Filter", partNumber: "23303-64010", vendor: "Toyota", price: 15.93, shipping: 0, duties: 0, total: 15.93, tracking: "Local" },
+      { id: 28, delivered: true, shipped: true, purchased: true, part: "Oil Filter x 2", partNumber: "90915-30002", vendor: "Toyota", price: 36.77, shipping: 0, duties: 0, total: 36.77, tracking: "Local" },
+      { id: 29, delivered: true, shipped: true, purchased: true, part: "Air Filter", partNumber: "17801-68020", vendor: "Toyota", price: 21.24, shipping: 0, duties: 0, total: 21.24, tracking: "Local" },
+      { id: 30, delivered: true, shipped: true, purchased: true, part: "LH Inner Belt Assembly", partNumber: "73230-60181-B0", vendor: "Jauce", price: 56.03, shipping: 158.00, duties: 24.27, total: 423.55, tracking: "4730109366" },
+      { id: 31, delivered: true, shipped: true, purchased: true, part: "RH Inner Belt Assembly", partNumber: "73230-60151-B0", vendor: "Jauce", price: 56.03, shipping: 0, duties: 0, total: 56.03, tracking: "4730109366" },
+      { id: 32, delivered: true, shipped: true, purchased: true, part: "Dash Pad", partNumber: "55401-90K00-B0", vendor: "Jauce", price: 129.22, shipping: 0, duties: 0, total: 129.22, tracking: "4730109366" },
+      { id: 33, delivered: true, shipped: true, purchased: true, part: "Front Speakers", partNumber: "DB402", vendor: "Amazon", price: 49.98, shipping: 0, duties: 0, total: 49.98, tracking: "" },
+      { id: 34, delivered: true, shipped: true, purchased: true, part: "Rear Speakers", partNumber: "DB652", vendor: "Amazon", price: 69.35, shipping: 0, duties: 0, total: 69.35, tracking: "" },
+      { id: 35, delivered: true, shipped: true, purchased: true, part: "Radio Wiring Harness", partNumber: "70-1761", vendor: "Amazon", price: 5.00, shipping: 0, duties: 0, total: 5.00, tracking: "" },
+      { id: 36, delivered: false, shipped: true, purchased: true, part: "Oil Plug Gaskets", partNumber: "90430-12031", vendor: "Amazon", price: 14.74, shipping: 0, duties: 0, total: 14.74, tracking: "https://www.amazon.com/gp/your-account/ship-track?itemId=jkohkoonpjkqpsp&ref=ppx_yo2ov_dt_b_track_package&orderId=112-1718718-3841801" },
+      { id: 37, delivered: true, shipped: true, purchased: true, part: "5 to 4 Wire Converter", partNumber: "-", vendor: "Amazon", price: 19.99, shipping: 0, duties: 0, total: 19.99, tracking: "https://www.amazon.com/gp/your-account/ship-track?itemId=jkogrpkqljlrqmp&ref=ppx_yo2ov_dt_b_track_package&packageIndex=0&orderId=112-0626844-5673038&shipmentId=PhG9YC6jb" },
+      { id: 38, delivered: false, shipped: false, purchased: false, part: "Subwoofer", partNumber: "", vendor: "", price: 0, shipping: 0, duties: 0, total: 0, tracking: "" },
+    ];
+
+    try {
+      // Insert all default parts
+      for (const part of defaultParts) {
+        await supabase.from('parts').insert({
+          id: part.id,
+          delivered: part.delivered,
+          shipped: part.shipped,
+          purchased: part.purchased,
+          part: part.part,
+          part_number: part.partNumber,
+          vendor: part.vendor,
+          price: part.price,
+          shipping: part.shipping,
+          duties: part.duties,
+          total: part.total,
+          tracking: part.tracking
+        });
+      }
+      
+      // Reload parts after initialization
+      await loadParts();
+    } catch (error) {
+      console.error('Error initializing data:', error);
+    }
+  };
+
+  const [searchTerm, setSearchTerm] = useState('');
+  const [statusFilter, setStatusFilter] = useState('all');
+  const [vendorFilter, setVendorFilter] = useState('all');
+  const [sortBy, setSortBy] = useState('part');
+  const [sortOrder, setSortOrder] = useState('asc');
+  const [openDropdown, setOpenDropdown] = useState(null);
+  const [showAddModal, setShowAddModal] = useState(false);
+  const [showEditModal, setShowEditModal] = useState(false);
+  const [showTrackingModal, setShowTrackingModal] = useState(false);
+  const [trackingModalPartId, setTrackingModalPartId] = useState(null);
+  const [trackingInput, setTrackingInput] = useState('');
+  const [editingPart, setEditingPart] = useState(null);
+  const [newPart, setNewPart] = useState({
+    part: '',
+    partNumber: '',
+    vendor: '',
+    price: '',
+    shipping: '',
+    duties: '',
+    tracking: '',
+    status: 'pending'
+  });
+
+  const vendors = useMemo(() => {
+    const vendorSet = new Set(parts.map(p => p.vendor).filter(v => v));
+    return ['all', ...Array.from(vendorSet).sort()];
+  }, [parts]);
+
+  const updatePartStatus = async (partId, newStatus) => {
+    // If changing to shipped, show tracking modal
+    if (newStatus === 'shipped') {
+      setTrackingModalPartId(partId);
+      setShowTrackingModal(true);
+      setOpenDropdown(null);
+      return;
+    }
+    
+    try {
+      const statusMap = {
+        delivered: { delivered: true, shipped: true, purchased: true },
+        purchased: { delivered: false, shipped: false, purchased: true },
+        pending: { delivered: false, shipped: false, purchased: false }
+      };
+      
+      const updates = statusMap[newStatus];
+      
+      // Update in database
+      const { error } = await supabase
+        .from('parts')
+        .update(updates)
+        .eq('id', partId);
+      
+      if (error) throw error;
+      
+      // Update local state
+      setParts(prevParts => prevParts.map(part => {
+        if (part.id === partId) {
+          return { ...part, ...updates };
+        }
+        return part;
+      }));
+      
+      setOpenDropdown(null);
+    } catch (error) {
+      console.error('Error updating part status:', error);
+      alert('Error updating part status. Please try again.');
+    }
+  };
+
+  const saveTrackingInfo = async () => {
+    try {
+      // Update in database
+      const { error } = await supabase
+        .from('parts')
+        .update({
+          delivered: false,
+          shipped: true,
+          purchased: true,
+          tracking: trackingInput
+        })
+        .eq('id', trackingModalPartId);
+      
+      if (error) throw error;
+      
+      // Update local state
+      setParts(prevParts => prevParts.map(part => {
+        if (part.id === trackingModalPartId) {
+          return { 
+            ...part, 
+            delivered: false, 
+            shipped: true, 
+            purchased: true,
+            tracking: trackingInput 
+          };
+        }
+        return part;
+      }));
+      
+      setShowTrackingModal(false);
+      setTrackingModalPartId(null);
+      setTrackingInput('');
+    } catch (error) {
+      console.error('Error saving tracking info:', error);
+      alert('Error saving tracking info. Please try again.');
+    }
+  };
+
+  const skipTrackingInfo = async () => {
+    try {
+      // Update in database
+      const { error } = await supabase
+        .from('parts')
+        .update({
+          delivered: false,
+          shipped: true,
+          purchased: true
+        })
+        .eq('id', trackingModalPartId);
+      
+      if (error) throw error;
+      
+      // Update local state
+      setParts(prevParts => prevParts.map(part => {
+        if (part.id === trackingModalPartId) {
+          return { 
+            ...part, 
+            delivered: false, 
+            shipped: true, 
+            purchased: true
+          };
+        }
+        return part;
+      }));
+      
+      setShowTrackingModal(false);
+      setTrackingModalPartId(null);
+      setTrackingInput('');
+    } catch (error) {
+      console.error('Error updating status:', error);
+      alert('Error updating status. Please try again.');
+    }
+  };
+
+  const openEditModal = (part) => {
+    setEditingPart({
+      ...part,
+      status: part.delivered ? 'delivered' : (part.shipped ? 'shipped' : (part.purchased ? 'purchased' : 'pending'))
+    });
+    setShowEditModal(true);
+  };
+
+  const saveEditedPart = async () => {
+    const price = parseFloat(editingPart.price) || 0;
+    const shipping = parseFloat(editingPart.shipping) || 0;
+    const duties = parseFloat(editingPart.duties) || 0;
+    const total = price + shipping + duties;
+    
+    const statusMap = {
+      delivered: { delivered: true, shipped: true, purchased: true },
+      shipped: { delivered: false, shipped: true, purchased: true },
+      purchased: { delivered: false, shipped: false, purchased: true },
+      pending: { delivered: false, shipped: false, purchased: false }
+    };
+    
+    try {
+      // Update in database
+      const { error } = await supabase
+        .from('parts')
+        .update({
+          ...statusMap[editingPart.status],
+          part: editingPart.part,
+          part_number: editingPart.partNumber,
+          vendor: editingPart.vendor,
+          price,
+          shipping,
+          duties,
+          total,
+          tracking: editingPart.tracking
+        })
+        .eq('id', editingPart.id);
+      
+      if (error) throw error;
+      
+      // Update local state
+      setParts(prevParts => prevParts.map(part => {
+        if (part.id === editingPart.id) {
+          return {
+            ...part,
+            ...statusMap[editingPart.status],
+            part: editingPart.part,
+            partNumber: editingPart.partNumber,
+            vendor: editingPart.vendor,
+            price,
+            shipping,
+            duties,
+            total,
+            tracking: editingPart.tracking
+          };
+        }
+        return part;
+      }));
+      
+      setShowEditModal(false);
+      setEditingPart(null);
+    } catch (error) {
+      console.error('Error saving part:', error);
+      alert('Error saving part. Please try again.');
+    }
+  };
+
+  const deletePart = async (partId) => {
+    if (window.confirm('Are you sure you want to delete this part? This action cannot be undone.')) {
+      try {
+        // Delete from database
+        const { error } = await supabase
+          .from('parts')
+          .delete()
+          .eq('id', partId);
+        
+        if (error) throw error;
+        
+        // Update local state
+        setParts(prevParts => prevParts.filter(part => part.id !== partId));
+      } catch (error) {
+        console.error('Error deleting part:', error);
+        alert('Error deleting part. Please try again.');
+      }
+    }
+  };
+
+  const addNewPart = async () => {
+    const price = parseFloat(newPart.price) || 0;
+    const shipping = parseFloat(newPart.shipping) || 0;
+    const duties = parseFloat(newPart.duties) || 0;
+    const total = price + shipping + duties;
+    
+    const statusMap = {
+      delivered: { delivered: true, shipped: true, purchased: true },
+      shipped: { delivered: false, shipped: true, purchased: true },
+      purchased: { delivered: false, shipped: false, purchased: true },
+      pending: { delivered: false, shipped: false, purchased: false }
+    };
+    
+    try {
+      // Insert into database
+      const { data, error } = await supabase
+        .from('parts')
+        .insert({
+          ...statusMap[newPart.status],
+          part: newPart.part,
+          part_number: newPart.partNumber,
+          vendor: newPart.vendor,
+          price,
+          shipping,
+          duties,
+          total,
+          tracking: newPart.tracking
+        })
+        .select()
+        .single();
+      
+      if (error) throw error;
+      
+      // Add to local state with the ID from database
+      const partToAdd = {
+        id: data.id,
+        ...statusMap[newPart.status],
+        part: newPart.part,
+        partNumber: newPart.partNumber,
+        vendor: newPart.vendor,
+        price,
+        shipping,
+        duties,
+        total,
+        tracking: newPart.tracking
+      };
+      
+      setParts([...parts, partToAdd]);
+      setShowAddModal(false);
+      setNewPart({
+        part: '',
+        partNumber: '',
+        vendor: '',
+        price: '',
+        shipping: '',
+        duties: '',
+        tracking: '',
+        status: 'pending'
+      });
+    } catch (error) {
+      console.error('Error adding part:', error);
+      alert('Error adding part. Please try again.');
+    }
+  };
+
+  const handleSort = (field) => {
+    if (sortBy === field) {
+      // Toggle sort order if clicking the same column
+      setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc');
+    } else {
+      // Set new sort field with ascending order
+      setSortBy(field);
+      setSortOrder('asc');
+    }
+  };
+
+  const getSortIcon = (field) => {
+    if (sortBy !== field) return null;
+    return sortOrder === 'asc' ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />;
+  };
+
+  const filteredParts = useMemo(() => {
+    return parts
+      .filter(part => {
+        const matchesSearch = part.part.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                            part.partNumber.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                            part.vendor.toLowerCase().includes(searchTerm.toLowerCase());
+        
+        const matchesStatus = statusFilter === 'all' ||
+                             (statusFilter === 'delivered' && part.delivered) ||
+                             (statusFilter === 'shipped' && part.shipped && !part.delivered) ||
+                             (statusFilter === 'purchased' && part.purchased && !part.shipped) ||
+                             (statusFilter === 'pending' && !part.purchased);
+        
+        const matchesVendor = vendorFilter === 'all' || part.vendor === vendorFilter;
+        
+        return matchesSearch && matchesStatus && matchesVendor;
+      })
+      .sort((a, b) => {
+        let aVal, bVal;
+        
+        // Special handling for status sorting
+        if (sortBy === 'status') {
+          // Assign numeric values: pending=0, purchased=1, shipped=2, delivered=3
+          aVal = a.delivered ? 3 : (a.shipped ? 2 : (a.purchased ? 1 : 0));
+          bVal = b.delivered ? 3 : (b.shipped ? 2 : (b.purchased ? 1 : 0));
+        } else {
+          aVal = a[sortBy];
+          bVal = b[sortBy];
+          
+          if (typeof aVal === 'string') {
+            aVal = aVal.toLowerCase();
+            bVal = bVal.toLowerCase();
+          }
+        }
+        
+        if (sortOrder === 'asc') {
+          return aVal > bVal ? 1 : -1;
+        } else {
+          return aVal < bVal ? 1 : -1;
+        }
+      });
+  }, [parts, searchTerm, statusFilter, vendorFilter, sortBy, sortOrder]);
+
+  const stats = useMemo(() => {
+    return {
+      total: parts.length,
+      delivered: parts.filter(p => p.delivered).length,
+      shipped: parts.filter(p => p.shipped && !p.delivered).length,
+      purchased: parts.filter(p => p.purchased && !p.shipped).length,
+      pending: parts.filter(p => !p.purchased).length,
+      totalCost: parts.reduce((sum, p) => sum + p.total, 0),
+      totalPrice: parts.reduce((sum, p) => sum + p.price, 0),
+      totalShipping: parts.reduce((sum, p) => sum + p.shipping, 0),
+      totalDuties: parts.reduce((sum, p) => sum + p.duties, 0),
+    };
+  }, [parts]);
+
+  const getStatusIcon = (part) => {
+    if (part.delivered) return <CheckCircle className="w-4 h-4 text-green-600" />;
+    if (part.shipped) return <Truck className="w-4 h-4 text-blue-600" />;
+    if (part.purchased) return <Clock className="w-4 h-4 text-yellow-600" />;
+    return <XCircle className="w-4 h-4 text-gray-400" />;
+  };
+
+  const getStatusText = (part) => {
+    if (part.delivered) return 'Delivered';
+    if (part.shipped) return 'Shipped';
+    if (part.purchased) return 'Purchased';
+    return 'Pending';
+  };
+
+  const getStatusColor = (part) => {
+    if (part.delivered) return 'bg-green-100 text-green-800 border-green-200';
+    if (part.shipped) return 'bg-blue-100 text-blue-800 border-blue-200';
+    if (part.purchased) return 'bg-yellow-100 text-yellow-800 border-yellow-200';
+    return 'bg-gray-100 text-gray-800 border-gray-200';
+  };
+
+  const getTrackingUrl = (tracking) => {
+    if (!tracking) return null;
+    
+    // If it's already a full URL, return it
+    if (tracking.startsWith('http')) {
+      return tracking;
+    }
+    
+    // Check if it's an Orange Connex tracking number (starts with EX)
+    if (tracking.startsWith('EX')) {
+      return `https://www.orangeconnex.com/tracking?language=en&trackingnumber=${tracking}`;
+    }
+    
+    // Check if it's an ECMS tracking number (starts with ECSDT)
+    if (tracking.startsWith('ECSDT')) {
+      return `https://www.ecmsglobal.com/en-us/tracking.html?orderNumber=${tracking}`;
+    }
+    
+    // Check if it's a UPS tracking number
+    if (tracking.startsWith('1Z')) {
+      return `https://www.ups.com/track?tracknum=${tracking}&loc=en_US&requester=ST/trackdetails`;
+    }
+    
+    // Check if it's a FedEx tracking number (12-14 digits)
+    if (/^\d{12,14}$/.test(tracking)) {
+      return `https://www.fedex.com/fedextrack/?trknbr=${tracking}`;
+    }
+    
+    // Check if it's a USPS tracking number (20-22 digits or specific patterns)
+    if (/^\d{20,22}$/.test(tracking) || /^(94|92|93)\d{20}$/.test(tracking)) {
+      return `https://tools.usps.com/go/TrackConfirmAction?tLabels=${tracking}`;
+    }
+    
+    // Check if it's a DHL tracking number (10-11 digits)
+    if (/^\d{10,11}$/.test(tracking)) {
+      return `https://www.dhl.com/us-en/home/tracking/tracking-express.html?submit=1&tracking-id=${tracking}`;
+    }
+    
+    // For generic text like "Local", "USPS", "FedEx" without tracking number
+    return null;
+  };
+
+  const getCarrierName = (tracking) => {
+    if (!tracking) return null;
+    
+    // Check if it's an Amazon URL or tracking
+    if (tracking.toLowerCase().includes('amazon.com') || tracking.toLowerCase().includes('amzn')) {
+      return 'Amazon';
+    }
+    
+    // Check if it's a FedEx URL
+    if (tracking.toLowerCase().includes('fedex.com')) {
+      return 'FedEx';
+    }
+    
+    // Check if it's an Orange Connex tracking number (starts with EX)
+    if (tracking.startsWith('EX')) {
+      return 'Orange Connex';
+    }
+    
+    // Check if it's an ECMS tracking number (starts with ECSDT)
+    if (tracking.startsWith('ECSDT')) {
+      return 'ECMS';
+    }
+    
+    // Check if it's a UPS tracking number
+    if (tracking.startsWith('1Z')) {
+      return 'UPS';
+    }
+    
+    // Check if it's a FedEx tracking number (12-14 digits)
+    if (/^\d{12,14}$/.test(tracking)) {
+      return 'FedEx';
+    }
+    
+    // Check if it's a USPS tracking number
+    if (/^\d{20,22}$/.test(tracking) || /^(94|92|93)\d{20}$/.test(tracking)) {
+      return 'USPS';
+    }
+    
+    // Check if it's a DHL tracking number
+    if (/^\d{10,11}$/.test(tracking)) {
+      return 'DHL';
+    }
+    
+    // For text like "Local", "USPS", "FedEx", "ECMS" etc.
+    const upper = tracking.toUpperCase();
+    if (upper.includes('UPS')) return 'UPS';
+    if (upper.includes('FEDEX')) return 'FedEx';
+    if (upper.includes('USPS')) return 'USPS';
+    if (upper.includes('DHL')) return 'DHL';
+    if (upper.includes('ECMS')) return 'ECMS';
+    if (upper.includes('LOCAL')) return 'Local';
+    
+    return tracking; // Return as-is if unknown
+  };
+
+  const getVendorColor = (vendor) => {
+    if (!vendor) return 'bg-gray-100 text-gray-700 border border-gray-200';
+    
+    const vendorLower = vendor.toLowerCase();
+    if (vendorLower === 'toyota') return 'bg-red-100 text-red-700 border border-red-200';
+    if (vendorLower === 'ebay') return 'bg-green-100 text-green-700 border border-green-200';
+    if (vendorLower === 'etsy') return 'bg-orange-100 text-orange-700 border border-orange-200';
+    if (vendorLower === 'partsnext') return 'bg-yellow-100 text-yellow-700 border border-yellow-200';
+    if (vendorLower === 'best buy') return 'bg-purple-100 text-purple-700 border border-purple-200';
+    if (vendorLower === 'amazon') return 'bg-blue-100 text-blue-700 border border-blue-200';
+    if (vendorLower === 'jauce') return 'bg-fuchsia-100 text-fuchsia-700 border border-fuchsia-200';
+    
+    return 'bg-gray-100 text-gray-700 border border-gray-200';
+  };
+
+  const StatusDropdown = ({ part }) => {
+    const isOpen = openDropdown === part.id;
+    
+    return (
+      <div className="relative">
+        <button
+          onClick={(e) => {
+            e.stopPropagation();
+            setOpenDropdown(isOpen ? null : part.id);
+          }}
+          className={`flex items-center gap-2 px-3 py-1.5 text-xs font-medium rounded-full border transition-all hover:shadow-md ${getStatusColor(part)}`}
+        >
+          {getStatusIcon(part)}
+          <span>{getStatusText(part)}</span>
+          <ChevronDown className={`w-3 h-3 transition-transform ${isOpen ? 'rotate-180' : ''}`} />
+        </button>
+        
+        {isOpen && (
+          <>
+            <div 
+              className="fixed inset-0 z-10" 
+              onClick={() => setOpenDropdown(null)}
+            />
+            <div className="absolute left-0 top-full mt-1 bg-white rounded-lg shadow-lg border border-gray-200 py-1 z-20 min-w-[140px]">
+              <button
+                onClick={() => updatePartStatus(part.id, 'delivered')}
+                className="w-full px-4 py-2 text-left text-sm hover:bg-green-50 flex items-center gap-2 text-gray-700"
+              >
+                <CheckCircle className="w-4 h-4 text-green-600" />
+                <span>Delivered</span>
+              </button>
+              <button
+                onClick={() => updatePartStatus(part.id, 'shipped')}
+                className="w-full px-4 py-2 text-left text-sm hover:bg-blue-50 flex items-center gap-2 text-gray-700"
+              >
+                <Truck className="w-4 h-4 text-blue-600" />
+                <span>Shipped</span>
+              </button>
+              <button
+                onClick={() => updatePartStatus(part.id, 'purchased')}
+                className="w-full px-4 py-2 text-left text-sm hover:bg-yellow-50 flex items-center gap-2 text-gray-700"
+              >
+                <Clock className="w-4 h-4 text-yellow-600" />
+                <span>Purchased</span>
+              </button>
+              <button
+                onClick={() => updatePartStatus(part.id, 'pending')}
+                className="w-full px-4 py-2 text-left text-sm hover:bg-gray-50 flex items-center gap-2 text-gray-700"
+              >
+                <XCircle className="w-4 h-4 text-gray-400" />
+                <span>Pending</span>
+              </button>
+            </div>
+          </>
+        )}
+      </div>
+    );
+  };
+
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 p-6">
+      <div className="max-w-7xl mx-auto">
+        {/* Header */}
+        <div className="mb-8">
+          <div className="flex items-center justify-between">
+            <div>
+              <h1 className="text-4xl font-bold text-slate-800 mb-2" style={{ fontFamily: "'Courier New', 'Courier', monospace" }}>🛻 Land Cruiser Parts Tracker</h1>
+            </div>
+            <button
+              onClick={() => setShowAddModal(true)}
+              className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg shadow-md transition-colors font-medium"
+            >
+              <Plus className="w-5 h-5" />
+              Add New Part
+            </button>
+          </div>
+        </div>
+
+        {/* Loading State */}
+        {loading && (
+          <div className="flex items-center justify-center py-20">
+            <div className="text-center">
+              <div className="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mb-4"></div>
+              <p className="text-slate-600">Loading parts from database...</p>
+            </div>
+          </div>
+        )}
+
+        {/* Content - Only show when not loading */}
+        {!loading && (
+          <>
+        {/* Add New Part Modal */}
+        {showAddModal && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+            <div className="bg-white rounded-lg shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+              <div className="sticky top-0 bg-white border-b border-gray-200 px-6 py-4 flex items-center justify-between">
+                <h2 className="text-2xl font-bold text-gray-800">Add New Part</h2>
+                <button
+                  onClick={() => setShowAddModal(false)}
+                  className="text-gray-400 hover:text-gray-600 transition-colors"
+                >
+                  <X className="w-6 h-6" />
+                </button>
+              </div>
+              
+              <div className="p-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="md:col-span-2">
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Part Name <span className="text-red-500">*</span>
+                    </label>
+                    <input
+                      type="text"
+                      value={newPart.part}
+                      onChange={(e) => setNewPart({ ...newPart, part: e.target.value })}
+                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      placeholder="e.g., Front Bumper"
+                      required
+                    />
+                  </div>
+                  
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Part Number
+                    </label>
+                    <input
+                      type="text"
+                      value={newPart.partNumber}
+                      onChange={(e) => setNewPart({ ...newPart, partNumber: e.target.value })}
+                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      placeholder="e.g., 12345-67890"
+                    />
+                  </div>
+                  
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Vendor
+                    </label>
+                    <input
+                      type="text"
+                      value={newPart.vendor}
+                      onChange={(e) => setNewPart({ ...newPart, vendor: e.target.value })}
+                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      placeholder="e.g., eBay, Amazon"
+                    />
+                  </div>
+                  
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Price ($)
+                    </label>
+                    <input
+                      type="number"
+                      step="0.01"
+                      value={newPart.price}
+                      onChange={(e) => setNewPart({ ...newPart, price: e.target.value })}
+                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      placeholder="0.00"
+                    />
+                  </div>
+                  
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Shipping ($)
+                    </label>
+                    <input
+                      type="number"
+                      step="0.01"
+                      value={newPart.shipping}
+                      onChange={(e) => setNewPart({ ...newPart, shipping: e.target.value })}
+                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      placeholder="0.00"
+                    />
+                  </div>
+                  
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Import Duties ($)
+                    </label>
+                    <input
+                      type="number"
+                      step="0.01"
+                      value={newPart.duties}
+                      onChange={(e) => setNewPart({ ...newPart, duties: e.target.value })}
+                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      placeholder="0.00"
+                    />
+                  </div>
+                  
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Tracking Link
+                    </label>
+                    <input
+                      type="text"
+                      value={newPart.tracking}
+                      onChange={(e) => setNewPart({ ...newPart, tracking: e.target.value })}
+                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      placeholder="e.g., FedEx, USPS"
+                    />
+                  </div>
+                  
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Status
+                    </label>
+                    <select
+                      value={newPart.status}
+                      onChange={(e) => setNewPart({ ...newPart, status: e.target.value })}
+                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    >
+                      <option value="pending">Pending</option>
+                      <option value="purchased">Purchased</option>
+                      <option value="shipped">Shipped</option>
+                      <option value="delivered">Delivered</option>
+                    </select>
+                  </div>
+                  
+                  {(newPart.price || newPart.shipping || newPart.duties) && (
+                    <div className="md:col-span-2 bg-blue-50 border border-blue-200 rounded-lg p-4">
+                      <div className="flex items-center justify-between">
+                        <span className="text-sm font-medium text-gray-700">Calculated Total:</span>
+                        <span className="text-2xl font-bold text-blue-600">
+                          ${((parseFloat(newPart.price) || 0) + (parseFloat(newPart.shipping) || 0) + (parseFloat(newPart.duties) || 0)).toFixed(2)}
+                        </span>
+                      </div>
+                    </div>
+                  )}
+                </div>
+                
+                <div className="flex gap-3 mt-6">
+                  <button
+                    onClick={addNewPart}
+                    disabled={!newPart.part}
+                    className="flex-1 bg-blue-600 hover:bg-blue-700 disabled:bg-gray-300 disabled:cursor-not-allowed text-white px-6 py-3 rounded-lg font-medium transition-colors"
+                  >
+                    Add Part
+                  </button>
+                  <button
+                    onClick={() => setShowAddModal(false)}
+                    className="px-6 py-3 border border-gray-300 rounded-lg font-medium text-gray-700 hover:bg-gray-50 transition-colors"
+                  >
+                    Cancel
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Tracking Info Modal */}
+        {showTrackingModal && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+            <div className="bg-white rounded-lg shadow-xl max-w-md w-full">
+              <div className="bg-white border-b border-gray-200 px-6 py-4 flex items-center justify-between rounded-t-lg">
+                <h2 className="text-xl font-bold text-gray-800">Add Tracking Info</h2>
+                <button
+                  onClick={() => {
+                    setShowTrackingModal(false);
+                    setTrackingModalPartId(null);
+                    setTrackingInput('');
+                  }}
+                  className="text-gray-400 hover:text-gray-600 transition-colors"
+                >
+                  <X className="w-5 h-5" />
+                </button>
+              </div>
+              
+              <div className="p-6">
+                <p className="text-sm text-gray-600 mb-4">
+                  Enter the tracking number for this shipment (optional)
+                </p>
+                
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Tracking Number
+                </label>
+                <input
+                  type="text"
+                  value={trackingInput}
+                  onChange={(e) => setTrackingInput(e.target.value)}
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  placeholder="e.g., 1Z999AA10123456784"
+                  autoFocus
+                />
+                
+                <div className="flex gap-3 mt-6">
+                  <button
+                    onClick={saveTrackingInfo}
+                    className="flex-1 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-medium transition-colors"
+                  >
+                    Save
+                  </button>
+                  <button
+                    onClick={skipTrackingInfo}
+                    className="px-4 py-2 border border-gray-300 rounded-lg font-medium text-gray-700 hover:bg-gray-50 transition-colors"
+                  >
+                    Skip
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Edit Part Modal */}
+        {showEditModal && editingPart && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+            <div className="bg-white rounded-lg shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+              <div className="sticky top-0 bg-white border-b border-gray-200 px-6 py-4 flex items-center justify-between">
+                <h2 className="text-2xl font-bold text-gray-800">Edit Part</h2>
+                <button
+                  onClick={() => {
+                    setShowEditModal(false);
+                    setEditingPart(null);
+                  }}
+                  className="text-gray-400 hover:text-gray-600 transition-colors"
+                >
+                  <X className="w-6 h-6" />
+                </button>
+              </div>
+              
+              <div className="p-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="md:col-span-2">
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Part Name <span className="text-red-500">*</span>
+                    </label>
+                    <input
+                      type="text"
+                      value={editingPart.part}
+                      onChange={(e) => setEditingPart({ ...editingPart, part: e.target.value })}
+                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      placeholder="e.g., Front Bumper"
+                      required
+                    />
+                  </div>
+                  
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Part Number
+                    </label>
+                    <input
+                      type="text"
+                      value={editingPart.partNumber}
+                      onChange={(e) => setEditingPart({ ...editingPart, partNumber: e.target.value })}
+                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      placeholder="e.g., 12345-67890"
+                    />
+                  </div>
+                  
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Vendor
+                    </label>
+                    <input
+                      type="text"
+                      value={editingPart.vendor}
+                      onChange={(e) => setEditingPart({ ...editingPart, vendor: e.target.value })}
+                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      placeholder="e.g., eBay, Amazon"
+                    />
+                  </div>
+                  
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Price ($)
+                    </label>
+                    <input
+                      type="number"
+                      step="0.01"
+                      value={editingPart.price}
+                      onChange={(e) => setEditingPart({ ...editingPart, price: e.target.value })}
+                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      placeholder="0.00"
+                    />
+                  </div>
+                  
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Shipping ($)
+                    </label>
+                    <input
+                      type="number"
+                      step="0.01"
+                      value={editingPart.shipping}
+                      onChange={(e) => setEditingPart({ ...editingPart, shipping: e.target.value })}
+                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      placeholder="0.00"
+                    />
+                  </div>
+                  
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Import Duties ($)
+                    </label>
+                    <input
+                      type="number"
+                      step="0.01"
+                      value={editingPart.duties}
+                      onChange={(e) => setEditingPart({ ...editingPart, duties: e.target.value })}
+                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      placeholder="0.00"
+                    />
+                  </div>
+                  
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Tracking Number
+                    </label>
+                    <input
+                      type="text"
+                      value={editingPart.tracking}
+                      onChange={(e) => setEditingPart({ ...editingPart, tracking: e.target.value })}
+                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      placeholder="e.g., 1Z999AA10123456784"
+                    />
+                  </div>
+                  
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Status
+                    </label>
+                    <select
+                      value={editingPart.status}
+                      onChange={(e) => setEditingPart({ ...editingPart, status: e.target.value })}
+                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    >
+                      <option value="pending">Pending</option>
+                      <option value="purchased">Purchased</option>
+                      <option value="shipped">Shipped</option>
+                      <option value="delivered">Delivered</option>
+                    </select>
+                  </div>
+                  
+                  <div className="md:col-span-2 bg-blue-50 border border-blue-200 rounded-lg p-4">
+                    <div className="flex items-center justify-between">
+                      <span className="text-sm font-medium text-gray-700">Calculated Total:</span>
+                      <span className="text-2xl font-bold text-blue-600">
+                        ${((parseFloat(editingPart.price) || 0) + (parseFloat(editingPart.shipping) || 0) + (parseFloat(editingPart.duties) || 0)).toFixed(2)}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+                
+                <div className="flex gap-3 mt-6">
+                  <button
+                    onClick={saveEditedPart}
+                    disabled={!editingPart.part}
+                    className="flex-1 bg-blue-600 hover:bg-blue-700 disabled:bg-gray-300 disabled:cursor-not-allowed text-white px-6 py-3 rounded-lg font-medium transition-colors"
+                  >
+                    Save Changes
+                  </button>
+                  <button
+                    onClick={() => {
+                      setShowEditModal(false);
+                      setEditingPart(null);
+                    }}
+                    className="px-6 py-3 border border-gray-300 rounded-lg font-medium text-gray-700 hover:bg-gray-50 transition-colors"
+                  >
+                    Cancel
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Statistics and Cost Breakdown - Side by Side */}
+        <div className="grid grid-cols-2 gap-6 mb-6">
+          {/* Left Column: Statistics Cards + Search */}
+          <div className="space-y-4">
+            {/* Statistics Cards */}
+            <div className="grid grid-cols-2 gap-4">
+              <div className="bg-white rounded-lg shadow-md p-6 border-l-4 border-green-500 relative">
+                <CheckCircle className="w-8 h-8 text-green-500 opacity-20 absolute top-4 right-4" />
+                <div>
+                  <p className="text-sm text-gray-600 mb-3">Delivered</p>
+                  <p className="text-3xl font-bold text-gray-800">{stats.delivered}</p>
+                </div>
+              </div>
+
+              <div className="bg-white rounded-lg shadow-md p-6 border-l-4 border-blue-500 relative">
+                <Truck className="w-8 h-8 text-blue-500 opacity-20 absolute top-4 right-4" />
+                <div>
+                  <p className="text-sm text-gray-600 mb-3">In Transit</p>
+                  <p className="text-3xl font-bold text-gray-800">{stats.shipped}</p>
+                </div>
+              </div>
+
+              <div className="bg-white rounded-lg shadow-md p-6 border-l-4 border-yellow-500 relative">
+                <Package className="w-8 h-8 text-yellow-500 opacity-20 absolute top-4 right-4" />
+                <div>
+                  <p className="text-sm text-gray-600 mb-3">Purchased</p>
+                  <p className="text-3xl font-bold text-gray-800">{stats.purchased}</p>
+                </div>
+              </div>
+
+              <div className="bg-white rounded-lg shadow-md p-6 border-l-4 border-purple-500 relative">
+                <DollarSign className="w-8 h-8 text-purple-500 opacity-20 absolute top-4 right-4" />
+                <div>
+                  <p className="text-sm text-gray-600 mb-3">Total Spent</p>
+                  <p className="text-3xl font-bold text-gray-800">${stats.totalCost.toFixed(2)}</p>
+                </div>
+              </div>
+            </div>
+
+            {/* Search Box */}
+            <div className="bg-white rounded-lg shadow-md p-3">
+              <div className="relative">
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+                <input
+                  type="text"
+                  placeholder="Search parts..."
+                  className="w-full pl-10 pr-10 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                />
+                {searchTerm && (
+                  <button
+                    onClick={() => setSearchTerm('')}
+                    className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors"
+                    title="Clear search"
+                  >
+                    <X className="w-4 h-4" />
+                  </button>
+                )}
+              </div>
+            </div>
+          </div>
+
+          {/* Cost Breakdown */}
+          <div className="bg-white rounded-lg shadow-md p-6">
+            <h3 className="text-lg font-semibold text-gray-800 mb-4 flex items-center gap-2">
+              <TrendingUp className="w-5 h-5" />
+              Cost Breakdown
+            </h3>
+            <div className="grid grid-cols-1 gap-4">
+              <div className="flex items-center justify-between py-2 border-b border-gray-100">
+                <p className="text-sm text-gray-600">Parts Cost</p>
+                <p className="text-xl font-semibold text-gray-800">${stats.totalPrice.toFixed(2)}</p>
+              </div>
+              <div className="flex items-center justify-between py-2 border-b border-gray-100">
+                <p className="text-sm text-gray-600">Shipping</p>
+                <p className="text-xl font-semibold text-gray-800">${stats.totalShipping.toFixed(2)}</p>
+              </div>
+              <div className="flex items-center justify-between py-2 border-b border-gray-100">
+                <p className="text-sm text-gray-600">Import Duties</p>
+                <p className="text-xl font-semibold text-gray-800">${stats.totalDuties.toFixed(2)}</p>
+              </div>
+              <div className="pt-2">
+                <p className="text-sm text-gray-600 mb-2">Progress</p>
+                <div className="flex items-center gap-2">
+                  <div className="flex-1 bg-gray-200 rounded-full h-2">
+                    <div 
+                      className="bg-green-500 h-2 rounded-full transition-all duration-500"
+                      style={{ width: `${(stats.delivered / stats.total) * 100}%` }}
+                    />
+                  </div>
+                  <span className="text-sm font-semibold text-gray-700">
+                    {Math.round((stats.delivered / stats.total) * 100)}%
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Parts Table */}
+        <div className="bg-white rounded-lg shadow-md overflow-hidden">
+          <div className="overflow-x-auto">
+            <table className="w-full">
+              <thead className="bg-slate-100 border-b border-slate-200">
+                <tr>
+                  <th 
+                    onClick={() => handleSort('status')}
+                    className="px-6 py-4 text-left text-xs font-semibold text-slate-700 uppercase tracking-wider cursor-pointer hover:bg-slate-200 transition-colors"
+                  >
+                    <div className="flex items-center gap-2">
+                      Status
+                      {getSortIcon('status')}
+                    </div>
+                  </th>
+                  <th className="px-6 py-4 text-left text-xs font-semibold text-slate-700 uppercase tracking-wider">Part</th>
+                  <th className="px-6 py-4 text-left text-xs font-semibold text-slate-700 uppercase tracking-wider">Part #</th>
+                  <th 
+                    onClick={() => handleSort('vendor')}
+                    className="px-6 py-4 text-left text-xs font-semibold text-slate-700 uppercase tracking-wider cursor-pointer hover:bg-slate-200 transition-colors"
+                  >
+                    <div className="flex items-center gap-2">
+                      Vendor
+                      {getSortIcon('vendor')}
+                    </div>
+                  </th>
+                  <th 
+                    onClick={() => handleSort('price')}
+                    className="px-6 py-4 text-right text-xs font-semibold text-slate-700 uppercase tracking-wider cursor-pointer hover:bg-slate-200 transition-colors"
+                  >
+                    <div className="flex items-center justify-end gap-2">
+                      Price
+                      {getSortIcon('price')}
+                    </div>
+                  </th>
+                  <th className="px-6 py-4 text-right text-xs font-semibold text-slate-700 uppercase tracking-wider">Shipping</th>
+                  <th 
+                    onClick={() => handleSort('total')}
+                    className="px-6 py-4 text-right text-xs font-semibold text-slate-700 uppercase tracking-wider cursor-pointer hover:bg-slate-200 transition-colors"
+                  >
+                    <div className="flex items-center justify-end gap-2">
+                      Total
+                      {getSortIcon('total')}
+                    </div>
+                  </th>
+                  <th className="px-6 py-4 text-left text-xs font-semibold text-slate-700 uppercase tracking-wider">Tracking</th>
+                  <th className="px-6 py-4 text-center text-xs font-semibold text-slate-700 uppercase tracking-wider">Actions</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-slate-200">
+                {filteredParts.map((part) => (
+                  <tr key={part.id} className="hover:bg-slate-50 transition-colors">
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <StatusDropdown part={part} />
+                    </td>
+                    <td className="px-6 py-4">
+                      <div className="text-sm font-medium text-slate-900">{part.part}</div>
+                    </td>
+                    <td className="px-6 py-4">
+                      {part.partNumber && part.partNumber !== '-' ? (
+                        <div className="text-sm text-slate-600 font-mono">{part.partNumber}</div>
+                      ) : (
+                        <div className="text-sm text-slate-400 text-center">—</div>
+                      )}
+                    </td>
+                    <td className="px-6 py-4">
+                      {part.vendor ? (
+                        <span className={`inline-block px-3 py-1 rounded-full text-sm font-medium ${getVendorColor(part.vendor)}`}>
+                          {part.vendor}
+                        </span>
+                      ) : (
+                        <div className="text-sm text-slate-400 text-center">—</div>
+                      )}
+                    </td>
+                    <td className="px-6 py-4 text-right">
+                      <div className="text-sm text-slate-900">${part.price.toFixed(2)}</div>
+                    </td>
+                    <td className="px-6 py-4">
+                      {part.shipping > 0 ? (
+                        <div className="text-sm text-slate-600 text-right">${part.shipping.toFixed(2)}</div>
+                      ) : (
+                        <div className="text-sm text-slate-400 text-center">—</div>
+                      )}
+                    </td>
+                    <td className="px-6 py-4 text-right">
+                      <div className="text-sm font-semibold text-slate-900">${part.total.toFixed(2)}</div>
+                    </td>
+                    <td className="px-6 py-4">
+                      {part.tracking ? (
+                        getTrackingUrl(part.tracking) ? (
+                          <a
+                            href={getTrackingUrl(part.tracking)}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="inline-flex items-center justify-center gap-1.5 px-3 py-1.5 bg-blue-400 hover:bg-blue-500 text-white text-sm font-medium rounded-md transition-colors w-28"
+                          >
+                            {getCarrierName(part.tracking)}
+                            <ExternalLink className="w-3.5 h-3.5" />
+                          </a>
+                        ) : (
+                          <div className="inline-flex items-center justify-center px-3 py-1.5 bg-gray-200 text-gray-700 text-sm font-medium rounded-md w-28">
+                            {getCarrierName(part.tracking)}
+                          </div>
+                        )
+                      ) : (
+                        <div className="text-sm text-slate-400 text-center">—</div>
+                      )}
+                    </td>
+                    <td className="px-6 py-4 text-center">
+                      <div className="flex items-center justify-center gap-2">
+                        <button
+                          onClick={() => openEditModal(part)}
+                          className="inline-flex items-center justify-center p-2 text-gray-600 hover:text-blue-600 hover:bg-blue-50 border border-gray-300 hover:border-blue-300 rounded-md transition-colors"
+                          title="Edit part"
+                        >
+                          <Edit2 className="w-4 h-4" />
+                        </button>
+                        <button
+                          onClick={() => deletePart(part.id)}
+                          className="inline-flex items-center justify-center p-2 text-gray-600 hover:text-red-600 hover:bg-red-50 border border-gray-300 hover:border-red-300 rounded-md transition-colors"
+                          title="Delete part"
+                        >
+                          <Trash2 className="w-4 h-4" />
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+          
+          <div className="bg-slate-50 px-6 py-4 border-t border-slate-200">
+            <p className="text-sm text-slate-600">
+              Showing <span className="font-semibold">{filteredParts.length}</span> of <span className="font-semibold">{stats.total}</span> parts
+            </p>
+          </div>
+        </div>
+        </>
+        )}
+      </div>
+    </div>
+  );
+};
+
+export default LandCruiserTracker;
