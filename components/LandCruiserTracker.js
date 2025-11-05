@@ -1,5 +1,5 @@
 import React, { useState, useMemo, useEffect } from 'react';
-import { Search, Package, DollarSign, TrendingUp, Truck, CheckCircle, Clock, XCircle, ChevronDown, Plus, X, ExternalLink, ChevronUp, Edit2, Trash2 } from 'lucide-react';
+import { Search, Package, DollarSign, TrendingUp, Truck, CheckCircle, Clock, XCircle, ChevronDown, Plus, X, ExternalLink, ChevronUp, Edit2, Trash2, Moon, Sun } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 
 // Add Foundation One font
@@ -143,6 +143,18 @@ const LandCruiserTracker = () => {
   const [trackingModalPartId, setTrackingModalPartId] = useState(null);
   const [trackingInput, setTrackingInput] = useState('');
   const [editingPart, setEditingPart] = useState(null);
+  const [darkMode, setDarkMode] = useState(() => {
+    // Check localStorage or system preference
+    const saved = localStorage.getItem('darkMode');
+    if (saved !== null) return JSON.parse(saved);
+    return window.matchMedia('(prefers-color-scheme: dark)').matches;
+  });
+
+  // Save dark mode preference to localStorage
+  useEffect(() => {
+    localStorage.setItem('darkMode', JSON.stringify(darkMode));
+  }, [darkMode]);
+
   const [newPart, setNewPart] = useState({
     part: '',
     partNumber: '',
@@ -692,22 +704,41 @@ const LandCruiserTracker = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 p-3 sm:p-6">
+    <div className={`min-h-screen p-3 sm:p-6 transition-colors duration-200 ${
+      darkMode 
+        ? 'bg-gradient-to-br from-gray-900 to-gray-800' 
+        : 'bg-gradient-to-br from-slate-50 to-slate-100'
+    }`}>
       <style>{fontStyles}</style>
       <div className="max-w-7xl mx-auto">
         {/* Header */}
         <div className="mb-6 sm:mb-8">
           <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
             <div>
-              <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-slate-800 mb-2" style={{ fontFamily: "'FoundationOne', 'Courier New', monospace" }}>🛻 LAND CRUISER PARTS TRACKER</h1>
+              <h1 className={`text-2xl sm:text-3xl lg:text-4xl font-bold mb-2 ${
+                darkMode ? 'text-gray-100' : 'text-slate-800'
+              }`} style={{ fontFamily: "'FoundationOne', 'Courier New', monospace" }}>🗺️ LAND CRUISER PARTS</h1>
             </div>
-            <button
-              onClick={() => setShowAddModal(true)}
-              className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-4 sm:px-6 py-2 sm:py-3 rounded-lg shadow-md transition-colors font-medium text-sm sm:text-base whitespace-nowrap"
-            >
-              <Plus className="w-4 h-4 sm:w-5 sm:h-5" />
-              Add New Part
-            </button>
+            <div className="flex items-center gap-3">
+              <button
+                onClick={() => setDarkMode(!darkMode)}
+                className={`p-2 sm:p-3 rounded-lg shadow-md transition-colors ${
+                  darkMode 
+                    ? 'bg-gray-700 hover:bg-gray-600 text-yellow-300' 
+                    : 'bg-white hover:bg-gray-100 text-gray-700'
+                }`}
+                title={darkMode ? 'Switch to Light Mode' : 'Switch to Dark Mode'}
+              >
+                {darkMode ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
+              </button>
+              <button
+                onClick={() => setShowAddModal(true)}
+                className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-4 sm:px-6 py-2 sm:py-3 rounded-lg shadow-md transition-colors font-medium text-sm sm:text-base whitespace-nowrap"
+              >
+                <Plus className="w-4 h-4 sm:w-5 sm:h-5" />
+                Add New Part
+              </button>
+            </div>
           </div>
         </div>
 
@@ -1106,54 +1137,88 @@ const LandCruiserTracker = () => {
           <div className="space-y-4">
             {/* Statistics Cards */}
             <div className="grid grid-cols-2 gap-3 sm:gap-4">
-              <div className="bg-white rounded-lg shadow-md p-3 sm:p-4 lg:p-6 border-l-4 border-green-500 relative overflow-hidden">
+              <div className={`rounded-lg shadow-md p-3 sm:p-4 lg:p-6 border-l-4 border-green-500 relative overflow-hidden ${
+                darkMode ? 'bg-gray-800' : 'bg-white'
+              }`}>
                 <CheckCircle className="w-6 h-6 sm:w-8 sm:h-8 text-green-500 opacity-20 absolute top-2 sm:top-4 right-2 sm:right-4" />
                 <div>
-                  <p className="text-xs sm:text-sm text-gray-600 mb-1 sm:mb-2 lg:mb-3">Delivered</p>
-                  <p className="text-xl sm:text-2xl lg:text-3xl font-bold text-gray-800 truncate">{stats.delivered}</p>
+                  <p className={`text-xs sm:text-sm mb-1 sm:mb-2 lg:mb-3 ${
+                    darkMode ? 'text-gray-400' : 'text-gray-600'
+                  }`}>Delivered</p>
+                  <p className={`text-xl sm:text-2xl lg:text-3xl font-bold truncate ${
+                    darkMode ? 'text-gray-100' : 'text-gray-800'
+                  }`}>{stats.delivered}</p>
                 </div>
               </div>
 
-              <div className="bg-white rounded-lg shadow-md p-3 sm:p-4 lg:p-6 border-l-4 border-blue-500 relative overflow-hidden">
+              <div className={`rounded-lg shadow-md p-3 sm:p-4 lg:p-6 border-l-4 border-blue-500 relative overflow-hidden ${
+                darkMode ? 'bg-gray-800' : 'bg-white'
+              }`}>
                 <Truck className="w-6 h-6 sm:w-8 sm:h-8 text-blue-500 opacity-20 absolute top-2 sm:top-4 right-2 sm:right-4" />
                 <div>
-                  <p className="text-xs sm:text-sm text-gray-600 mb-1 sm:mb-2 lg:mb-3">In Transit</p>
-                  <p className="text-xl sm:text-2xl lg:text-3xl font-bold text-gray-800 truncate">{stats.shipped}</p>
+                  <p className={`text-xs sm:text-sm mb-1 sm:mb-2 lg:mb-3 ${
+                    darkMode ? 'text-gray-400' : 'text-gray-600'
+                  }`}>In Transit</p>
+                  <p className={`text-xl sm:text-2xl lg:text-3xl font-bold truncate ${
+                    darkMode ? 'text-gray-100' : 'text-gray-800'
+                  }`}>{stats.shipped}</p>
                 </div>
               </div>
 
-              <div className="bg-white rounded-lg shadow-md p-3 sm:p-4 lg:p-6 border-l-4 border-yellow-500 relative overflow-hidden">
+              <div className={`rounded-lg shadow-md p-3 sm:p-4 lg:p-6 border-l-4 border-yellow-500 relative overflow-hidden ${
+                darkMode ? 'bg-gray-800' : 'bg-white'
+              }`}>
                 <Package className="w-6 h-6 sm:w-8 sm:h-8 text-yellow-500 opacity-20 absolute top-2 sm:top-4 right-2 sm:right-4" />
                 <div>
-                  <p className="text-xs sm:text-sm text-gray-600 mb-1 sm:mb-2 lg:mb-3">Purchased</p>
-                  <p className="text-xl sm:text-2xl lg:text-3xl font-bold text-gray-800 truncate">{stats.purchased}</p>
+                  <p className={`text-xs sm:text-sm mb-1 sm:mb-2 lg:mb-3 ${
+                    darkMode ? 'text-gray-400' : 'text-gray-600'
+                  }`}>Purchased</p>
+                  <p className={`text-xl sm:text-2xl lg:text-3xl font-bold truncate ${
+                    darkMode ? 'text-gray-100' : 'text-gray-800'
+                  }`}>{stats.purchased}</p>
                 </div>
               </div>
 
-              <div className="bg-white rounded-lg shadow-md p-3 sm:p-4 lg:p-6 border-l-4 border-purple-500 relative overflow-hidden">
+              <div className={`rounded-lg shadow-md p-3 sm:p-4 lg:p-6 border-l-4 border-purple-500 relative overflow-hidden ${
+                darkMode ? 'bg-gray-800' : 'bg-white'
+              }`}>
                 <DollarSign className="w-6 h-6 sm:w-8 sm:h-8 text-purple-500 opacity-20 absolute top-2 sm:top-4 right-2 sm:right-4" />
                 <div>
-                  <p className="text-xs sm:text-sm text-gray-600 mb-1 sm:mb-2 lg:mb-3">Total Spent</p>
-                  <p className="text-lg sm:text-2xl lg:text-3xl font-bold text-gray-800 truncate">${stats.totalCost.toFixed(2)}</p>
+                  <p className={`text-xs sm:text-sm mb-1 sm:mb-2 lg:mb-3 ${
+                    darkMode ? 'text-gray-400' : 'text-gray-600'
+                  }`}>Total Spent</p>
+                  <p className={`text-lg sm:text-2xl lg:text-3xl font-bold truncate ${
+                    darkMode ? 'text-gray-100' : 'text-gray-800'
+                  }`}>${stats.totalCost.toFixed(2)}</p>
                 </div>
               </div>
             </div>
 
             {/* Search Box */}
-            <div className="bg-white rounded-lg shadow-md p-3">
+            <div className={`rounded-lg shadow-md p-3 ${
+              darkMode ? 'bg-gray-800' : 'bg-white'
+            }`}>
               <div className="relative">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+                <Search className={`absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 ${
+                  darkMode ? 'text-gray-500' : 'text-gray-400'
+                }`} />
                 <input
                   type="text"
                   placeholder="Search parts..."
-                  className="w-full pl-10 pr-10 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className={`w-full pl-10 pr-10 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
+                    darkMode 
+                      ? 'bg-gray-700 border-gray-600 text-gray-100 placeholder-gray-400' 
+                      : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400'
+                  }`}
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
                 />
                 {searchTerm && (
                   <button
                     onClick={() => setSearchTerm('')}
-                    className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors"
+                    className={`absolute right-3 top-1/2 transform -translate-y-1/2 transition-colors ${
+                      darkMode ? 'text-gray-500 hover:text-gray-300' : 'text-gray-400 hover:text-gray-600'
+                    }`}
                     title="Clear search"
                   >
                     <X className="w-4 h-4" />
@@ -1164,34 +1229,62 @@ const LandCruiserTracker = () => {
           </div>
 
           {/* Cost Breakdown */}
-          <div className="bg-white rounded-lg shadow-md p-4 sm:p-6">
-            <h3 className="text-base sm:text-lg font-semibold text-gray-800 mb-4 flex items-center gap-2">
+          <div className={`rounded-lg shadow-md p-4 sm:p-6 ${
+            darkMode ? 'bg-gray-800' : 'bg-white'
+          }`}>
+            <h3 className={`text-base sm:text-lg font-semibold mb-4 flex items-center gap-2 ${
+              darkMode ? 'text-gray-100' : 'text-gray-800'
+            }`}>
               <TrendingUp className="w-4 h-4 sm:w-5 sm:h-5" />
               Cost Breakdown
             </h3>
             <div className="grid grid-cols-1 gap-4">
-              <div className="flex items-center justify-between py-2 border-b border-gray-100">
-                <p className="text-xs sm:text-sm text-gray-600">Parts Cost</p>
-                <p className="text-base sm:text-xl font-semibold text-gray-800 truncate">${stats.totalPrice.toFixed(2)}</p>
+              <div className={`flex items-center justify-between py-2 border-b ${
+                darkMode ? 'border-gray-700' : 'border-gray-100'
+              }`}>
+                <p className={`text-xs sm:text-sm ${
+                  darkMode ? 'text-gray-400' : 'text-gray-600'
+                }`}>Parts Cost</p>
+                <p className={`text-base sm:text-xl font-semibold truncate ${
+                  darkMode ? 'text-gray-100' : 'text-gray-800'
+                }`}>${stats.totalPrice.toFixed(2)}</p>
               </div>
-              <div className="flex items-center justify-between py-2 border-b border-gray-100">
-                <p className="text-xs sm:text-sm text-gray-600">Shipping</p>
-                <p className="text-base sm:text-xl font-semibold text-gray-800 truncate">${stats.totalShipping.toFixed(2)}</p>
+              <div className={`flex items-center justify-between py-2 border-b ${
+                darkMode ? 'border-gray-700' : 'border-gray-100'
+              }`}>
+                <p className={`text-xs sm:text-sm ${
+                  darkMode ? 'text-gray-400' : 'text-gray-600'
+                }`}>Shipping</p>
+                <p className={`text-base sm:text-xl font-semibold truncate ${
+                  darkMode ? 'text-gray-100' : 'text-gray-800'
+                }`}>${stats.totalShipping.toFixed(2)}</p>
               </div>
-              <div className="flex items-center justify-between py-2 border-b border-gray-100">
-                <p className="text-xs sm:text-sm text-gray-600">Import Duties</p>
-                <p className="text-base sm:text-xl font-semibold text-gray-800 truncate">${stats.totalDuties.toFixed(2)}</p>
+              <div className={`flex items-center justify-between py-2 border-b ${
+                darkMode ? 'border-gray-700' : 'border-gray-100'
+              }`}>
+                <p className={`text-xs sm:text-sm ${
+                  darkMode ? 'text-gray-400' : 'text-gray-600'
+                }`}>Import Duties</p>
+                <p className={`text-base sm:text-xl font-semibold truncate ${
+                  darkMode ? 'text-gray-100' : 'text-gray-800'
+                }`}>${stats.totalDuties.toFixed(2)}</p>
               </div>
               <div className="pt-2">
-                <p className="text-sm text-gray-600 mb-2">Progress</p>
+                <p className={`text-sm mb-2 ${
+                  darkMode ? 'text-gray-400' : 'text-gray-600'
+                }`}>Progress</p>
                 <div className="flex items-center gap-2">
-                  <div className="flex-1 bg-gray-200 rounded-full h-2">
+                  <div className={`flex-1 rounded-full h-2 ${
+                    darkMode ? 'bg-gray-700' : 'bg-gray-200'
+                  }`}>
                     <div 
                       className="bg-green-500 h-2 rounded-full transition-all duration-500"
                       style={{ width: `${(stats.delivered / stats.total) * 100}%` }}
                     />
                   </div>
-                  <span className="text-sm font-semibold text-gray-700">
+                  <span className={`text-sm font-semibold ${
+                    darkMode ? 'text-gray-300' : 'text-gray-700'
+                  }`}>
                     {Math.round((stats.delivered / stats.total) * 100)}%
                   </span>
                 </div>
@@ -1201,25 +1294,37 @@ const LandCruiserTracker = () => {
         </div>
 
         {/* Parts Table */}
-        <div className="bg-white rounded-lg shadow-md overflow-hidden">
+        <div className={`rounded-lg shadow-md overflow-hidden ${
+          darkMode ? 'bg-gray-800' : 'bg-white'
+        }`}>
           <div className="overflow-x-auto">
             <table className="w-full">
-              <thead className="bg-slate-100 border-b border-slate-200">
+              <thead className={`border-b ${
+                darkMode ? 'bg-gray-700 border-gray-600' : 'bg-slate-100 border-slate-200'
+              }`}>
                 <tr>
                   <th 
                     onClick={() => handleSort('status')}
-                    className="px-6 py-4 text-left text-xs font-semibold text-slate-700 uppercase tracking-wider cursor-pointer hover:bg-slate-200 transition-colors"
+                    className={`px-6 py-4 text-left text-xs font-semibold uppercase tracking-wider cursor-pointer transition-colors ${
+                      darkMode ? 'text-gray-300 hover:bg-gray-600' : 'text-slate-700 hover:bg-slate-200'
+                    }`}
                   >
                     <div className="flex items-center gap-2">
                       Status
                       {getSortIcon('status')}
                     </div>
                   </th>
-                  <th className="px-6 py-4 text-left text-xs font-semibold text-slate-700 uppercase tracking-wider">Part</th>
-                  <th className="px-6 py-4 text-left text-xs font-semibold text-slate-700 uppercase tracking-wider">Part #</th>
+                  <th className={`px-6 py-4 text-left text-xs font-semibold uppercase tracking-wider ${
+                    darkMode ? 'text-gray-300' : 'text-slate-700'
+                  }`}>Part</th>
+                  <th className={`px-6 py-4 text-left text-xs font-semibold uppercase tracking-wider ${
+                    darkMode ? 'text-gray-300' : 'text-slate-700'
+                  }`}>Part #</th>
                   <th 
                     onClick={() => handleSort('vendor')}
-                    className="px-6 py-4 text-left text-xs font-semibold text-slate-700 uppercase tracking-wider cursor-pointer hover:bg-slate-200 transition-colors"
+                    className={`px-6 py-4 text-left text-xs font-semibold uppercase tracking-wider cursor-pointer transition-colors ${
+                      darkMode ? 'text-gray-300 hover:bg-gray-600' : 'text-slate-700 hover:bg-slate-200'
+                    }`}
                   >
                     <div className="flex items-center gap-2">
                       Vendor
@@ -1228,41 +1333,61 @@ const LandCruiserTracker = () => {
                   </th>
                   <th 
                     onClick={() => handleSort('price')}
-                    className="px-6 py-4 text-right text-xs font-semibold text-slate-700 uppercase tracking-wider cursor-pointer hover:bg-slate-200 transition-colors"
+                    className={`px-6 py-4 text-right text-xs font-semibold uppercase tracking-wider cursor-pointer transition-colors ${
+                      darkMode ? 'text-gray-300 hover:bg-gray-600' : 'text-slate-700 hover:bg-slate-200'
+                    }`}
                   >
                     <div className="flex items-center justify-end gap-2">
                       Price
                       {getSortIcon('price')}
                     </div>
                   </th>
-                  <th className="px-6 py-4 text-right text-xs font-semibold text-slate-700 uppercase tracking-wider">Shipping</th>
+                  <th className={`px-6 py-4 text-right text-xs font-semibold uppercase tracking-wider ${
+                    darkMode ? 'text-gray-300' : 'text-slate-700'
+                  }`}>Shipping</th>
                   <th 
                     onClick={() => handleSort('total')}
-                    className="px-6 py-4 text-right text-xs font-semibold text-slate-700 uppercase tracking-wider cursor-pointer hover:bg-slate-200 transition-colors"
+                    className={`px-6 py-4 text-right text-xs font-semibold uppercase tracking-wider cursor-pointer transition-colors ${
+                      darkMode ? 'text-gray-300 hover:bg-gray-600' : 'text-slate-700 hover:bg-slate-200'
+                    }`}
                   >
                     <div className="flex items-center justify-end gap-2">
                       Total
                       {getSortIcon('total')}
                     </div>
                   </th>
-                  <th className="px-6 py-4 text-left text-xs font-semibold text-slate-700 uppercase tracking-wider">Tracking</th>
-                  <th className="px-6 py-4 text-center text-xs font-semibold text-slate-700 uppercase tracking-wider">Actions</th>
+                  <th className={`px-6 py-4 text-left text-xs font-semibold uppercase tracking-wider ${
+                    darkMode ? 'text-gray-300' : 'text-slate-700'
+                  }`}>Tracking</th>
+                  <th className={`px-6 py-4 text-center text-xs font-semibold uppercase tracking-wider ${
+                    darkMode ? 'text-gray-300' : 'text-slate-700'
+                  }`}>Actions</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-slate-200">
+              <tbody className={`divide-y ${
+                darkMode ? 'divide-gray-700' : 'divide-slate-200'
+              }`}>
                 {filteredParts.map((part) => (
-                  <tr key={part.id} className="hover:bg-slate-50 transition-colors">
+                  <tr key={part.id} className={`transition-colors ${
+                    darkMode ? 'hover:bg-gray-700' : 'hover:bg-slate-50'
+                  }`}>
                     <td className="px-6 py-4 whitespace-nowrap">
                       <StatusDropdown part={part} />
                     </td>
                     <td className="px-6 py-4">
-                      <div className="text-sm font-medium text-slate-900">{part.part}</div>
+                      <div className={`text-sm font-medium ${
+                        darkMode ? 'text-gray-100' : 'text-slate-900'
+                      }`}>{part.part}</div>
                     </td>
                     <td className="px-6 py-4">
                       {part.partNumber && part.partNumber !== '-' ? (
-                        <div className="text-sm text-slate-600 font-mono">{part.partNumber}</div>
+                        <div className={`text-sm font-mono ${
+                          darkMode ? 'text-gray-300' : 'text-slate-600'
+                        }`}>{part.partNumber}</div>
                       ) : (
-                        <div className="text-sm text-slate-400 text-center">—</div>
+                        <div className={`text-sm text-center ${
+                          darkMode ? 'text-gray-600' : 'text-slate-400'
+                        }`}>—</div>
                       )}
                     </td>
                     <td className="px-6 py-4">
@@ -1271,21 +1396,31 @@ const LandCruiserTracker = () => {
                           {part.vendor}
                         </span>
                       ) : (
-                        <div className="text-sm text-slate-400 text-center">—</div>
+                        <div className={`text-sm text-center ${
+                          darkMode ? 'text-gray-600' : 'text-slate-400'
+                        }`}>—</div>
                       )}
                     </td>
                     <td className="px-6 py-4 text-right">
-                      <div className="text-sm text-slate-900">${part.price.toFixed(2)}</div>
+                      <div className={`text-sm ${
+                        darkMode ? 'text-gray-100' : 'text-slate-900'
+                      }`}>${part.price.toFixed(2)}</div>
                     </td>
                     <td className="px-6 py-4">
                       {part.shipping > 0 ? (
-                        <div className="text-sm text-slate-600 text-right">${part.shipping.toFixed(2)}</div>
+                        <div className={`text-sm text-right ${
+                          darkMode ? 'text-gray-300' : 'text-slate-600'
+                        }`}>${part.shipping.toFixed(2)}</div>
                       ) : (
-                        <div className="text-sm text-slate-400 text-center">—</div>
+                        <div className={`text-sm text-center ${
+                          darkMode ? 'text-gray-600' : 'text-slate-400'
+                        }`}>—</div>
                       )}
                     </td>
                     <td className="px-6 py-4 text-right">
-                      <div className="text-sm font-semibold text-slate-900">${part.total.toFixed(2)}</div>
+                      <div className={`text-sm font-semibold ${
+                        darkMode ? 'text-gray-100' : 'text-slate-900'
+                      }`}>${part.total.toFixed(2)}</div>
                     </td>
                     <td className="px-6 py-4">
                       {part.tracking ? (
@@ -1300,26 +1435,38 @@ const LandCruiserTracker = () => {
                             <ExternalLink className="w-3.5 h-3.5" />
                           </a>
                         ) : (
-                          <div className="inline-flex items-center justify-center px-3 py-1.5 bg-gray-200 text-gray-700 text-sm font-medium rounded-md w-28">
+                          <div className={`inline-flex items-center justify-center px-3 py-1.5 text-sm font-medium rounded-md w-28 ${
+                            darkMode ? 'bg-gray-700 text-gray-300' : 'bg-gray-200 text-gray-700'
+                          }`}>
                             {getCarrierName(part.tracking)}
                           </div>
                         )
                       ) : (
-                        <div className="text-sm text-slate-400 text-center">—</div>
+                        <div className={`text-sm text-center ${
+                          darkMode ? 'text-gray-600' : 'text-slate-400'
+                        }`}>—</div>
                       )}
                     </td>
                     <td className="px-6 py-4 text-center">
                       <div className="flex items-center justify-center gap-2">
                         <button
                           onClick={() => openEditModal(part)}
-                          className="inline-flex items-center justify-center p-2 text-gray-600 hover:text-blue-600 hover:bg-blue-50 border border-gray-300 hover:border-blue-300 rounded-md transition-colors"
+                          className={`inline-flex items-center justify-center p-2 border rounded-md transition-colors ${
+                            darkMode 
+                              ? 'text-gray-400 hover:text-blue-400 hover:bg-gray-700 border-gray-600 hover:border-blue-500' 
+                              : 'text-gray-600 hover:text-blue-600 hover:bg-blue-50 border-gray-300 hover:border-blue-300'
+                          }`}
                           title="Edit part"
                         >
                           <Edit2 className="w-4 h-4" />
                         </button>
                         <button
                           onClick={() => deletePart(part.id)}
-                          className="inline-flex items-center justify-center p-2 text-gray-600 hover:text-red-600 hover:bg-red-50 border border-gray-300 hover:border-red-300 rounded-md transition-colors"
+                          className={`inline-flex items-center justify-center p-2 border rounded-md transition-colors ${
+                            darkMode 
+                              ? 'text-gray-400 hover:text-red-400 hover:bg-gray-700 border-gray-600 hover:border-red-500' 
+                              : 'text-gray-600 hover:text-red-600 hover:bg-red-50 border-gray-300 hover:border-red-300'
+                          }`}
                           title="Delete part"
                         >
                           <Trash2 className="w-4 h-4" />
@@ -1332,8 +1479,12 @@ const LandCruiserTracker = () => {
             </table>
           </div>
           
-          <div className="bg-slate-50 px-6 py-4 border-t border-slate-200">
-            <p className="text-sm text-slate-600">
+          <div className={`px-6 py-4 border-t ${
+            darkMode ? 'bg-gray-700 border-gray-600' : 'bg-slate-50 border-slate-200'
+          }`}>
+            <p className={`text-sm ${
+              darkMode ? 'text-gray-400' : 'text-slate-600'
+            }`}>
               Showing <span className="font-semibold">{filteredParts.length}</span> of <span className="font-semibold">{stats.total}</span> parts
             </p>
           </div>
