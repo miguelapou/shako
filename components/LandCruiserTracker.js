@@ -679,19 +679,19 @@ const LandCruiserTracker = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 p-6">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 p-3 sm:p-6">
       <div className="max-w-7xl mx-auto">
         {/* Header */}
-        <div className="mb-8">
-          <div className="flex items-center justify-between">
+        <div className="mb-6 sm:mb-8">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
             <div>
-              <h1 className="text-4xl font-bold text-slate-800 mb-2" style={{ fontFamily: "'Courier New', 'Courier', monospace" }}>🛻 Land Cruiser Parts Tracker</h1>
+              <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-slate-800 mb-2" style={{ fontFamily: "'Courier New', 'Courier', monospace" }}>🛻 Land Cruiser Parts Tracker</h1>
             </div>
             <button
               onClick={() => setShowAddModal(true)}
-              className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg shadow-md transition-colors font-medium"
+              className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-4 sm:px-6 py-2 sm:py-3 rounded-lg shadow-md transition-colors font-medium text-sm sm:text-base whitespace-nowrap"
             >
-              <Plus className="w-5 h-5" />
+              <Plus className="w-4 h-4 sm:w-5 sm:h-5" />
               Add New Part
             </button>
           </div>
@@ -1087,40 +1087,40 @@ const LandCruiserTracker = () => {
         )}
 
         {/* Statistics and Cost Breakdown - Side by Side */}
-        <div className="grid grid-cols-2 gap-6 mb-6">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
           {/* Left Column: Statistics Cards + Search */}
           <div className="space-y-4">
             {/* Statistics Cards */}
-            <div className="grid grid-cols-2 gap-4">
-              <div className="bg-white rounded-lg shadow-md p-6 border-l-4 border-green-500 relative">
-                <CheckCircle className="w-8 h-8 text-green-500 opacity-20 absolute top-4 right-4" />
+            <div className="grid grid-cols-2 gap-3 sm:gap-4">
+              <div className="bg-white rounded-lg shadow-md p-3 sm:p-4 lg:p-6 border-l-4 border-green-500 relative overflow-hidden">
+                <CheckCircle className="w-6 h-6 sm:w-8 sm:h-8 text-green-500 opacity-20 absolute top-2 sm:top-4 right-2 sm:right-4" />
                 <div>
-                  <p className="text-sm text-gray-600 mb-3">Delivered</p>
-                  <p className="text-3xl font-bold text-gray-800">{stats.delivered}</p>
+                  <p className="text-xs sm:text-sm text-gray-600 mb-1 sm:mb-2 lg:mb-3">Delivered</p>
+                  <p className="text-xl sm:text-2xl lg:text-3xl font-bold text-gray-800 truncate">{stats.delivered}</p>
                 </div>
               </div>
 
-              <div className="bg-white rounded-lg shadow-md p-6 border-l-4 border-blue-500 relative">
-                <Truck className="w-8 h-8 text-blue-500 opacity-20 absolute top-4 right-4" />
+              <div className="bg-white rounded-lg shadow-md p-3 sm:p-4 lg:p-6 border-l-4 border-blue-500 relative overflow-hidden">
+                <Truck className="w-6 h-6 sm:w-8 sm:h-8 text-blue-500 opacity-20 absolute top-2 sm:top-4 right-2 sm:right-4" />
                 <div>
-                  <p className="text-sm text-gray-600 mb-3">In Transit</p>
-                  <p className="text-3xl font-bold text-gray-800">{stats.shipped}</p>
+                  <p className="text-xs sm:text-sm text-gray-600 mb-1 sm:mb-2 lg:mb-3">In Transit</p>
+                  <p className="text-xl sm:text-2xl lg:text-3xl font-bold text-gray-800 truncate">{stats.shipped}</p>
                 </div>
               </div>
 
-              <div className="bg-white rounded-lg shadow-md p-6 border-l-4 border-yellow-500 relative">
-                <Package className="w-8 h-8 text-yellow-500 opacity-20 absolute top-4 right-4" />
+              <div className="bg-white rounded-lg shadow-md p-3 sm:p-4 lg:p-6 border-l-4 border-yellow-500 relative overflow-hidden">
+                <Package className="w-6 h-6 sm:w-8 sm:h-8 text-yellow-500 opacity-20 absolute top-2 sm:top-4 right-2 sm:right-4" />
                 <div>
-                  <p className="text-sm text-gray-600 mb-3">Purchased</p>
-                  <p className="text-3xl font-bold text-gray-800">{stats.purchased}</p>
+                  <p className="text-xs sm:text-sm text-gray-600 mb-1 sm:mb-2 lg:mb-3">Purchased</p>
+                  <p className="text-xl sm:text-2xl lg:text-3xl font-bold text-gray-800 truncate">{stats.purchased}</p>
                 </div>
               </div>
 
-              <div className="bg-white rounded-lg shadow-md p-6 border-l-4 border-purple-500 relative">
-                <DollarSign className="w-8 h-8 text-purple-500 opacity-20 absolute top-4 right-4" />
+              <div className="bg-white rounded-lg shadow-md p-3 sm:p-4 lg:p-6 border-l-4 border-purple-500 relative overflow-hidden">
+                <DollarSign className="w-6 h-6 sm:w-8 sm:h-8 text-purple-500 opacity-20 absolute top-2 sm:top-4 right-2 sm:right-4" />
                 <div>
-                  <p className="text-sm text-gray-600 mb-3">Total Spent</p>
-                  <p className="text-3xl font-bold text-gray-800">${stats.totalCost.toFixed(2)}</p>
+                  <p className="text-xs sm:text-sm text-gray-600 mb-1 sm:mb-2 lg:mb-3">Total Spent</p>
+                  <p className="text-lg sm:text-2xl lg:text-3xl font-bold text-gray-800 truncate">${stats.totalCost.toFixed(2)}</p>
                 </div>
               </div>
             </div>
@@ -1150,23 +1150,23 @@ const LandCruiserTracker = () => {
           </div>
 
           {/* Cost Breakdown */}
-          <div className="bg-white rounded-lg shadow-md p-6">
-            <h3 className="text-lg font-semibold text-gray-800 mb-4 flex items-center gap-2">
-              <TrendingUp className="w-5 h-5" />
+          <div className="bg-white rounded-lg shadow-md p-4 sm:p-6">
+            <h3 className="text-base sm:text-lg font-semibold text-gray-800 mb-4 flex items-center gap-2">
+              <TrendingUp className="w-4 h-4 sm:w-5 sm:h-5" />
               Cost Breakdown
             </h3>
             <div className="grid grid-cols-1 gap-4">
               <div className="flex items-center justify-between py-2 border-b border-gray-100">
-                <p className="text-sm text-gray-600">Parts Cost</p>
-                <p className="text-xl font-semibold text-gray-800">${stats.totalPrice.toFixed(2)}</p>
+                <p className="text-xs sm:text-sm text-gray-600">Parts Cost</p>
+                <p className="text-base sm:text-xl font-semibold text-gray-800 truncate">${stats.totalPrice.toFixed(2)}</p>
               </div>
               <div className="flex items-center justify-between py-2 border-b border-gray-100">
-                <p className="text-sm text-gray-600">Shipping</p>
-                <p className="text-xl font-semibold text-gray-800">${stats.totalShipping.toFixed(2)}</p>
+                <p className="text-xs sm:text-sm text-gray-600">Shipping</p>
+                <p className="text-base sm:text-xl font-semibold text-gray-800 truncate">${stats.totalShipping.toFixed(2)}</p>
               </div>
               <div className="flex items-center justify-between py-2 border-b border-gray-100">
-                <p className="text-sm text-gray-600">Import Duties</p>
-                <p className="text-xl font-semibold text-gray-800">${stats.totalDuties.toFixed(2)}</p>
+                <p className="text-xs sm:text-sm text-gray-600">Import Duties</p>
+                <p className="text-base sm:text-xl font-semibold text-gray-800 truncate">${stats.totalDuties.toFixed(2)}</p>
               </div>
               <div className="pt-2">
                 <p className="text-sm text-gray-600 mb-2">Progress</p>
