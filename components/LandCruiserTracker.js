@@ -1138,9 +1138,8 @@ const LandCruiserTracker = () => {
 
         {/* Statistics and Cost Breakdown - Side by Side */}
         <div className="flex flex-col lg:grid lg:grid-cols-2 gap-6 mb-6">
-          {/* Left Column: Statistics Cards + Search - order-1 on mobile */}
-          <div className="space-y-4 order-1 lg:order-none">
-            {/* Statistics Cards */}
+          {/* Statistics Cards - order-1 on mobile */}
+          <div className="order-1 lg:order-none">
             <div className="grid grid-cols-2 gap-3 sm:gap-4">
               <div className={`rounded-lg shadow-md p-3 sm:p-4 lg:p-6 border-l-4 border-green-500 relative overflow-hidden ${
                 darkMode ? 'bg-gray-800' : 'bg-white'
@@ -1198,42 +1197,9 @@ const LandCruiserTracker = () => {
                 </div>
               </div>
             </div>
-
-            {/* Search Box - On mobile shows after cost breakdown via order-3 */}
-            <div className={`rounded-lg shadow-md p-3 order-3 lg:order-none ${
-              darkMode ? 'bg-gray-800' : 'bg-white'
-            }`}>
-              <div className="relative">
-                <Search className={`absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 ${
-                  darkMode ? 'text-gray-500' : 'text-gray-400'
-                }`} />
-                <input
-                  type="text"
-                  placeholder="Search parts..."
-                  className={`w-full pl-10 pr-10 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
-                    darkMode 
-                      ? 'bg-gray-700 border-gray-600 text-gray-100 placeholder-gray-400' 
-                      : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400'
-                  }`}
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                />
-                {searchTerm && (
-                  <button
-                    onClick={() => setSearchTerm('')}
-                    className={`absolute right-3 top-1/2 transform -translate-y-1/2 transition-colors ${
-                      darkMode ? 'text-gray-500 hover:text-gray-300' : 'text-gray-400 hover:text-gray-600'
-                    }`}
-                    title="Clear search"
-                  >
-                    <X className="w-4 h-4" />
-                  </button>
-                )}
-              </div>
-            </div>
           </div>
 
-          {/* Cost Breakdown - order-2 on mobile so it shows before search */}
+          {/* Cost Breakdown - order-2 on mobile */}
           <div className={`rounded-lg shadow-md p-4 sm:p-6 order-2 lg:order-none ${
             darkMode ? 'bg-gray-800' : 'bg-white'
           }`}>
@@ -1294,6 +1260,39 @@ const LandCruiserTracker = () => {
                   </span>
                 </div>
               </div>
+            </div>
+          </div>
+
+          {/* Search Box - order-3 on mobile (shows after cost breakdown), spans full width on desktop */}
+          <div className={`rounded-lg shadow-md p-3 order-3 lg:col-span-2 ${
+            darkMode ? 'bg-gray-800' : 'bg-white'
+          }`}>
+            <div className="relative">
+              <Search className={`absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 ${
+                darkMode ? 'text-gray-500' : 'text-gray-400'
+              }`} />
+              <input
+                type="text"
+                placeholder="Search parts..."
+                className={`w-full pl-10 pr-10 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
+                  darkMode 
+                    ? 'bg-gray-700 border-gray-600 text-gray-100 placeholder-gray-400' 
+                    : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400'
+                }`}
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+              />
+              {searchTerm && (
+                <button
+                  onClick={() => setSearchTerm('')}
+                  className={`absolute right-3 top-1/2 transform -translate-y-1/2 transition-colors ${
+                    darkMode ? 'text-gray-500 hover:text-gray-300' : 'text-gray-400 hover:text-gray-600'
+                  }`}
+                  title="Clear search"
+                >
+                  <X className="w-4 h-4" />
+                </button>
+              )}
             </div>
           </div>
         </div>
