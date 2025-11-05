@@ -8,7 +8,7 @@ export const metadata = {
     icon: '/icon.png',
     apple: '/icon.png',  // Critical for Safari!
   },
-};
+}
 
 export default function RootLayout({ children }) {
   return (
