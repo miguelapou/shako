@@ -4,11 +4,9 @@ export const metadata = {
   title: 'Land Cruiser Parts Tracker',
   description: 'Track your Land Cruiser restoration parts',
   icons: {
-    icon: [
-      { url: '/icon.png' },
-      { url: '/icon.png', sizes: '32x32', type: 'image/png' },
-    ],
-    apple: '/icon.png',
+    icons: {
+    icon: '/icon.png',
+    apple: '/icon.png',  // Critical for Safari!
   },
 };
 
