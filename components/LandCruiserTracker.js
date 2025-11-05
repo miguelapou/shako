@@ -722,7 +722,7 @@ const LandCruiserTracker = () => {
             <div>
               <h1 className={`text-2xl sm:text-3xl lg:text-4xl font-bold mb-2 ${
                 darkMode ? 'text-gray-100' : 'text-slate-800'
-              }`} style={{ fontFamily: "'FoundationOne', 'Courier New', monospace" }}>🛻 LAND CRUISER PARTS TRACKER</h1>
+              }`} style={{ fontFamily: "'FoundationOne', 'Courier New', monospace" }}>🗺️ LAND CRUISER PARTS</h1>
             </div>
             <div className="flex items-center gap-3">
               <button
