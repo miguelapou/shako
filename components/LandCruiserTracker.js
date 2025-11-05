@@ -2,6 +2,19 @@ import React, { useState, useMemo, useEffect } from 'react';
 import { Search, Package, DollarSign, TrendingUp, Truck, CheckCircle, Clock, XCircle, ChevronDown, Plus, X, ExternalLink, ChevronUp, Edit2, Trash2 } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 
+// Add Foundation One font
+const fontStyles = `
+  @font-face {
+    font-family: 'FoundationOne';
+    src: url('https://db.onlinewebfonts.com/t/f58c10cd63660152b6858a49e05fe609.woff2') format('woff2'),
+         url('https://db.onlinewebfonts.com/t/f58c10cd63660152b6858a49e05fe609.woff') format('woff'),
+         url('https://db.onlinewebfonts.com/t/f58c10cd63660152b6858a49e05fe609.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+    font-display: swap;
+  }
+`;
+
 const LandCruiserTracker = () => {
   const [parts, setParts] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -680,12 +693,13 @@ const LandCruiserTracker = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 p-3 sm:p-6">
+      <style>{fontStyles}</style>
       <div className="max-w-7xl mx-auto">
         {/* Header */}
         <div className="mb-6 sm:mb-8">
           <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
             <div>
-              <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-slate-800 mb-2" style={{ fontFamily: "'Courier New', 'Courier', monospace" }}>🛻 Land Cruiser Parts Tracker</h1>
+              <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-slate-800 mb-2" style={{ fontFamily: "'FoundationOne', 'Courier New', monospace" }}>🛻 LAND CRUISER PARTS TRACKER</h1>
             </div>
             <button
               onClick={() => setShowAddModal(true)}
