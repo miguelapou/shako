@@ -663,20 +663,23 @@ const LandCruiserTracker = () => {
   };
 
   const VendorSelect = ({ value, onChange, darkMode }) => {
-    const [isCustom, setIsCustom] = useState(false);
+    const [isCustomMode, setIsCustomMode] = useState(false);
     
     // Check if current value is not in the list (custom vendor)
-    const isCurrentValueCustom = value && !uniqueVendors.includes(value);
+    const isCurrentValueCustom = value && value.trim() !== '' && !uniqueVendors.includes(value);
+    
+    // Show custom input if in custom mode OR if value is already custom
+    const showCustomInput = isCustomMode || isCurrentValueCustom;
     
     return (
       <div>
-        {!isCustom && !isCurrentValueCustom ? (
+        {!showCustomInput ? (
           <div className="space-y-2">
             <select
               value={value}
               onChange={(e) => {
                 if (e.target.value === '__custom__') {
-                  setIsCustom(true);
+                  setIsCustomMode(true);
                   onChange('');
                 } else {
                   onChange(e.target.value);
@@ -713,7 +716,7 @@ const LandCruiserTracker = () => {
               <button
                 type="button"
                 onClick={() => {
-                  setIsCustom(false);
+                  setIsCustomMode(false);
                   onChange('');
                 }}
                 className={`text-xs transition-colors ${
