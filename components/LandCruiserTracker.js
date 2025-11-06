@@ -663,72 +663,71 @@ const LandCruiserTracker = () => {
   };
 
   const VendorSelect = ({ value, onChange, darkMode }) => {
-    const [isCustomMode, setIsCustomMode] = useState(false);
+    const [showInput, setShowInput] = useState(false);
     
-    // Check if current value is not in the list (custom vendor)
-    const isCurrentValueCustom = value && value.trim() !== '' && !uniqueVendors.includes(value);
+    // Determine if we should show input based on value
+    const isCustomVendor = value && value.trim() !== '' && !uniqueVendors.includes(value);
     
-    // Show custom input if in custom mode OR if value is already custom
-    const showCustomInput = isCustomMode || isCurrentValueCustom;
+    // Show input if manually toggled OR if editing a custom vendor
+    const shouldShowInput = showInput || isCustomVendor;
     
-    return (
-      <div>
-        {!showCustomInput ? (
-          <div className="space-y-2">
-            <select
-              value={value}
-              onChange={(e) => {
-                if (e.target.value === '__custom__') {
-                  setIsCustomMode(true);
-                  onChange('');
-                } else {
-                  onChange(e.target.value);
-                }
+    if (shouldShowInput) {
+      return (
+        <div className="space-y-2">
+          <input
+            type="text"
+            value={value || ''}
+            onChange={(e) => onChange(e.target.value)}
+            className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
+              darkMode 
+                ? 'bg-gray-700 border-gray-600 text-gray-100 placeholder-gray-400' 
+                : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400'
+            }`}
+            placeholder="Enter vendor name"
+            autoFocus
+          />
+          {uniqueVendors.length > 0 && (
+            <button
+              type="button"
+              onClick={() => {
+                setShowInput(false);
+                onChange('');
               }}
-              className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
-                darkMode 
-                  ? 'bg-gray-700 border-gray-600 text-gray-100' 
-                  : 'bg-white border-gray-300 text-gray-900'
+              className={`text-xs transition-colors ${
+                darkMode ? 'text-blue-400 hover:text-blue-300' : 'text-blue-600 hover:text-blue-700'
               }`}
             >
-              <option value="">Select a vendor...</option>
-              {uniqueVendors.map(vendor => (
-                <option key={vendor} value={vendor}>{vendor}</option>
-              ))}
-              <option value="__custom__">+ Add new vendor</option>
-            </select>
-          </div>
-        ) : (
-          <div className="space-y-2">
-            <input
-              type="text"
-              value={value}
-              onChange={(e) => onChange(e.target.value)}
-              className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
-                darkMode 
-                  ? 'bg-gray-700 border-gray-600 text-gray-100 placeholder-gray-400' 
-                  : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400'
-              }`}
-              placeholder="Enter vendor name"
-              autoFocus
-            />
-            {uniqueVendors.length > 0 && (
-              <button
-                type="button"
-                onClick={() => {
-                  setIsCustomMode(false);
-                  onChange('');
-                }}
-                className={`text-xs transition-colors ${
-                  darkMode ? 'text-blue-400 hover:text-blue-300' : 'text-blue-600 hover:text-blue-700'
-                }`}
-              >
-                ← Back to vendor list
-              </button>
-            )}
-          </div>
-        )}
-      </div>
+              ← Back to vendor list
+            </button>
+          )}
+        </div>
+      );
+    }
+    
+    return (
+      <select
+        value={value || ''}
+        onChange={(e) => {
+          if (e.target.value === '__custom__') {
+            setShowInput(true);
+            // Small delay to ensure state updates before clearing
+            setTimeout(() => onChange(''), 0);
+          } else {
+            onChange(e.target.value);
+          }
+        }}
+        className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
+          darkMode 
+            ? 'bg-gray-700 border-gray-600 text-gray-100' 
+            : 'bg-white border-gray-300 text-gray-900'
+        }`}
+      >
+        <option value="">Select a vendor...</option>
+        {uniqueVendors.map(vendor => (
+          <option key={vendor} value={vendor}>{vendor}</option>
+        ))}
+        <option value="__custom__">+ Add new vendor</option>
+      </select>
     );
   };
 
