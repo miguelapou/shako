@@ -503,16 +503,19 @@ const LandCruiserTracker = () => {
   }, [parts, searchTerm, statusFilter, vendorFilter, sortBy, sortOrder]);
 
   const stats = useMemo(() => {
+    // Filter out pending items (items where purchased is false) for cost calculations
+    const purchasedParts = parts.filter(p => p.purchased);
+    
     return {
       total: parts.length,
       delivered: parts.filter(p => p.delivered).length,
       shipped: parts.filter(p => p.shipped && !p.delivered).length,
       purchased: parts.filter(p => p.purchased && !p.shipped).length,
       pending: parts.filter(p => !p.purchased).length,
-      totalCost: parts.reduce((sum, p) => sum + p.total, 0),
-      totalPrice: parts.reduce((sum, p) => sum + p.price, 0),
-      totalShipping: parts.reduce((sum, p) => sum + p.shipping, 0),
-      totalDuties: parts.reduce((sum, p) => sum + p.duties, 0),
+      totalCost: purchasedParts.reduce((sum, p) => sum + p.total, 0),
+      totalPrice: purchasedParts.reduce((sum, p) => sum + p.price, 0),
+      totalShipping: purchasedParts.reduce((sum, p) => sum + p.shipping, 0),
+      totalDuties: purchasedParts.reduce((sum, p) => sum + p.duties, 0),
     };
   }, [parts]);
 
