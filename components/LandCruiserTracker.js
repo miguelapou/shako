@@ -763,12 +763,20 @@ const LandCruiserTracker = () => {
         {/* Add New Part Modal */}
         {showAddModal && (
           <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-            <div className="bg-white rounded-lg shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
-              <div className="sticky top-0 bg-white border-b border-gray-200 px-6 py-4 flex items-center justify-between">
-                <h2 className="text-2xl font-bold text-gray-800">Add New Part</h2>
+            <div className={`rounded-lg shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto ${
+              darkMode ? 'bg-gray-800' : 'bg-white'
+            }`}>
+              <div className={`sticky top-0 border-b px-6 py-4 flex items-center justify-between ${
+                darkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-200'
+              }`}>
+                <h2 className={`text-2xl font-bold ${
+                  darkMode ? 'text-gray-100' : 'text-gray-800'
+                }`}>Add New Part</h2>
                 <button
                   onClick={() => setShowAddModal(false)}
-                  className="text-gray-400 hover:text-gray-600 transition-colors"
+                  className={`transition-colors ${
+                    darkMode ? 'text-gray-400 hover:text-gray-300' : 'text-gray-400 hover:text-gray-600'
+                  }`}
                 >
                   <X className="w-6 h-6" />
                 </button>
@@ -777,47 +785,67 @@ const LandCruiserTracker = () => {
               <div className="p-6">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div className="md:col-span-2">
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                    <label className={`block text-sm font-medium mb-2 ${
+                      darkMode ? 'text-gray-300' : 'text-gray-700'
+                    }`}>
                       Part Name <span className="text-red-500">*</span>
                     </label>
                     <input
                       type="text"
                       value={newPart.part}
                       onChange={(e) => setNewPart({ ...newPart, part: e.target.value })}
-                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
+                        darkMode 
+                          ? 'bg-gray-700 border-gray-600 text-gray-100 placeholder-gray-400' 
+                          : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400'
+                      }`}
                       placeholder="e.g., Front Bumper"
                       required
                     />
                   </div>
                   
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                    <label className={`block text-sm font-medium mb-2 ${
+                      darkMode ? 'text-gray-300' : 'text-gray-700'
+                    }`}>
                       Part Number
                     </label>
                     <input
                       type="text"
                       value={newPart.partNumber}
                       onChange={(e) => setNewPart({ ...newPart, partNumber: e.target.value })}
-                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
+                        darkMode 
+                          ? 'bg-gray-700 border-gray-600 text-gray-100 placeholder-gray-400' 
+                          : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400'
+                      }`}
                       placeholder="e.g., 12345-67890"
                     />
                   </div>
                   
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                    <label className={`block text-sm font-medium mb-2 ${
+                      darkMode ? 'text-gray-300' : 'text-gray-700'
+                    }`}>
                       Vendor
                     </label>
                     <input
                       type="text"
                       value={newPart.vendor}
                       onChange={(e) => setNewPart({ ...newPart, vendor: e.target.value })}
-                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
+                        darkMode 
+                          ? 'bg-gray-700 border-gray-600 text-gray-100 placeholder-gray-400' 
+                          : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400'
+                      }`}
                       placeholder="e.g., eBay, Amazon"
                     />
                   </div>
                   
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                    <label className={`block text-sm font-medium mb-2 ${
+                      darkMode ? 'text-gray-300' : 'text-gray-700'
+                    }`}>
                       Price ($)
                     </label>
                     <input
@@ -825,13 +853,19 @@ const LandCruiserTracker = () => {
                       step="0.01"
                       value={newPart.price}
                       onChange={(e) => setNewPart({ ...newPart, price: e.target.value })}
-                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
+                        darkMode 
+                          ? 'bg-gray-700 border-gray-600 text-gray-100 placeholder-gray-400' 
+                          : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400'
+                      }`}
                       placeholder="0.00"
                     />
                   </div>
                   
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                    <label className={`block text-sm font-medium mb-2 ${
+                      darkMode ? 'text-gray-300' : 'text-gray-700'
+                    }`}>
                       Shipping ($)
                     </label>
                     <input
@@ -839,13 +873,19 @@ const LandCruiserTracker = () => {
                       step="0.01"
                       value={newPart.shipping}
                       onChange={(e) => setNewPart({ ...newPart, shipping: e.target.value })}
-                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
+                        darkMode 
+                          ? 'bg-gray-700 border-gray-600 text-gray-100 placeholder-gray-400' 
+                          : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400'
+                      }`}
                       placeholder="0.00"
                     />
                   </div>
                   
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                    <label className={`block text-sm font-medium mb-2 ${
+                      darkMode ? 'text-gray-300' : 'text-gray-700'
+                    }`}>
                       Import Duties ($)
                     </label>
                     <input
@@ -853,32 +893,48 @@ const LandCruiserTracker = () => {
                       step="0.01"
                       value={newPart.duties}
                       onChange={(e) => setNewPart({ ...newPart, duties: e.target.value })}
-                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
+                        darkMode 
+                          ? 'bg-gray-700 border-gray-600 text-gray-100 placeholder-gray-400' 
+                          : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400'
+                      }`}
                       placeholder="0.00"
                     />
                   </div>
                   
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                    <label className={`block text-sm font-medium mb-2 ${
+                      darkMode ? 'text-gray-300' : 'text-gray-700'
+                    }`}>
                       Tracking Link
                     </label>
                     <input
                       type="text"
                       value={newPart.tracking}
                       onChange={(e) => setNewPart({ ...newPart, tracking: e.target.value })}
-                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
+                        darkMode 
+                          ? 'bg-gray-700 border-gray-600 text-gray-100 placeholder-gray-400' 
+                          : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400'
+                      }`}
                       placeholder="e.g., FedEx, USPS"
                     />
                   </div>
                   
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                    <label className={`block text-sm font-medium mb-2 ${
+                      darkMode ? 'text-gray-300' : 'text-gray-700'
+                    }`}>
                       Status
                     </label>
                     <select
                       value={newPart.status}
                       onChange={(e) => setNewPart({ ...newPart, status: e.target.value })}
-                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
+                        darkMode 
+                          ? 'bg-gray-700 border-gray-600 text-gray-100' 
+                          : 'bg-white border-gray-300 text-gray-900'
+                      }`}
                     >
                       <option value="pending">Pending</option>
                       <option value="purchased">Purchased</option>
@@ -888,10 +944,18 @@ const LandCruiserTracker = () => {
                   </div>
                   
                   {(newPart.price || newPart.shipping || newPart.duties) && (
-                    <div className="md:col-span-2 bg-blue-50 border border-blue-200 rounded-lg p-4">
+                    <div className={`md:col-span-2 border rounded-lg p-4 ${
+                      darkMode 
+                        ? 'bg-blue-900/30 border-blue-700' 
+                        : 'bg-blue-50 border-blue-200'
+                    }`}>
                       <div className="flex items-center justify-between">
-                        <span className="text-sm font-medium text-gray-700">Calculated Total:</span>
-                        <span className="text-2xl font-bold text-blue-600">
+                        <span className={`text-sm font-medium ${
+                          darkMode ? 'text-gray-300' : 'text-gray-700'
+                        }`}>Calculated Total:</span>
+                        <span className={`text-2xl font-bold ${
+                          darkMode ? 'text-blue-400' : 'text-blue-600'
+                        }`}>
                           ${((parseFloat(newPart.price) || 0) + (parseFloat(newPart.shipping) || 0) + (parseFloat(newPart.duties) || 0)).toFixed(2)}
                         </span>
                       </div>
@@ -909,7 +973,11 @@ const LandCruiserTracker = () => {
                   </button>
                   <button
                     onClick={() => setShowAddModal(false)}
-                    className="px-6 py-3 border border-gray-300 rounded-lg font-medium text-gray-700 hover:bg-gray-50 transition-colors"
+                    className={`px-6 py-3 border rounded-lg font-medium transition-colors ${
+                      darkMode 
+                        ? 'border-gray-600 text-gray-300 hover:bg-gray-700' 
+                        : 'border-gray-300 text-gray-700 hover:bg-gray-50'
+                    }`}
                   >
                     Cancel
                   </button>
@@ -922,34 +990,50 @@ const LandCruiserTracker = () => {
         {/* Tracking Info Modal */}
         {showTrackingModal && (
           <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-            <div className="bg-white rounded-lg shadow-xl max-w-md w-full">
-              <div className="bg-white border-b border-gray-200 px-6 py-4 flex items-center justify-between rounded-t-lg">
-                <h2 className="text-xl font-bold text-gray-800">Add Tracking Info</h2>
+            <div className={`rounded-lg shadow-xl max-w-md w-full ${
+              darkMode ? 'bg-gray-800' : 'bg-white'
+            }`}>
+              <div className={`border-b px-6 py-4 flex items-center justify-between rounded-t-lg ${
+                darkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-200'
+              }`}>
+                <h2 className={`text-xl font-bold ${
+                  darkMode ? 'text-gray-100' : 'text-gray-800'
+                }`}>Add Tracking Info</h2>
                 <button
                   onClick={() => {
                     setShowTrackingModal(false);
                     setTrackingModalPartId(null);
                     setTrackingInput('');
                   }}
-                  className="text-gray-400 hover:text-gray-600 transition-colors"
+                  className={`transition-colors ${
+                    darkMode ? 'text-gray-400 hover:text-gray-300' : 'text-gray-400 hover:text-gray-600'
+                  }`}
                 >
                   <X className="w-5 h-5" />
                 </button>
               </div>
               
               <div className="p-6">
-                <p className="text-sm text-gray-600 mb-4">
+                <p className={`text-sm mb-4 ${
+                  darkMode ? 'text-gray-400' : 'text-gray-600'
+                }`}>
                   Enter the tracking number for this shipment (optional)
                 </p>
                 
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className={`block text-sm font-medium mb-2 ${
+                  darkMode ? 'text-gray-300' : 'text-gray-700'
+                }`}>
                   Tracking Number
                 </label>
                 <input
                   type="text"
                   value={trackingInput}
                   onChange={(e) => setTrackingInput(e.target.value)}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
+                    darkMode 
+                      ? 'bg-gray-700 border-gray-600 text-gray-100 placeholder-gray-400' 
+                      : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400'
+                  }`}
                   placeholder="e.g., 1Z999AA10123456784"
                   autoFocus
                 />
@@ -963,7 +1047,11 @@ const LandCruiserTracker = () => {
                   </button>
                   <button
                     onClick={skipTrackingInfo}
-                    className="px-4 py-2 border border-gray-300 rounded-lg font-medium text-gray-700 hover:bg-gray-50 transition-colors"
+                    className={`px-4 py-2 border rounded-lg font-medium transition-colors ${
+                      darkMode 
+                        ? 'border-gray-600 text-gray-300 hover:bg-gray-700' 
+                        : 'border-gray-300 text-gray-700 hover:bg-gray-50'
+                    }`}
                   >
                     Skip
                   </button>
@@ -976,15 +1064,23 @@ const LandCruiserTracker = () => {
         {/* Edit Part Modal */}
         {showEditModal && editingPart && (
           <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-            <div className="bg-white rounded-lg shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
-              <div className="sticky top-0 bg-white border-b border-gray-200 px-6 py-4 flex items-center justify-between">
-                <h2 className="text-2xl font-bold text-gray-800">Edit Part</h2>
+            <div className={`rounded-lg shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto ${
+              darkMode ? 'bg-gray-800' : 'bg-white'
+            }`}>
+              <div className={`sticky top-0 border-b px-6 py-4 flex items-center justify-between ${
+                darkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-200'
+              }`}>
+                <h2 className={`text-2xl font-bold ${
+                  darkMode ? 'text-gray-100' : 'text-gray-800'
+                }`}>Edit Part</h2>
                 <button
                   onClick={() => {
                     setShowEditModal(false);
                     setEditingPart(null);
                   }}
-                  className="text-gray-400 hover:text-gray-600 transition-colors"
+                  className={`transition-colors ${
+                    darkMode ? 'text-gray-400 hover:text-gray-300' : 'text-gray-400 hover:text-gray-600'
+                  }`}
                 >
                   <X className="w-6 h-6" />
                 </button>
@@ -993,47 +1089,67 @@ const LandCruiserTracker = () => {
               <div className="p-6">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div className="md:col-span-2">
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                    <label className={`block text-sm font-medium mb-2 ${
+                      darkMode ? 'text-gray-300' : 'text-gray-700'
+                    }`}>
                       Part Name <span className="text-red-500">*</span>
                     </label>
                     <input
                       type="text"
                       value={editingPart.part}
                       onChange={(e) => setEditingPart({ ...editingPart, part: e.target.value })}
-                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
+                        darkMode 
+                          ? 'bg-gray-700 border-gray-600 text-gray-100 placeholder-gray-400' 
+                          : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400'
+                      }`}
                       placeholder="e.g., Front Bumper"
                       required
                     />
                   </div>
                   
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                    <label className={`block text-sm font-medium mb-2 ${
+                      darkMode ? 'text-gray-300' : 'text-gray-700'
+                    }`}>
                       Part Number
                     </label>
                     <input
                       type="text"
                       value={editingPart.partNumber}
                       onChange={(e) => setEditingPart({ ...editingPart, partNumber: e.target.value })}
-                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
+                        darkMode 
+                          ? 'bg-gray-700 border-gray-600 text-gray-100 placeholder-gray-400' 
+                          : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400'
+                      }`}
                       placeholder="e.g., 12345-67890"
                     />
                   </div>
                   
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                    <label className={`block text-sm font-medium mb-2 ${
+                      darkMode ? 'text-gray-300' : 'text-gray-700'
+                    }`}>
                       Vendor
                     </label>
                     <input
                       type="text"
                       value={editingPart.vendor}
                       onChange={(e) => setEditingPart({ ...editingPart, vendor: e.target.value })}
-                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
+                        darkMode 
+                          ? 'bg-gray-700 border-gray-600 text-gray-100 placeholder-gray-400' 
+                          : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400'
+                      }`}
                       placeholder="e.g., eBay, Amazon"
                     />
                   </div>
                   
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                    <label className={`block text-sm font-medium mb-2 ${
+                      darkMode ? 'text-gray-300' : 'text-gray-700'
+                    }`}>
                       Price ($)
                     </label>
                     <input
@@ -1041,13 +1157,19 @@ const LandCruiserTracker = () => {
                       step="0.01"
                       value={editingPart.price}
                       onChange={(e) => setEditingPart({ ...editingPart, price: e.target.value })}
-                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
+                        darkMode 
+                          ? 'bg-gray-700 border-gray-600 text-gray-100 placeholder-gray-400' 
+                          : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400'
+                      }`}
                       placeholder="0.00"
                     />
                   </div>
                   
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                    <label className={`block text-sm font-medium mb-2 ${
+                      darkMode ? 'text-gray-300' : 'text-gray-700'
+                    }`}>
                       Shipping ($)
                     </label>
                     <input
@@ -1055,13 +1177,19 @@ const LandCruiserTracker = () => {
                       step="0.01"
                       value={editingPart.shipping}
                       onChange={(e) => setEditingPart({ ...editingPart, shipping: e.target.value })}
-                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
+                        darkMode 
+                          ? 'bg-gray-700 border-gray-600 text-gray-100 placeholder-gray-400' 
+                          : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400'
+                      }`}
                       placeholder="0.00"
                     />
                   </div>
                   
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                    <label className={`block text-sm font-medium mb-2 ${
+                      darkMode ? 'text-gray-300' : 'text-gray-700'
+                    }`}>
                       Import Duties ($)
                     </label>
                     <input
@@ -1069,32 +1197,48 @@ const LandCruiserTracker = () => {
                       step="0.01"
                       value={editingPart.duties}
                       onChange={(e) => setEditingPart({ ...editingPart, duties: e.target.value })}
-                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
+                        darkMode 
+                          ? 'bg-gray-700 border-gray-600 text-gray-100 placeholder-gray-400' 
+                          : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400'
+                      }`}
                       placeholder="0.00"
                     />
                   </div>
                   
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                    <label className={`block text-sm font-medium mb-2 ${
+                      darkMode ? 'text-gray-300' : 'text-gray-700'
+                    }`}>
                       Tracking Number
                     </label>
                     <input
                       type="text"
                       value={editingPart.tracking}
                       onChange={(e) => setEditingPart({ ...editingPart, tracking: e.target.value })}
-                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
+                        darkMode 
+                          ? 'bg-gray-700 border-gray-600 text-gray-100 placeholder-gray-400' 
+                          : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400'
+                      }`}
                       placeholder="e.g., 1Z999AA10123456784"
                     />
                   </div>
                   
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                    <label className={`block text-sm font-medium mb-2 ${
+                      darkMode ? 'text-gray-300' : 'text-gray-700'
+                    }`}>
                       Status
                     </label>
                     <select
                       value={editingPart.status}
                       onChange={(e) => setEditingPart({ ...editingPart, status: e.target.value })}
-                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
+                        darkMode 
+                          ? 'bg-gray-700 border-gray-600 text-gray-100' 
+                          : 'bg-white border-gray-300 text-gray-900'
+                      }`}
                     >
                       <option value="pending">Pending</option>
                       <option value="purchased">Purchased</option>
@@ -1103,10 +1247,18 @@ const LandCruiserTracker = () => {
                     </select>
                   </div>
                   
-                  <div className="md:col-span-2 bg-blue-50 border border-blue-200 rounded-lg p-4">
+                  <div className={`md:col-span-2 border rounded-lg p-4 ${
+                    darkMode 
+                      ? 'bg-blue-900/30 border-blue-700' 
+                      : 'bg-blue-50 border-blue-200'
+                  }`}>
                     <div className="flex items-center justify-between">
-                      <span className="text-sm font-medium text-gray-700">Calculated Total:</span>
-                      <span className="text-2xl font-bold text-blue-600">
+                      <span className={`text-sm font-medium ${
+                        darkMode ? 'text-gray-300' : 'text-gray-700'
+                      }`}>Calculated Total:</span>
+                      <span className={`text-2xl font-bold ${
+                        darkMode ? 'text-blue-400' : 'text-blue-600'
+                      }`}>
                         ${((parseFloat(editingPart.price) || 0) + (parseFloat(editingPart.shipping) || 0) + (parseFloat(editingPart.duties) || 0)).toFixed(2)}
                       </span>
                     </div>
@@ -1126,7 +1278,11 @@ const LandCruiserTracker = () => {
                       setShowEditModal(false);
                       setEditingPart(null);
                     }}
-                    className="px-6 py-3 border border-gray-300 rounded-lg font-medium text-gray-700 hover:bg-gray-50 transition-colors"
+                    className={`px-6 py-3 border rounded-lg font-medium transition-colors ${
+                      darkMode 
+                        ? 'border-gray-600 text-gray-300 hover:bg-gray-700' 
+                        : 'border-gray-300 text-gray-700 hover:bg-gray-50'
+                    }`}
                   >
                     Cancel
                   </button>
