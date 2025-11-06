@@ -502,6 +502,16 @@ const LandCruiserTracker = () => {
       });
   }, [parts, searchTerm, statusFilter, vendorFilter, sortBy, sortOrder]);
 
+  // Get unique vendors from existing parts for the dropdown
+  const uniqueVendors = useMemo(() => {
+    const vendors = parts
+      .map(p => p.vendor)
+      .filter(v => v && v.trim() !== '')
+      .filter((v, i, arr) => arr.indexOf(v) === i) // unique values
+      .sort();
+    return vendors;
+  }, [parts]);
+
   const stats = useMemo(() => {
     // Filter out pending items (items where purchased is false) for cost calculations
     const purchasedParts = parts.filter(p => p.purchased);
@@ -650,6 +660,73 @@ const LandCruiserTracker = () => {
     if (vendorLower === 'jauce') return 'bg-fuchsia-100 text-fuchsia-700 border border-fuchsia-200';
     
     return 'bg-gray-100 text-gray-700 border border-gray-200';
+  };
+
+  const VendorSelect = ({ value, onChange, darkMode }) => {
+    const [isCustom, setIsCustom] = useState(false);
+    
+    // Check if current value is not in the list (custom vendor)
+    const isCurrentValueCustom = value && !uniqueVendors.includes(value);
+    
+    return (
+      <div>
+        {!isCustom && !isCurrentValueCustom ? (
+          <div className="space-y-2">
+            <select
+              value={value}
+              onChange={(e) => {
+                if (e.target.value === '__custom__') {
+                  setIsCustom(true);
+                  onChange('');
+                } else {
+                  onChange(e.target.value);
+                }
+              }}
+              className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
+                darkMode 
+                  ? 'bg-gray-700 border-gray-600 text-gray-100' 
+                  : 'bg-white border-gray-300 text-gray-900'
+              }`}
+            >
+              <option value="">Select a vendor...</option>
+              {uniqueVendors.map(vendor => (
+                <option key={vendor} value={vendor}>{vendor}</option>
+              ))}
+              <option value="__custom__">+ Add new vendor</option>
+            </select>
+          </div>
+        ) : (
+          <div className="space-y-2">
+            <input
+              type="text"
+              value={value}
+              onChange={(e) => onChange(e.target.value)}
+              className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
+                darkMode 
+                  ? 'bg-gray-700 border-gray-600 text-gray-100 placeholder-gray-400' 
+                  : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400'
+              }`}
+              placeholder="Enter vendor name"
+              autoFocus
+            />
+            {uniqueVendors.length > 0 && (
+              <button
+                type="button"
+                onClick={() => {
+                  setIsCustom(false);
+                  onChange('');
+                }}
+                className={`text-xs transition-colors ${
+                  darkMode ? 'text-blue-400 hover:text-blue-300' : 'text-blue-600 hover:text-blue-700'
+                }`}
+              >
+                ← Back to vendor list
+              </button>
+            )}
+          </div>
+        )}
+      </div>
+    );
   };
 
   const StatusDropdown = ({ part }) => {
@@ -833,16 +910,10 @@ const LandCruiserTracker = () => {
                     }`}>
                       Vendor
                     </label>
-                    <input
-                      type="text"
+                    <VendorSelect 
                       value={newPart.vendor}
-                      onChange={(e) => setNewPart({ ...newPart, vendor: e.target.value })}
-                      className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
-                        darkMode 
-                          ? 'bg-gray-700 border-gray-600 text-gray-100 placeholder-gray-400' 
-                          : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400'
-                      }`}
-                      placeholder="e.g., eBay, Amazon"
+                      onChange={(value) => setNewPart({ ...newPart, vendor: value })}
+                      darkMode={darkMode}
                     />
                   </div>
                   
@@ -1137,16 +1208,10 @@ const LandCruiserTracker = () => {
                     }`}>
                       Vendor
                     </label>
-                    <input
-                      type="text"
+                    <VendorSelect 
                       value={editingPart.vendor}
-                      onChange={(e) => setEditingPart({ ...editingPart, vendor: e.target.value })}
-                      className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
-                        darkMode 
-                          ? 'bg-gray-700 border-gray-600 text-gray-100 placeholder-gray-400' 
-                          : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400'
-                      }`}
-                      placeholder="e.g., eBay, Amazon"
+                      onChange={(value) => setEditingPart({ ...editingPart, vendor: value })}
+                      darkMode={darkMode}
                     />
                   </div>
                   
