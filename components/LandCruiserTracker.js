@@ -659,7 +659,8 @@ const LandCruiserTracker = () => {
             e.stopPropagation();
             setOpenDropdown(isOpen ? null : part.id);
           }}
-          className={`flex items-center gap-2 px-3 py-1.5 text-xs font-medium rounded-full border transition-all hover:shadow-md w-34 ${getStatusColor(part)}`}
+          className={`flex items-center gap-2 px-3 py-1.5 text-xs font-medium rounded-full border transition-all hover:shadow-md ${getStatusColor(part)}`}
+          style={{ width: '8.5rem' }}
         >
           {getStatusIcon(part)}
           <span className="flex-1 text-left">{getStatusText(part)}</span>
