@@ -1249,15 +1249,15 @@ const LandCruiserTracker = () => {
                   
                   <div className={`md:col-span-2 border rounded-lg p-4 ${
                     darkMode 
-                      ? 'bg-blue-900/30 border-blue-700' 
-                      : 'bg-blue-50 border-blue-200'
+                      ? 'bg-green-900/30 border-green-700' 
+                      : 'bg-green-50 border-green-200'
                   }`}>
                     <div className="flex items-center justify-between">
                       <span className={`text-sm font-medium ${
                         darkMode ? 'text-gray-300' : 'text-gray-700'
                       }`}>Calculated Total:</span>
                       <span className={`text-2xl font-bold ${
-                        darkMode ? 'text-blue-400' : 'text-blue-600'
+                        darkMode ? 'text-green-400' : 'text-green-600'
                       }`}>
                         ${((parseFloat(editingPart.price) || 0) + (parseFloat(editingPart.shipping) || 0) + (parseFloat(editingPart.duties) || 0)).toFixed(2)}
                       </span>
