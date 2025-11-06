@@ -668,11 +668,12 @@ const LandCruiserTracker = () => {
         <select
           value={uniqueVendors.includes(value) ? value : ''}
           onChange={(e) => onChange(e.target.value)}
-          className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
+          className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent min-h-[42px] box-border ${
             darkMode 
               ? 'bg-gray-700 border-gray-600 text-gray-100' 
               : 'bg-white border-gray-300 text-gray-900'
           }`}
+          style={{ width: '100%', WebkitAppearance: 'none', appearance: 'none', backgroundImage: `url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e")`, backgroundRepeat: 'no-repeat', backgroundPosition: 'right 1rem center', backgroundSize: '1.25em 1.25em', paddingRight: '2.5rem' }}
         >
           <option value="">Select a vendor...</option>
           {uniqueVendors.map(vendor => (
@@ -822,7 +823,7 @@ const LandCruiserTracker = () => {
               }`}>
                 <h2 className={`text-2xl font-bold ${
                   darkMode ? 'text-gray-100' : 'text-gray-800'
-                }`}>Add New Part</h2>
+                }`} style={{ fontFamily: "'FoundationOne', 'Courier New', monospace" }}>Add New Part</h2>
                 <button
                   onClick={() => setShowAddModal(false)}
                   className={`transition-colors ${
@@ -962,11 +963,12 @@ const LandCruiserTracker = () => {
                     <select
                       value={newPart.status}
                       onChange={(e) => setNewPart({ ...newPart, status: e.target.value })}
-                      className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
+                      className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent min-h-[42px] box-border ${
                         darkMode 
                           ? 'bg-gray-700 border-gray-600 text-gray-100' 
                           : 'bg-white border-gray-300 text-gray-900'
                       }`}
+                      style={{ width: '100%', WebkitAppearance: 'none', appearance: 'none', backgroundImage: `url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e")`, backgroundRepeat: 'no-repeat', backgroundPosition: 'right 1rem center', backgroundSize: '1.25em 1.25em', paddingRight: '2.5rem' }}
                     >
                       <option value="pending">Pending</option>
                       <option value="purchased">Purchased</option>
@@ -1043,7 +1045,7 @@ const LandCruiserTracker = () => {
               }`}>
                 <h2 className={`text-xl font-bold ${
                   darkMode ? 'text-gray-100' : 'text-gray-800'
-                }`}>Add Tracking Info</h2>
+                }`} style={{ fontFamily: "'FoundationOne', 'Courier New', monospace" }}>Add Tracking Info</h2>
                 <button
                   onClick={() => {
                     setShowTrackingModal(false);
@@ -1117,7 +1119,7 @@ const LandCruiserTracker = () => {
               }`}>
                 <h2 className={`text-2xl font-bold ${
                   darkMode ? 'text-gray-100' : 'text-gray-800'
-                }`}>Edit Part</h2>
+                }`} style={{ fontFamily: "'FoundationOne', 'Courier New', monospace" }}>Edit Part</h2>
                 <button
                   onClick={() => {
                     setShowEditModal(false);
@@ -1260,11 +1262,12 @@ const LandCruiserTracker = () => {
                     <select
                       value={editingPart.status}
                       onChange={(e) => setEditingPart({ ...editingPart, status: e.target.value })}
-                      className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
+                      className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent min-h-[42px] box-border ${
                         darkMode 
                           ? 'bg-gray-700 border-gray-600 text-gray-100' 
                           : 'bg-white border-gray-300 text-gray-900'
                       }`}
+                      style={{ width: '100%', WebkitAppearance: 'none', appearance: 'none', backgroundImage: `url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e")`, backgroundRepeat: 'no-repeat', backgroundPosition: 'right 1rem center', backgroundSize: '1.25em 1.25em', paddingRight: '2.5rem' }}
                     >
                       <option value="pending">Pending</option>
                       <option value="purchased">Purchased</option>
