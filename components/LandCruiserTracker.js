@@ -1339,9 +1339,12 @@ const LandCruiserTracker = () => {
           {/* Statistics Cards - order-1 on mobile, contains search on desktop */}
           <div className="space-y-4 order-1 lg:order-none">
             <div className="grid grid-cols-2 gap-3 sm:gap-4">
-              <div className={`rounded-lg shadow-md p-3 sm:p-4 lg:p-6 border-l-4 border-yellow-500 relative overflow-hidden ${
-                darkMode ? 'bg-gray-800' : 'bg-white'
-              }`}>
+              <div 
+                onClick={() => setStatusFilter(statusFilter === 'purchased' ? 'all' : 'purchased')}
+                className={`rounded-lg shadow-md p-3 sm:p-4 lg:p-6 border-l-4 border-yellow-500 relative overflow-hidden cursor-pointer transition-all duration-200 ${
+                  darkMode ? 'bg-gray-800 hover:bg-gray-750' : 'bg-white hover:bg-gray-50'
+                } ${statusFilter === 'purchased' ? 'ring-2 ring-yellow-500 ring-offset-2' : ''}`}
+              >
                 <Package className="w-6 h-6 sm:w-8 sm:h-8 text-yellow-500 opacity-20 absolute top-2 sm:top-4 right-2 sm:right-4" />
                 <div>
                   <p className={`text-xs sm:text-sm mb-1 sm:mb-2 lg:mb-3 ${
@@ -1353,9 +1356,12 @@ const LandCruiserTracker = () => {
                 </div>
               </div>
 
-              <div className={`rounded-lg shadow-md p-3 sm:p-4 lg:p-6 border-l-4 border-blue-500 relative overflow-hidden ${
-                darkMode ? 'bg-gray-800' : 'bg-white'
-              }`}>
+              <div 
+                onClick={() => setStatusFilter(statusFilter === 'shipped' ? 'all' : 'shipped')}
+                className={`rounded-lg shadow-md p-3 sm:p-4 lg:p-6 border-l-4 border-blue-500 relative overflow-hidden cursor-pointer transition-all duration-200 ${
+                  darkMode ? 'bg-gray-800 hover:bg-gray-750' : 'bg-white hover:bg-gray-50'
+                } ${statusFilter === 'shipped' ? 'ring-2 ring-blue-500 ring-offset-2' : ''}`}
+              >
                 <Truck className="w-6 h-6 sm:w-8 sm:h-8 text-blue-500 opacity-20 absolute top-2 sm:top-4 right-2 sm:right-4" />
                 <div>
                   <p className={`text-xs sm:text-sm mb-1 sm:mb-2 lg:mb-3 ${
@@ -1367,9 +1373,12 @@ const LandCruiserTracker = () => {
                 </div>
               </div>
 
-              <div className={`rounded-lg shadow-md p-3 sm:p-4 lg:p-6 border-l-4 border-green-500 relative overflow-hidden ${
-                darkMode ? 'bg-gray-800' : 'bg-white'
-              }`}>
+              <div 
+                onClick={() => setStatusFilter(statusFilter === 'delivered' ? 'all' : 'delivered')}
+                className={`rounded-lg shadow-md p-3 sm:p-4 lg:p-6 border-l-4 border-green-500 relative overflow-hidden cursor-pointer transition-all duration-200 ${
+                  darkMode ? 'bg-gray-800 hover:bg-gray-750' : 'bg-white hover:bg-gray-50'
+                } ${statusFilter === 'delivered' ? 'ring-2 ring-green-500 ring-offset-2' : ''}`}
+              >
                 <CheckCircle className="w-6 h-6 sm:w-8 sm:h-8 text-green-500 opacity-20 absolute top-2 sm:top-4 right-2 sm:right-4" />
                 <div>
                   <p className={`text-xs sm:text-sm mb-1 sm:mb-2 lg:mb-3 ${
