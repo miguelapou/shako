@@ -1345,7 +1345,7 @@ const LandCruiserTracker = () => {
                   darkMode ? 'bg-gray-800 hover:bg-gray-750' : 'bg-white hover:bg-gray-50'
                 } ${statusFilter === 'purchased' ? 'ring-2 ring-yellow-500 ring-offset-2' : ''}`}
               >
-                <Package className="w-6 h-6 sm:w-8 sm:h-8 text-yellow-500 opacity-20 absolute top-2 sm:top-4 right-2 sm:right-4" />
+                <DollarSign className="w-6 h-6 sm:w-8 sm:h-8 text-yellow-500 opacity-20 absolute top-2 sm:top-4 right-2 sm:right-4" />
                 <div>
                   <p className={`text-xs sm:text-sm mb-1 sm:mb-2 lg:mb-3 ${
                     darkMode ? 'text-gray-400' : 'text-gray-600'
