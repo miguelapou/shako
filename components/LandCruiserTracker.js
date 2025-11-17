@@ -1541,7 +1541,8 @@ const LandCruiserTracker = () => {
         <div className={`rounded-lg shadow-md overflow-hidden ${
           darkMode ? 'bg-gray-800' : 'bg-white'
         }`}>
-          <div className="overflow-x-auto">
+          {/* Desktop Table View - Hidden on mobile */}
+          <div className="hidden md:block overflow-x-auto">
             <table className="w-full">
               <thead className={`border-b ${
                 darkMode ? 'bg-gray-700 border-gray-600' : 'bg-slate-100 border-slate-200'
@@ -1722,6 +1723,158 @@ const LandCruiserTracker = () => {
               </tbody>
             </table>
           </div>
+
+          {/* Mobile Card View - Visible only on mobile */}
+          <div className="md:hidden space-y-4 p-4">
+            {filteredParts.map((part) => (
+              <div 
+                key={part.id}
+                className={`rounded-lg border shadow-sm overflow-hidden ${
+                  darkMode 
+                    ? 'bg-gray-700 border-gray-600' 
+                    : 'bg-white border-slate-200'
+                }`}
+              >
+                {/* Card Header with Status and Actions */}
+                <div className={`flex items-center justify-between p-4 border-b ${
+                  darkMode ? 'border-gray-600' : 'border-slate-200'
+                }`}>
+                  <div className="flex items-center gap-3 flex-1 min-w-0">
+                    <div className="flex-shrink-0">
+                      {part.delivered ? (
+                        <CheckCircle className="w-6 h-6 text-green-500" />
+                      ) : part.shipped ? (
+                        <Clock className="w-6 h-6 text-blue-500" />
+                      ) : part.purchased ? (
+                        <Package className="w-6 h-6 text-orange-500" />
+                      ) : (
+                        <XCircle className="w-6 h-6 text-slate-300" />
+                      )}
+                    </div>
+                    <div className={`font-semibold text-sm truncate ${
+                      darkMode ? 'text-gray-100' : 'text-slate-900'
+                    }`}>
+                      {part.part}
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-2 flex-shrink-0 ml-2">
+                    <button
+                      onClick={() => openEditModal(part)}
+                      className={`p-2 border rounded-md transition-colors ${
+                        darkMode 
+                          ? 'text-gray-400 hover:text-blue-400 hover:bg-gray-600 border-gray-600' 
+                          : 'text-gray-600 hover:text-blue-600 hover:bg-blue-50 border-gray-300'
+                      }`}
+                    >
+                      <Edit2 className="w-4 h-4" />
+                    </button>
+                    <button
+                      onClick={() => deletePart(part.id)}
+                      className={`p-2 border rounded-md transition-colors ${
+                        darkMode 
+                          ? 'text-gray-400 hover:text-red-400 hover:bg-gray-600 border-gray-600' 
+                          : 'text-gray-600 hover:text-red-600 hover:bg-red-50 border-gray-300'
+                      }`}
+                    >
+                      <Trash2 className="w-4 h-4" />
+                    </button>
+                  </div>
+                </div>
+
+                {/* Card Body with Details */}
+                <div className="p-4 space-y-3">
+                  {/* Part Number */}
+                  {part.partNumber && part.partNumber !== '-' && (
+                    <div className="flex justify-between items-center gap-2">
+                      <span className={`text-sm font-medium flex-shrink-0 ${
+                        darkMode ? 'text-gray-400' : 'text-slate-600'
+                      }`}>Part Number</span>
+                      <span className={`text-sm font-mono text-right ${
+                        darkMode ? 'text-gray-300' : 'text-slate-900'
+                      }`}>{part.partNumber}</span>
+                    </div>
+                  )}
+
+                  {/* Vendor */}
+                  {part.vendor && (
+                    <div className="flex justify-between items-center gap-2">
+                      <span className={`text-sm font-medium flex-shrink-0 ${
+                        darkMode ? 'text-gray-400' : 'text-slate-600'
+                      }`}>Vendor</span>
+                      <span className={`inline-block px-3 py-1 rounded-full text-sm font-medium ${getVendorColor(part.vendor)}`}>
+                        {part.vendor}
+                      </span>
+                    </div>
+                  )}
+
+                  {/* Price Breakdown */}
+                  <div className={`pt-3 border-t ${
+                    darkMode ? 'border-gray-600' : 'border-slate-200'
+                  }`}>
+                    <div className="flex justify-between items-center mb-2">
+                      <span className={`text-sm ${
+                        darkMode ? 'text-gray-400' : 'text-slate-600'
+                      }`}>Price</span>
+                      <span className={`text-sm font-medium ${
+                        darkMode ? 'text-gray-100' : 'text-slate-900'
+                      }`}>${part.price.toFixed(2)}</span>
+                    </div>
+                    {part.shipping > 0 && (
+                      <div className="flex justify-between items-center mb-2">
+                        <span className={`text-sm ${
+                          darkMode ? 'text-gray-400' : 'text-slate-600'
+                        }`}>Shipping</span>
+                        <span className={`text-sm ${
+                          darkMode ? 'text-gray-300' : 'text-slate-600'
+                        }`}>${part.shipping.toFixed(2)}</span>
+                      </div>
+                    )}
+                    <div className={`flex justify-between items-center pt-2 border-t ${
+                      darkMode ? 'border-gray-600 border-dashed' : 'border-slate-200 border-dashed'
+                    }`}>
+                      <span className={`text-sm font-semibold ${
+                        darkMode ? 'text-gray-300' : 'text-slate-700'
+                      }`}>Total</span>
+                      <span className={`text-base font-bold ${
+                        darkMode ? 'text-gray-100' : 'text-slate-900'
+                      }`}>${part.total.toFixed(2)}</span>
+                    </div>
+                  </div>
+
+                  {/* Tracking */}
+                  {part.tracking && (
+                    <div className={`pt-3 border-t ${
+                      darkMode ? 'border-gray-600' : 'border-slate-200'
+                    }`}>
+                      <div className="flex justify-between items-center gap-2">
+                        <span className={`text-sm font-medium flex-shrink-0 ${
+                          darkMode ? 'text-gray-400' : 'text-slate-600'
+                        }`}>Tracking</span>
+                        {getTrackingUrl(part.tracking) ? (
+                          <a
+                            href={getTrackingUrl(part.tracking)}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-blue-400 hover:bg-blue-500 text-white text-sm font-medium rounded-md transition-colors"
+                          >
+                            {getCarrierName(part.tracking)}
+                            <ExternalLink className="w-3.5 h-3.5" />
+                          </a>
+                        ) : (
+                          <div className={`inline-flex items-center px-3 py-1.5 text-sm font-medium rounded-md ${
+                            darkMode ? 'bg-gray-600 text-gray-300' : 'bg-gray-200 text-gray-700'
+                          }`}>
+                            {getCarrierName(part.tracking)}
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </div>
+            ))}
+          </div>
+          
           
           <div className={`px-6 py-4 border-t ${
             darkMode ? 'bg-gray-700 border-gray-600' : 'bg-slate-50 border-slate-200'
