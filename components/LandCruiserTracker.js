@@ -543,6 +543,26 @@ const LandCruiserTracker = () => {
     }
   };
 
+  const updatePartProject = async (partId, projectId) => {
+    try {
+      // Update in database
+      const { error } = await supabase
+        .from('parts')
+        .update({ project_id: projectId || null })
+        .eq('id', partId);
+      
+      if (error) throw error;
+      
+      // Update local state
+      setParts(prevParts => prevParts.map(part => 
+        part.id === partId ? { ...part, projectId: projectId || null } : part
+      ));
+    } catch (error) {
+      console.error('Error updating part project:', error);
+      alert('Error updating part project. Please try again.');
+    }
+  };
+
   const addNewPart = async () => {
     const price = parseFloat(newPart.price) || 0;
     const shipping = parseFloat(newPart.shipping) || 0;
@@ -1920,17 +1940,32 @@ const LandCruiserTracker = () => {
                       )}
                     </td>
                     <td className="px-6 py-4 text-center">
-                      {part.projectId ? (
-                        <span className={`inline-block px-3 py-1 rounded text-xs font-medium ${
-                          darkMode ? 'bg-blue-900/50 text-blue-200' : 'bg-blue-100 text-blue-800'
-                        }`}>
-                          {projects.find(p => p.id === part.projectId)?.name || 'Unknown'}
-                        </span>
-                      ) : (
-                        <div className={`text-sm text-center ${
-                          darkMode ? 'text-gray-600' : 'text-slate-400'
-                        }`}>—</div>
-                      )}
+                      <select
+                        value={part.projectId || ''}
+                        onChange={(e) => updatePartProject(part.id, e.target.value ? parseInt(e.target.value) : null)}
+                        className={`px-3 py-1 rounded text-xs font-medium border transition-colors ${
+                          darkMode 
+                            ? 'bg-gray-700 border-gray-600 text-gray-100 hover:border-blue-500' 
+                            : 'bg-white border-gray-300 text-gray-900 hover:border-blue-400'
+                        }`}
+                        style={{ 
+                          minWidth: '120px',
+                          WebkitAppearance: 'none', 
+                          appearance: 'none',
+                          backgroundImage: `url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e")`,
+                          backgroundRepeat: 'no-repeat',
+                          backgroundPosition: 'right 0.5rem center',
+                          backgroundSize: '1em 1em',
+                          paddingRight: '2rem'
+                        }}
+                      >
+                        <option value="">No Project</option>
+                        {projects.map(project => (
+                          <option key={project.id} value={project.id}>
+                            {project.name}
+                          </option>
+                        ))}
+                      </select>
                     </td>
                     <td className="px-6 py-4 text-right">
                       <div className={`text-sm ${
@@ -2265,16 +2300,18 @@ const LandCruiserTracker = () => {
                             setShowEditProjectModal(true);
                           }}
                           className={`p-2 rounded-lg transition-colors ${
-                            darkMode ? 'hover:bg-gray-700 text-gray-400' : 'hover:bg-gray-100 text-gray-600'
+                            darkMode ? 'hover:bg-gray-700 text-gray-400 hover:text-blue-400' : 'hover:bg-gray-100 text-gray-600 hover:text-blue-600'
                           }`}
+                          title="Edit project"
                         >
                           <Edit2 className="w-4 h-4" />
                         </button>
                         <button
                           onClick={() => deleteProject(project.id)}
                           className={`p-2 rounded-lg transition-colors ${
-                            darkMode ? 'hover:bg-gray-700 text-red-400' : 'hover:bg-gray-100 text-red-600'
+                            darkMode ? 'hover:bg-gray-700 text-gray-400 hover:text-red-400' : 'hover:bg-gray-100 text-gray-600 hover:text-red-600'
                           }`}
+                          title="Delete project"
                         >
                           <Trash2 className="w-4 h-4" />
                         </button>
@@ -2352,17 +2389,17 @@ const LandCruiserTracker = () => {
 
                     {/* Dates and Priority */}
                     <div className="space-y-2">
-                      <div className="flex items-center gap-2">
-                        <Calendar className={`w-4 h-4 ${
-                          darkMode ? 'text-gray-400' : 'text-gray-600'
-                        }`} />
-                        <span className={`text-sm ${
-                          darkMode ? 'text-gray-300' : 'text-gray-700'
-                        }`}>
-                          Started: {project.start_date ? new Date(project.start_date).toLocaleDateString() : 'TBD'}
-                        </span>
-                      </div>
-                      {project.target_date && (
+                      <div className="grid grid-cols-2 gap-3">
+                        <div className="flex items-center gap-2">
+                          <Calendar className={`w-4 h-4 ${
+                            darkMode ? 'text-gray-400' : 'text-gray-600'
+                          }`} />
+                          <span className={`text-sm ${
+                            darkMode ? 'text-gray-300' : 'text-gray-700'
+                          }`}>
+                            Started: {project.start_date ? new Date(project.start_date).toLocaleDateString() : 'TBD'}
+                          </span>
+                        </div>
                         <div className="flex items-center gap-2">
                           <Target className={`w-4 h-4 ${
                             darkMode ? 'text-gray-400' : 'text-gray-600'
@@ -2370,10 +2407,10 @@ const LandCruiserTracker = () => {
                           <span className={`text-sm ${
                             darkMode ? 'text-gray-300' : 'text-gray-700'
                           }`}>
-                            Target: {new Date(project.target_date).toLocaleDateString()}
+                            Target: {project.target_date ? new Date(project.target_date).toLocaleDateString() : 'Not set'}
                           </span>
                         </div>
-                      )}
+                      </div>
                       <div className="flex items-center gap-2">
                         <span className={`text-sm font-medium ${
                           darkMode ? 'text-gray-400' : 'text-gray-600'
