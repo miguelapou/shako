@@ -2094,7 +2094,7 @@ const LandCruiserTracker = () => {
           </div>
 
           {/* Mobile Card View - Visible only on mobile */}
-          <div className="md:hidden space-y-4 p-4">
+          <div className="md:hidden space-y-6 p-4">
             {filteredParts.map((part) => (
               <div 
                 key={part.id}
@@ -2121,7 +2121,7 @@ const LandCruiserTracker = () => {
 
                 {/* Part Details */}
                 {part.partNumber && part.partNumber !== '-' && (
-                  <div className="mb-3">
+                  <div className="mb-4">
                     <p className={`text-xs mb-1 ${
                       darkMode ? 'text-gray-400' : 'text-gray-600'
                     }`}>Part Number</p>
@@ -2132,7 +2132,7 @@ const LandCruiserTracker = () => {
                 )}
 
                 {/* Vendor & Project */}
-                <div className="space-y-2 mb-4">
+                <div className="space-y-3 mb-4">
                   {part.vendor && (
                     <div>
                       <p className={`text-xs mb-1 ${
