@@ -37,12 +37,42 @@ const fontStyles = `
     }
   }
 
+  @keyframes slideInFromRight {
+    from {
+      opacity: 0;
+      transform: translateX(30px);
+    }
+    to {
+      opacity: 1;
+      transform: translateX(0);
+    }
+  }
+
+  @keyframes slideInFromLeft {
+    from {
+      opacity: 0;
+      transform: translateX(-30px);
+    }
+    to {
+      opacity: 1;
+      transform: translateX(0);
+    }
+  }
+
   .modal-popup-enter {
     animation: popUpCenter 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
   }
 
   .modal-backdrop-enter {
     animation: fadeIn 0.3s ease-out;
+  }
+
+  .slide-in-right {
+    animation: slideInFromRight 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  .slide-in-left {
+    animation: slideInFromLeft 0.4s cubic-bezier(0.16, 1, 0.3, 1);
   }
 `;
 
@@ -51,6 +81,7 @@ const LandCruiserTracker = () => {
   const [projects, setProjects] = useState([]);
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState('projects'); // 'parts' or 'projects'
+  const [previousTab, setPreviousTab] = useState('projects');
   const [draggedProject, setDraggedProject] = useState(null);
   const [dragOverProject, setDragOverProject] = useState(null);
 
@@ -335,6 +366,12 @@ const LandCruiserTracker = () => {
   const handleDragEnd = () => {
     setDraggedProject(null);
     setDragOverProject(null);
+  };
+
+  // Tab change handler to track animation direction
+  const handleTabChange = (newTab) => {
+    setPreviousTab(activeTab);
+    setActiveTab(newTab);
   };
 
   const updateProjectsOrder = async (orderedProjects) => {
@@ -1218,7 +1255,7 @@ const LandCruiserTracker = () => {
         }`}>
           <div className="flex gap-1">
             <button
-              onClick={() => setActiveTab('projects')}
+              onClick={() => handleTabChange('projects')}
               className={`flex items-center gap-2 px-6 py-3 font-medium transition-all relative ${
                 activeTab === 'projects'
                   ? darkMode
@@ -1238,7 +1275,7 @@ const LandCruiserTracker = () => {
               )}
             </button>
             <button
-              onClick={() => setActiveTab('parts')}
+              onClick={() => handleTabChange('parts')}
               className={`flex items-center gap-2 px-6 py-3 font-medium transition-all relative ${
                 activeTab === 'parts'
                   ? darkMode
@@ -1884,6 +1921,7 @@ const LandCruiserTracker = () => {
 
         {/* PARTS TAB CONTENT */}
         {activeTab === 'parts' && (
+          <div className={previousTab === 'projects' ? 'slide-in-right' : 'slide-in-left'}>
           <>
         {/* Statistics and Cost Breakdown - Side by Side */}
         <div className="flex flex-col lg:grid lg:grid-cols-2 gap-6 mb-6">
@@ -2414,10 +2452,12 @@ const LandCruiserTracker = () => {
             ))}
           </div>
         </>
+          </div>
         )}
 
         {/* PROJECTS TAB CONTENT */}
         {activeTab === 'projects' && (
+          <div className={previousTab === 'parts' ? 'slide-in-left' : 'slide-in-right'}>
           <>
             {/* Projects Grid */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -3481,6 +3521,7 @@ const LandCruiserTracker = () => {
               </div>
             )}
           </>
+          </div>
         )}
 
         </>
