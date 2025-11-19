@@ -2270,7 +2270,7 @@ const LandCruiserTracker = () => {
                         <span className={`text-sm font-medium ${
                           darkMode ? 'text-gray-300' : 'text-gray-700'
                         }`}>
-                          Budget Progress
+                          Budget Used
                         </span>
                         <span className={`text-sm font-bold ${
                           darkMode ? 'text-gray-200' : 'text-gray-900'
@@ -2373,11 +2373,6 @@ const LandCruiserTracker = () => {
                                 darkMode ? 'text-gray-300' : 'text-gray-700'
                               }`}>
                                 Linked Parts ({linkedParts.length})
-                              </span>
-                              <span className={`text-xs font-medium ${
-                                darkMode ? 'text-gray-400' : 'text-gray-600'
-                              }`}>
-                                ${linkedParts.reduce((sum, part) => sum + part.total, 0).toFixed(2)}
                               </span>
                             </div>
                             <div className="space-y-1">
