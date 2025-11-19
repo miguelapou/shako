@@ -523,6 +523,26 @@ const LandCruiserTracker = () => {
     }
   };
 
+  const unlinkPartFromProject = async (partId) => {
+    try {
+      // Update in database
+      const { error } = await supabase
+        .from('parts')
+        .update({ project_id: null })
+        .eq('id', partId);
+      
+      if (error) throw error;
+      
+      // Update local state
+      setParts(prevParts => prevParts.map(part => 
+        part.id === partId ? { ...part, projectId: null } : part
+      ));
+    } catch (error) {
+      console.error('Error unlinking part:', error);
+      alert('Error unlinking part. Please try again.');
+    }
+  };
+
   const addNewPart = async () => {
     const price = parseFloat(newPart.price) || 0;
     const shipping = parseFloat(newPart.shipping) || 0;
@@ -2827,6 +2847,66 @@ const LandCruiserTracker = () => {
                         </select>
                       </div>
                     </div>
+
+                    {/* Linked Parts Section */}
+                    {(() => {
+                      const linkedParts = parts.filter(part => part.projectId === editingProject.id);
+                      if (linkedParts.length > 0) {
+                        return (
+                          <div className={`mt-6 pt-6 border-t ${
+                            darkMode ? 'border-gray-600' : 'border-gray-200'
+                          }`}>
+                            <h3 className={`text-lg font-semibold mb-3 ${
+                              darkMode ? 'text-gray-200' : 'text-gray-800'
+                            }`}>
+                              Linked Parts ({linkedParts.length})
+                            </h3>
+                            <div className="space-y-2 max-h-60 overflow-y-auto">
+                              {linkedParts.map((part) => (
+                                <div 
+                                  key={part.id}
+                                  className={`p-3 rounded-lg border flex items-center justify-between ${
+                                    darkMode ? 'bg-gray-700 border-gray-600' : 'bg-gray-50 border-gray-200'
+                                  }`}
+                                >
+                                  <div className="flex-1 min-w-0">
+                                    <h4 className={`font-medium truncate ${
+                                      darkMode ? 'text-gray-100' : 'text-gray-900'
+                                    }`}>
+                                      {part.part}
+                                    </h4>
+                                    <div className="flex items-center gap-2 mt-1">
+                                      {part.vendor && (
+                                        <span className={`inline-block px-2 py-0.5 rounded-full text-xs font-medium ${getVendorColor(part.vendor)}`}>
+                                          {part.vendor}
+                                        </span>
+                                      )}
+                                      <span className={`text-sm font-bold ${
+                                        darkMode ? 'text-gray-200' : 'text-gray-900'
+                                      }`}>
+                                        ${part.total.toFixed(2)}
+                                      </span>
+                                    </div>
+                                  </div>
+                                  <button
+                                    onClick={() => unlinkPartFromProject(part.id)}
+                                    className={`ml-3 px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${
+                                      darkMode 
+                                        ? 'bg-red-900/30 hover:bg-red-900/50 text-red-400 border border-red-700' 
+                                        : 'bg-red-50 hover:bg-red-100 text-red-600 border border-red-200'
+                                    }`}
+                                    title="Unlink from project"
+                                  >
+                                    Unlink
+                                  </button>
+                                </div>
+                              ))}
+                            </div>
+                          </div>
+                        );
+                      }
+                      return null;
+                    })()}
 
                     <div className="flex gap-3 mt-6">
                       <button
