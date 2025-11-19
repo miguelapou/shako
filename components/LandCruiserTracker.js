@@ -1,5 +1,5 @@
 import React, { useState, useMemo, useEffect } from 'react';
-import { Search, Package, DollarSign, TrendingUp, Truck, CheckCircle, Clock, XCircle, ChevronDown, Plus, X, ExternalLink, ChevronUp, Edit2, Trash2, Moon, Sun, Wrench, List, Target, Calendar, GripVertical } from 'lucide-react';
+import { Search, Package, DollarSign, TrendingUp, Truck, CheckCircle, Clock, XCircle, ChevronDown, Plus, X, ExternalLink, ChevronUp, Edit2, Trash2, Moon, Sun, Wrench, List, Target, Calendar, GripVertical, ShoppingCart } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 
 // Add Foundation One font
@@ -857,7 +857,7 @@ const LandCruiserTracker = () => {
   const getStatusIcon = (part) => {
     if (part.delivered) return <CheckCircle className="w-4 h-4 text-green-600" />;
     if (part.shipped) return <Truck className="w-4 h-4 text-blue-600" />;
-    if (part.purchased) return <DollarSign className="w-4 h-4 text-yellow-600" />;
+    if (part.purchased) return <ShoppingCart className="w-4 h-4 text-yellow-600" />;
     return <Clock className="w-4 h-4 text-gray-400" />;
   };
 
@@ -1108,7 +1108,7 @@ const LandCruiserTracker = () => {
                     : 'text-gray-700 hover:bg-yellow-50'
                 }`}
               >
-                <DollarSign className={`w-4 h-4 ${darkMode ? 'text-yellow-400' : 'text-yellow-600'}`} />
+                <ShoppingCart className={`w-4 h-4 ${darkMode ? 'text-yellow-400' : 'text-yellow-600'}`} />
                 <span>Purchased</span>
               </button>
               <button
@@ -1934,7 +1934,7 @@ const LandCruiserTracker = () => {
                   darkMode ? 'bg-gray-800 hover:bg-gray-750' : 'bg-white hover:bg-gray-50'
                 } ${statusFilter === 'purchased' ? 'ring-2 ring-yellow-500 ring-offset-2' : ''}`}
               >
-                <DollarSign className="w-6 h-6 sm:w-8 sm:h-8 text-yellow-500 opacity-20 absolute top-2 sm:top-4 right-2 sm:right-4" />
+                <ShoppingCart className="w-6 h-6 sm:w-8 sm:h-8 text-yellow-500 opacity-20 absolute top-2 sm:top-4 right-2 sm:right-4" />
                 <div>
                   <p className={`text-xs sm:text-sm mb-1 sm:mb-2 lg:mb-3 ${
                     darkMode ? 'text-gray-400' : 'text-gray-600'
