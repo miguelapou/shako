@@ -3118,11 +3118,11 @@ const LandCruiserTracker = () => {
                                 {linkedParts.map((part) => (
                                   <div 
                                     key={part.id}
-                                    className={`p-3 rounded-lg border ${
+                                    className={`p-4 rounded-lg border ${
                                       darkMode ? 'bg-gray-700 border-gray-600' : 'bg-gray-50 border-gray-200'
                                     }`}
                                   >
-                                    <div className="flex justify-between items-start mb-2">
+                                    <div className="flex justify-between items-start mb-3">
                                       <div className="flex-1">
                                         <h4 className={`font-medium ${
                                           darkMode ? 'text-gray-100' : 'text-gray-900'
@@ -3135,26 +3135,72 @@ const LandCruiserTracker = () => {
                                           </span>
                                         )}
                                       </div>
-                                      <div className="text-right ml-4">
-                                        <p className={`text-lg font-bold ${
-                                          darkMode ? 'text-gray-100' : 'text-gray-900'
-                                        }`}>
-                                          ${part.total.toFixed(2)}
-                                        </p>
-                                        <div className={`text-xs ${
-                                          darkMode ? 'text-gray-400' : 'text-gray-600'
-                                        }`}>
-                                          {getStatusText(part)}
-                                        </div>
+                                      <div className={`text-xs ${
+                                        darkMode ? 'text-gray-400' : 'text-gray-600'
+                                      }`}>
+                                        {getStatusText(part)}
                                       </div>
                                     </div>
+                                    
                                     {part.partNumber && part.partNumber !== '-' && (
-                                      <p className={`text-xs font-mono ${
+                                      <p className={`text-xs font-mono mb-3 ${
                                         darkMode ? 'text-gray-400' : 'text-gray-600'
                                       }`}>
                                         Part #: {part.partNumber}
                                       </p>
                                     )}
+                                    
+                                    <div className={`pt-3 border-t space-y-2 ${
+                                      darkMode ? 'border-gray-600' : 'border-gray-200'
+                                    }`}>
+                                      <div className="flex justify-between text-sm">
+                                        <span className={darkMode ? 'text-gray-400' : 'text-gray-600'}>
+                                          Part Price:
+                                        </span>
+                                        <span className={`font-medium ${
+                                          darkMode ? 'text-gray-200' : 'text-gray-800'
+                                        }`}>
+                                          ${part.price.toFixed(2)}
+                                        </span>
+                                      </div>
+                                      
+                                      {part.shipping > 0 && (
+                                        <div className="flex justify-between text-sm">
+                                          <span className={darkMode ? 'text-gray-400' : 'text-gray-600'}>
+                                            Shipping:
+                                          </span>
+                                          <span className={`font-medium ${
+                                            darkMode ? 'text-gray-200' : 'text-gray-800'
+                                          }`}>
+                                            ${part.shipping.toFixed(2)}
+                                          </span>
+                                        </div>
+                                      )}
+                                      
+                                      {part.duties > 0 && (
+                                        <div className="flex justify-between text-sm">
+                                          <span className={darkMode ? 'text-gray-400' : 'text-gray-600'}>
+                                            Duties:
+                                          </span>
+                                          <span className={`font-medium ${
+                                            darkMode ? 'text-gray-200' : 'text-gray-800'
+                                          }`}>
+                                            ${part.duties.toFixed(2)}
+                                          </span>
+                                        </div>
+                                      )}
+                                      
+                                      <div className={`flex justify-between text-base font-bold pt-2 border-t ${
+                                        darkMode ? 'border-gray-600' : 'border-gray-200'
+                                      }`}>
+                                        <span className={darkMode ? 'text-gray-100' : 'text-gray-900'}>
+                                          Total:
+                                        </span>
+                                        <span className={darkMode ? 'text-gray-100' : 'text-gray-900'}>
+                                          ${part.total.toFixed(2)}
+                                        </span>
+                                      </div>
+                                    </div>
                                   </div>
                                 ))}
                               </div>
