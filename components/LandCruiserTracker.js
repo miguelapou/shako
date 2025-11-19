@@ -979,17 +979,26 @@ const LandCruiserTracker = () => {
           <>
             <div 
               className="fixed inset-0 z-10" 
-              onClick={() => setOpenDropdown(null)}
+              onClick={(e) => {
+                e.stopPropagation();
+                setOpenDropdown(null);
+              }}
             />
-            <div className="absolute left-0 top-full mt-1 bg-white rounded-lg shadow-lg border border-gray-200 py-1 z-20 min-w-[140px]">
+            <div className={`absolute left-0 top-full mt-1 rounded-lg shadow-lg border py-1 z-20 min-w-[140px] ${
+              darkMode ? 'bg-gray-800 border-gray-600' : 'bg-white border-gray-200'
+            }`}>
               <button
                 onClick={(e) => {
                   e.stopPropagation();
                   updatePartStatus(part.id, 'delivered');
                 }}
-                className="w-full px-4 py-2 text-left text-sm hover:bg-green-50 flex items-center gap-2 text-gray-700"
+                className={`w-full px-4 py-2 text-left text-sm flex items-center gap-2 ${
+                  darkMode 
+                    ? 'text-gray-300 hover:bg-green-900/30' 
+                    : 'text-gray-700 hover:bg-green-50'
+                }`}
               >
-                <CheckCircle className="w-4 h-4 text-green-600" />
+                <CheckCircle className={`w-4 h-4 ${darkMode ? 'text-green-400' : 'text-green-600'}`} />
                 <span>Delivered</span>
               </button>
               <button
@@ -997,9 +1006,13 @@ const LandCruiserTracker = () => {
                   e.stopPropagation();
                   updatePartStatus(part.id, 'shipped');
                 }}
-                className="w-full px-4 py-2 text-left text-sm hover:bg-blue-50 flex items-center gap-2 text-gray-700"
+                className={`w-full px-4 py-2 text-left text-sm flex items-center gap-2 ${
+                  darkMode 
+                    ? 'text-gray-300 hover:bg-blue-900/30' 
+                    : 'text-gray-700 hover:bg-blue-50'
+                }`}
               >
-                <Truck className="w-4 h-4 text-blue-600" />
+                <Truck className={`w-4 h-4 ${darkMode ? 'text-blue-400' : 'text-blue-600'}`} />
                 <span>Shipped</span>
               </button>
               <button
@@ -1007,9 +1020,13 @@ const LandCruiserTracker = () => {
                   e.stopPropagation();
                   updatePartStatus(part.id, 'purchased');
                 }}
-                className="w-full px-4 py-2 text-left text-sm hover:bg-yellow-50 flex items-center gap-2 text-gray-700"
+                className={`w-full px-4 py-2 text-left text-sm flex items-center gap-2 ${
+                  darkMode 
+                    ? 'text-gray-300 hover:bg-yellow-900/30' 
+                    : 'text-gray-700 hover:bg-yellow-50'
+                }`}
               >
-                <DollarSign className="w-4 h-4 text-yellow-600" />
+                <DollarSign className={`w-4 h-4 ${darkMode ? 'text-yellow-400' : 'text-yellow-600'}`} />
                 <span>Purchased</span>
               </button>
               <button
@@ -1017,9 +1034,13 @@ const LandCruiserTracker = () => {
                   e.stopPropagation();
                   updatePartStatus(part.id, 'pending');
                 }}
-                className="w-full px-4 py-2 text-left text-sm hover:bg-gray-50 flex items-center gap-2 text-gray-700"
+                className={`w-full px-4 py-2 text-left text-sm flex items-center gap-2 ${
+                  darkMode 
+                    ? 'text-gray-300 hover:bg-gray-700' 
+                    : 'text-gray-700 hover:bg-gray-50'
+                }`}
               >
-                <Clock className="w-4 h-4 text-gray-400" />
+                <Clock className={`w-4 h-4 ${darkMode ? 'text-gray-500' : 'text-gray-400'}`} />
                 <span>Pending</span>
               </button>
             </div>
@@ -1055,7 +1076,10 @@ const LandCruiserTracker = () => {
           <>
             <div 
               className="fixed inset-0 z-10" 
-              onClick={() => setOpenDropdown(null)}
+              onClick={(e) => {
+                e.stopPropagation();
+                setOpenDropdown(null);
+              }}
             />
             <div className={`absolute left-0 top-full mt-1 rounded-lg shadow-lg border py-1 z-20 min-w-[180px] max-h-60 overflow-y-auto ${
               darkMode ? 'bg-gray-800 border-gray-600' : 'bg-white border-gray-200'
