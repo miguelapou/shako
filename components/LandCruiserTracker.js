@@ -1,5 +1,5 @@
 import React, { useState, useMemo, useEffect } from 'react';
-import { Search, Package, DollarSign, TrendingUp, Truck, CheckCircle, Clock, XCircle, ChevronDown, Plus, X, ExternalLink, ChevronUp, Edit2, Trash2, Moon, Sun } from 'lucide-react';
+import { Search, Package, DollarSign, TrendingUp, Truck, CheckCircle, Clock, XCircle, ChevronDown, Plus, X, ExternalLink, ChevronUp, Edit2, Trash2, Moon, Sun, Folder, List, Target, Calendar } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 
 // Add Foundation One font
@@ -17,11 +17,14 @@ const fontStyles = `
 
 const LandCruiserTracker = () => {
   const [parts, setParts] = useState([]);
+  const [projects, setProjects] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [activeTab, setActiveTab] = useState('parts'); // 'parts' or 'projects'
 
-  // Load parts from Supabase on mount
+  // Load parts and projects from Supabase on mount
   useEffect(() => {
     loadParts();
+    loadProjects();
   }, []);
 
   const loadParts = async () => {
@@ -131,6 +134,130 @@ const LandCruiserTracker = () => {
     }
   };
 
+  // Load projects from Supabase
+  const loadProjects = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('projects')
+        .select('*')
+        .order('id', { ascending: true });
+
+      if (error) throw error;
+
+      if (data && data.length > 0) {
+        setProjects(data);
+      } else {
+        // Initialize with default projects
+        await initializeDefaultProjects();
+      }
+    } catch (error) {
+      console.error('Error loading projects:', error);
+    }
+  };
+
+  const initializeDefaultProjects = async () => {
+    const defaultProjects = [
+      { 
+        id: 1, 
+        name: "Interior Restoration", 
+        description: "Complete interior refurbishment including seats, dashboard, and trim",
+        status: "in_progress",
+        budget: 2000,
+        spent: 850,
+        start_date: "2024-01-15",
+        target_date: "2025-03-01",
+        priority: "high"
+      },
+      { 
+        id: 2, 
+        name: "Engine Maintenance", 
+        description: "Regular maintenance and upgrades to engine components",
+        status: "in_progress",
+        budget: 1500,
+        spent: 600,
+        start_date: "2024-02-01",
+        target_date: "2025-06-01",
+        priority: "medium"
+      },
+      { 
+        id: 3, 
+        name: "Exterior Body Work", 
+        description: "Rust repair, paint, and body panel replacement",
+        status: "planning",
+        budget: 3500,
+        spent: 0,
+        start_date: null,
+        target_date: "2025-12-01",
+        priority: "low"
+      }
+    ];
+
+    try {
+      for (const project of defaultProjects) {
+        await supabase.from('projects').insert(project);
+      }
+      await loadProjects();
+    } catch (error) {
+      console.error('Error initializing projects:', error);
+    }
+  };
+
+  const addProject = async (projectData) => {
+    try {
+      const { data, error } = await supabase
+        .from('projects')
+        .insert([{
+          name: projectData.name,
+          description: projectData.description,
+          status: projectData.status || 'planning',
+          budget: parseFloat(projectData.budget) || 0,
+          spent: 0,
+          start_date: projectData.start_date || null,
+          target_date: projectData.target_date || null,
+          priority: projectData.priority || 'medium'
+        }])
+        .select();
+
+      if (error) throw error;
+      await loadProjects();
+    } catch (error) {
+      console.error('Error adding project:', error);
+      alert('Error adding project');
+    }
+  };
+
+  const updateProject = async (projectId, updates) => {
+    try {
+      const { error } = await supabase
+        .from('projects')
+        .update(updates)
+        .eq('id', projectId);
+
+      if (error) throw error;
+      await loadProjects();
+    } catch (error) {
+      console.error('Error updating project:', error);
+      alert('Error updating project');
+    }
+  };
+
+  const deleteProject = async (projectId) => {
+    if (!confirm('Are you sure you want to delete this project?')) return;
+    
+    try {
+      const { error } = await supabase
+        .from('projects')
+        .delete()
+        .eq('id', projectId);
+
+      if (error) throw error;
+      await loadProjects();
+    } catch (error) {
+      console.error('Error deleting project:', error);
+      alert('Error deleting project');
+    }
+  };
+
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
   const [vendorFilter, setVendorFilter] = useState('all');
@@ -143,6 +270,21 @@ const LandCruiserTracker = () => {
   const [trackingModalPartId, setTrackingModalPartId] = useState(null);
   const [trackingInput, setTrackingInput] = useState('');
   const [editingPart, setEditingPart] = useState(null);
+  
+  // Project-related state
+  const [showAddProjectModal, setShowAddProjectModal] = useState(false);
+  const [showEditProjectModal, setShowEditProjectModal] = useState(false);
+  const [editingProject, setEditingProject] = useState(null);
+  const [newProject, setNewProject] = useState({
+    name: '',
+    description: '',
+    budget: '',
+    start_date: '',
+    target_date: '',
+    priority: 'medium',
+    status: 'planning'
+  });
+  
   const [darkMode, setDarkMode] = useState(() => {
     // Only access localStorage in the browser
     if (typeof window === 'undefined') return false;
@@ -789,13 +931,61 @@ const LandCruiserTracker = () => {
                 {darkMode ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
               </button>
               <button
-                onClick={() => setShowAddModal(true)}
+                onClick={() => activeTab === 'parts' ? setShowAddModal(true) : setShowAddProjectModal(true)}
                 className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-4 sm:px-6 py-2 sm:py-3 rounded-lg shadow-md transition-colors font-medium text-sm sm:text-base whitespace-nowrap"
               >
                 <Plus className="w-4 h-4 sm:w-5 sm:h-5" />
-                Add New Part
+                {activeTab === 'parts' ? 'Add New Part' : 'Add New Project'}
               </button>
             </div>
+          </div>
+        </div>
+
+        {/* Tab Navigation */}
+        <div className={`mb-6 border-b ${
+          darkMode ? 'border-gray-700' : 'border-gray-200'
+        }`}>
+          <div className="flex gap-1">
+            <button
+              onClick={() => setActiveTab('parts')}
+              className={`flex items-center gap-2 px-6 py-3 font-medium transition-all relative ${
+                activeTab === 'parts'
+                  ? darkMode
+                    ? 'text-blue-400'
+                    : 'text-blue-600'
+                  : darkMode
+                    ? 'text-gray-400 hover:text-gray-300'
+                    : 'text-gray-600 hover:text-gray-800'
+              }`}
+            >
+              <Package className="w-5 h-5" />
+              <span>Parts</span>
+              {activeTab === 'parts' && (
+                <div className={`absolute bottom-0 left-0 right-0 h-0.5 ${
+                  darkMode ? 'bg-blue-400' : 'bg-blue-600'
+                }`} />
+              )}
+            </button>
+            <button
+              onClick={() => setActiveTab('projects')}
+              className={`flex items-center gap-2 px-6 py-3 font-medium transition-all relative ${
+                activeTab === 'projects'
+                  ? darkMode
+                    ? 'text-blue-400'
+                    : 'text-blue-600'
+                  : darkMode
+                    ? 'text-gray-400 hover:text-gray-300'
+                    : 'text-gray-600 hover:text-gray-800'
+              }`}
+            >
+              <Folder className="w-5 h-5" />
+              <span>Projects</span>
+              {activeTab === 'projects' && (
+                <div className={`absolute bottom-0 left-0 right-0 h-0.5 ${
+                  darkMode ? 'bg-blue-400' : 'bg-blue-600'
+                }`} />
+              )}
+            </button>
           </div>
         </div>
 
@@ -1334,6 +1524,9 @@ const LandCruiserTracker = () => {
           </div>
         )}
 
+        {/* PARTS TAB CONTENT */}
+        {activeTab === 'parts' && (
+          <>
         {/* Statistics and Cost Breakdown - Side by Side */}
         <div className="flex flex-col lg:grid lg:grid-cols-2 gap-6 mb-6">
           {/* Statistics Cards - order-1 on mobile, contains search on desktop */}
@@ -1886,6 +2079,639 @@ const LandCruiserTracker = () => {
             </p>
           </div>
         </div>
+        </>
+        )}
+
+        {/* PROJECTS TAB CONTENT */}
+        {activeTab === 'projects' && (
+          <>
+            {/* Projects Grid */}
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {projects.map((project) => {
+                const progress = project.budget > 0 ? (project.spent / project.budget) * 100 : 0;
+                const statusColors = {
+                  planning: darkMode ? 'bg-gray-600 text-gray-200' : 'bg-gray-200 text-gray-800',
+                  in_progress: darkMode ? 'bg-blue-600 text-blue-100' : 'bg-blue-100 text-blue-800',
+                  completed: darkMode ? 'bg-green-600 text-green-100' : 'bg-green-100 text-green-800',
+                  on_hold: darkMode ? 'bg-yellow-600 text-yellow-100' : 'bg-yellow-100 text-yellow-800'
+                };
+                const priorityColors = {
+                  low: darkMode ? 'text-gray-400' : 'text-gray-600',
+                  medium: darkMode ? 'text-yellow-400' : 'text-yellow-600',
+                  high: darkMode ? 'text-red-400' : 'text-red-600'
+                };
+
+                return (
+                  <div
+                    key={project.id}
+                    className={`rounded-lg shadow-lg p-6 transition-all hover:shadow-xl ${
+                      darkMode ? 'bg-gray-800' : 'bg-white'
+                    }`}
+                  >
+                    {/* Project Header */}
+                    <div className="flex items-start justify-between mb-4">
+                      <div className="flex-1">
+                        <h3 className={`text-xl font-bold mb-2 ${
+                          darkMode ? 'text-gray-100' : 'text-gray-900'
+                        }`}>
+                          {project.name}
+                        </h3>
+                        <span className={`inline-block px-3 py-1 rounded-full text-sm font-medium ${
+                          statusColors[project.status]
+                        }`}>
+                          {project.status.replace('_', ' ').toUpperCase()}
+                        </span>
+                      </div>
+                      <div className="flex gap-2">
+                        <button
+                          onClick={() => {
+                            setEditingProject(project);
+                            setShowEditProjectModal(true);
+                          }}
+                          className={`p-2 rounded-lg transition-colors ${
+                            darkMode ? 'hover:bg-gray-700 text-gray-400' : 'hover:bg-gray-100 text-gray-600'
+                          }`}
+                        >
+                          <Edit2 className="w-4 h-4" />
+                        </button>
+                        <button
+                          onClick={() => deleteProject(project.id)}
+                          className={`p-2 rounded-lg transition-colors ${
+                            darkMode ? 'hover:bg-gray-700 text-red-400' : 'hover:bg-gray-100 text-red-600'
+                          }`}
+                        >
+                          <Trash2 className="w-4 h-4" />
+                        </button>
+                      </div>
+                    </div>
+
+                    {/* Description */}
+                    {project.description && (
+                      <p className={`text-sm mb-4 ${
+                        darkMode ? 'text-gray-400' : 'text-gray-600'
+                      }`}>
+                        {project.description}
+                      </p>
+                    )}
+
+                    {/* Progress Bar */}
+                    <div className="mb-4">
+                      <div className="flex justify-between items-center mb-2">
+                        <span className={`text-sm font-medium ${
+                          darkMode ? 'text-gray-300' : 'text-gray-700'
+                        }`}>
+                          Budget Progress
+                        </span>
+                        <span className={`text-sm font-bold ${
+                          darkMode ? 'text-gray-200' : 'text-gray-900'
+                        }`}>
+                          {progress.toFixed(0)}%
+                        </span>
+                      </div>
+                      <div className={`w-full rounded-full h-3 ${
+                        darkMode ? 'bg-gray-700' : 'bg-gray-200'
+                      }`}>
+                        <div
+                          className={`h-3 rounded-full transition-all ${
+                            progress > 90
+                              ? 'bg-red-500'
+                              : progress > 70
+                              ? 'bg-yellow-500'
+                              : 'bg-green-500'
+                          }`}
+                          style={{ width: `${Math.min(progress, 100)}%` }}
+                        />
+                      </div>
+                    </div>
+
+                    {/* Budget Info */}
+                    <div className={`grid grid-cols-2 gap-4 mb-4 p-3 rounded-lg ${
+                      darkMode ? 'bg-gray-700' : 'bg-gray-50'
+                    }`}>
+                      <div>
+                        <p className={`text-xs mb-1 ${
+                          darkMode ? 'text-gray-400' : 'text-gray-600'
+                        }`}>
+                          Spent
+                        </p>
+                        <p className={`text-lg font-bold ${
+                          darkMode ? 'text-gray-100' : 'text-gray-900'
+                        }`}>
+                          ${project.spent?.toFixed(2) || '0.00'}
+                        </p>
+                      </div>
+                      <div>
+                        <p className={`text-xs mb-1 ${
+                          darkMode ? 'text-gray-400' : 'text-gray-600'
+                        }`}>
+                          Budget
+                        </p>
+                        <p className={`text-lg font-bold ${
+                          darkMode ? 'text-gray-100' : 'text-gray-900'
+                        }`}>
+                          ${project.budget?.toFixed(2) || '0.00'}
+                        </p>
+                      </div>
+                    </div>
+
+                    {/* Dates and Priority */}
+                    <div className="space-y-2">
+                      {project.start_date && (
+                        <div className="flex items-center gap-2">
+                          <Calendar className={`w-4 h-4 ${
+                            darkMode ? 'text-gray-400' : 'text-gray-600'
+                          }`} />
+                          <span className={`text-sm ${
+                            darkMode ? 'text-gray-300' : 'text-gray-700'
+                          }`}>
+                            Started: {new Date(project.start_date).toLocaleDateString()}
+                          </span>
+                        </div>
+                      )}
+                      {project.target_date && (
+                        <div className="flex items-center gap-2">
+                          <Target className={`w-4 h-4 ${
+                            darkMode ? 'text-gray-400' : 'text-gray-600'
+                          }`} />
+                          <span className={`text-sm ${
+                            darkMode ? 'text-gray-300' : 'text-gray-700'
+                          }`}>
+                            Target: {new Date(project.target_date).toLocaleDateString()}
+                          </span>
+                        </div>
+                      )}
+                      <div className="flex items-center gap-2">
+                        <span className={`text-sm font-medium ${
+                          darkMode ? 'text-gray-400' : 'text-gray-600'
+                        }`}>
+                          Priority:
+                        </span>
+                        <span className={`text-sm font-bold ${priorityColors[project.priority]}`}>
+                          {project.priority?.toUpperCase()}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+
+            {/* Empty State */}
+            {projects.length === 0 && (
+              <div className={`text-center py-12 rounded-lg ${
+                darkMode ? 'bg-gray-800' : 'bg-white'
+              }`}>
+                <Folder className={`w-16 h-16 mx-auto mb-4 ${
+                  darkMode ? 'text-gray-600' : 'text-gray-400'
+                }`} />
+                <h3 className={`text-xl font-semibold mb-2 ${
+                  darkMode ? 'text-gray-300' : 'text-gray-700'
+                }`}>
+                  No Projects Yet
+                </h3>
+                <p className={`mb-4 ${
+                  darkMode ? 'text-gray-400' : 'text-gray-600'
+                }`}>
+                  Start organizing your restoration by creating your first project
+                </p>
+                <button
+                  onClick={() => setShowAddProjectModal(true)}
+                  className="inline-flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg shadow-md transition-colors font-medium"
+                >
+                  <Plus className="w-5 h-5" />
+                  Create First Project
+                </button>
+              </div>
+            )}
+
+            {/* Add Project Modal */}
+            {showAddProjectModal && (
+              <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+                <div className={`rounded-lg shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto ${
+                  darkMode ? 'bg-gray-800' : 'bg-white'
+                }`}>
+                  <div className={`sticky top-0 border-b px-6 py-4 flex items-center justify-between ${
+                    darkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-200'
+                  }`}>
+                    <h2 className={`text-2xl font-bold ${
+                      darkMode ? 'text-gray-100' : 'text-gray-800'
+                    }`} style={{ fontFamily: "'FoundationOne', 'Courier New', monospace" }}>
+                      Add New Project
+                    </h2>
+                    <button
+                      onClick={() => setShowAddProjectModal(false)}
+                      className={`transition-colors ${
+                        darkMode ? 'text-gray-400 hover:text-gray-300' : 'text-gray-400 hover:text-gray-600'
+                      }`}
+                    >
+                      <X className="w-6 h-6" />
+                    </button>
+                  </div>
+
+                  <div className="p-6">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div className="md:col-span-2">
+                        <label className={`block text-sm font-medium mb-2 ${
+                          darkMode ? 'text-gray-300' : 'text-gray-700'
+                        }`}>
+                          Project Name <span className="text-red-500">*</span>
+                        </label>
+                        <input
+                          type="text"
+                          value={newProject.name}
+                          onChange={(e) => setNewProject({ ...newProject, name: e.target.value })}
+                          className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
+                            darkMode 
+                              ? 'bg-gray-700 border-gray-600 text-gray-100 placeholder-gray-400' 
+                              : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400'
+                          }`}
+                          placeholder="e.g., Interior Restoration"
+                          required
+                        />
+                      </div>
+
+                      <div className="md:col-span-2">
+                        <label className={`block text-sm font-medium mb-2 ${
+                          darkMode ? 'text-gray-300' : 'text-gray-700'
+                        }`}>
+                          Description
+                        </label>
+                        <textarea
+                          value={newProject.description}
+                          onChange={(e) => setNewProject({ ...newProject, description: e.target.value })}
+                          className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
+                            darkMode 
+                              ? 'bg-gray-700 border-gray-600 text-gray-100 placeholder-gray-400' 
+                              : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400'
+                          }`}
+                          placeholder="Brief description of the project"
+                          rows="3"
+                        />
+                      </div>
+
+                      <div>
+                        <label className={`block text-sm font-medium mb-2 ${
+                          darkMode ? 'text-gray-300' : 'text-gray-700'
+                        }`}>
+                          Budget ($)
+                        </label>
+                        <input
+                          type="number"
+                          step="0.01"
+                          value={newProject.budget}
+                          onChange={(e) => setNewProject({ ...newProject, budget: e.target.value })}
+                          className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
+                            darkMode 
+                              ? 'bg-gray-700 border-gray-600 text-gray-100 placeholder-gray-400' 
+                              : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400'
+                          }`}
+                          placeholder="0.00"
+                        />
+                      </div>
+
+                      <div>
+                        <label className={`block text-sm font-medium mb-2 ${
+                          darkMode ? 'text-gray-300' : 'text-gray-700'
+                        }`}>
+                          Priority
+                        </label>
+                        <select
+                          value={newProject.priority}
+                          onChange={(e) => setNewProject({ ...newProject, priority: e.target.value })}
+                          className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
+                            darkMode 
+                              ? 'bg-gray-700 border-gray-600 text-gray-100' 
+                              : 'bg-white border-gray-300 text-gray-900'
+                          }`}
+                        >
+                          <option value="low">Low</option>
+                          <option value="medium">Medium</option>
+                          <option value="high">High</option>
+                        </select>
+                      </div>
+
+                      <div>
+                        <label className={`block text-sm font-medium mb-2 ${
+                          darkMode ? 'text-gray-300' : 'text-gray-700'
+                        }`}>
+                          Start Date
+                        </label>
+                        <input
+                          type="date"
+                          value={newProject.start_date}
+                          onChange={(e) => setNewProject({ ...newProject, start_date: e.target.value })}
+                          className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
+                            darkMode 
+                              ? 'bg-gray-700 border-gray-600 text-gray-100' 
+                              : 'bg-white border-gray-300 text-gray-900'
+                          }`}
+                        />
+                      </div>
+
+                      <div>
+                        <label className={`block text-sm font-medium mb-2 ${
+                          darkMode ? 'text-gray-300' : 'text-gray-700'
+                        }`}>
+                          Target Date
+                        </label>
+                        <input
+                          type="date"
+                          value={newProject.target_date}
+                          onChange={(e) => setNewProject({ ...newProject, target_date: e.target.value })}
+                          className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
+                            darkMode 
+                              ? 'bg-gray-700 border-gray-600 text-gray-100' 
+                              : 'bg-white border-gray-300 text-gray-900'
+                          }`}
+                        />
+                      </div>
+
+                      <div>
+                        <label className={`block text-sm font-medium mb-2 ${
+                          darkMode ? 'text-gray-300' : 'text-gray-700'
+                        }`}>
+                          Status
+                        </label>
+                        <select
+                          value={newProject.status}
+                          onChange={(e) => setNewProject({ ...newProject, status: e.target.value })}
+                          className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
+                            darkMode 
+                              ? 'bg-gray-700 border-gray-600 text-gray-100' 
+                              : 'bg-white border-gray-300 text-gray-900'
+                          }`}
+                        >
+                          <option value="planning">Planning</option>
+                          <option value="in_progress">In Progress</option>
+                          <option value="on_hold">On Hold</option>
+                          <option value="completed">Completed</option>
+                        </select>
+                      </div>
+                    </div>
+
+                    <div className="flex gap-3 mt-6">
+                      <button
+                        onClick={() => setShowAddProjectModal(false)}
+                        className={`flex-1 px-6 py-3 rounded-lg font-medium transition-colors ${
+                          darkMode 
+                            ? 'bg-gray-700 hover:bg-gray-600 text-gray-100' 
+                            : 'bg-gray-200 hover:bg-gray-300 text-gray-800'
+                        }`}
+                      >
+                        Cancel
+                      </button>
+                      <button
+                        onClick={async () => {
+                          if (!newProject.name) {
+                            alert('Please enter a project name');
+                            return;
+                          }
+                          await addProject(newProject);
+                          setNewProject({
+                            name: '',
+                            description: '',
+                            budget: '',
+                            start_date: '',
+                            target_date: '',
+                            priority: 'medium',
+                            status: 'planning'
+                          });
+                          setShowAddProjectModal(false);
+                        }}
+                        className="flex-1 bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg font-medium transition-colors"
+                      >
+                        Add Project
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* Edit Project Modal */}
+            {showEditProjectModal && editingProject && (
+              <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+                <div className={`rounded-lg shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto ${
+                  darkMode ? 'bg-gray-800' : 'bg-white'
+                }`}>
+                  <div className={`sticky top-0 border-b px-6 py-4 flex items-center justify-between ${
+                    darkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-200'
+                  }`}>
+                    <h2 className={`text-2xl font-bold ${
+                      darkMode ? 'text-gray-100' : 'text-gray-800'
+                    }`} style={{ fontFamily: "'FoundationOne', 'Courier New', monospace" }}>
+                      Edit Project
+                    </h2>
+                    <button
+                      onClick={() => {
+                        setShowEditProjectModal(false);
+                        setEditingProject(null);
+                      }}
+                      className={`transition-colors ${
+                        darkMode ? 'text-gray-400 hover:text-gray-300' : 'text-gray-400 hover:text-gray-600'
+                      }`}
+                    >
+                      <X className="w-6 h-6" />
+                    </button>
+                  </div>
+
+                  <div className="p-6">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div className="md:col-span-2">
+                        <label className={`block text-sm font-medium mb-2 ${
+                          darkMode ? 'text-gray-300' : 'text-gray-700'
+                        }`}>
+                          Project Name
+                        </label>
+                        <input
+                          type="text"
+                          value={editingProject.name}
+                          onChange={(e) => setEditingProject({ ...editingProject, name: e.target.value })}
+                          className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
+                            darkMode 
+                              ? 'bg-gray-700 border-gray-600 text-gray-100' 
+                              : 'bg-white border-gray-300 text-gray-900'
+                          }`}
+                        />
+                      </div>
+
+                      <div className="md:col-span-2">
+                        <label className={`block text-sm font-medium mb-2 ${
+                          darkMode ? 'text-gray-300' : 'text-gray-700'
+                        }`}>
+                          Description
+                        </label>
+                        <textarea
+                          value={editingProject.description}
+                          onChange={(e) => setEditingProject({ ...editingProject, description: e.target.value })}
+                          className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
+                            darkMode 
+                              ? 'bg-gray-700 border-gray-600 text-gray-100' 
+                              : 'bg-white border-gray-300 text-gray-900'
+                          }`}
+                          rows="3"
+                        />
+                      </div>
+
+                      <div>
+                        <label className={`block text-sm font-medium mb-2 ${
+                          darkMode ? 'text-gray-300' : 'text-gray-700'
+                        }`}>
+                          Budget ($)
+                        </label>
+                        <input
+                          type="number"
+                          step="0.01"
+                          value={editingProject.budget}
+                          onChange={(e) => setEditingProject({ ...editingProject, budget: e.target.value })}
+                          className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
+                            darkMode 
+                              ? 'bg-gray-700 border-gray-600 text-gray-100' 
+                              : 'bg-white border-gray-300 text-gray-900'
+                          }`}
+                        />
+                      </div>
+
+                      <div>
+                        <label className={`block text-sm font-medium mb-2 ${
+                          darkMode ? 'text-gray-300' : 'text-gray-700'
+                        }`}>
+                          Spent ($)
+                        </label>
+                        <input
+                          type="number"
+                          step="0.01"
+                          value={editingProject.spent}
+                          onChange={(e) => setEditingProject({ ...editingProject, spent: e.target.value })}
+                          className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
+                            darkMode 
+                              ? 'bg-gray-700 border-gray-600 text-gray-100' 
+                              : 'bg-white border-gray-300 text-gray-900'
+                          }`}
+                        />
+                      </div>
+
+                      <div>
+                        <label className={`block text-sm font-medium mb-2 ${
+                          darkMode ? 'text-gray-300' : 'text-gray-700'
+                        }`}>
+                          Priority
+                        </label>
+                        <select
+                          value={editingProject.priority}
+                          onChange={(e) => setEditingProject({ ...editingProject, priority: e.target.value })}
+                          className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
+                            darkMode 
+                              ? 'bg-gray-700 border-gray-600 text-gray-100' 
+                              : 'bg-white border-gray-300 text-gray-900'
+                          }`}
+                        >
+                          <option value="low">Low</option>
+                          <option value="medium">Medium</option>
+                          <option value="high">High</option>
+                        </select>
+                      </div>
+
+                      <div>
+                        <label className={`block text-sm font-medium mb-2 ${
+                          darkMode ? 'text-gray-300' : 'text-gray-700'
+                        }`}>
+                          Start Date
+                        </label>
+                        <input
+                          type="date"
+                          value={editingProject.start_date || ''}
+                          onChange={(e) => setEditingProject({ ...editingProject, start_date: e.target.value })}
+                          className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
+                            darkMode 
+                              ? 'bg-gray-700 border-gray-600 text-gray-100' 
+                              : 'bg-white border-gray-300 text-gray-900'
+                          }`}
+                        />
+                      </div>
+
+                      <div>
+                        <label className={`block text-sm font-medium mb-2 ${
+                          darkMode ? 'text-gray-300' : 'text-gray-700'
+                        }`}>
+                          Target Date
+                        </label>
+                        <input
+                          type="date"
+                          value={editingProject.target_date || ''}
+                          onChange={(e) => setEditingProject({ ...editingProject, target_date: e.target.value })}
+                          className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
+                            darkMode 
+                              ? 'bg-gray-700 border-gray-600 text-gray-100' 
+                              : 'bg-white border-gray-300 text-gray-900'
+                          }`}
+                        />
+                      </div>
+
+                      <div>
+                        <label className={`block text-sm font-medium mb-2 ${
+                          darkMode ? 'text-gray-300' : 'text-gray-700'
+                        }`}>
+                          Status
+                        </label>
+                        <select
+                          value={editingProject.status}
+                          onChange={(e) => setEditingProject({ ...editingProject, status: e.target.value })}
+                          className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
+                            darkMode 
+                              ? 'bg-gray-700 border-gray-600 text-gray-100' 
+                              : 'bg-white border-gray-300 text-gray-900'
+                          }`}
+                        >
+                          <option value="planning">Planning</option>
+                          <option value="in_progress">In Progress</option>
+                          <option value="on_hold">On Hold</option>
+                          <option value="completed">Completed</option>
+                        </select>
+                      </div>
+                    </div>
+
+                    <div className="flex gap-3 mt-6">
+                      <button
+                        onClick={() => {
+                          setShowEditProjectModal(false);
+                          setEditingProject(null);
+                        }}
+                        className={`flex-1 px-6 py-3 rounded-lg font-medium transition-colors ${
+                          darkMode 
+                            ? 'bg-gray-700 hover:bg-gray-600 text-gray-100' 
+                            : 'bg-gray-200 hover:bg-gray-300 text-gray-800'
+                        }`}
+                      >
+                        Cancel
+                      </button>
+                      <button
+                        onClick={async () => {
+                          await updateProject(editingProject.id, {
+                            name: editingProject.name,
+                            description: editingProject.description,
+                            budget: parseFloat(editingProject.budget),
+                            spent: parseFloat(editingProject.spent),
+                            priority: editingProject.priority,
+                            start_date: editingProject.start_date || null,
+                            target_date: editingProject.target_date || null,
+                            status: editingProject.status
+                          });
+                          setShowEditProjectModal(false);
+                          setEditingProject(null);
+                        }}
+                        className="flex-1 bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg font-medium transition-colors"
+                      >
+                        Save Changes
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
+          </>
+        )}
+
         </>
         )}
       </div>
