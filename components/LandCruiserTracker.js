@@ -1542,6 +1542,7 @@ const LandCruiserTracker = () => {
                 </div>
               </div>
             </div>
+            </div>
           </>
         )}
 
@@ -1905,6 +1906,7 @@ const LandCruiserTracker = () => {
                   </button>
                 </div>
               </div>
+            </div>
             </div>
           </>
         )}
@@ -2933,6 +2935,7 @@ const LandCruiserTracker = () => {
                   </div>
                 </div>
               </div>
+              </div>
               </>
             )}
 
@@ -3211,6 +3214,7 @@ const LandCruiserTracker = () => {
                     </div>
                   </div>
                 </div>
+              </div>
               </div>
               </>
             )}
@@ -3531,6 +3535,7 @@ const LandCruiserTracker = () => {
                   </div>
                 </div>
               </div>
+            </div>
             </>
             )}
           </>
