@@ -914,28 +914,40 @@ const LandCruiserTracker = () => {
             />
             <div className="absolute left-0 top-full mt-1 bg-white rounded-lg shadow-lg border border-gray-200 py-1 z-20 min-w-[140px]">
               <button
-                onClick={() => updatePartStatus(part.id, 'delivered')}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  updatePartStatus(part.id, 'delivered');
+                }}
                 className="w-full px-4 py-2 text-left text-sm hover:bg-green-50 flex items-center gap-2 text-gray-700"
               >
                 <CheckCircle className="w-4 h-4 text-green-600" />
                 <span>Delivered</span>
               </button>
               <button
-                onClick={() => updatePartStatus(part.id, 'shipped')}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  updatePartStatus(part.id, 'shipped');
+                }}
                 className="w-full px-4 py-2 text-left text-sm hover:bg-blue-50 flex items-center gap-2 text-gray-700"
               >
                 <Truck className="w-4 h-4 text-blue-600" />
                 <span>Shipped</span>
               </button>
               <button
-                onClick={() => updatePartStatus(part.id, 'purchased')}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  updatePartStatus(part.id, 'purchased');
+                }}
                 className="w-full px-4 py-2 text-left text-sm hover:bg-yellow-50 flex items-center gap-2 text-gray-700"
               >
                 <DollarSign className="w-4 h-4 text-yellow-600" />
                 <span>Purchased</span>
               </button>
               <button
-                onClick={() => updatePartStatus(part.id, 'pending')}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  updatePartStatus(part.id, 'pending');
+                }}
                 className="w-full px-4 py-2 text-left text-sm hover:bg-gray-50 flex items-center gap-2 text-gray-700"
               >
                 <Clock className="w-4 h-4 text-gray-400" />
@@ -980,7 +992,8 @@ const LandCruiserTracker = () => {
               darkMode ? 'bg-gray-800 border-gray-600' : 'bg-white border-gray-200'
             }`}>
               <button
-                onClick={() => {
+                onClick={(e) => {
+                  e.stopPropagation();
                   updatePartProject(part.id, null);
                   setOpenDropdown(null);
                 }}
@@ -998,7 +1011,8 @@ const LandCruiserTracker = () => {
               {projects.map(project => (
                 <button
                   key={project.id}
-                  onClick={() => {
+                  onClick={(e) => {
+                    e.stopPropagation();
                     updatePartProject(part.id, project.id);
                     setOpenDropdown(null);
                   }}
