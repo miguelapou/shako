@@ -913,7 +913,7 @@ const LandCruiserTracker = () => {
             <div>
               <h1 className={`text-2xl sm:text-3xl lg:text-4xl font-bold mb-2 ${
                 darkMode ? 'text-gray-100' : 'text-slate-800'
-              }`} style={{ fontFamily: "'FoundationOne', 'Courier New', monospace" }}>🗻 Takumi Garage</h1>
+              }`} style={{ fontFamily: "'FoundationOne', 'Courier New', monospace" }}>🗺️ LAND CRUISER PARTS</h1>
             </div>
             <div className="flex items-center gap-3">
               <button
@@ -1780,6 +1780,9 @@ const LandCruiserTracker = () => {
                   <th className={`px-6 py-4 text-right text-xs font-semibold uppercase tracking-wider ${
                     darkMode ? 'text-gray-300' : 'text-slate-700'
                   }`}>Shipping</th>
+                  <th className={`px-6 py-4 text-right text-xs font-semibold uppercase tracking-wider ${
+                    darkMode ? 'text-gray-300' : 'text-slate-700'
+                  }`}>Duties</th>
                   <th 
                     onClick={() => handleSort('total')}
                     className={`px-6 py-4 text-right text-xs font-semibold uppercase tracking-wider cursor-pointer transition-colors ${
@@ -1846,6 +1849,17 @@ const LandCruiserTracker = () => {
                         <div className={`text-sm text-right ${
                           darkMode ? 'text-gray-300' : 'text-slate-600'
                         }`}>${part.shipping.toFixed(2)}</div>
+                      ) : (
+                        <div className={`text-sm text-center ${
+                          darkMode ? 'text-gray-600' : 'text-slate-400'
+                        }`}>—</div>
+                      )}
+                    </td>
+                    <td className="px-6 py-4">
+                      {part.duties > 0 ? (
+                        <div className={`text-sm text-right ${
+                          darkMode ? 'text-gray-300' : 'text-slate-600'
+                        }`}>${part.duties.toFixed(2)}</div>
                       ) : (
                         <div className={`text-sm text-center ${
                           darkMode ? 'text-gray-600' : 'text-slate-400'
@@ -2017,6 +2031,16 @@ const LandCruiserTracker = () => {
                         <span className={`text-sm ${
                           darkMode ? 'text-gray-300' : 'text-slate-600'
                         }`}>${part.shipping.toFixed(2)}</span>
+                      </div>
+                    )}
+                    {part.duties > 0 && (
+                      <div className="flex justify-between items-center mb-2">
+                        <span className={`text-sm ${
+                          darkMode ? 'text-gray-400' : 'text-slate-600'
+                        }`}>Duties</span>
+                        <span className={`text-sm ${
+                          darkMode ? 'text-gray-300' : 'text-slate-600'
+                        }`}>${part.duties.toFixed(2)}</span>
                       </div>
                     )}
                     <div className={`flex justify-between items-center pt-2 border-t ${
