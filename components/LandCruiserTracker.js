@@ -19,7 +19,7 @@ const LandCruiserTracker = () => {
   const [parts, setParts] = useState([]);
   const [projects, setProjects] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [activeTab, setActiveTab] = useState('parts'); // 'parts' or 'projects'
+  const [activeTab, setActiveTab] = useState('projects'); // 'parts' or 'projects'
   const [draggedProject, setDraggedProject] = useState(null);
   const [dragOverProject, setDragOverProject] = useState(null);
 
@@ -1187,26 +1187,6 @@ const LandCruiserTracker = () => {
         }`}>
           <div className="flex gap-1">
             <button
-              onClick={() => setActiveTab('parts')}
-              className={`flex items-center gap-2 px-6 py-3 font-medium transition-all relative ${
-                activeTab === 'parts'
-                  ? darkMode
-                    ? 'text-blue-400'
-                    : 'text-blue-600'
-                  : darkMode
-                    ? 'text-gray-400 hover:text-gray-300'
-                    : 'text-gray-600 hover:text-gray-800'
-              }`}
-            >
-              <Package className="w-5 h-5" />
-              <span>Parts</span>
-              {activeTab === 'parts' && (
-                <div className={`absolute bottom-0 left-0 right-0 h-0.5 ${
-                  darkMode ? 'bg-blue-400' : 'bg-blue-600'
-                }`} />
-              )}
-            </button>
-            <button
               onClick={() => setActiveTab('projects')}
               className={`flex items-center gap-2 px-6 py-3 font-medium transition-all relative ${
                 activeTab === 'projects'
@@ -1221,6 +1201,26 @@ const LandCruiserTracker = () => {
               <Wrench className="w-5 h-5" />
               <span>Projects</span>
               {activeTab === 'projects' && (
+                <div className={`absolute bottom-0 left-0 right-0 h-0.5 ${
+                  darkMode ? 'bg-blue-400' : 'bg-blue-600'
+                }`} />
+              )}
+            </button>
+            <button
+              onClick={() => setActiveTab('parts')}
+              className={`flex items-center gap-2 px-6 py-3 font-medium transition-all relative ${
+                activeTab === 'parts'
+                  ? darkMode
+                    ? 'text-blue-400'
+                    : 'text-blue-600'
+                  : darkMode
+                    ? 'text-gray-400 hover:text-gray-300'
+                    : 'text-gray-600 hover:text-gray-800'
+              }`}
+            >
+              <Package className="w-5 h-5" />
+              <span>Parts</span>
+              {activeTab === 'parts' && (
                 <div className={`absolute bottom-0 left-0 right-0 h-0.5 ${
                   darkMode ? 'bg-blue-400' : 'bg-blue-600'
                 }`} />
