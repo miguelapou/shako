@@ -272,6 +272,8 @@ const LandCruiserTracker = () => {
   // Project-related state
   const [showAddProjectModal, setShowAddProjectModal] = useState(false);
   const [showEditProjectModal, setShowEditProjectModal] = useState(false);
+  const [showProjectDetailModal, setShowProjectDetailModal] = useState(false);
+  const [viewingProject, setViewingProject] = useState(null);
   const [editingProject, setEditingProject] = useState(null);
   const [newProject, setNewProject] = useState({
     name: '',
@@ -2214,7 +2216,11 @@ const LandCruiserTracker = () => {
                 return (
                   <div
                     key={project.id}
-                    className={`rounded-lg shadow-lg p-6 transition-all hover:shadow-xl ${
+                    onClick={() => {
+                      setViewingProject(project);
+                      setShowProjectDetailModal(true);
+                    }}
+                    className={`rounded-lg shadow-lg p-6 transition-all hover:shadow-xl cursor-pointer ${
                       darkMode ? 'bg-gray-800' : 'bg-white'
                     }`}
                   >
@@ -2232,7 +2238,7 @@ const LandCruiserTracker = () => {
                           {project.status.replace('_', ' ').toUpperCase()}
                         </span>
                       </div>
-                      <div className="flex gap-2">
+                      <div className="flex gap-2" onClick={(e) => e.stopPropagation()}>
                         <button
                           onClick={() => {
                             setEditingProject(project);
@@ -2856,6 +2862,262 @@ const LandCruiserTracker = () => {
                         Save Changes
                       </button>
                     </div>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* Project Detail Modal */}
+            {showProjectDetailModal && viewingProject && (
+              <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+                <div className={`rounded-lg shadow-xl max-w-3xl w-full max-h-[90vh] overflow-y-auto ${
+                  darkMode ? 'bg-gray-800' : 'bg-white'
+                }`}>
+                  <div className={`sticky top-0 border-b px-6 py-4 flex items-center justify-between rounded-t-lg ${
+                    darkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-200'
+                  }`} style={{ zIndex: 10 }}>
+                    <h2 className={`text-2xl font-bold ${
+                      darkMode ? 'text-gray-100' : 'text-gray-800'
+                    }`} style={{ fontFamily: "'FoundationOne', 'Courier New', monospace" }}>
+                      {viewingProject.name}
+                    </h2>
+                    <button
+                      onClick={() => {
+                        setShowProjectDetailModal(false);
+                        setViewingProject(null);
+                      }}
+                      className={`transition-colors ${
+                        darkMode ? 'text-gray-400 hover:text-gray-300' : 'text-gray-400 hover:text-gray-600'
+                      }`}
+                    >
+                      <X className="w-6 h-6" />
+                    </button>
+                  </div>
+                  
+                  <div className="p-6">
+                    {(() => {
+                      const linkedParts = parts.filter(part => part.projectId === viewingProject.id);
+                      const linkedPartsTotal = linkedParts.reduce((sum, part) => sum + (part.total || 0), 0);
+                      const progress = viewingProject.budget > 0 ? (linkedPartsTotal / viewingProject.budget) * 100 : 0;
+                      
+                      const statusColors = {
+                        planning: darkMode ? 'bg-gray-600 text-gray-200' : 'bg-gray-200 text-gray-800',
+                        in_progress: darkMode ? 'bg-blue-600 text-blue-100' : 'bg-blue-100 text-blue-800',
+                        completed: darkMode ? 'bg-green-600 text-green-100' : 'bg-green-100 text-green-800',
+                        on_hold: darkMode ? 'bg-yellow-600 text-yellow-100' : 'bg-yellow-100 text-yellow-800'
+                      };
+                      
+                      const priorityColors = {
+                        low: darkMode ? 'text-green-400' : 'text-green-600',
+                        medium: darkMode ? 'text-yellow-400' : 'text-yellow-600',
+                        high: darkMode ? 'text-red-400' : 'text-red-600'
+                      };
+
+                      return (
+                        <>
+                          {/* Status Badge */}
+                          <div className="mb-6">
+                            <span className={`inline-block px-4 py-2 rounded-full text-sm font-medium ${
+                              statusColors[viewingProject.status]
+                            }`}>
+                              {viewingProject.status.replace('_', ' ').toUpperCase()}
+                            </span>
+                          </div>
+
+                          {/* Description */}
+                          {viewingProject.description && (
+                            <div className="mb-6">
+                              <h3 className={`text-lg font-semibold mb-2 ${
+                                darkMode ? 'text-gray-200' : 'text-gray-800'
+                              }`}>Description</h3>
+                              <p className={`text-base ${
+                                darkMode ? 'text-gray-400' : 'text-gray-600'
+                              }`}>
+                                {viewingProject.description}
+                              </p>
+                            </div>
+                          )}
+
+                          {/* Budget Progress */}
+                          <div className="mb-6">
+                            <h3 className={`text-lg font-semibold mb-3 ${
+                              darkMode ? 'text-gray-200' : 'text-gray-800'
+                            }`}>Budget Used</h3>
+                            <div className="flex justify-between items-center mb-2">
+                              <span className={`text-sm font-medium ${
+                                darkMode ? 'text-gray-300' : 'text-gray-700'
+                              }`}>
+                                ${linkedPartsTotal.toFixed(2)} / ${viewingProject.budget?.toFixed(2) || '0.00'}
+                              </span>
+                              <span className={`text-sm font-bold ${
+                                darkMode ? 'text-gray-200' : 'text-gray-900'
+                              }`}>
+                                {progress.toFixed(0)}%
+                              </span>
+                            </div>
+                            <div className={`w-full rounded-full h-4 ${
+                              darkMode ? 'bg-gray-700' : 'bg-gray-200'
+                            }`}>
+                              <div
+                                className={`h-4 rounded-full transition-all ${
+                                  progress > 90
+                                    ? 'bg-red-500'
+                                    : progress > 70
+                                    ? 'bg-yellow-500'
+                                    : 'bg-green-500'
+                                }`}
+                                style={{ width: `${Math.min(progress, 100)}%` }}
+                              />
+                            </div>
+                          </div>
+
+                          {/* Project Details Grid */}
+                          <div className={`grid grid-cols-2 gap-4 mb-6 p-4 rounded-lg ${
+                            darkMode ? 'bg-gray-700' : 'bg-gray-50'
+                          }`}>
+                            <div>
+                              <p className={`text-xs mb-1 ${
+                                darkMode ? 'text-gray-400' : 'text-gray-600'
+                              }`}>Priority</p>
+                              <p className={`text-lg font-bold ${priorityColors[viewingProject.priority]}`}>
+                                {viewingProject.priority?.toUpperCase()}
+                              </p>
+                            </div>
+                            <div>
+                              <p className={`text-xs mb-1 ${
+                                darkMode ? 'text-gray-400' : 'text-gray-600'
+                              }`}>Parts Linked</p>
+                              <p className={`text-lg font-bold ${
+                                darkMode ? 'text-gray-100' : 'text-gray-900'
+                              }`}>
+                                {linkedParts.length}
+                              </p>
+                            </div>
+                            <div>
+                              <p className={`text-xs mb-1 ${
+                                darkMode ? 'text-gray-400' : 'text-gray-600'
+                              }`}>Start Date</p>
+                              <p className={`text-sm font-medium ${
+                                darkMode ? 'text-gray-300' : 'text-gray-700'
+                              }`}>
+                                {viewingProject.start_date ? new Date(viewingProject.start_date).toLocaleDateString() : 'TBD'}
+                              </p>
+                            </div>
+                            <div>
+                              <p className={`text-xs mb-1 ${
+                                darkMode ? 'text-gray-400' : 'text-gray-600'
+                              }`}>Target Date</p>
+                              <p className={`text-sm font-medium ${
+                                darkMode ? 'text-gray-300' : 'text-gray-700'
+                              }`}>
+                                {viewingProject.target_date ? new Date(viewingProject.target_date).toLocaleDateString() : 'Not set'}
+                              </p>
+                            </div>
+                          </div>
+
+                          {/* Linked Parts List */}
+                          {linkedParts.length > 0 && (
+                            <div>
+                              <h3 className={`text-lg font-semibold mb-3 ${
+                                darkMode ? 'text-gray-200' : 'text-gray-800'
+                              }`}>
+                                Linked Parts ({linkedParts.length})
+                              </h3>
+                              <div className="space-y-2">
+                                {linkedParts.map((part) => (
+                                  <div 
+                                    key={part.id}
+                                    className={`p-3 rounded-lg border ${
+                                      darkMode ? 'bg-gray-700 border-gray-600' : 'bg-gray-50 border-gray-200'
+                                    }`}
+                                  >
+                                    <div className="flex justify-between items-start mb-2">
+                                      <div className="flex-1">
+                                        <h4 className={`font-medium ${
+                                          darkMode ? 'text-gray-100' : 'text-gray-900'
+                                        }`}>
+                                          {part.part}
+                                        </h4>
+                                        {part.vendor && (
+                                          <span className={`inline-block mt-1 px-2 py-0.5 rounded-full text-xs font-medium ${getVendorColor(part.vendor)}`}>
+                                            {part.vendor}
+                                          </span>
+                                        )}
+                                      </div>
+                                      <div className="text-right ml-4">
+                                        <p className={`text-lg font-bold ${
+                                          darkMode ? 'text-gray-100' : 'text-gray-900'
+                                        }`}>
+                                          ${part.total.toFixed(2)}
+                                        </p>
+                                        <div className={`text-xs ${
+                                          darkMode ? 'text-gray-400' : 'text-gray-600'
+                                        }`}>
+                                          {getStatusText(part)}
+                                        </div>
+                                      </div>
+                                    </div>
+                                    {part.partNumber && part.partNumber !== '-' && (
+                                      <p className={`text-xs font-mono ${
+                                        darkMode ? 'text-gray-400' : 'text-gray-600'
+                                      }`}>
+                                        Part #: {part.partNumber}
+                                      </p>
+                                    )}
+                                  </div>
+                                ))}
+                              </div>
+                            </div>
+                          )}
+
+                          {linkedParts.length === 0 && (
+                            <div className={`text-center py-8 rounded-lg ${
+                              darkMode ? 'bg-gray-700' : 'bg-gray-50'
+                            }`}>
+                              <Package className={`w-12 h-12 mx-auto mb-3 ${
+                                darkMode ? 'text-gray-600' : 'text-gray-400'
+                              }`} />
+                              <p className={`text-sm ${
+                                darkMode ? 'text-gray-400' : 'text-gray-600'
+                              }`}>
+                                No parts linked to this project yet
+                              </p>
+                            </div>
+                          )}
+
+                          {/* Action Buttons */}
+                          <div className="flex gap-3 mt-6 pt-6 border-t" style={{
+                            borderColor: darkMode ? '#374151' : '#e5e7eb'
+                          }}>
+                            <button
+                              onClick={() => {
+                                setEditingProject(viewingProject);
+                                setShowProjectDetailModal(false);
+                                setShowEditProjectModal(true);
+                                setViewingProject(null);
+                              }}
+                              className="flex-1 bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg font-medium transition-colors flex items-center justify-center gap-2"
+                            >
+                              <Edit2 className="w-4 h-4" />
+                              Edit Project
+                            </button>
+                            <button
+                              onClick={() => {
+                                setShowProjectDetailModal(false);
+                                setViewingProject(null);
+                              }}
+                              className={`px-6 py-3 rounded-lg font-medium transition-colors ${
+                                darkMode 
+                                  ? 'bg-gray-700 hover:bg-gray-600 text-gray-100' 
+                                  : 'bg-gray-200 hover:bg-gray-300 text-gray-800'
+                              }`}
+                            >
+                              Close
+                            </button>
+                          </div>
+                        </>
+                      );
+                    })()}
                   </div>
                 </div>
               </div>
