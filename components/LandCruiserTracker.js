@@ -1807,7 +1807,7 @@ const LandCruiserTracker = () => {
                   <th className={`px-6 py-4 text-left text-xs font-semibold uppercase tracking-wider ${
                     darkMode ? 'text-gray-300' : 'text-slate-700'
                   }`}>Part</th>
-                  <th className={`px-6 py-4 text-left text-xs font-semibold uppercase tracking-wider ${
+                  <th className={`hidden px-6 py-4 text-left text-xs font-semibold uppercase tracking-wider ${
                     darkMode ? 'text-gray-300' : 'text-slate-700'
                   }`}>Part #</th>
                   <th 
@@ -1875,7 +1875,7 @@ const LandCruiserTracker = () => {
                         darkMode ? 'text-gray-100' : 'text-slate-900'
                       }`}>{part.part}</div>
                     </td>
-                    <td className="px-6 py-4">
+                    <td className="hidden px-6 py-4">
                       {part.partNumber && part.partNumber !== '-' ? (
                         <div className={`text-sm font-mono ${
                           darkMode ? 'text-gray-300' : 'text-slate-600'
@@ -1897,9 +1897,9 @@ const LandCruiserTracker = () => {
                         }`}>—</div>
                       )}
                     </td>
-                    <td className="px-6 py-4">
+                    <td className="px-6 py-4 text-center">
                       {part.projectId ? (
-                        <span className={`inline-block px-3 py-1 rounded-full text-xs font-medium ${
+                        <span className={`inline-block px-3 py-1 rounded text-xs font-medium ${
                           darkMode ? 'bg-blue-900/50 text-blue-200' : 'bg-blue-100 text-blue-800'
                         }`}>
                           {projects.find(p => p.id === part.projectId)?.name || 'Unknown'}
@@ -2088,7 +2088,7 @@ const LandCruiserTracker = () => {
                       <span className={`text-sm font-medium flex-shrink-0 ${
                         darkMode ? 'text-gray-400' : 'text-slate-600'
                       }`}>Project</span>
-                      <span className={`inline-block px-3 py-1 rounded-full text-xs font-medium ${
+                      <span className={`inline-block px-3 py-1 rounded text-xs font-medium ${
                         darkMode ? 'bg-blue-900/50 text-blue-200' : 'bg-blue-100 text-blue-800'
                       }`}>
                         {projects.find(p => p.id === part.projectId)?.name || 'Unknown'}
