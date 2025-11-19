@@ -1,5 +1,5 @@
 import React, { useState, useMemo, useEffect } from 'react';
-import { Search, Package, DollarSign, TrendingUp, Truck, CheckCircle, Clock, XCircle, ChevronDown, Plus, X, ExternalLink, ChevronUp, Edit2, Trash2, Moon, Sun, Wrench, List, Target, Calendar } from 'lucide-react';
+import { Search, Package, DollarSign, TrendingUp, Truck, CheckCircle, Clock, XCircle, ChevronDown, Plus, X, ExternalLink, ChevronUp, Edit2, Trash2, Moon, Sun, Wrench, List, Target, Calendar, GripVertical } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 
 // Add Foundation One font
@@ -20,6 +20,8 @@ const LandCruiserTracker = () => {
   const [projects, setProjects] = useState([]);
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState('parts'); // 'parts' or 'projects'
+  const [draggedProject, setDraggedProject] = useState(null);
+  const [dragOverProject, setDragOverProject] = useState(null);
 
   // Load parts and projects from Supabase on mount
   useEffect(() => {
@@ -141,6 +143,7 @@ const LandCruiserTracker = () => {
       const { data, error } = await supabase
         .from('projects')
         .select('*')
+        .order('display_order', { ascending: true, nullsFirst: false })
         .order('id', { ascending: true });
 
       if (error) throw error;
@@ -253,6 +256,72 @@ const LandCruiserTracker = () => {
     } catch (error) {
       console.error('Error deleting project:', error);
       alert('Error deleting project');
+    }
+  };
+
+  // Drag and drop handlers for projects
+  const handleDragStart = (e, project) => {
+    setDraggedProject(project);
+    e.dataTransfer.effectAllowed = 'move';
+  };
+
+  const handleDragOver = (e, project) => {
+    e.preventDefault();
+    e.dataTransfer.dropEffect = 'move';
+    if (draggedProject && draggedProject.id !== project.id) {
+      setDragOverProject(project);
+    }
+  };
+
+  const handleDragLeave = () => {
+    setDragOverProject(null);
+  };
+
+  const handleDrop = (e, targetProject) => {
+    e.preventDefault();
+    
+    if (!draggedProject || draggedProject.id === targetProject.id) {
+      setDraggedProject(null);
+      setDragOverProject(null);
+      return;
+    }
+
+    const draggedIndex = projects.findIndex(p => p.id === draggedProject.id);
+    const targetIndex = projects.findIndex(p => p.id === targetProject.id);
+
+    const newProjects = [...projects];
+    const [removed] = newProjects.splice(draggedIndex, 1);
+    newProjects.splice(targetIndex, 0, removed);
+
+    setProjects(newProjects);
+    setDraggedProject(null);
+    setDragOverProject(null);
+
+    // Update display_order in database
+    updateProjectsOrder(newProjects);
+  };
+
+  const handleDragEnd = () => {
+    setDraggedProject(null);
+    setDragOverProject(null);
+  };
+
+  const updateProjectsOrder = async (orderedProjects) => {
+    try {
+      // Update each project with its new display order
+      const updates = orderedProjects.map((project, index) => ({
+        id: project.id,
+        display_order: index
+      }));
+
+      for (const update of updates) {
+        await supabase
+          .from('projects')
+          .update({ display_order: update.display_order })
+          .eq('id', update.id);
+      }
+    } catch (error) {
+      console.error('Error updating project order:', error);
     }
   };
 
@@ -2279,16 +2348,36 @@ const LandCruiserTracker = () => {
                 return (
                   <div
                     key={project.id}
+                    draggable
+                    onDragStart={(e) => handleDragStart(e, project)}
+                    onDragOver={(e) => handleDragOver(e, project)}
+                    onDragLeave={handleDragLeave}
+                    onDrop={(e) => handleDrop(e, project)}
+                    onDragEnd={handleDragEnd}
                     onClick={() => {
                       setViewingProject(project);
                       setShowProjectDetailModal(true);
                     }}
-                    className={`rounded-lg shadow-lg p-6 transition-all hover:shadow-xl cursor-pointer ${
-                      darkMode ? 'bg-gray-800' : 'bg-white'
-                    }`}
+                    className={`relative rounded-lg shadow-lg p-6 transition-all hover:shadow-xl cursor-pointer ${
+                      draggedProject?.id === project.id 
+                        ? 'opacity-50' 
+                        : dragOverProject?.id === project.id
+                          ? (darkMode ? 'ring-2 ring-blue-500' : 'ring-2 ring-blue-400')
+                          : ''
+                    } ${darkMode ? 'bg-gray-800' : 'bg-white'}`}
                   >
+                    {/* Drag Handle */}
+                    <div 
+                      className={`absolute top-2 left-2 cursor-grab active:cursor-grabbing ${
+                        darkMode ? 'text-gray-600 hover:text-gray-400' : 'text-gray-400 hover:text-gray-600'
+                      }`}
+                      title="Drag to reorder"
+                    >
+                      <GripVertical className="w-5 h-5" />
+                    </div>
+
                     {/* Project Header */}
-                    <div className="flex items-start justify-between mb-4">
+                    <div className="flex items-start justify-between mb-4 ml-6">
                       <div className="flex-1">
                         <h3 className={`text-xl font-bold mb-2 ${
                           darkMode ? 'text-gray-100' : 'text-gray-900'
