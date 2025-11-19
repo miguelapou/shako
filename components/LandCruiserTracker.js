@@ -1943,23 +1943,23 @@ const LandCruiserTracker = () => {
                       <select
                         value={part.projectId || ''}
                         onChange={(e) => updatePartProject(part.id, e.target.value ? parseInt(e.target.value) : null)}
-                        className={`px-3 py-1 rounded text-xs font-medium border transition-colors ${
+                        className={`px-2 py-1 rounded text-xs font-medium border transition-colors cursor-pointer ${
                           darkMode 
                             ? 'bg-gray-700 border-gray-600 text-gray-100 hover:border-blue-500' 
                             : 'bg-white border-gray-300 text-gray-900 hover:border-blue-400'
-                        }`}
+                        } ${part.projectId ? (darkMode ? 'bg-blue-900/30 text-blue-200' : 'bg-blue-50 text-blue-800') : ''}`}
                         style={{ 
-                          minWidth: '120px',
+                          maxWidth: '140px',
                           WebkitAppearance: 'none', 
                           appearance: 'none',
-                          backgroundImage: `url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e")`,
+                          backgroundImage: `url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='${darkMode ? '%23d1d5db' : '%234b5563'}' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e")`,
                           backgroundRepeat: 'no-repeat',
-                          backgroundPosition: 'right 0.5rem center',
-                          backgroundSize: '1em 1em',
-                          paddingRight: '2rem'
+                          backgroundPosition: 'right 0.25rem center',
+                          backgroundSize: '0.875em 0.875em',
+                          paddingRight: '1.5rem'
                         }}
                       >
-                        <option value="">No Project</option>
+                        <option value="">None</option>
                         {projects.map(project => (
                           <option key={project.id} value={project.id}>
                             {project.name}
@@ -2140,18 +2140,37 @@ const LandCruiserTracker = () => {
                   )}
 
                   {/* Project */}
-                  {part.projectId && (
-                    <div className="flex justify-between items-center gap-2">
-                      <span className={`text-sm font-medium flex-shrink-0 ${
-                        darkMode ? 'text-gray-400' : 'text-slate-600'
-                      }`}>Project</span>
-                      <span className={`inline-block px-3 py-1 rounded text-xs font-medium ${
-                        darkMode ? 'bg-blue-900/50 text-blue-200' : 'bg-blue-100 text-blue-800'
-                      }`}>
-                        {projects.find(p => p.id === part.projectId)?.name || 'Unknown'}
-                      </span>
-                    </div>
-                  )}
+                  <div className="flex justify-between items-center gap-2">
+                    <span className={`text-sm font-medium flex-shrink-0 ${
+                      darkMode ? 'text-gray-400' : 'text-slate-600'
+                    }`}>Project</span>
+                    <select
+                      value={part.projectId || ''}
+                      onChange={(e) => updatePartProject(part.id, e.target.value ? parseInt(e.target.value) : null)}
+                      className={`px-2 py-1 rounded text-xs font-medium border transition-colors cursor-pointer ${
+                        darkMode 
+                          ? 'bg-gray-600 border-gray-500 text-gray-100 hover:border-blue-500' 
+                          : 'bg-white border-gray-300 text-gray-900 hover:border-blue-400'
+                      } ${part.projectId ? (darkMode ? 'bg-blue-900/30 text-blue-200' : 'bg-blue-50 text-blue-800') : ''}`}
+                      style={{ 
+                        maxWidth: '160px',
+                        WebkitAppearance: 'none', 
+                        appearance: 'none',
+                        backgroundImage: `url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='${darkMode ? '%23d1d5db' : '%234b5563'}' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e")`,
+                        backgroundRepeat: 'no-repeat',
+                        backgroundPosition: 'right 0.25rem center',
+                        backgroundSize: '0.875em 0.875em',
+                        paddingRight: '1.5rem'
+                      }}
+                    >
+                      <option value="">None</option>
+                      {projects.map(project => (
+                        <option key={project.id} value={project.id}>
+                          {project.name}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
 
                   {/* Price Breakdown */}
                   <div className={`pt-3 border-t ${
@@ -2790,25 +2809,6 @@ const LandCruiserTracker = () => {
                         <label className={`block text-sm font-medium mb-2 ${
                           darkMode ? 'text-gray-300' : 'text-gray-700'
                         }`}>
-                          Spent ($)
-                        </label>
-                        <input
-                          type="number"
-                          step="0.01"
-                          value={editingProject.spent}
-                          onChange={(e) => setEditingProject({ ...editingProject, spent: e.target.value })}
-                          className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none ${
-                            darkMode 
-                              ? 'bg-gray-700 border-gray-600 text-gray-100' 
-                              : 'bg-white border-gray-300 text-gray-900'
-                          }`}
-                        />
-                      </div>
-
-                      <div>
-                        <label className={`block text-sm font-medium mb-2 ${
-                          darkMode ? 'text-gray-300' : 'text-gray-700'
-                        }`}>
                           Priority
                         </label>
                         <select
@@ -2965,7 +2965,6 @@ const LandCruiserTracker = () => {
                             name: editingProject.name,
                             description: editingProject.description,
                             budget: parseFloat(editingProject.budget),
-                            spent: parseFloat(editingProject.spent),
                             priority: editingProject.priority,
                             start_date: editingProject.start_date || null,
                             target_date: editingProject.target_date || null,
