@@ -2510,6 +2510,25 @@ const LandCruiserTracker = () => {
                       <GripVertical className="w-5 h-5" />
                     </div>
 
+                    {/* Edit Button - Top Right */}
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setEditingProject({
+                          ...project,
+                          start_date: project.start_date ? project.start_date.split('T')[0] : '',
+                          target_date: project.target_date ? project.target_date.split('T')[0] : ''
+                        });
+                        setShowEditProjectModal(true);
+                      }}
+                      className={`absolute top-2 right-2 p-1.5 rounded-md transition-colors ${
+                        darkMode ? 'hover:bg-gray-700 text-gray-500 hover:text-blue-400' : 'hover:bg-gray-100 text-gray-500 hover:text-blue-600'
+                      }`}
+                      title="Edit project"
+                    >
+                      <Edit2 className="w-3.5 h-3.5" />
+                    </button>
+
                     {/* Project Header */}
                     <div className="flex items-start justify-between mb-4 ml-6">
                       <div className="flex-1">
@@ -2523,33 +2542,6 @@ const LandCruiserTracker = () => {
                         }`}>
                           {project.status.replace('_', ' ').toUpperCase()}
                         </span>
-                      </div>
-                      <div className="flex gap-2" onClick={(e) => e.stopPropagation()}>
-                        <button
-                          onClick={() => {
-                            setEditingProject({
-                              ...project,
-                              start_date: project.start_date ? project.start_date.split('T')[0] : '',
-                              target_date: project.target_date ? project.target_date.split('T')[0] : ''
-                            });
-                            setShowEditProjectModal(true);
-                          }}
-                          className={`p-2 rounded-lg transition-colors ${
-                            darkMode ? 'hover:bg-gray-700 text-gray-400 hover:text-blue-400' : 'hover:bg-gray-100 text-gray-600 hover:text-blue-600'
-                          }`}
-                          title="Edit project"
-                        >
-                          <Edit2 className="w-4 h-4" />
-                        </button>
-                        <button
-                          onClick={() => deleteProject(project.id)}
-                          className={`p-2 rounded-lg transition-colors ${
-                            darkMode ? 'hover:bg-gray-700 text-gray-400 hover:text-red-400' : 'hover:bg-gray-100 text-gray-600 hover:text-red-600'
-                          }`}
-                          title="Delete project"
-                        >
-                          <Trash2 className="w-4 h-4" />
-                        </button>
                       </div>
                     </div>
 
