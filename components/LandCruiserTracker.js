@@ -51,7 +51,8 @@ const LandCruiserTracker = () => {
           shipping: parseFloat(part.shipping) || 0,
           duties: parseFloat(part.duties) || 0,
           total: parseFloat(part.total) || 0,
-          tracking: part.tracking || ''
+          tracking: part.tracking || '',
+          projectId: part.project_id || null
         }));
         setParts(formattedParts);
       } else {
@@ -307,7 +308,8 @@ const LandCruiserTracker = () => {
     shipping: '',
     duties: '',
     tracking: '',
-    status: 'pending'
+    status: 'pending',
+    projectId: null
   });
 
   const vendors = useMemo(() => {
@@ -464,7 +466,8 @@ const LandCruiserTracker = () => {
           shipping,
           duties,
           total,
-          tracking: editingPart.tracking
+          tracking: editingPart.tracking,
+          project_id: editingPart.projectId || null
         })
         .eq('id', editingPart.id);
       
@@ -483,7 +486,8 @@ const LandCruiserTracker = () => {
             shipping,
             duties,
             total,
-            tracking: editingPart.tracking
+            tracking: editingPart.tracking,
+            projectId: editingPart.projectId || null
           };
         }
         return part;
@@ -543,7 +547,8 @@ const LandCruiserTracker = () => {
           shipping,
           duties,
           total,
-          tracking: newPart.tracking
+          tracking: newPart.tracking,
+          project_id: newPart.projectId || null
         })
         .select()
         .single();
@@ -561,7 +566,8 @@ const LandCruiserTracker = () => {
         shipping,
         duties,
         total,
-        tracking: newPart.tracking
+        tracking: newPart.tracking,
+        projectId: newPart.projectId || null
       };
       
       setParts([...parts, partToAdd]);
@@ -574,7 +580,8 @@ const LandCruiserTracker = () => {
         shipping: '',
         duties: '',
         tracking: '',
-        status: 'pending'
+        status: 'pending',
+        projectId: null
       });
     } catch (error) {
       console.error('Error adding part:', error);
@@ -1176,6 +1183,30 @@ const LandCruiserTracker = () => {
                       darkMode={darkMode}
                     />
                   </div>
+
+                  <div>
+                    <label className={`block text-sm font-medium mb-2 ${
+                      darkMode ? 'text-gray-300' : 'text-gray-700'
+                    }`}>
+                      Project <span className={`text-xs font-normal ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>(optional)</span>
+                    </label>
+                    <select
+                      value={newPart.projectId || ''}
+                      onChange={(e) => setNewPart({ ...newPart, projectId: e.target.value ? parseInt(e.target.value) : null })}
+                      className={`w-full h-[42px] px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
+                        darkMode 
+                          ? 'bg-gray-700 border-gray-600 text-gray-100' 
+                          : 'bg-white border-gray-300 text-gray-900'
+                      }`}
+                    >
+                      <option value="">No Project</option>
+                      {projects.map(project => (
+                        <option key={project.id} value={project.id}>
+                          {project.name}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
                   
                   {(newPart.price || newPart.shipping || newPart.duties) && (
                     <div className={`md:col-span-2 border rounded-lg p-4 ${
@@ -1475,6 +1506,30 @@ const LandCruiserTracker = () => {
                       darkMode={darkMode}
                     />
                   </div>
+
+                  <div>
+                    <label className={`block text-sm font-medium mb-2 ${
+                      darkMode ? 'text-gray-300' : 'text-gray-700'
+                    }`}>
+                      Project <span className={`text-xs font-normal ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>(optional)</span>
+                    </label>
+                    <select
+                      value={editingPart.projectId || ''}
+                      onChange={(e) => setEditingPart({ ...editingPart, projectId: e.target.value ? parseInt(e.target.value) : null })}
+                      className={`w-full h-[42px] px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
+                        darkMode 
+                          ? 'bg-gray-700 border-gray-600 text-gray-100' 
+                          : 'bg-white border-gray-300 text-gray-900'
+                      }`}
+                    >
+                      <option value="">No Project</option>
+                      {projects.map(project => (
+                        <option key={project.id} value={project.id}>
+                          {project.name}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
                   
                   <div className={`md:col-span-2 border rounded-lg p-4 ${
                     darkMode 
@@ -1766,6 +1821,9 @@ const LandCruiserTracker = () => {
                       {getSortIcon('vendor')}
                     </div>
                   </th>
+                  <th className={`px-6 py-4 text-left text-xs font-semibold uppercase tracking-wider ${
+                    darkMode ? 'text-gray-300' : 'text-slate-700'
+                  }`}>Project</th>
                   <th 
                     onClick={() => handleSort('price')}
                     className={`px-6 py-4 text-right text-xs font-semibold uppercase tracking-wider cursor-pointer transition-colors ${
@@ -1832,6 +1890,19 @@ const LandCruiserTracker = () => {
                       {part.vendor ? (
                         <span className={`inline-block px-3 py-1 rounded-full text-sm font-medium ${getVendorColor(part.vendor)}`}>
                           {part.vendor}
+                        </span>
+                      ) : (
+                        <div className={`text-sm text-center ${
+                          darkMode ? 'text-gray-600' : 'text-slate-400'
+                        }`}>—</div>
+                      )}
+                    </td>
+                    <td className="px-6 py-4">
+                      {part.projectId ? (
+                        <span className={`inline-block px-3 py-1 rounded-full text-xs font-medium ${
+                          darkMode ? 'bg-blue-900/50 text-blue-200' : 'bg-blue-100 text-blue-800'
+                        }`}>
+                          {projects.find(p => p.id === part.projectId)?.name || 'Unknown'}
                         </span>
                       ) : (
                         <div className={`text-sm text-center ${
@@ -2007,6 +2078,20 @@ const LandCruiserTracker = () => {
                       }`}>Vendor</span>
                       <span className={`inline-block px-3 py-1 rounded-full text-sm font-medium ${getVendorColor(part.vendor)}`}>
                         {part.vendor}
+                      </span>
+                    </div>
+                  )}
+
+                  {/* Project */}
+                  {part.projectId && (
+                    <div className="flex justify-between items-center gap-2">
+                      <span className={`text-sm font-medium flex-shrink-0 ${
+                        darkMode ? 'text-gray-400' : 'text-slate-600'
+                      }`}>Project</span>
+                      <span className={`inline-block px-3 py-1 rounded-full text-xs font-medium ${
+                        darkMode ? 'bg-blue-900/50 text-blue-200' : 'bg-blue-100 text-blue-800'
+                      }`}>
+                        {projects.find(p => p.id === part.projectId)?.name || 'Unknown'}
                       </span>
                     </div>
                   )}
@@ -2270,6 +2355,54 @@ const LandCruiserTracker = () => {
                         </span>
                       </div>
                     </div>
+
+                    {/* Linked Parts */}
+                    {(() => {
+                      const linkedParts = parts.filter(part => part.projectId === project.id);
+                      if (linkedParts.length > 0) {
+                        return (
+                          <div className={`mt-4 pt-4 border-t ${
+                            darkMode ? 'border-gray-600' : 'border-gray-200'
+                          }`}>
+                            <div className="flex items-center justify-between mb-2">
+                              <span className={`text-sm font-semibold ${
+                                darkMode ? 'text-gray-300' : 'text-gray-700'
+                              }`}>
+                                Linked Parts ({linkedParts.length})
+                              </span>
+                              <span className={`text-xs font-medium ${
+                                darkMode ? 'text-gray-400' : 'text-gray-600'
+                              }`}>
+                                ${linkedParts.reduce((sum, part) => sum + part.total, 0).toFixed(2)}
+                              </span>
+                            </div>
+                            <div className="space-y-1">
+                              {linkedParts.slice(0, 3).map((part) => (
+                                <div 
+                                  key={part.id}
+                                  className={`text-xs px-2 py-1 rounded ${
+                                    darkMode ? 'bg-gray-700 text-gray-300' : 'bg-gray-100 text-gray-700'
+                                  }`}
+                                >
+                                  <div className="flex justify-between items-center">
+                                    <span className="truncate flex-1">{part.part}</span>
+                                    <span className="ml-2 font-medium">${part.total.toFixed(2)}</span>
+                                  </div>
+                                </div>
+                              ))}
+                              {linkedParts.length > 3 && (
+                                <div className={`text-xs text-center py-1 ${
+                                  darkMode ? 'text-gray-400' : 'text-gray-600'
+                                }`}>
+                                  +{linkedParts.length - 3} more
+                                </div>
+                              )}
+                            </div>
+                          </div>
+                        );
+                      }
+                      return null;
+                    })()}
                   </div>
                 );
               })}
