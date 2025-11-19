@@ -1888,7 +1888,7 @@ const LandCruiserTracker = () => {
                     </td>
                     <td className="px-6 py-4">
                       {part.vendor ? (
-                        <span className={`inline-block px-3 py-1 rounded-full text-sm font-medium ${getVendorColor(part.vendor)}`}>
+                        <span className={`inline-block px-3 py-1 rounded-full text-sm font-medium text-center ${getVendorColor(part.vendor)}`}>
                           {part.vendor}
                         </span>
                       ) : (
@@ -2194,7 +2194,11 @@ const LandCruiserTracker = () => {
             {/* Projects Grid */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {projects.map((project) => {
-                const progress = project.budget > 0 ? (project.spent / project.budget) * 100 : 0;
+                // Calculate spent based on linked parts
+                const linkedPartsTotal = parts
+                  .filter(part => part.projectId === project.id)
+                  .reduce((sum, part) => sum + (part.total || 0), 0);
+                const progress = project.budget > 0 ? (linkedPartsTotal / project.budget) * 100 : 0;
                 const statusColors = {
                   planning: darkMode ? 'bg-gray-600 text-gray-200' : 'bg-gray-200 text-gray-800',
                   in_progress: darkMode ? 'bg-blue-600 text-blue-100' : 'bg-blue-100 text-blue-800',
@@ -2303,7 +2307,7 @@ const LandCruiserTracker = () => {
                         <p className={`text-lg font-bold ${
                           darkMode ? 'text-gray-100' : 'text-gray-900'
                         }`}>
-                          ${project.spent?.toFixed(2) || '0.00'}
+                          ${linkedPartsTotal.toFixed(2)}
                         </p>
                       </div>
                       <div>
