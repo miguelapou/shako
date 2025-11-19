@@ -2527,7 +2527,11 @@ const LandCruiserTracker = () => {
                       <div className="flex gap-2" onClick={(e) => e.stopPropagation()}>
                         <button
                           onClick={() => {
-                            setEditingProject(project);
+                            setEditingProject({
+                              ...project,
+                              start_date: project.start_date ? project.start_date.split('T')[0] : '',
+                              target_date: project.target_date ? project.target_date.split('T')[0] : ''
+                            });
                             setShowEditProjectModal(true);
                           }}
                           className={`p-2 rounded-lg transition-colors ${
@@ -3489,7 +3493,11 @@ const LandCruiserTracker = () => {
                           }}>
                             <button
                               onClick={() => {
-                                setEditingProject(viewingProject);
+                                setEditingProject({
+                                  ...viewingProject,
+                                  start_date: viewingProject.start_date ? viewingProject.start_date.split('T')[0] : '',
+                                  target_date: viewingProject.target_date ? viewingProject.target_date.split('T')[0] : ''
+                                });
                                 setShowProjectDetailModal(false);
                                 setShowEditProjectModal(true);
                                 setViewingProject(null);
