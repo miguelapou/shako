@@ -2094,17 +2094,18 @@ const LandCruiserTracker = () => {
           </div>
 
           {/* Mobile Card View - Visible only on mobile */}
-          <div className="md:hidden space-y-6 p-4">
-            {filteredParts.map((part) => (
-              <div 
-                key={part.id}
-                onClick={() => openEditModal(part)}
-                className={`rounded-lg shadow-lg p-6 transition-all hover:shadow-xl cursor-pointer ${
-                  darkMode 
-                    ? 'bg-gray-800' 
-                    : 'bg-white'
-                }`}
-              >
+          <div className="md:hidden px-4 py-6">
+            <div className="space-y-6">
+              {filteredParts.map((part) => (
+                <div 
+                  key={part.id}
+                  onClick={() => openEditModal(part)}
+                  className={`rounded-lg shadow-lg p-6 transition-all hover:shadow-xl cursor-pointer ${
+                    darkMode 
+                      ? 'bg-gray-800' 
+                      : 'bg-white'
+                  }`}
+                >
                 {/* Card Header */}
                 <div className="flex items-start justify-between mb-4">
                   <div className="flex-1">
@@ -2224,6 +2225,7 @@ const LandCruiserTracker = () => {
                 )}
               </div>
             ))}
+            </div>
           </div>
           
           
