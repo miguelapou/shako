@@ -864,7 +864,7 @@ const LandCruiserTracker = () => {
   const getStatusText = (part) => {
     if (part.delivered) return 'Delivered';
     if (part.shipped) return 'Shipped';
-    if (part.purchased) return 'Purchased';
+    if (part.purchased) return 'Ordered';
     return 'Pending';
   };
 
@@ -1109,7 +1109,7 @@ const LandCruiserTracker = () => {
                 }`}
               >
                 <ShoppingCart className={`w-4 h-4 ${darkMode ? 'text-yellow-400' : 'text-yellow-600'}`} />
-                <span>Purchased</span>
+                <span>Ordered</span>
               </button>
               <button
                 onClick={(e) => {
@@ -1475,7 +1475,7 @@ const LandCruiserTracker = () => {
                       style={{ width: '100%', WebkitAppearance: 'none', appearance: 'none', backgroundImage: `url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e")`, backgroundRepeat: 'no-repeat', backgroundPosition: 'right 1rem center', backgroundSize: '1.25em 1.25em', paddingRight: '2.5rem' }}
                     >
                       <option value="pending">Pending</option>
-                      <option value="purchased">Purchased</option>
+                      <option value="purchased">Ordered</option>
                       <option value="shipped">Shipped</option>
                       <option value="delivered">Delivered</option>
                     </select>
@@ -1817,7 +1817,7 @@ const LandCruiserTracker = () => {
                       style={{ width: '100%', WebkitAppearance: 'none', appearance: 'none', backgroundImage: `url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e")`, backgroundRepeat: 'no-repeat', backgroundPosition: 'right 1rem center', backgroundSize: '1.25em 1.25em', paddingRight: '2.5rem' }}
                     >
                       <option value="pending">Pending</option>
-                      <option value="purchased">Purchased</option>
+                      <option value="purchased">Ordered</option>
                       <option value="shipped">Shipped</option>
                       <option value="delivered">Delivered</option>
                     </select>
