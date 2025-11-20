@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useEffect } from 'react';
+import React, { useState, useMemo, useEffect, useRef } from 'react';
 import { Search, Package, DollarSign, TrendingUp, Truck, CheckCircle, Clock, XCircle, ChevronDown, Plus, X, ExternalLink, ChevronUp, Edit2, Trash2, Moon, Sun, Wrench, List, Target, Calendar, GripVertical, ShoppingCart, Car } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 
@@ -86,6 +86,10 @@ const LandCruiserTracker = () => {
   const [draggedProject, setDraggedProject] = useState(null);
   const [dragOverProject, setDragOverProject] = useState(null);
 
+  // Refs for tab underline animation
+  const tabRefs = useRef({});
+  const [underlineStyle, setUnderlineStyle] = useState({ left: 0, width: 0 });
+
   // Vehicle modal states
   const [showAddVehicleModal, setShowAddVehicleModal] = useState(false);
   const [showEditVehicleModal, setShowEditVehicleModal] = useState(false);
@@ -110,6 +114,24 @@ const LandCruiserTracker = () => {
     loadProjects();
     loadVehicles();
   }, []);
+
+  // Update underline position when active tab changes
+  useEffect(() => {
+    const updateUnderline = () => {
+      const activeTabElement = tabRefs.current[activeTab];
+      if (activeTabElement) {
+        const { offsetLeft, offsetWidth } = activeTabElement;
+        setUnderlineStyle({
+          left: offsetLeft,
+          width: offsetWidth
+        });
+      }
+    };
+
+    // Small delay to ensure DOM is ready
+    const timer = setTimeout(updateUnderline, 0);
+    return () => clearTimeout(timer);
+  }, [activeTab]);
 
   const loadParts = async () => {
     try {
@@ -1341,8 +1363,9 @@ const LandCruiserTracker = () => {
         <div className={`mb-6 border-b ${
           darkMode ? 'border-gray-700' : 'border-gray-200'
         }`}>
-          <div className="flex">
+          <div className="flex relative">
             <button
+              ref={(el) => (tabRefs.current['projects'] = el)}
               onClick={() => handleTabChange('projects')}
               className={`flex items-center gap-2 px-6 py-3 font-medium transition-all relative ${
                 activeTab === 'projects'
@@ -1356,13 +1379,9 @@ const LandCruiserTracker = () => {
             >
               <Wrench className="w-5 h-5" />
               <span>Projects</span>
-              {activeTab === 'projects' && (
-                <div className={`absolute bottom-0 left-0 right-2 h-0.5 ${
-                  darkMode ? 'bg-blue-400' : 'bg-blue-600'
-                }`} />
-              )}
             </button>
             <button
+              ref={(el) => (tabRefs.current['parts'] = el)}
               onClick={() => handleTabChange('parts')}
               className={`flex items-center gap-2 px-6 py-3 font-medium transition-all relative ${
                 activeTab === 'parts'
@@ -1376,13 +1395,9 @@ const LandCruiserTracker = () => {
             >
               <Package className="w-5 h-5" />
               <span>Parts</span>
-              {activeTab === 'parts' && (
-                <div className={`absolute bottom-0 left-2 right-2 h-0.5 ${
-                  darkMode ? 'bg-blue-400' : 'bg-blue-600'
-                }`} />
-              )}
             </button>
             <button
+              ref={(el) => (tabRefs.current['vehicles'] = el)}
               onClick={() => handleTabChange('vehicles')}
               className={`flex items-center gap-2 px-6 py-3 font-medium transition-all relative ${
                 activeTab === 'vehicles'
@@ -1396,12 +1411,17 @@ const LandCruiserTracker = () => {
             >
               <Car className="w-5 h-5" />
               <span>Vehicles</span>
-              {activeTab === 'vehicles' && (
-                <div className={`absolute bottom-0 left-2 right-3 h-0.5 ${
-                  darkMode ? 'bg-blue-400' : 'bg-blue-600'
-                }`} />
-              )}
             </button>
+            {/* Animated underline */}
+            <div
+              className={`absolute bottom-0 h-0.5 transition-all duration-300 ease-out ${
+                darkMode ? 'bg-blue-400' : 'bg-blue-600'
+              }`}
+              style={{
+                left: `${underlineStyle.left}px`,
+                width: `${underlineStyle.width}px`
+              }}
+            />
           </div>
         </div>
 
