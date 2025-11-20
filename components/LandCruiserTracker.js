@@ -1799,6 +1799,16 @@ const LandCruiserTracker = () => {
               <div className="p-6">
                 <div className="flex gap-3">
                   <button
+                    onClick={() => setShowAddModal(false)}
+                    className={`flex-1 px-6 py-3 rounded-lg font-medium transition-colors ${
+                      darkMode 
+                        ? 'bg-gray-700 hover:bg-gray-600 text-gray-100' 
+                        : 'bg-gray-200 hover:bg-gray-300 text-gray-800'
+                    }`}
+                  >
+                    Cancel
+                  </button>
+                  <button
                     onClick={addNewPart}
                     disabled={!newPart.part}
                     className={`flex-1 px-6 py-3 rounded-lg font-medium transition-colors ${
@@ -1810,16 +1820,6 @@ const LandCruiserTracker = () => {
                     }`}
                   >
                     Add Part
-                  </button>
-                  <button
-                    onClick={() => setShowAddModal(false)}
-                    className={`flex-1 px-6 py-3 rounded-lg font-medium transition-colors ${
-                      darkMode 
-                        ? 'bg-gray-700 hover:bg-gray-600 text-gray-100' 
-                        : 'bg-gray-200 hover:bg-gray-300 text-gray-800'
-                    }`}
-                  >
-                    Cancel
                   </button>
                 </div>
               </div>
