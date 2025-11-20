@@ -3667,7 +3667,8 @@ const LandCruiserTracker = () => {
                             priority: editingProject.priority,
                             start_date: editingProject.start_date && editingProject.start_date.trim() !== '' ? editingProject.start_date : null,
                             target_date: editingProject.target_date && editingProject.target_date.trim() !== '' ? editingProject.target_date : null,
-                            status: editingProject.status
+                            status: editingProject.status,
+                            vehicle_id: editingProject.vehicle_id || null
                           });
                           setShowEditProjectModal(false);
                           setEditingProject(null);
