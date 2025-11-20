@@ -1340,13 +1340,13 @@ const LandCruiserTracker = () => {
       <div className="max-w-7xl mx-auto">
         {/* Header */}
         <div className="mb-6 sm:mb-8">
-          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+          <div className="flex items-start justify-between">
             <div>
               <h1 className={`text-2xl sm:text-3xl lg:text-4xl font-bold mb-2 ${
                 darkMode ? 'text-gray-100' : 'text-slate-800'
               }`} style={{ fontFamily: "'FoundationOne', 'Courier New', monospace" }}>🗻 TAKUMI GARAGE</h1>
             </div>
-            <div className="flex items-center gap-3">
+            <div className="flex items-center gap-2 sm:gap-3">
               <button
                 onClick={() => setDarkMode(!darkMode)}
                 className={`p-2 sm:p-3 rounded-lg shadow-md transition-colors ${
@@ -1364,10 +1364,12 @@ const LandCruiserTracker = () => {
                   else if (activeTab === 'projects') setShowAddProjectModal(true);
                   else if (activeTab === 'vehicles') setShowAddVehicleModal(true);
                 }}
-                className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-4 sm:px-6 py-2 sm:py-3 rounded-lg shadow-md transition-colors font-medium text-sm sm:text-base whitespace-nowrap"
+                className={`p-2 sm:p-3 rounded-lg shadow-md transition-colors bg-blue-600 hover:bg-blue-700 text-white ${
+                  darkMode ? '' : ''
+                }`}
+                title="Add New"
               >
-                <Plus className="w-4 h-4 sm:w-5 sm:h-5" />
-                Add New
+                <Plus className="w-5 h-5" />
               </button>
             </div>
           </div>
