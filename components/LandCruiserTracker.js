@@ -3994,19 +3994,19 @@ const LandCruiserTracker = () => {
                         {vehicle.year ? `${vehicle.year} ` : ''}{vehicle.name}
                       </p>
                     )}
-                    <div className="flex items-center gap-2 flex-wrap">
-                      {vehicle.license_plate && (
-                        <span className={`inline-block px-3 py-1 rounded text-sm font-medium ${
-                          darkMode ? 'bg-blue-600 text-blue-100' : 'bg-blue-100 text-blue-800'
-                        }`}>
-                          {vehicle.license_plate}
-                        </span>
-                      )}
+                    <div className="flex items-center justify-between gap-2 flex-wrap">
                       {vehicle.vin && (
                         <span className={`inline-block px-3 py-1 rounded text-xs font-mono ${
                           darkMode ? 'bg-gray-700 text-gray-300' : 'bg-gray-100 text-gray-700'
                         }`}>
                           VIN: {vehicle.vin}
+                        </span>
+                      )}
+                      {vehicle.license_plate && (
+                        <span className={`inline-block px-3 py-1 rounded text-sm font-medium ${
+                          darkMode ? 'bg-blue-600 text-blue-100' : 'bg-blue-100 text-blue-800'
+                        }`}>
+                          {vehicle.license_plate}
                         </span>
                       )}
                     </div>
