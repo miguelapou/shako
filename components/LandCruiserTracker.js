@@ -118,6 +118,7 @@ const LandCruiserTracker = () => {
   const [showEditVehicleModal, setShowEditVehicleModal] = useState(false);
   const [editingVehicle, setEditingVehicle] = useState(null);
   const [newVehicle, setNewVehicle] = useState({
+    nickname: '',
     name: '',
     year: '',
     license_plate: '',
@@ -129,7 +130,8 @@ const LandCruiserTracker = () => {
     oil_type: '',
     oil_capacity: '',
     oil_brand: '',
-    drain_plug: ''
+    drain_plug: '',
+    battery: ''
   });
 
   // Load parts and projects from Supabase on mount
@@ -3757,11 +3759,18 @@ const LandCruiserTracker = () => {
 
                   {/* Vehicle Header */}
                   <div className="mb-4">
-                    <h3 className={`text-xl font-bold mb-2 ${
+                    <h3 className={`text-xl font-bold mb-1 ${
                       darkMode ? 'text-gray-100' : 'text-gray-900'
                     }`}>
-                      {vehicle.year ? `${vehicle.year} ` : ''}{vehicle.name}
+                      {vehicle.nickname || (vehicle.year ? `${vehicle.year} ` : '') + vehicle.name}
                     </h3>
+                    {vehicle.nickname && (
+                      <p className={`text-sm mb-2 ${
+                        darkMode ? 'text-gray-400' : 'text-gray-600'
+                      }`}>
+                        {vehicle.year ? `${vehicle.year} ` : ''}{vehicle.name}
+                      </p>
+                    )}
                     {vehicle.license_plate && (
                       <span className={`inline-block px-3 py-1 rounded-full text-sm font-medium ${
                         darkMode ? 'bg-blue-600 text-blue-100' : 'bg-blue-100 text-blue-800'
@@ -3946,38 +3955,61 @@ const LandCruiserTracker = () => {
                         <label className={`block text-sm font-medium mb-2 ${
                           darkMode ? 'text-gray-300' : 'text-gray-700'
                         }`}>
-                          Vehicle Name *
+                          Nickname *
                         </label>
                         <input
                           type="text"
-                          value={newVehicle.name}
-                          onChange={(e) => setNewVehicle({ ...newVehicle, name: e.target.value })}
+                          value={newVehicle.nickname}
+                          onChange={(e) => setNewVehicle({ ...newVehicle, nickname: e.target.value })}
                           className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
                             darkMode 
                               ? 'bg-gray-700 border-gray-600 text-gray-100 placeholder-gray-400' 
                               : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400'
                           }`}
-                          placeholder="e.g., Toyota Land Cruiser FJ62"
+                          placeholder=""
                         />
                       </div>
 
-                      <div>
-                        <label className={`block text-sm font-medium mb-2 ${
-                          darkMode ? 'text-gray-300' : 'text-gray-700'
-                        }`}>
-                          Year
-                        </label>
-                        <input
-                          type="text"
-                          value={newVehicle.year}
-                          onChange={(e) => setNewVehicle({ ...newVehicle, year: e.target.value })}
-                          className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
-                            darkMode 
-                              ? 'bg-gray-700 border-gray-600 text-gray-100 placeholder-gray-400' 
-                              : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400'
-                          }`}
-                          placeholder="e.g., 1990"
-                        />
+                      <div className="grid grid-cols-2 gap-4">
+                        <div>
+                          <label className={`block text-sm font-medium mb-2 ${
+                            darkMode ? 'text-gray-300' : 'text-gray-700'
+                          }`}>
+                            Year
+                          </label>
+                          <input
+                            type="number"
+                            value={newVehicle.year}
+                            onChange={(e) => setNewVehicle({ ...newVehicle, year: e.target.value })}
+                            className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
+                              darkMode 
+                                ? 'bg-gray-700 border-gray-600 text-gray-100 placeholder-gray-400' 
+                                : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400'
+                            }`}
+                            placeholder=""
+                            min="1900"
+                            max="2100"
+                          />
+                        </div>
+
+                        <div>
+                          <label className={`block text-sm font-medium mb-2 ${
+                            darkMode ? 'text-gray-300' : 'text-gray-700'
+                          }`}>
+                            Vehicle Name
+                          </label>
+                          <input
+                            type="text"
+                            value={newVehicle.name}
+                            onChange={(e) => setNewVehicle({ ...newVehicle, name: e.target.value })}
+                            className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
+                              darkMode 
+                                ? 'bg-gray-700 border-gray-600 text-gray-100 placeholder-gray-400' 
+                                : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400'
+                            }`}
+                            placeholder=""
+                          />
+                        </div>
                       </div>
 
                       <div className="grid grid-cols-2 gap-4">
@@ -3996,7 +4028,7 @@ const LandCruiserTracker = () => {
                                 ? 'bg-gray-700 border-gray-600 text-gray-100 placeholder-gray-400' 
                                 : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400'
                             }`}
-                            placeholder="ABC-1234"
+                            placeholder=""
                           />
                         </div>
 
@@ -4015,7 +4047,7 @@ const LandCruiserTracker = () => {
                                 ? 'bg-gray-700 border-gray-600 text-gray-100 placeholder-gray-400' 
                                 : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400'
                             }`}
-                            placeholder="17 characters"
+                            placeholder=""
                           />
                         </div>
                       </div>
@@ -4035,7 +4067,7 @@ const LandCruiserTracker = () => {
                               ? 'bg-gray-700 border-gray-600 text-gray-100 placeholder-gray-400' 
                               : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400'
                           }`}
-                          placeholder="Policy number"
+                          placeholder=""
                         />
                       </div>
 
@@ -4063,7 +4095,7 @@ const LandCruiserTracker = () => {
                                   ? 'bg-gray-700 border-gray-600 text-gray-100 placeholder-gray-400' 
                                   : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400'
                               }`}
-                              placeholder="Part number"
+                              placeholder=""
                             />
                           </div>
 
@@ -4082,9 +4114,37 @@ const LandCruiserTracker = () => {
                                   ? 'bg-gray-700 border-gray-600 text-gray-100 placeholder-gray-400' 
                                   : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400'
                               }`}
-                              placeholder="Part number"
+                              placeholder=""
                             />
                           </div>
+                        </div>
+                      </div>
+
+                      <div className={`pt-4 border-t ${
+                        darkMode ? 'border-gray-700' : 'border-gray-200'
+                      }`}>
+                        <h3 className={`text-lg font-semibold mb-3 ${
+                          darkMode ? 'text-gray-200' : 'text-gray-800'
+                        }`}>
+                          Battery
+                        </h3>
+                        <div>
+                          <label className={`block text-sm font-medium mb-2 ${
+                            darkMode ? 'text-gray-300' : 'text-gray-700'
+                          }`}>
+                            Battery Type
+                          </label>
+                          <input
+                            type="text"
+                            value={newVehicle.battery}
+                            onChange={(e) => setNewVehicle({ ...newVehicle, battery: e.target.value })}
+                            className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
+                              darkMode 
+                                ? 'bg-gray-700 border-gray-600 text-gray-100 placeholder-gray-400' 
+                                : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400'
+                            }`}
+                            placeholder=""
+                          />
                         </div>
                       </div>
 
@@ -4112,7 +4172,7 @@ const LandCruiserTracker = () => {
                                   ? 'bg-gray-700 border-gray-600 text-gray-100 placeholder-gray-400' 
                                   : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400'
                               }`}
-                              placeholder="Part number"
+                              placeholder=""
                             />
                           </div>
 
@@ -4132,7 +4192,7 @@ const LandCruiserTracker = () => {
                                     ? 'bg-gray-700 border-gray-600 text-gray-100 placeholder-gray-400' 
                                     : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400'
                                 }`}
-                                placeholder="e.g., 10W-30"
+                                placeholder=""
                               />
                             </div>
 
@@ -4151,7 +4211,7 @@ const LandCruiserTracker = () => {
                                     ? 'bg-gray-700 border-gray-600 text-gray-100 placeholder-gray-400' 
                                     : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400'
                                 }`}
-                                placeholder="e.g., 6.5 quarts"
+                                placeholder=""
                               />
                             </div>
                           </div>
@@ -4172,7 +4232,7 @@ const LandCruiserTracker = () => {
                                     ? 'bg-gray-700 border-gray-600 text-gray-100 placeholder-gray-400' 
                                     : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400'
                                 }`}
-                                placeholder="e.g., Mobil 1"
+                                placeholder=""
                               />
                             </div>
 
@@ -4191,7 +4251,7 @@ const LandCruiserTracker = () => {
                                     ? 'bg-gray-700 border-gray-600 text-gray-100 placeholder-gray-400' 
                                     : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400'
                                 }`}
-                                placeholder="e.g., 14mm"
+                                placeholder=""
                               />
                             </div>
                           </div>
@@ -4212,8 +4272,8 @@ const LandCruiserTracker = () => {
                       </button>
                       <button
                         onClick={async () => {
-                          if (!newVehicle.name) {
-                            alert('Please enter a vehicle name');
+                          if (!newVehicle.nickname) {
+                            alert('Please enter a nickname');
                             return;
                           }
                           await addVehicle(newVehicle);
@@ -4284,38 +4344,61 @@ const LandCruiserTracker = () => {
                         <label className={`block text-sm font-medium mb-2 ${
                           darkMode ? 'text-gray-300' : 'text-gray-700'
                         }`}>
-                          Vehicle Name *
+                          Nickname *
                         </label>
                         <input
                           type="text"
-                          value={editingVehicle.name}
-                          onChange={(e) => setEditingVehicle({ ...editingVehicle, name: e.target.value })}
+                          value={editingVehicle.nickname || ''}
+                          onChange={(e) => setEditingVehicle({ ...editingVehicle, nickname: e.target.value })}
                           className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
                             darkMode 
                               ? 'bg-gray-700 border-gray-600 text-gray-100 placeholder-gray-400' 
                               : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400'
                           }`}
-                          placeholder="e.g., Toyota Land Cruiser FJ62"
+                          placeholder=""
                         />
                       </div>
 
-                      <div>
-                        <label className={`block text-sm font-medium mb-2 ${
-                          darkMode ? 'text-gray-300' : 'text-gray-700'
-                        }`}>
-                          Year
-                        </label>
-                        <input
-                          type="text"
-                          value={editingVehicle.year || ''}
-                          onChange={(e) => setEditingVehicle({ ...editingVehicle, year: e.target.value })}
-                          className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
-                            darkMode 
-                              ? 'bg-gray-700 border-gray-600 text-gray-100 placeholder-gray-400' 
-                              : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400'
-                          }`}
-                          placeholder="e.g., 1990"
-                        />
+                      <div className="grid grid-cols-2 gap-4">
+                        <div>
+                          <label className={`block text-sm font-medium mb-2 ${
+                            darkMode ? 'text-gray-300' : 'text-gray-700'
+                          }`}>
+                            Year
+                          </label>
+                          <input
+                            type="number"
+                            value={editingVehicle.year || ''}
+                            onChange={(e) => setEditingVehicle({ ...editingVehicle, year: e.target.value })}
+                            className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
+                              darkMode 
+                                ? 'bg-gray-700 border-gray-600 text-gray-100 placeholder-gray-400' 
+                                : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400'
+                            }`}
+                            placeholder=""
+                            min="1900"
+                            max="2100"
+                          />
+                        </div>
+
+                        <div>
+                          <label className={`block text-sm font-medium mb-2 ${
+                            darkMode ? 'text-gray-300' : 'text-gray-700'
+                          }`}>
+                            Vehicle Name
+                          </label>
+                          <input
+                            type="text"
+                            value={editingVehicle.name}
+                            onChange={(e) => setEditingVehicle({ ...editingVehicle, name: e.target.value })}
+                            className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
+                              darkMode 
+                                ? 'bg-gray-700 border-gray-600 text-gray-100 placeholder-gray-400' 
+                                : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400'
+                            }`}
+                            placeholder=""
+                          />
+                        </div>
                       </div>
 
                       <div className="grid grid-cols-2 gap-4">
@@ -4334,7 +4417,7 @@ const LandCruiserTracker = () => {
                                 ? 'bg-gray-700 border-gray-600 text-gray-100 placeholder-gray-400' 
                                 : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400'
                             }`}
-                            placeholder="ABC-1234"
+                            placeholder=""
                           />
                         </div>
 
@@ -4353,7 +4436,7 @@ const LandCruiserTracker = () => {
                                 ? 'bg-gray-700 border-gray-600 text-gray-100 placeholder-gray-400' 
                                 : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400'
                             }`}
-                            placeholder="17 characters"
+                            placeholder=""
                           />
                         </div>
                       </div>
@@ -4373,7 +4456,7 @@ const LandCruiserTracker = () => {
                               ? 'bg-gray-700 border-gray-600 text-gray-100 placeholder-gray-400' 
                               : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400'
                           }`}
-                          placeholder="Policy number"
+                          placeholder=""
                         />
                       </div>
 
@@ -4401,7 +4484,7 @@ const LandCruiserTracker = () => {
                                   ? 'bg-gray-700 border-gray-600 text-gray-100 placeholder-gray-400' 
                                   : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400'
                               }`}
-                              placeholder="Part number"
+                              placeholder=""
                             />
                           </div>
 
@@ -4420,9 +4503,37 @@ const LandCruiserTracker = () => {
                                   ? 'bg-gray-700 border-gray-600 text-gray-100 placeholder-gray-400' 
                                   : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400'
                               }`}
-                              placeholder="Part number"
+                              placeholder=""
                             />
                           </div>
+                        </div>
+                      </div>
+
+                      <div className={`pt-4 border-t ${
+                        darkMode ? 'border-gray-700' : 'border-gray-200'
+                      }`}>
+                        <h3 className={`text-lg font-semibold mb-3 ${
+                          darkMode ? 'text-gray-200' : 'text-gray-800'
+                        }`}>
+                          Battery
+                        </h3>
+                        <div>
+                          <label className={`block text-sm font-medium mb-2 ${
+                            darkMode ? 'text-gray-300' : 'text-gray-700'
+                          }`}>
+                            Battery Type
+                          </label>
+                          <input
+                            type="text"
+                            value={editingVehicle.battery || ''}
+                            onChange={(e) => setEditingVehicle({ ...editingVehicle, battery: e.target.value })}
+                            className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
+                              darkMode 
+                                ? 'bg-gray-700 border-gray-600 text-gray-100 placeholder-gray-400' 
+                                : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400'
+                            }`}
+                            placeholder=""
+                          />
                         </div>
                       </div>
 
@@ -4450,7 +4561,7 @@ const LandCruiserTracker = () => {
                                   ? 'bg-gray-700 border-gray-600 text-gray-100 placeholder-gray-400' 
                                   : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400'
                               }`}
-                              placeholder="Part number"
+                              placeholder=""
                             />
                           </div>
 
@@ -4470,7 +4581,7 @@ const LandCruiserTracker = () => {
                                     ? 'bg-gray-700 border-gray-600 text-gray-100 placeholder-gray-400' 
                                     : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400'
                                 }`}
-                                placeholder="e.g., 10W-30"
+                                placeholder=""
                               />
                             </div>
 
@@ -4489,7 +4600,7 @@ const LandCruiserTracker = () => {
                                     ? 'bg-gray-700 border-gray-600 text-gray-100 placeholder-gray-400' 
                                     : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400'
                                 }`}
-                                placeholder="e.g., 6.5 quarts"
+                                placeholder=""
                               />
                             </div>
                           </div>
@@ -4510,7 +4621,7 @@ const LandCruiserTracker = () => {
                                     ? 'bg-gray-700 border-gray-600 text-gray-100 placeholder-gray-400' 
                                     : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400'
                                 }`}
-                                placeholder="e.g., Mobil 1"
+                                placeholder=""
                               />
                             </div>
 
@@ -4529,7 +4640,7 @@ const LandCruiserTracker = () => {
                                     ? 'bg-gray-700 border-gray-600 text-gray-100 placeholder-gray-400' 
                                     : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400'
                                 }`}
-                                placeholder="e.g., 14mm"
+                                placeholder=""
                               />
                             </div>
                           </div>
@@ -4553,8 +4664,8 @@ const LandCruiserTracker = () => {
                       </button>
                       <button
                         onClick={async () => {
-                          if (!editingVehicle.name) {
-                            alert('Please enter a vehicle name');
+                          if (!editingVehicle.nickname) {
+                            alert('Please enter a nickname');
                             return;
                           }
                           await updateVehicle(editingVehicle.id, editingVehicle);
