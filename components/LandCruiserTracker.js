@@ -2844,9 +2844,9 @@ const LandCruiserTracker = () => {
                           : ''
                     } ${darkMode ? 'bg-gray-800' : 'bg-white'}`}
                   >
-                    {/* Drag Handle */}
+                    {/* Drag Handle - Hidden on mobile */}
                     <div 
-                      className={`absolute top-2 left-2 cursor-grab active:cursor-grabbing ${
+                      className={`absolute top-2 left-2 cursor-grab active:cursor-grabbing hidden md:block ${
                         darkMode ? 'text-gray-600 hover:text-gray-400' : 'text-gray-400 hover:text-gray-600'
                       }`}
                       title="Drag to reorder"
@@ -3914,9 +3914,9 @@ const LandCruiserTracker = () => {
                         : ''
                   } ${darkMode ? 'bg-gray-800' : 'bg-white'}`}
                 >
-                  {/* Drag Handle */}
+                  {/* Drag Handle - Hidden on mobile */}
                   <div 
-                    className={`absolute top-2 left-2 cursor-move ${
+                    className={`absolute top-2 left-2 cursor-move hidden md:block ${
                       darkMode ? 'text-gray-500 hover:text-gray-400' : 'text-gray-400 hover:text-gray-600'
                     }`}
                   >
