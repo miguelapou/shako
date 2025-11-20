@@ -4129,27 +4129,43 @@ const LandCruiserTracker = () => {
                     {/* Project Badges */}
                     {(() => {
                       const vehicleProjects = getVehicleProjects(vehicle.id);
+                      const getPriorityColor = (priority) => {
+                        const priorityColors = {
+                          low: darkMode ? 'bg-green-900/40 text-green-300 border-green-700' : 'bg-green-50 text-green-700 border-green-200',
+                          medium: darkMode ? 'bg-yellow-900/40 text-yellow-300 border-yellow-700' : 'bg-yellow-50 text-yellow-700 border-yellow-200',
+                          high: darkMode ? 'bg-red-900/40 text-red-300 border-red-700' : 'bg-red-50 text-red-700 border-red-200',
+                        };
+                        return priorityColors[priority] || (darkMode ? 'bg-gray-700 text-gray-300 border-gray-600' : 'bg-gray-100 text-gray-700 border-gray-300');
+                      };
                       return vehicleProjects.length > 0 && (
-                        <div className="flex flex-wrap gap-2 mt-3">
-                          {vehicleProjects.slice(0, 3).map(project => (
-                            <span
-                              key={project.id}
-                              className={`inline-flex items-center px-2 py-1 rounded text-xs font-medium ${
-                                darkMode ? 'bg-gray-700 text-gray-300 border border-gray-600' : 'bg-gray-100 text-gray-700 border border-gray-300'
-                              }`}
-                              style={{ borderLeftWidth: '3px', borderLeftColor: project.color || '#3b82f6' }}
-                            >
-                              <Wrench className="w-3 h-3 mr-1" />
-                              {project.name}
-                            </span>
-                          ))}
-                          {vehicleProjects.length > 3 && (
-                            <span className={`inline-flex items-center px-2 py-1 rounded text-xs ${
-                              darkMode ? 'text-gray-500' : 'text-gray-600'
-                            }`}>
-                              +{vehicleProjects.length - 3} more
-                            </span>
-                          )}
+                        <div className={`mt-4 pt-4 border-t ${
+                          darkMode ? 'border-gray-700' : 'border-gray-200'
+                        }`}>
+                          <h4 className={`text-xs font-semibold mb-2 uppercase tracking-wider ${
+                            darkMode ? 'text-gray-400' : 'text-gray-600'
+                          }`}>
+                            Projects ({vehicleProjects.length})
+                          </h4>
+                          <div className="flex flex-wrap gap-2">
+                            {vehicleProjects.slice(0, 4).map((project) => (
+                              <span
+                                key={project.id}
+                                className={`inline-flex items-center px-2 py-1 rounded text-xs font-medium border ${
+                                  getPriorityColor(project.priority)
+                                }`}
+                              >
+                                <Wrench className="w-3 h-3 mr-1" />
+                                {project.name}
+                              </span>
+                            ))}
+                            {vehicleProjects.length > 4 && (
+                              <span className={`inline-flex items-center px-2 py-1 rounded text-xs ${
+                                darkMode ? 'text-gray-500' : 'text-gray-600'
+                              }`}>
+                                +{vehicleProjects.length - 4} more
+                              </span>
+                            )}
+                          </div>
                         </div>
                       );
                     })()}
