@@ -3813,7 +3813,7 @@ const LandCruiserTracker = () => {
                     )}
 
                     {/* Maintenance Info */}
-                    {(vehicle.fuel_filter || vehicle.air_filter || vehicle.oil_filter) && (
+                    {(vehicle.fuel_filter || vehicle.air_filter) && (
                       <div className={`pt-3 border-t ${
                         darkMode ? 'border-gray-600' : 'border-gray-200'
                       }`}>
@@ -3836,26 +3836,26 @@ const LandCruiserTracker = () => {
                             Air: {vehicle.air_filter}
                           </p>
                         )}
-                        {vehicle.oil_filter && (
-                          <p className={`text-xs ${
-                            darkMode ? 'text-gray-400' : 'text-gray-600'
-                          }`}>
-                            Oil Filter: {vehicle.oil_filter}
-                          </p>
-                        )}
                       </div>
                     )}
 
                     {/* Oil Info */}
-                    {(vehicle.oil_type || vehicle.oil_capacity || vehicle.oil_brand || vehicle.drain_plug) && (
+                    {(vehicle.oil_filter || vehicle.oil_type || vehicle.oil_capacity || vehicle.oil_brand || vehicle.drain_plug) && (
                       <div className={`pt-3 border-t ${
                         darkMode ? 'border-gray-600' : 'border-gray-200'
                       }`}>
                         <p className={`text-xs font-semibold mb-2 ${
                           darkMode ? 'text-gray-300' : 'text-gray-700'
                         }`}>
-                          Oil Information
+                          Oil Info
                         </p>
+                        {vehicle.oil_filter && (
+                          <p className={`text-xs ${
+                            darkMode ? 'text-gray-400' : 'text-gray-600'
+                          }`}>
+                            Filter: {vehicle.oil_filter}
+                          </p>
+                        )}
                         {vehicle.oil_type && (
                           <p className={`text-xs ${
                             darkMode ? 'text-gray-400' : 'text-gray-600'
@@ -4154,7 +4154,7 @@ const LandCruiserTracker = () => {
                         <h3 className={`text-lg font-semibold mb-3 ${
                           darkMode ? 'text-gray-200' : 'text-gray-800'
                         }`}>
-                          Oil Information
+                          Oil Info
                         </h3>
                         <div className="space-y-4">
                           <div>
@@ -4543,7 +4543,7 @@ const LandCruiserTracker = () => {
                         <h3 className={`text-lg font-semibold mb-3 ${
                           darkMode ? 'text-gray-200' : 'text-gray-800'
                         }`}>
-                          Oil Information
+                          Oil Info
                         </h3>
                         <div className="space-y-4">
                           <div>
