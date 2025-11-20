@@ -1357,7 +1357,7 @@ const LandCruiserTracker = () => {
               <Wrench className="w-5 h-5" />
               <span>Projects</span>
               {activeTab === 'projects' && (
-                <div className={`absolute bottom-0 left-2 right-2 h-0.5 ${
+                <div className={`absolute bottom-0 left-1 right-2 h-0.5 ${
                   darkMode ? 'bg-blue-400' : 'bg-blue-600'
                 }`} />
               )}
@@ -1397,7 +1397,7 @@ const LandCruiserTracker = () => {
               <Car className="w-5 h-5" />
               <span>Vehicles</span>
               {activeTab === 'vehicles' && (
-                <div className={`absolute bottom-0 left-2 right-2 h-0.5 ${
+                <div className={`absolute bottom-0 left-2 right-3 h-0.5 ${
                   darkMode ? 'bg-blue-400' : 'bg-blue-600'
                 }`} />
               )}
