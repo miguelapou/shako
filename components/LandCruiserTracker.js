@@ -660,10 +660,6 @@ const LandCruiserTracker = () => {
   };
 
   // Touch event handlers for projects (mobile support)
-  const touchTimeout = useRef(null);
-  const isDraggingTouch = useRef(false);
-  const touchStartPos = useRef({ x: 0, y: 0 });
-
   const handleProjectTouchStart = (e, project) => {
     const touch = e.touches[0];
     touchStartPos.current = { x: touch.clientX, y: touch.clientY };
