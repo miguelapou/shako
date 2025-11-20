@@ -119,6 +119,7 @@ const LandCruiserTracker = () => {
   const [editingVehicle, setEditingVehicle] = useState(null);
   const [newVehicle, setNewVehicle] = useState({
     name: '',
+    year: '',
     license_plate: '',
     vin: '',
     insurance_policy: '',
@@ -2699,21 +2700,21 @@ const LandCruiserTracker = () => {
                           });
                           setShowEditProjectModal(true);
                         }}
-                        className={`p-1.5 rounded-md transition-colors ${
+                        className={`p-2 rounded-md transition-colors ${
                           darkMode ? 'hover:bg-gray-700 text-gray-500 hover:text-blue-400' : 'hover:bg-gray-100 text-gray-500 hover:text-blue-600'
                         }`}
                         title="Edit project"
                       >
-                        <Edit2 className="w-3.5 h-3.5" />
+                        <Edit2 className="w-5 h-5" />
                       </button>
                       <button
                         onClick={() => deleteProject(project.id)}
-                        className={`p-1.5 rounded-md transition-colors ${
+                        className={`p-2 rounded-md transition-colors ${
                           darkMode ? 'hover:bg-gray-700 text-gray-500 hover:text-red-400' : 'hover:bg-gray-100 text-gray-500 hover:text-red-600'
                         }`}
                         title="Delete project"
                       >
-                        <Trash2 className="w-3.5 h-3.5" />
+                        <Trash2 className="w-5 h-5" />
                       </button>
                     </div>
 
@@ -3719,12 +3720,12 @@ const LandCruiserTracker = () => {
                         setEditingVehicle(vehicle);
                         setShowEditVehicleModal(true);
                       }}
-                      className={`p-1.5 rounded-md transition-colors ${
+                      className={`p-2 rounded-md transition-colors ${
                         darkMode ? 'hover:bg-gray-700 text-gray-500 hover:text-blue-400' : 'hover:bg-gray-100 text-gray-500 hover:text-blue-600'
                       }`}
                       title="Edit vehicle"
                     >
-                      <Edit2 className="w-3.5 h-3.5" />
+                      <Edit2 className="w-5 h-5" />
                     </button>
                     <button
                       onClick={async (e) => {
@@ -3745,12 +3746,12 @@ const LandCruiserTracker = () => {
                           }
                         }
                       }}
-                      className={`p-1.5 rounded-md transition-colors ${
+                      className={`p-2 rounded-md transition-colors ${
                         darkMode ? 'hover:bg-gray-700 text-gray-500 hover:text-red-400' : 'hover:bg-gray-100 text-gray-500 hover:text-red-600'
                       }`}
                       title="Delete vehicle"
                     >
-                      <Trash2 className="w-3.5 h-3.5" />
+                      <Trash2 className="w-5 h-5" />
                     </button>
                   </div>
 
@@ -3759,7 +3760,7 @@ const LandCruiserTracker = () => {
                     <h3 className={`text-xl font-bold mb-2 ${
                       darkMode ? 'text-gray-100' : 'text-gray-900'
                     }`}>
-                      {vehicle.name}
+                      {vehicle.year ? `${vehicle.year} ` : ''}{vehicle.name}
                     </h3>
                     {vehicle.license_plate && (
                       <span className={`inline-block px-3 py-1 rounded-full text-sm font-medium ${
@@ -3877,19 +3878,6 @@ const LandCruiserTracker = () => {
                       </div>
                     )}
                   </div>
-
-                  {/* Delete Button */}
-                  <button
-                    onClick={() => deleteVehicle(vehicle.id)}
-                    className={`mt-4 w-full px-4 py-2 rounded-lg font-medium transition-colors flex items-center justify-center gap-2 ${
-                      darkMode 
-                        ? 'bg-red-900/30 hover:bg-red-900/50 text-red-400' 
-                        : 'bg-red-50 hover:bg-red-100 text-red-600'
-                    }`}
-                  >
-                    <Trash2 className="w-4 h-4" />
-                    Delete Vehicle
-                  </button>
                 </div>
               ))}
             </div>
@@ -3969,7 +3957,26 @@ const LandCruiserTracker = () => {
                               ? 'bg-gray-700 border-gray-600 text-gray-100 placeholder-gray-400' 
                               : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400'
                           }`}
-                          placeholder="e.g., 1990 Toyota Land Cruiser"
+                          placeholder="e.g., Toyota Land Cruiser FJ62"
+                        />
+                      </div>
+
+                      <div>
+                        <label className={`block text-sm font-medium mb-2 ${
+                          darkMode ? 'text-gray-300' : 'text-gray-700'
+                        }`}>
+                          Year
+                        </label>
+                        <input
+                          type="text"
+                          value={newVehicle.year}
+                          onChange={(e) => setNewVehicle({ ...newVehicle, year: e.target.value })}
+                          className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
+                            darkMode 
+                              ? 'bg-gray-700 border-gray-600 text-gray-100 placeholder-gray-400' 
+                              : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400'
+                          }`}
+                          placeholder="e.g., 1990"
                         />
                       </div>
 
@@ -4288,7 +4295,26 @@ const LandCruiserTracker = () => {
                               ? 'bg-gray-700 border-gray-600 text-gray-100 placeholder-gray-400' 
                               : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400'
                           }`}
-                          placeholder="e.g., 1990 Toyota Land Cruiser"
+                          placeholder="e.g., Toyota Land Cruiser FJ62"
+                        />
+                      </div>
+
+                      <div>
+                        <label className={`block text-sm font-medium mb-2 ${
+                          darkMode ? 'text-gray-300' : 'text-gray-700'
+                        }`}>
+                          Year
+                        </label>
+                        <input
+                          type="text"
+                          value={editingVehicle.year || ''}
+                          onChange={(e) => setEditingVehicle({ ...editingVehicle, year: e.target.value })}
+                          className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
+                            darkMode 
+                              ? 'bg-gray-700 border-gray-600 text-gray-100 placeholder-gray-400' 
+                              : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400'
+                          }`}
+                          placeholder="e.g., 1990"
                         />
                       </div>
 
