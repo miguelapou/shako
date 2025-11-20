@@ -19,6 +19,24 @@ const fontStyles = `
     overflow-y: scroll;
   }
 
+  /* Prevent background scroll when modal is open */
+  body.modal-open {
+    overflow: hidden;
+    position: fixed;
+    width: 100%;
+  }
+
+  /* Prevent touch scrolling on modal backdrop */
+  .modal-backdrop {
+    touch-action: none;
+  }
+
+  /* Enable smooth scrolling on modal content */
+  .modal-content {
+    -webkit-overflow-scrolling: touch;
+    overflow-y: auto;
+  }
+
   @keyframes popUpCenter {
     0% {
       opacity: 0;
@@ -146,6 +164,25 @@ const LandCruiserTracker = () => {
     const timer = setTimeout(updateUnderline, 0);
     return () => clearTimeout(timer);
   }, [activeTab]);
+
+  // Lock body scroll when any modal is open
+  useEffect(() => {
+    const isAnyModalOpen = showAddModal || showEditModal || showTrackingModal || 
+                          showAddProjectModal || showEditProjectModal || showProjectDetailModal ||
+                          showAddVehicleModal || showEditVehicleModal;
+    
+    if (isAnyModalOpen) {
+      document.body.classList.add('modal-open');
+    } else {
+      document.body.classList.remove('modal-open');
+    }
+    
+    // Cleanup on unmount
+    return () => {
+      document.body.classList.remove('modal-open');
+    };
+  }, [showAddModal, showEditModal, showTrackingModal, showAddProjectModal, 
+      showEditProjectModal, showProjectDetailModal, showAddVehicleModal, showEditVehicleModal]);
 
   const loadParts = async () => {
     try {
@@ -1457,11 +1494,11 @@ const LandCruiserTracker = () => {
         {/* Add New Part Modal */}
         {showAddModal && (
           <div 
-            className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4 modal-backdrop-enter"
+            className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4 modal-backdrop-enter modal-backdrop"
             onClick={() => setShowAddModal(false)}
           >
             <div 
-              className={`rounded-lg shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto modal-popup-enter ${
+              className={`rounded-lg shadow-xl max-w-2xl w-full max-h-[90vh] modal-popup-enter modal-content ${
                 darkMode ? 'bg-gray-800' : 'bg-white'
               }`}
               onClick={(e) => e.stopPropagation()}
@@ -1709,7 +1746,7 @@ const LandCruiserTracker = () => {
         {/* Tracking Info Modal */}
         {showTrackingModal && (
           <div 
-            className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4 modal-backdrop-enter"
+            className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4 modal-backdrop-enter modal-backdrop"
             onClick={() => {
               setShowTrackingModal(false);
               setTrackingModalPartId(null);
@@ -1793,14 +1830,14 @@ const LandCruiserTracker = () => {
         {/* Edit Part Modal */}
         {showEditModal && editingPart && (
           <div 
-            className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4 modal-backdrop-enter"
+            className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4 modal-backdrop-enter modal-backdrop"
             onClick={() => {
               setShowEditModal(false);
               setEditingPart(null);
             }}
           >
             <div 
-              className={`rounded-lg shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto modal-popup-enter ${
+              className={`rounded-lg shadow-xl max-w-2xl w-full max-h-[90vh] modal-popup-enter modal-content ${
                 darkMode ? 'bg-gray-800' : 'bg-white'
               }`}
               onClick={(e) => e.stopPropagation()}
@@ -2877,11 +2914,11 @@ const LandCruiserTracker = () => {
             {/* Add Project Modal */}
             {showAddProjectModal && (
               <div 
-                className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4 modal-backdrop-enter"
+                className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4 modal-backdrop-enter modal-backdrop"
                 onClick={() => setShowAddProjectModal(false)}
               >
                 <div 
-                  className={`rounded-lg shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto modal-popup-enter ${
+                  className={`rounded-lg shadow-xl max-w-2xl w-full max-h-[90vh] modal-popup-enter modal-content ${
                     darkMode ? 'bg-gray-800' : 'bg-white'
                   }`}
                   onClick={(e) => e.stopPropagation()}
@@ -3087,14 +3124,14 @@ const LandCruiserTracker = () => {
             {/* Edit Project Modal */}
             {showEditProjectModal && editingProject && (
               <div 
-                className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4 modal-backdrop-enter"
+                className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4 modal-backdrop-enter modal-backdrop"
                 onClick={() => {
                   setShowEditProjectModal(false);
                   setEditingProject(null);
                 }}
               >
                 <div 
-                  className={`rounded-lg shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto modal-popup-enter ${
+                  className={`rounded-lg shadow-xl max-w-2xl w-full max-h-[90vh] modal-popup-enter modal-content ${
                     darkMode ? 'bg-gray-800' : 'bg-white'
                   }`}
                   onClick={(e) => e.stopPropagation()}
@@ -3358,14 +3395,14 @@ const LandCruiserTracker = () => {
             {/* Project Detail Modal */}
             {showProjectDetailModal && viewingProject && (
               <div 
-                className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4 modal-backdrop-enter"
+                className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4 modal-backdrop-enter modal-backdrop"
                 onClick={() => {
                   setShowProjectDetailModal(false);
                   setViewingProject(null);
                 }}
               >
                 <div 
-                  className={`rounded-lg shadow-xl max-w-3xl w-full max-h-[90vh] overflow-y-auto modal-popup-enter ${
+                  className={`rounded-lg shadow-xl max-w-3xl w-full max-h-[90vh] modal-popup-enter modal-content ${
                     darkMode ? 'bg-gray-800' : 'bg-white'
                   }`}
                   onClick={(e) => e.stopPropagation()}
@@ -3436,10 +3473,11 @@ const LandCruiserTracker = () => {
                                 setShowEditProjectModal(true);
                                 setViewingProject(null);
                               }}
-                              className="p-2 rounded-lg transition-colors bg-blue-600 hover:bg-blue-700 text-white"
+                              className="flex items-center gap-2 px-3 py-2 rounded-lg transition-colors bg-blue-600 hover:bg-blue-700 text-white font-medium"
                               title="Edit project"
                             >
-                              <Edit2 className="w-5 h-5" />
+                              <Edit2 className="w-4 h-4" />
+                              Edit
                             </button>
                           </div>
 
@@ -3859,11 +3897,11 @@ const LandCruiserTracker = () => {
             {/* Add Vehicle Modal */}
             {showAddVehicleModal && (
               <div 
-                className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4 modal-backdrop-enter"
+                className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4 modal-backdrop-enter modal-backdrop"
                 onClick={() => setShowAddVehicleModal(false)}
               >
                 <div 
-                  className={`rounded-lg shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto modal-popup-enter ${
+                  className={`rounded-lg shadow-xl max-w-2xl w-full max-h-[90vh] modal-popup-enter modal-content ${
                     darkMode ? 'bg-gray-800' : 'bg-white'
                   }`}
                   onClick={(e) => e.stopPropagation()}
@@ -4172,14 +4210,14 @@ const LandCruiserTracker = () => {
             {/* Edit Vehicle Modal */}
             {showEditVehicleModal && editingVehicle && (
               <div 
-                className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4 modal-backdrop-enter"
+                className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4 modal-backdrop-enter modal-backdrop"
                 onClick={() => {
                   setShowEditVehicleModal(false);
                   setEditingVehicle(null);
                 }}
               >
                 <div 
-                  className={`rounded-lg shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto modal-popup-enter ${
+                  className={`rounded-lg shadow-xl max-w-2xl w-full max-h-[90vh] modal-popup-enter modal-content ${
                     darkMode ? 'bg-gray-800' : 'bg-white'
                   }`}
                   onClick={(e) => e.stopPropagation()}
