@@ -113,6 +113,7 @@ const LandCruiserTracker = () => {
   
   // Track the drag handle element for non-passive listeners
   const dragHandleRef = useRef(null);
+  const activeDragHandles = useRef(new Set());
   
   // Touch event handling for mobile drag and drop
   const touchStartY = useRef(0);
@@ -121,6 +122,27 @@ const LandCruiserTracker = () => {
   const touchTimeout = useRef(null);
   const isDraggingTouch = useRef(false);
   const touchStartPos = useRef({ x: 0, y: 0 });
+
+  // Callback ref to attach non-passive listeners to drag handles
+  const attachDragHandleListeners = (element, handlers) => {
+    if (!element) return;
+    
+    // Store in set to track active handles
+    activeDragHandles.current.add(element);
+    
+    // Attach non-passive listeners
+    element.addEventListener('touchstart', handlers.start, { passive: true });
+    element.addEventListener('touchmove', handlers.move, { passive: false });
+    element.addEventListener('touchend', handlers.end, { passive: true });
+    
+    // Return cleanup function
+    return () => {
+      activeDragHandles.current.delete(element);
+      element.removeEventListener('touchstart', handlers.start);
+      element.removeEventListener('touchmove', handlers.move);
+      element.removeEventListener('touchend', handlers.end);
+    };
+  };
 
   // Refs for tab underline animation
   const tabRefs = useRef({});
@@ -678,14 +700,8 @@ const LandCruiserTracker = () => {
     
     if (!draggedProject) return;
     
-    // Only prevent default if we're dragging
-    if (isDraggingTouch.current && draggedProject) {
-      try {
-        e.preventDefault();
-      } catch (err) {
-        // Passive listener error - ignore
-      }
-    }
+    // Prevent scrolling when dragging
+    e.preventDefault();
     
     touchCurrentY.current = touch.clientY;
     
@@ -784,14 +800,8 @@ const LandCruiserTracker = () => {
     
     if (!draggedVehicle) return;
     
-    // Only prevent default if we're dragging
-    if (isDraggingTouch.current && draggedVehicle) {
-      try {
-        e.preventDefault();
-      } catch (err) {
-        // Passive listener error - ignore
-      }
-    }
+    // Prevent scrolling when dragging
+    e.preventDefault();
     
     touchCurrentY.current = touch.clientY;
     
@@ -3069,22 +3079,43 @@ const LandCruiserTracker = () => {
                   >
                     {/* Drag Handle */}
                     <div 
+                      ref={(el) => {
+                        if (el) {
+                          // Remove old listeners if they exist
+                          const oldHandlers = el._touchHandlers;
+                          if (oldHandlers) {
+                            el.removeEventListener('touchmove', oldHandlers.move);
+                          }
+                          
+                          // Create new handlers
+                          const handlers = {
+                            start: (e) => {
+                              e.stopPropagation();
+                              handleProjectTouchStart(e, project);
+                            },
+                            move: (e) => {
+                              e.stopPropagation();
+                              handleProjectTouchMove(e);
+                            },
+                            end: (e) => {
+                              e.stopPropagation();
+                              handleProjectTouchEnd(e);
+                            }
+                          };
+                          
+                          // Store handlers on element for cleanup
+                          el._touchHandlers = handlers;
+                          
+                          // Attach with correct passive settings
+                          el.addEventListener('touchstart', handlers.start, { passive: true });
+                          el.addEventListener('touchmove', handlers.move, { passive: false }); // Non-passive!
+                          el.addEventListener('touchend', handlers.end, { passive: true });
+                        }
+                      }}
                       className={`absolute top-2 left-2 cursor-grab active:cursor-grabbing p-2 -m-2 ${
                         darkMode ? 'text-gray-600 hover:text-gray-400' : 'text-gray-400 hover:text-gray-600'
                       }`}
                       title="Drag to reorder"
-                      onTouchStart={(e) => {
-                        e.stopPropagation();
-                        handleProjectTouchStart(e, project);
-                      }}
-                      onTouchMove={(e) => {
-                        e.stopPropagation();
-                        handleProjectTouchMove(e);
-                      }}
-                      onTouchEnd={(e) => {
-                        e.stopPropagation();
-                        handleProjectTouchEnd(e);
-                      }}
                     >
                       <GripVertical className="w-5 h-5" />
                     </div>
@@ -4151,21 +4182,42 @@ const LandCruiserTracker = () => {
                 >
                   {/* Drag Handle */}
                   <div 
+                    ref={(el) => {
+                      if (el) {
+                        // Remove old listeners if they exist
+                        const oldHandlers = el._touchHandlers;
+                        if (oldHandlers) {
+                          el.removeEventListener('touchmove', oldHandlers.move);
+                        }
+                        
+                        // Create new handlers
+                        const handlers = {
+                          start: (e) => {
+                            e.stopPropagation();
+                            handleVehicleTouchStart(e, vehicle);
+                          },
+                          move: (e) => {
+                            e.stopPropagation();
+                            handleVehicleTouchMove(e);
+                          },
+                          end: (e) => {
+                            e.stopPropagation();
+                            handleVehicleTouchEnd(e);
+                          }
+                        };
+                        
+                        // Store handlers on element for cleanup
+                        el._touchHandlers = handlers;
+                        
+                        // Attach with correct passive settings
+                        el.addEventListener('touchstart', handlers.start, { passive: true });
+                        el.addEventListener('touchmove', handlers.move, { passive: false }); // Non-passive!
+                        el.addEventListener('touchend', handlers.end, { passive: true });
+                      }
+                    }}
                     className={`absolute top-2 left-2 cursor-move p-2 -m-2 ${
                       darkMode ? 'text-gray-500 hover:text-gray-400' : 'text-gray-400 hover:text-gray-600'
                     }`}
-                    onTouchStart={(e) => {
-                      e.stopPropagation();
-                      handleVehicleTouchStart(e, vehicle);
-                    }}
-                    onTouchMove={(e) => {
-                      e.stopPropagation();
-                      handleVehicleTouchMove(e);
-                    }}
-                    onTouchEnd={(e) => {
-                      e.stopPropagation();
-                      handleVehicleTouchEnd(e);
-                    }}
                   >
                     <GripVertical className="w-5 h-5" />
                   </div>
