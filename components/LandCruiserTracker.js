@@ -14,6 +14,11 @@ const fontStyles = `
     font-display: swap;
   }
 
+  /* Force scrollbar to always be visible to prevent layout shift */
+  html {
+    overflow-y: scroll;
+  }
+
   @keyframes popUpCenter {
     0% {
       opacity: 0;
@@ -1321,7 +1326,7 @@ const LandCruiserTracker = () => {
       darkMode 
         ? 'bg-gradient-to-br from-gray-900 to-gray-800' 
         : 'bg-gradient-to-br from-slate-50 to-slate-100'
-    }`} style={{ scrollbarGutter: 'stable' }}>
+    }`}>
       <style>{fontStyles}</style>
       <div className="max-w-7xl mx-auto">
         {/* Header */}
