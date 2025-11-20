@@ -37,6 +37,13 @@ const fontStyles = `
     overflow-y: auto;
   }
 
+  /* Improve touch dragging experience */
+  [data-project-id], [data-vehicle-id] {
+    touch-action: none;
+    -webkit-user-select: none;
+    user-select: none;
+  }
+
   @keyframes popUpCenter {
     0% {
       opacity: 0;
@@ -115,6 +122,9 @@ const LandCruiserTracker = () => {
   const touchStartY = useRef(0);
   const touchCurrentY = useRef(0);
   const scrollInterval = useRef(null);
+  const touchTimeout = useRef(null);
+  const isDraggingTouch = useRef(false);
+  const touchStartPos = useRef({ x: 0, y: 0 });
 
   // Refs for tab underline animation
   const tabRefs = useRef({});
@@ -151,6 +161,22 @@ const LandCruiserTracker = () => {
     loadProjects();
     loadVehicles();
   }, []);
+
+  // Register non-passive touch event listeners to allow preventDefault
+  useEffect(() => {
+    const handleTouchMove = (e) => {
+      if (draggedProject || draggedVehicle) {
+        e.preventDefault();
+      }
+    };
+
+    // Add non-passive touch move listener to prevent scrolling during drag
+    document.addEventListener('touchmove', handleTouchMove, { passive: false });
+
+    return () => {
+      document.removeEventListener('touchmove', handleTouchMove);
+    };
+  }, [draggedProject, draggedVehicle]);
 
   // Update underline position when active tab changes
   useEffect(() => {
@@ -634,17 +660,47 @@ const LandCruiserTracker = () => {
   };
 
   // Touch event handlers for projects (mobile support)
+  const touchTimeout = useRef(null);
+  const isDraggingTouch = useRef(false);
+  const touchStartPos = useRef({ x: 0, y: 0 });
+
   const handleProjectTouchStart = (e, project) => {
     const touch = e.touches[0];
+    touchStartPos.current = { x: touch.clientX, y: touch.clientY };
     touchStartY.current = touch.clientY;
-    setDraggedProject(project);
+    isDraggingTouch.current = false;
+    
+    // Set a timeout to distinguish between tap and long press
+    touchTimeout.current = setTimeout(() => {
+      isDraggingTouch.current = true;
+      setDraggedProject(project);
+      // Add haptic feedback on mobile if available
+      if (navigator.vibrate) {
+        navigator.vibrate(50);
+      }
+    }, 200); // 200ms long press to start dragging
   };
 
   const handleProjectTouchMove = (e) => {
+    const touch = e.touches[0];
+    const moveThreshold = 10; // pixels
+    
+    // Check if user has moved enough to be considered dragging
+    const dx = Math.abs(touch.clientX - touchStartPos.current.x);
+    const dy = Math.abs(touch.clientY - touchStartPos.current.y);
+    
+    if (dx > moveThreshold || dy > moveThreshold) {
+      clearTimeout(touchTimeout.current);
+      if (!isDraggingTouch.current && !draggedProject) {
+        return; // Not dragging yet
+      }
+      isDraggingTouch.current = true;
+    } else {
+      return; // Haven't moved enough yet
+    }
+    
     if (!draggedProject) return;
     
-    e.preventDefault(); // Prevent scrolling while dragging
-    const touch = e.touches[0];
     touchCurrentY.current = touch.clientY;
     
     // Get the element under the touch point
@@ -660,16 +716,30 @@ const LandCruiserTracker = () => {
     }
   };
 
-  const handleProjectTouchEnd = async () => {
-    if (!draggedProject || !dragOverProject) {
+  const handleProjectTouchEnd = async (e) => {
+    clearTimeout(touchTimeout.current);
+    
+    // If we weren't dragging, let the click handler work
+    if (!isDraggingTouch.current || !draggedProject) {
+      isDraggingTouch.current = false;
       setDraggedProject(null);
       setDragOverProject(null);
+      return;
+    }
+    
+    e.preventDefault(); // Prevent click event from firing
+    
+    if (!dragOverProject) {
+      setDraggedProject(null);
+      setDragOverProject(null);
+      isDraggingTouch.current = false;
       return;
     }
 
     if (draggedProject.id === dragOverProject.id) {
       setDraggedProject(null);
       setDragOverProject(null);
+      isDraggingTouch.current = false;
       return;
     }
 
@@ -683,6 +753,7 @@ const LandCruiserTracker = () => {
     setProjects(newProjects);
     setDraggedProject(null);
     setDragOverProject(null);
+    isDraggingTouch.current = false;
 
     // Update display_order in database
     updateProjectsOrder(newProjects);
@@ -691,15 +762,41 @@ const LandCruiserTracker = () => {
   // Touch event handlers for vehicles (mobile support)
   const handleVehicleTouchStart = (e, vehicle) => {
     const touch = e.touches[0];
+    touchStartPos.current = { x: touch.clientX, y: touch.clientY };
     touchStartY.current = touch.clientY;
-    setDraggedVehicle(vehicle);
+    isDraggingTouch.current = false;
+    
+    // Set a timeout to distinguish between tap and long press
+    touchTimeout.current = setTimeout(() => {
+      isDraggingTouch.current = true;
+      setDraggedVehicle(vehicle);
+      // Add haptic feedback on mobile if available
+      if (navigator.vibrate) {
+        navigator.vibrate(50);
+      }
+    }, 200); // 200ms long press to start dragging
   };
 
   const handleVehicleTouchMove = (e) => {
+    const touch = e.touches[0];
+    const moveThreshold = 10; // pixels
+    
+    // Check if user has moved enough to be considered dragging
+    const dx = Math.abs(touch.clientX - touchStartPos.current.x);
+    const dy = Math.abs(touch.clientY - touchStartPos.current.y);
+    
+    if (dx > moveThreshold || dy > moveThreshold) {
+      clearTimeout(touchTimeout.current);
+      if (!isDraggingTouch.current && !draggedVehicle) {
+        return; // Not dragging yet
+      }
+      isDraggingTouch.current = true;
+    } else {
+      return; // Haven't moved enough yet
+    }
+    
     if (!draggedVehicle) return;
     
-    e.preventDefault(); // Prevent scrolling while dragging
-    const touch = e.touches[0];
     touchCurrentY.current = touch.clientY;
     
     // Get the element under the touch point
@@ -715,16 +812,30 @@ const LandCruiserTracker = () => {
     }
   };
 
-  const handleVehicleTouchEnd = async () => {
-    if (!draggedVehicle || !dragOverVehicle) {
+  const handleVehicleTouchEnd = async (e) => {
+    clearTimeout(touchTimeout.current);
+    
+    // If we weren't dragging, let the normal behavior work
+    if (!isDraggingTouch.current || !draggedVehicle) {
+      isDraggingTouch.current = false;
       setDraggedVehicle(null);
       setDragOverVehicle(null);
+      return;
+    }
+    
+    e.preventDefault(); // Prevent any click events
+    
+    if (!dragOverVehicle) {
+      setDraggedVehicle(null);
+      setDragOverVehicle(null);
+      isDraggingTouch.current = false;
       return;
     }
 
     if (draggedVehicle.id === dragOverVehicle.id) {
       setDraggedVehicle(null);
       setDragOverVehicle(null);
+      isDraggingTouch.current = false;
       return;
     }
 
@@ -738,6 +849,7 @@ const LandCruiserTracker = () => {
     setVehicles(newVehicles);
     setDraggedVehicle(null);
     setDragOverVehicle(null);
+    isDraggingTouch.current = false;
 
     // Update display_order in database
     updateVehiclesOrder(newVehicles);
@@ -2947,9 +3059,6 @@ const LandCruiserTracker = () => {
                     onDragLeave={handleDragLeave}
                     onDrop={(e) => handleDrop(e, project)}
                     onDragEnd={handleDragEnd}
-                    onTouchStart={(e) => handleProjectTouchStart(e, project)}
-                    onTouchMove={handleProjectTouchMove}
-                    onTouchEnd={handleProjectTouchEnd}
                     onClick={() => {
                       setViewingProject(project);
                       setShowProjectDetailModal(true);
@@ -2964,10 +3073,22 @@ const LandCruiserTracker = () => {
                   >
                     {/* Drag Handle */}
                     <div 
-                      className={`absolute top-2 left-2 cursor-grab active:cursor-grabbing ${
+                      className={`absolute top-2 left-2 cursor-grab active:cursor-grabbing p-2 -m-2 ${
                         darkMode ? 'text-gray-600 hover:text-gray-400' : 'text-gray-400 hover:text-gray-600'
                       }`}
                       title="Drag to reorder"
+                      onTouchStart={(e) => {
+                        e.stopPropagation();
+                        handleProjectTouchStart(e, project);
+                      }}
+                      onTouchMove={(e) => {
+                        e.stopPropagation();
+                        handleProjectTouchMove(e);
+                      }}
+                      onTouchEnd={(e) => {
+                        e.stopPropagation();
+                        handleProjectTouchEnd(e);
+                      }}
                     >
                       <GripVertical className="w-5 h-5" />
                     </div>
@@ -4024,9 +4145,6 @@ const LandCruiserTracker = () => {
                   onDragLeave={handleVehicleDragLeave}
                   onDrop={(e) => handleVehicleDrop(e, vehicle)}
                   onDragEnd={handleVehicleDragEnd}
-                  onTouchStart={(e) => handleVehicleTouchStart(e, vehicle)}
-                  onTouchMove={handleVehicleTouchMove}
-                  onTouchEnd={handleVehicleTouchEnd}
                   className={`relative rounded-lg shadow-lg pt-3 pb-6 px-6 transition-all hover:shadow-xl cursor-move ${
                     draggedVehicle?.id === vehicle.id 
                       ? 'opacity-50' 
@@ -4037,9 +4155,21 @@ const LandCruiserTracker = () => {
                 >
                   {/* Drag Handle */}
                   <div 
-                    className={`absolute top-2 left-2 cursor-move ${
+                    className={`absolute top-2 left-2 cursor-move p-2 -m-2 ${
                       darkMode ? 'text-gray-500 hover:text-gray-400' : 'text-gray-400 hover:text-gray-600'
                     }`}
+                    onTouchStart={(e) => {
+                      e.stopPropagation();
+                      handleVehicleTouchStart(e, vehicle);
+                    }}
+                    onTouchMove={(e) => {
+                      e.stopPropagation();
+                      handleVehicleTouchMove(e);
+                    }}
+                    onTouchEnd={(e) => {
+                      e.stopPropagation();
+                      handleVehicleTouchEnd(e);
+                    }}
                   >
                     <GripVertical className="w-5 h-5" />
                   </div>
