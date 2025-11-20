@@ -3910,7 +3910,7 @@ const LandCruiserTracker = () => {
                       </p>
                     )}
                     {vehicle.license_plate && (
-                      <span className={`inline-block px-3 py-1 rounded-full text-sm font-medium ${
+                      <span className={`inline-block px-3 py-1 rounded text-sm font-medium ${
                         darkMode ? 'bg-blue-600 text-blue-100' : 'bg-blue-100 text-blue-800'
                       }`}>
                         {vehicle.license_plate}
