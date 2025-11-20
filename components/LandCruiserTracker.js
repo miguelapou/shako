@@ -2196,18 +2196,59 @@ const LandCruiserTracker = () => {
                   
                   <div className={`md:col-span-2 border rounded-lg p-4 ${
                     darkMode 
-                      ? 'bg-green-900/30 border-green-700' 
-                      : 'bg-green-50 border-green-200'
+                      ? 'bg-gray-700/50 border-gray-600' 
+                      : 'bg-gray-50 border-gray-200'
                   }`}>
-                    <div className="flex items-center justify-between">
-                      <span className={`text-sm font-medium ${
-                        darkMode ? 'text-gray-300' : 'text-gray-700'
-                      }`}>Calculated Total:</span>
-                      <span className={`text-2xl font-bold ${
-                        darkMode ? 'text-green-400' : 'text-green-600'
+                    <div className="space-y-2">
+                      <div className="flex items-center justify-between">
+                        <span className={`text-sm ${
+                          darkMode ? 'text-gray-300' : 'text-gray-700'
+                        }`}>Price:</span>
+                        <span className={`text-sm font-medium ${
+                          darkMode ? 'text-gray-200' : 'text-gray-800'
+                        }`}>
+                          ${(parseFloat(editingPart.price) || 0).toFixed(2)}
+                        </span>
+                      </div>
+                      
+                      {(parseFloat(editingPart.shipping) || 0) > 0 && (
+                        <div className="flex items-center justify-between">
+                          <span className={`text-sm ${
+                            darkMode ? 'text-gray-300' : 'text-gray-700'
+                          }`}>Shipping:</span>
+                          <span className={`text-sm font-medium ${
+                            darkMode ? 'text-gray-200' : 'text-gray-800'
+                          }`}>
+                            ${(parseFloat(editingPart.shipping) || 0).toFixed(2)}
+                          </span>
+                        </div>
+                      )}
+                      
+                      {(parseFloat(editingPart.duties) || 0) > 0 && (
+                        <div className="flex items-center justify-between">
+                          <span className={`text-sm ${
+                            darkMode ? 'text-gray-300' : 'text-gray-700'
+                          }`}>Import Duties:</span>
+                          <span className={`text-sm font-medium ${
+                            darkMode ? 'text-gray-200' : 'text-gray-800'
+                          }`}>
+                            ${(parseFloat(editingPart.duties) || 0).toFixed(2)}
+                          </span>
+                        </div>
+                      )}
+                      
+                      <div className={`flex items-center justify-between pt-2 border-t ${
+                        darkMode ? 'border-gray-600' : 'border-gray-300'
                       }`}>
-                        ${((parseFloat(editingPart.price) || 0) + (parseFloat(editingPart.shipping) || 0) + (parseFloat(editingPart.duties) || 0)).toFixed(2)}
-                      </span>
+                        <span className={`text-base font-semibold ${
+                          darkMode ? 'text-gray-200' : 'text-gray-800'
+                        }`}>Total:</span>
+                        <span className={`text-xl font-bold ${
+                          darkMode ? 'text-green-400' : 'text-green-600'
+                        }`}>
+                          ${((parseFloat(editingPart.price) || 0) + (parseFloat(editingPart.shipping) || 0) + (parseFloat(editingPart.duties) || 0)).toFixed(2)}
+                        </span>
+                      </div>
                     </div>
                   </div>
                 </div>
