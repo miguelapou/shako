@@ -1580,7 +1580,7 @@ const LandCruiserTracker = () => {
               }`}>
                 <h2 className={`text-2xl font-bold ${
                   darkMode ? 'text-gray-100' : 'text-gray-800'
-                }`} style={{ fontFamily: "'FoundationOne', 'Courier New', monospace" }}>Add New Part</h2>
+                }`} style={{ fontFamily: "'FoundationOne', 'Courier New', monospace" }}>Add Part</h2>
                 <button
                   onClick={() => setShowAddModal(false)}
                   className={`transition-colors ${
@@ -1791,20 +1791,28 @@ const LandCruiserTracker = () => {
                   )}
                 </div>
                 
-                <div className="flex gap-3 mt-6">
+                <div className={`flex gap-3 mt-6 pt-6 border-t ${
+                  darkMode ? 'border-gray-700' : 'border-gray-200'
+                }`}>
                   <button
                     onClick={addNewPart}
                     disabled={!newPart.part}
-                    className="flex-1 bg-blue-600 hover:bg-blue-700 disabled:bg-gray-300 disabled:cursor-not-allowed text-white px-6 py-3 rounded-lg font-medium transition-colors"
+                    className={`flex-1 px-6 py-3 rounded-lg font-medium transition-colors ${
+                      !newPart.part
+                        ? darkMode 
+                          ? 'bg-gray-700 text-gray-500 cursor-not-allowed'
+                          : 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                        : 'bg-blue-600 hover:bg-blue-700 text-white'
+                    }`}
                   >
                     Add Part
                   </button>
                   <button
                     onClick={() => setShowAddModal(false)}
-                    className={`px-6 py-3 border rounded-lg font-medium transition-colors ${
+                    className={`flex-1 px-6 py-3 rounded-lg font-medium transition-colors ${
                       darkMode 
-                        ? 'border-gray-600 text-gray-300 hover:bg-gray-700' 
-                        : 'border-gray-300 text-gray-700 hover:bg-gray-50'
+                        ? 'bg-gray-700 hover:bg-gray-600 text-gray-100' 
+                        : 'bg-gray-200 hover:bg-gray-300 text-gray-800'
                     }`}
                   >
                     Cancel
@@ -2131,16 +2139,18 @@ const LandCruiserTracker = () => {
                   </div>
                 </div>
                 
-                <div className="flex gap-3 mt-6">
+                <div className={`flex gap-3 mt-6 pt-6 border-t ${
+                  darkMode ? 'border-gray-700' : 'border-gray-200'
+                }`}>
                   <button
                     onClick={() => {
                       setShowEditModal(false);
                       setEditingPart(null);
                     }}
-                    className={`px-6 py-3 border rounded-lg font-medium transition-colors ${
+                    className={`flex-1 px-6 py-3 rounded-lg font-medium transition-colors ${
                       darkMode 
-                        ? 'border-gray-600 text-gray-300 hover:bg-gray-700' 
-                        : 'border-gray-300 text-gray-700 hover:bg-gray-50'
+                        ? 'bg-gray-700 hover:bg-gray-600 text-gray-100' 
+                        : 'bg-gray-200 hover:bg-gray-300 text-gray-800'
                     }`}
                   >
                     Cancel
@@ -2151,10 +2161,10 @@ const LandCruiserTracker = () => {
                       setShowEditModal(false);
                       setEditingPart(null);
                     }}
-                    className={`px-6 py-3 border rounded-lg font-medium transition-colors ${
+                    className={`px-6 py-3 rounded-lg font-medium transition-colors ${
                       darkMode 
-                        ? 'border-gray-600 text-gray-400 hover:text-red-400 hover:bg-gray-700 hover:border-red-500' 
-                        : 'border-gray-300 text-gray-600 hover:text-red-600 hover:bg-red-50 hover:border-red-300'
+                        ? 'bg-red-600/20 text-red-400 hover:bg-red-600/30 hover:text-red-300' 
+                        : 'bg-red-50 text-red-600 hover:bg-red-100'
                     }`}
                   >
                     Delete
@@ -2162,7 +2172,13 @@ const LandCruiserTracker = () => {
                   <button
                     onClick={saveEditedPart}
                     disabled={!editingPart.part}
-                    className="flex-1 bg-blue-600 hover:bg-blue-700 disabled:bg-gray-300 disabled:cursor-not-allowed text-white px-6 py-3 rounded-lg font-medium transition-colors"
+                    className={`flex-1 px-6 py-3 rounded-lg font-medium transition-colors ${
+                      !editingPart.part
+                        ? darkMode 
+                          ? 'bg-gray-700 text-gray-500 cursor-not-allowed'
+                          : 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                        : 'bg-blue-600 hover:bg-blue-700 text-white'
+                    }`}
                   >
                     Save Changes
                   </button>
@@ -3001,7 +3017,7 @@ const LandCruiserTracker = () => {
                     <h2 className={`text-2xl font-bold ${
                       darkMode ? 'text-gray-100' : 'text-gray-800'
                     }`} style={{ fontFamily: "'FoundationOne', 'Courier New', monospace" }}>
-                      Add New Project
+                      Add Project
                     </h2>
                     <button
                       onClick={() => setShowAddProjectModal(false)}
@@ -3154,7 +3170,9 @@ const LandCruiserTracker = () => {
                       </div>
                     </div>
 
-                    <div className="flex gap-3 mt-6">
+                    <div className={`flex gap-3 mt-6 pt-6 border-t ${
+                      darkMode ? 'border-gray-700' : 'border-gray-200'
+                    }`}>
                       <button
                         onClick={() => setShowAddProjectModal(false)}
                         className={`flex-1 px-6 py-3 rounded-lg font-medium transition-colors ${
@@ -3183,7 +3201,14 @@ const LandCruiserTracker = () => {
                           });
                           setShowAddProjectModal(false);
                         }}
-                        className="flex-1 bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg font-medium transition-colors"
+                        disabled={!newProject.name}
+                        className={`flex-1 px-6 py-3 rounded-lg font-medium transition-colors ${
+                          !newProject.name
+                            ? darkMode 
+                              ? 'bg-gray-700 text-gray-500 cursor-not-allowed'
+                              : 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                            : 'bg-blue-600 hover:bg-blue-700 text-white'
+                        }`}
                       >
                         Add Project
                       </button>
@@ -3426,7 +3451,9 @@ const LandCruiserTracker = () => {
                       return null;
                     })()}
 
-                    <div className="flex gap-3 mt-6">
+                    <div className={`flex gap-3 mt-6 pt-6 border-t ${
+                      darkMode ? 'border-gray-700' : 'border-gray-200'
+                    }`}>
                       <button
                         onClick={() => {
                           setShowEditProjectModal(false);
@@ -3454,7 +3481,14 @@ const LandCruiserTracker = () => {
                           setShowEditProjectModal(false);
                           setEditingProject(null);
                         }}
-                        className="flex-1 bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg font-medium transition-colors"
+                        disabled={!editingProject.name}
+                        className={`flex-1 px-6 py-3 rounded-lg font-medium transition-colors ${
+                          !editingProject.name
+                            ? darkMode 
+                              ? 'bg-gray-700 text-gray-500 cursor-not-allowed'
+                              : 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                            : 'bg-blue-600 hover:bg-blue-700 text-white'
+                        }`}
                       >
                         Save Changes
                       </button>
@@ -4347,7 +4381,9 @@ const LandCruiserTracker = () => {
                       </div>
                     </div>
 
-                    <div className="flex gap-3 mt-6">
+                    <div className={`flex gap-3 mt-6 pt-6 border-t ${
+                      darkMode ? 'border-gray-700' : 'border-gray-200'
+                    }`}>
                       <button
                         onClick={() => setShowAddVehicleModal(false)}
                         className={`flex-1 px-6 py-3 rounded-lg font-medium transition-colors ${
@@ -4380,7 +4416,14 @@ const LandCruiserTracker = () => {
                             drain_plug: ''
                           });
                         }}
-                        className="flex-1 bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg font-medium transition-colors"
+                        disabled={!newVehicle.nickname}
+                        className={`flex-1 px-6 py-3 rounded-lg font-medium transition-colors ${
+                          !newVehicle.nickname
+                            ? darkMode 
+                              ? 'bg-gray-700 text-gray-500 cursor-not-allowed'
+                              : 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                            : 'bg-blue-600 hover:bg-blue-700 text-white'
+                        }`}
                       >
                         Add Vehicle
                       </button>
@@ -4736,7 +4779,9 @@ const LandCruiserTracker = () => {
                       </div>
                     </div>
 
-                    <div className="flex gap-3 mt-6">
+                    <div className={`flex gap-3 mt-6 pt-6 border-t ${
+                      darkMode ? 'border-gray-700' : 'border-gray-200'
+                    }`}>
                       <button
                         onClick={() => {
                           setShowEditVehicleModal(false);
@@ -4760,7 +4805,14 @@ const LandCruiserTracker = () => {
                           setShowEditVehicleModal(false);
                           setEditingVehicle(null);
                         }}
-                        className="flex-1 bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg font-medium transition-colors"
+                        disabled={!editingVehicle.nickname}
+                        className={`flex-1 px-6 py-3 rounded-lg font-medium transition-colors ${
+                          !editingVehicle.nickname
+                            ? darkMode 
+                              ? 'bg-gray-700 text-gray-500 cursor-not-allowed'
+                              : 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                            : 'bg-blue-600 hover:bg-blue-700 text-white'
+                        }`}
                       >
                         Save Changes
                       </button>
