@@ -165,25 +165,6 @@ const LandCruiserTracker = () => {
     return () => clearTimeout(timer);
   }, [activeTab]);
 
-  // Lock body scroll when any modal is open
-  useEffect(() => {
-    const isAnyModalOpen = showAddModal || showEditModal || showTrackingModal || 
-                          showAddProjectModal || showEditProjectModal || showProjectDetailModal ||
-                          showAddVehicleModal || showEditVehicleModal;
-    
-    if (isAnyModalOpen) {
-      document.body.classList.add('modal-open');
-    } else {
-      document.body.classList.remove('modal-open');
-    }
-    
-    // Cleanup on unmount
-    return () => {
-      document.body.classList.remove('modal-open');
-    };
-  }, [showAddModal, showEditModal, showTrackingModal, showAddProjectModal, 
-      showEditProjectModal, showProjectDetailModal, showAddVehicleModal, showEditVehicleModal]);
-
   const loadParts = async () => {
     try {
       setLoading(true);
@@ -595,6 +576,25 @@ const LandCruiserTracker = () => {
       localStorage.setItem('darkMode', JSON.stringify(darkMode));
     }
   }, [darkMode]);
+
+  // Lock body scroll when any modal is open
+  useEffect(() => {
+    const isAnyModalOpen = showAddModal || showEditModal || showTrackingModal || 
+                          showAddProjectModal || showEditProjectModal || showProjectDetailModal ||
+                          showAddVehicleModal || showEditVehicleModal;
+    
+    if (isAnyModalOpen) {
+      document.body.classList.add('modal-open');
+    } else {
+      document.body.classList.remove('modal-open');
+    }
+    
+    // Cleanup on unmount
+    return () => {
+      document.body.classList.remove('modal-open');
+    };
+  }, [showAddModal, showEditModal, showTrackingModal, showAddProjectModal, 
+      showEditProjectModal, showProjectDetailModal, showAddVehicleModal, showEditVehicleModal]);
 
   const [newPart, setNewPart] = useState({
     part: '',
