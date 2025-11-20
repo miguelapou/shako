@@ -126,8 +126,8 @@ const LandCruiserTracker = () => {
       const activeTabElement = tabRefs.current[activeTab];
       if (activeTabElement) {
         const { offsetLeft, offsetWidth } = activeTabElement;
-        // Add 8px padding on each side so underline doesn't touch edges
-        const padding = 8;
+        // Add more padding on each side so underline better matches content width
+        const padding = 12;
         setUnderlineStyle({
           left: offsetLeft + padding,
           width: offsetWidth - (padding * 2)
