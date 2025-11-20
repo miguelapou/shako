@@ -672,10 +672,6 @@ const LandCruiserTracker = () => {
     touchTimeout.current = setTimeout(() => {
       isDraggingTouch.current = true;
       setDraggedProject(project);
-      // Add haptic feedback on mobile if available
-      if (navigator.vibrate) {
-        navigator.vibrate(50);
-      }
     }, 200); // 200ms long press to start dragging
   };
 
@@ -772,10 +768,6 @@ const LandCruiserTracker = () => {
     touchTimeout.current = setTimeout(() => {
       isDraggingTouch.current = true;
       setDraggedVehicle(vehicle);
-      // Add haptic feedback on mobile if available
-      if (navigator.vibrate) {
-        navigator.vibrate(50);
-      }
     }, 200); // 200ms long press to start dragging
   };
 
