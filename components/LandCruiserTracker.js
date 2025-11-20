@@ -2766,7 +2766,7 @@ const LandCruiserTracker = () => {
                       setViewingProject(project);
                       setShowProjectDetailModal(true);
                     }}
-                    className={`relative rounded-lg shadow-lg p-6 transition-all hover:shadow-xl cursor-pointer ${
+                    className={`relative rounded-lg shadow-lg pt-3 pb-6 px-6 transition-all hover:shadow-xl cursor-pointer ${
                       draggedProject?.id === project.id 
                         ? 'opacity-50' 
                         : dragOverProject?.id === project.id
@@ -2814,7 +2814,7 @@ const LandCruiserTracker = () => {
                     </div>
 
                     {/* Project Header */}
-                    <div className="mb-4 mt-6">
+                    <div className="mb-4 mt-8">
                       <h3 className={`text-xl font-bold mb-2 ${
                         darkMode ? 'text-gray-100' : 'text-gray-900'
                       }`}>
@@ -3835,7 +3835,7 @@ const LandCruiserTracker = () => {
                   onDragLeave={handleVehicleDragLeave}
                   onDrop={(e) => handleVehicleDrop(e, vehicle)}
                   onDragEnd={handleVehicleDragEnd}
-                  className={`relative rounded-lg shadow-lg p-6 transition-all hover:shadow-xl cursor-move ${
+                  className={`relative rounded-lg shadow-lg pt-3 pb-6 px-6 transition-all hover:shadow-xl cursor-move ${
                     draggedVehicle?.id === vehicle.id 
                       ? 'opacity-50' 
                       : dragOverVehicle?.id === vehicle.id
@@ -3896,7 +3896,7 @@ const LandCruiserTracker = () => {
                   </div>
 
                   {/* Vehicle Header */}
-                  <div className="mb-4 mt-6">
+                  <div className="mb-4 mt-8">
                     <h3 className={`text-xl font-bold mb-1 ${
                       darkMode ? 'text-gray-100' : 'text-gray-900'
                     }`}>
