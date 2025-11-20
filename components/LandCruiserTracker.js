@@ -5034,7 +5034,7 @@ const LandCruiserTracker = () => {
                   }`}>
                     <h2 className={`text-2xl font-bold ${
                       darkMode ? 'text-gray-100' : 'text-gray-900'
-                    }`}>
+                    }`} style={{ fontFamily: "'FoundationOne', 'Courier New', monospace" }}>
                       {viewingVehicle.nickname || viewingVehicle.name || 'Vehicle Details'}
                     </h2>
                     <button
@@ -5148,7 +5148,7 @@ const LandCruiserTracker = () => {
                             <div>
                               <p className={`text-sm font-medium mb-1 ${
                                 darkMode ? 'text-gray-400' : 'text-gray-600'
-                              }`}>Fuel Filter</p>
+                              }`}>Fuel</p>
                               <p className={`text-base ${
                                 darkMode ? 'text-gray-100' : 'text-gray-900'
                               }`}>{viewingVehicle.fuel_filter}</p>
@@ -5158,7 +5158,7 @@ const LandCruiserTracker = () => {
                             <div>
                               <p className={`text-sm font-medium mb-1 ${
                                 darkMode ? 'text-gray-400' : 'text-gray-600'
-                              }`}>Air Filter</p>
+                              }`}>Air</p>
                               <p className={`text-base ${
                                 darkMode ? 'text-gray-100' : 'text-gray-900'
                               }`}>{viewingVehicle.air_filter}</p>
@@ -5258,7 +5258,7 @@ const LandCruiserTracker = () => {
                       className="px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium transition-colors flex items-center gap-2"
                     >
                       <Edit2 className="w-4 h-4" />
-                      Edit Vehicle
+                      Edit
                     </button>
                   </div>
                 </div>
