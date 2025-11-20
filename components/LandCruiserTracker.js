@@ -1,5 +1,5 @@
 import React, { useState, useMemo, useEffect } from 'react';
-import { Search, Package, DollarSign, TrendingUp, Truck, CheckCircle, Clock, XCircle, ChevronDown, Plus, X, ExternalLink, ChevronUp, Edit2, Trash2, Moon, Sun, Wrench, List, Target, Calendar, GripVertical, ShoppingCart } from 'lucide-react';
+import { Search, Package, DollarSign, TrendingUp, Truck, CheckCircle, Clock, XCircle, ChevronDown, Plus, X, ExternalLink, ChevronUp, Edit2, Trash2, Moon, Sun, Wrench, List, Target, Calendar, GripVertical, ShoppingCart, Car } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 
 // Add Foundation One font
@@ -79,16 +79,36 @@ const fontStyles = `
 const LandCruiserTracker = () => {
   const [parts, setParts] = useState([]);
   const [projects, setProjects] = useState([]);
+  const [vehicles, setVehicles] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [activeTab, setActiveTab] = useState('projects'); // 'parts' or 'projects'
+  const [activeTab, setActiveTab] = useState('projects'); // 'parts', 'projects', or 'vehicles'
   const [previousTab, setPreviousTab] = useState('projects');
   const [draggedProject, setDraggedProject] = useState(null);
   const [dragOverProject, setDragOverProject] = useState(null);
+
+  // Vehicle modal states
+  const [showAddVehicleModal, setShowAddVehicleModal] = useState(false);
+  const [showEditVehicleModal, setShowEditVehicleModal] = useState(false);
+  const [editingVehicle, setEditingVehicle] = useState(null);
+  const [newVehicle, setNewVehicle] = useState({
+    name: '',
+    license_plate: '',
+    vin: '',
+    insurance_policy: '',
+    fuel_filter: '',
+    air_filter: '',
+    oil_filter: '',
+    oil_type: '',
+    oil_capacity: '',
+    oil_brand: '',
+    drain_plug: ''
+  });
 
   // Load parts and projects from Supabase on mount
   useEffect(() => {
     loadParts();
     loadProjects();
+    loadVehicles();
   }, []);
 
   const loadParts = async () => {
@@ -318,6 +338,70 @@ const LandCruiserTracker = () => {
     } catch (error) {
       console.error('Error deleting project:', error);
       alert('Error deleting project');
+    }
+  };
+
+  // Vehicle CRUD functions
+  const loadVehicles = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('vehicles')
+        .select('*')
+        .order('id', { ascending: true });
+
+      if (error) throw error;
+      if (data) {
+        setVehicles(data);
+      }
+    } catch (error) {
+      console.error('Error loading vehicles:', error);
+    }
+  };
+
+  const addVehicle = async (vehicleData) => {
+    try {
+      const { data, error } = await supabase
+        .from('vehicles')
+        .insert([vehicleData])
+        .select();
+
+      if (error) throw error;
+      await loadVehicles();
+    } catch (error) {
+      console.error('Error adding vehicle:', error);
+      alert('Error adding vehicle');
+    }
+  };
+
+  const updateVehicle = async (vehicleId, updates) => {
+    try {
+      const { error } = await supabase
+        .from('vehicles')
+        .update(updates)
+        .eq('id', vehicleId);
+
+      if (error) throw error;
+      await loadVehicles();
+    } catch (error) {
+      console.error('Error updating vehicle:', error);
+      alert('Error updating vehicle');
+    }
+  };
+
+  const deleteVehicle = async (vehicleId) => {
+    if (!confirm('Are you sure you want to delete this vehicle?')) return;
+    
+    try {
+      const { error } = await supabase
+        .from('vehicles')
+        .delete()
+        .eq('id', vehicleId);
+
+      if (error) throw error;
+      await loadVehicles();
+    } catch (error) {
+      console.error('Error deleting vehicle:', error);
+      alert('Error deleting vehicle');
     }
   };
 
@@ -1239,11 +1323,15 @@ const LandCruiserTracker = () => {
                 {darkMode ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
               </button>
               <button
-                onClick={() => activeTab === 'parts' ? setShowAddModal(true) : setShowAddProjectModal(true)}
+                onClick={() => {
+                  if (activeTab === 'parts') setShowAddModal(true);
+                  else if (activeTab === 'projects') setShowAddProjectModal(true);
+                  else if (activeTab === 'vehicles') setShowAddVehicleModal(true);
+                }}
                 className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-4 sm:px-6 py-2 sm:py-3 rounded-lg shadow-md transition-colors font-medium text-sm sm:text-base whitespace-nowrap"
               >
                 <Plus className="w-4 h-4 sm:w-5 sm:h-5" />
-                {activeTab === 'parts' ? 'Add New Part' : 'Add New Project'}
+                {activeTab === 'parts' ? 'Add New Part' : activeTab === 'projects' ? 'Add New Project' : 'Add Vehicle'}
               </button>
             </div>
           </div>
@@ -1289,6 +1377,26 @@ const LandCruiserTracker = () => {
               <Package className="w-5 h-5" />
               <span>Parts</span>
               {activeTab === 'parts' && (
+                <div className={`absolute bottom-0 left-0 right-0 h-0.5 ${
+                  darkMode ? 'bg-blue-400' : 'bg-blue-600'
+                }`} />
+              )}
+            </button>
+            <button
+              onClick={() => handleTabChange('vehicles')}
+              className={`flex items-center gap-2 px-6 py-3 font-medium transition-all relative ${
+                activeTab === 'vehicles'
+                  ? darkMode
+                    ? 'text-blue-400'
+                    : 'text-blue-600'
+                  : darkMode
+                    ? 'text-gray-400 hover:text-gray-300'
+                    : 'text-gray-600 hover:text-gray-800'
+              }`}
+            >
+              <Car className="w-5 h-5" />
+              <span>Vehicles</span>
+              {activeTab === 'vehicles' && (
                 <div className={`absolute bottom-0 left-0 right-0 h-0.5 ${
                   darkMode ? 'bg-blue-400' : 'bg-blue-600'
                 }`} />
@@ -3496,6 +3604,828 @@ const LandCruiserTracker = () => {
                         </>
                       );
                     })()}
+                  </div>
+                </div>
+              </div>
+            )}
+          </>
+          </div>
+        )}
+
+        {/* VEHICLES TAB CONTENT */}
+        {activeTab === 'vehicles' && (
+          <div className={previousTab === 'parts' ? 'slide-in-left' : previousTab === 'projects' ? 'slide-in-right' : 'slide-in-left'}>
+          <>
+            {/* Vehicles Grid */}
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {vehicles.map((vehicle) => (
+                <div
+                  key={vehicle.id}
+                  className={`relative rounded-lg shadow-lg p-6 transition-all hover:shadow-xl ${
+                    darkMode ? 'bg-gray-800' : 'bg-white'
+                  }`}
+                >
+                  {/* Edit Button - Top Right */}
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setEditingVehicle(vehicle);
+                      setShowEditVehicleModal(true);
+                    }}
+                    className={`absolute top-2 right-2 p-1.5 rounded-md transition-colors ${
+                      darkMode ? 'hover:bg-gray-700 text-gray-500 hover:text-blue-400' : 'hover:bg-gray-100 text-gray-500 hover:text-blue-600'
+                    }`}
+                    title="Edit vehicle"
+                  >
+                    <Edit2 className="w-3.5 h-3.5" />
+                  </button>
+
+                  {/* Vehicle Header */}
+                  <div className="mb-4">
+                    <h3 className={`text-xl font-bold mb-2 ${
+                      darkMode ? 'text-gray-100' : 'text-gray-900'
+                    }`}>
+                      {vehicle.name}
+                    </h3>
+                    {vehicle.license_plate && (
+                      <span className={`inline-block px-3 py-1 rounded-full text-sm font-medium ${
+                        darkMode ? 'bg-blue-600 text-blue-100' : 'bg-blue-100 text-blue-800'
+                      }`}>
+                        {vehicle.license_plate}
+                      </span>
+                    )}
+                  </div>
+
+                  {/* Vehicle Details */}
+                  <div className="space-y-3">
+                    {vehicle.vin && (
+                      <div>
+                        <p className={`text-xs mb-1 ${
+                          darkMode ? 'text-gray-400' : 'text-gray-600'
+                        }`}>
+                          VIN
+                        </p>
+                        <p className={`text-sm font-mono ${
+                          darkMode ? 'text-gray-200' : 'text-gray-800'
+                        }`}>
+                          {vehicle.vin}
+                        </p>
+                      </div>
+                    )}
+
+                    {vehicle.insurance_policy && (
+                      <div>
+                        <p className={`text-xs mb-1 ${
+                          darkMode ? 'text-gray-400' : 'text-gray-600'
+                        }`}>
+                          Insurance Policy
+                        </p>
+                        <p className={`text-sm ${
+                          darkMode ? 'text-gray-200' : 'text-gray-800'
+                        }`}>
+                          {vehicle.insurance_policy}
+                        </p>
+                      </div>
+                    )}
+
+                    {/* Maintenance Info */}
+                    {(vehicle.fuel_filter || vehicle.air_filter || vehicle.oil_filter) && (
+                      <div className={`pt-3 border-t ${
+                        darkMode ? 'border-gray-600' : 'border-gray-200'
+                      }`}>
+                        <p className={`text-xs font-semibold mb-2 ${
+                          darkMode ? 'text-gray-300' : 'text-gray-700'
+                        }`}>
+                          Filters
+                        </p>
+                        {vehicle.fuel_filter && (
+                          <p className={`text-xs ${
+                            darkMode ? 'text-gray-400' : 'text-gray-600'
+                          }`}>
+                            Fuel: {vehicle.fuel_filter}
+                          </p>
+                        )}
+                        {vehicle.air_filter && (
+                          <p className={`text-xs ${
+                            darkMode ? 'text-gray-400' : 'text-gray-600'
+                          }`}>
+                            Air: {vehicle.air_filter}
+                          </p>
+                        )}
+                        {vehicle.oil_filter && (
+                          <p className={`text-xs ${
+                            darkMode ? 'text-gray-400' : 'text-gray-600'
+                          }`}>
+                            Oil Filter: {vehicle.oil_filter}
+                          </p>
+                        )}
+                      </div>
+                    )}
+
+                    {/* Oil Info */}
+                    {(vehicle.oil_type || vehicle.oil_capacity || vehicle.oil_brand || vehicle.drain_plug) && (
+                      <div className={`pt-3 border-t ${
+                        darkMode ? 'border-gray-600' : 'border-gray-200'
+                      }`}>
+                        <p className={`text-xs font-semibold mb-2 ${
+                          darkMode ? 'text-gray-300' : 'text-gray-700'
+                        }`}>
+                          Oil Information
+                        </p>
+                        {vehicle.oil_type && (
+                          <p className={`text-xs ${
+                            darkMode ? 'text-gray-400' : 'text-gray-600'
+                          }`}>
+                            Type: {vehicle.oil_type}
+                          </p>
+                        )}
+                        {vehicle.oil_capacity && (
+                          <p className={`text-xs ${
+                            darkMode ? 'text-gray-400' : 'text-gray-600'
+                          }`}>
+                            Capacity: {vehicle.oil_capacity}
+                          </p>
+                        )}
+                        {vehicle.oil_brand && (
+                          <p className={`text-xs ${
+                            darkMode ? 'text-gray-400' : 'text-gray-600'
+                          }`}>
+                            Brand: {vehicle.oil_brand}
+                          </p>
+                        )}
+                        {vehicle.drain_plug && (
+                          <p className={`text-xs ${
+                            darkMode ? 'text-gray-400' : 'text-gray-600'
+                          }`}>
+                            Drain Plug: {vehicle.drain_plug}
+                          </p>
+                        )}
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Delete Button */}
+                  <button
+                    onClick={() => deleteVehicle(vehicle.id)}
+                    className={`mt-4 w-full px-4 py-2 rounded-lg font-medium transition-colors flex items-center justify-center gap-2 ${
+                      darkMode 
+                        ? 'bg-red-900/30 hover:bg-red-900/50 text-red-400' 
+                        : 'bg-red-50 hover:bg-red-100 text-red-600'
+                    }`}
+                  >
+                    <Trash2 className="w-4 h-4" />
+                    Delete Vehicle
+                  </button>
+                </div>
+              ))}
+            </div>
+
+            {/* Empty State */}
+            {vehicles.length === 0 && (
+              <div className={`text-center py-12 rounded-lg ${
+                darkMode ? 'bg-gray-800' : 'bg-white'
+              }`}>
+                <Car className={`w-16 h-16 mx-auto mb-4 ${
+                  darkMode ? 'text-gray-600' : 'text-gray-400'
+                }`} />
+                <h3 className={`text-xl font-semibold mb-2 ${
+                  darkMode ? 'text-gray-300' : 'text-gray-700'
+                }`}>
+                  No Vehicles Yet
+                </h3>
+                <p className={`mb-4 ${
+                  darkMode ? 'text-gray-400' : 'text-gray-600'
+                }`}>
+                  Add your first vehicle to track maintenance and information
+                </p>
+                <button
+                  onClick={() => setShowAddVehicleModal(true)}
+                  className="inline-flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg shadow-md transition-colors font-medium"
+                >
+                  <Plus className="w-5 h-5" />
+                  Add First Vehicle
+                </button>
+              </div>
+            )}
+
+            {/* Add Vehicle Modal */}
+            {showAddVehicleModal && (
+              <div 
+                className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4 modal-backdrop-enter"
+                onClick={() => setShowAddVehicleModal(false)}
+              >
+                <div 
+                  className={`rounded-lg shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto modal-popup-enter ${
+                    darkMode ? 'bg-gray-800' : 'bg-white'
+                  }`}
+                  onClick={(e) => e.stopPropagation()}
+                >
+                  <div className={`sticky top-0 border-b px-6 py-4 flex items-center justify-between ${
+                    darkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-200'
+                  }`} style={{ zIndex: 10 }}>
+                    <h2 className={`text-2xl font-bold ${
+                      darkMode ? 'text-gray-100' : 'text-gray-800'
+                    }`} style={{ fontFamily: "'FoundationOne', 'Courier New', monospace" }}>
+                      Add Vehicle
+                    </h2>
+                    <button
+                      onClick={() => setShowAddVehicleModal(false)}
+                      className={`transition-colors ${
+                        darkMode ? 'text-gray-400 hover:text-gray-300' : 'text-gray-400 hover:text-gray-600'
+                      }`}
+                    >
+                      <X className="w-6 h-6" />
+                    </button>
+                  </div>
+                  
+                  <div className="p-6">
+                    <div className="space-y-4">
+                      <div>
+                        <label className={`block text-sm font-medium mb-2 ${
+                          darkMode ? 'text-gray-300' : 'text-gray-700'
+                        }`}>
+                          Vehicle Name *
+                        </label>
+                        <input
+                          type="text"
+                          value={newVehicle.name}
+                          onChange={(e) => setNewVehicle({ ...newVehicle, name: e.target.value })}
+                          className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
+                            darkMode 
+                              ? 'bg-gray-700 border-gray-600 text-gray-100 placeholder-gray-400' 
+                              : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400'
+                          }`}
+                          placeholder="e.g., 1990 Toyota Land Cruiser"
+                        />
+                      </div>
+
+                      <div className="grid grid-cols-2 gap-4">
+                        <div>
+                          <label className={`block text-sm font-medium mb-2 ${
+                            darkMode ? 'text-gray-300' : 'text-gray-700'
+                          }`}>
+                            License Plate
+                          </label>
+                          <input
+                            type="text"
+                            value={newVehicle.license_plate}
+                            onChange={(e) => setNewVehicle({ ...newVehicle, license_plate: e.target.value })}
+                            className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
+                              darkMode 
+                                ? 'bg-gray-700 border-gray-600 text-gray-100 placeholder-gray-400' 
+                                : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400'
+                            }`}
+                            placeholder="ABC-1234"
+                          />
+                        </div>
+
+                        <div>
+                          <label className={`block text-sm font-medium mb-2 ${
+                            darkMode ? 'text-gray-300' : 'text-gray-700'
+                          }`}>
+                            VIN
+                          </label>
+                          <input
+                            type="text"
+                            value={newVehicle.vin}
+                            onChange={(e) => setNewVehicle({ ...newVehicle, vin: e.target.value })}
+                            className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
+                              darkMode 
+                                ? 'bg-gray-700 border-gray-600 text-gray-100 placeholder-gray-400' 
+                                : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400'
+                            }`}
+                            placeholder="17 characters"
+                          />
+                        </div>
+                      </div>
+
+                      <div>
+                        <label className={`block text-sm font-medium mb-2 ${
+                          darkMode ? 'text-gray-300' : 'text-gray-700'
+                        }`}>
+                          Insurance Policy
+                        </label>
+                        <input
+                          type="text"
+                          value={newVehicle.insurance_policy}
+                          onChange={(e) => setNewVehicle({ ...newVehicle, insurance_policy: e.target.value })}
+                          className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
+                            darkMode 
+                              ? 'bg-gray-700 border-gray-600 text-gray-100 placeholder-gray-400' 
+                              : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400'
+                          }`}
+                          placeholder="Policy number"
+                        />
+                      </div>
+
+                      <div className={`pt-4 border-t ${
+                        darkMode ? 'border-gray-700' : 'border-gray-200'
+                      }`}>
+                        <h3 className={`text-lg font-semibold mb-3 ${
+                          darkMode ? 'text-gray-200' : 'text-gray-800'
+                        }`}>
+                          Filters
+                        </h3>
+                        <div className="grid grid-cols-2 gap-4">
+                          <div>
+                            <label className={`block text-sm font-medium mb-2 ${
+                              darkMode ? 'text-gray-300' : 'text-gray-700'
+                            }`}>
+                              Fuel Filter
+                            </label>
+                            <input
+                              type="text"
+                              value={newVehicle.fuel_filter}
+                              onChange={(e) => setNewVehicle({ ...newVehicle, fuel_filter: e.target.value })}
+                              className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
+                                darkMode 
+                                  ? 'bg-gray-700 border-gray-600 text-gray-100 placeholder-gray-400' 
+                                  : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400'
+                              }`}
+                              placeholder="Part number"
+                            />
+                          </div>
+
+                          <div>
+                            <label className={`block text-sm font-medium mb-2 ${
+                              darkMode ? 'text-gray-300' : 'text-gray-700'
+                            }`}>
+                              Air Filter
+                            </label>
+                            <input
+                              type="text"
+                              value={newVehicle.air_filter}
+                              onChange={(e) => setNewVehicle({ ...newVehicle, air_filter: e.target.value })}
+                              className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
+                                darkMode 
+                                  ? 'bg-gray-700 border-gray-600 text-gray-100 placeholder-gray-400' 
+                                  : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400'
+                              }`}
+                              placeholder="Part number"
+                            />
+                          </div>
+                        </div>
+                      </div>
+
+                      <div className={`pt-4 border-t ${
+                        darkMode ? 'border-gray-700' : 'border-gray-200'
+                      }`}>
+                        <h3 className={`text-lg font-semibold mb-3 ${
+                          darkMode ? 'text-gray-200' : 'text-gray-800'
+                        }`}>
+                          Oil Information
+                        </h3>
+                        <div className="space-y-4">
+                          <div>
+                            <label className={`block text-sm font-medium mb-2 ${
+                              darkMode ? 'text-gray-300' : 'text-gray-700'
+                            }`}>
+                              Oil Filter
+                            </label>
+                            <input
+                              type="text"
+                              value={newVehicle.oil_filter}
+                              onChange={(e) => setNewVehicle({ ...newVehicle, oil_filter: e.target.value })}
+                              className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
+                                darkMode 
+                                  ? 'bg-gray-700 border-gray-600 text-gray-100 placeholder-gray-400' 
+                                  : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400'
+                              }`}
+                              placeholder="Part number"
+                            />
+                          </div>
+
+                          <div className="grid grid-cols-2 gap-4">
+                            <div>
+                              <label className={`block text-sm font-medium mb-2 ${
+                                darkMode ? 'text-gray-300' : 'text-gray-700'
+                              }`}>
+                                Oil Type
+                              </label>
+                              <input
+                                type="text"
+                                value={newVehicle.oil_type}
+                                onChange={(e) => setNewVehicle({ ...newVehicle, oil_type: e.target.value })}
+                                className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
+                                  darkMode 
+                                    ? 'bg-gray-700 border-gray-600 text-gray-100 placeholder-gray-400' 
+                                    : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400'
+                                }`}
+                                placeholder="e.g., 10W-30"
+                              />
+                            </div>
+
+                            <div>
+                              <label className={`block text-sm font-medium mb-2 ${
+                                darkMode ? 'text-gray-300' : 'text-gray-700'
+                              }`}>
+                                Oil Capacity
+                              </label>
+                              <input
+                                type="text"
+                                value={newVehicle.oil_capacity}
+                                onChange={(e) => setNewVehicle({ ...newVehicle, oil_capacity: e.target.value })}
+                                className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
+                                  darkMode 
+                                    ? 'bg-gray-700 border-gray-600 text-gray-100 placeholder-gray-400' 
+                                    : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400'
+                                }`}
+                                placeholder="e.g., 6.5 quarts"
+                              />
+                            </div>
+                          </div>
+
+                          <div className="grid grid-cols-2 gap-4">
+                            <div>
+                              <label className={`block text-sm font-medium mb-2 ${
+                                darkMode ? 'text-gray-300' : 'text-gray-700'
+                              }`}>
+                                Oil Brand
+                              </label>
+                              <input
+                                type="text"
+                                value={newVehicle.oil_brand}
+                                onChange={(e) => setNewVehicle({ ...newVehicle, oil_brand: e.target.value })}
+                                className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
+                                  darkMode 
+                                    ? 'bg-gray-700 border-gray-600 text-gray-100 placeholder-gray-400' 
+                                    : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400'
+                                }`}
+                                placeholder="e.g., Mobil 1"
+                              />
+                            </div>
+
+                            <div>
+                              <label className={`block text-sm font-medium mb-2 ${
+                                darkMode ? 'text-gray-300' : 'text-gray-700'
+                              }`}>
+                                Drain Plug
+                              </label>
+                              <input
+                                type="text"
+                                value={newVehicle.drain_plug}
+                                onChange={(e) => setNewVehicle({ ...newVehicle, drain_plug: e.target.value })}
+                                className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
+                                  darkMode 
+                                    ? 'bg-gray-700 border-gray-600 text-gray-100 placeholder-gray-400' 
+                                    : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400'
+                                }`}
+                                placeholder="e.g., 14mm"
+                              />
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="flex gap-3 mt-6">
+                      <button
+                        onClick={() => setShowAddVehicleModal(false)}
+                        className={`flex-1 px-6 py-3 rounded-lg font-medium transition-colors ${
+                          darkMode 
+                            ? 'bg-gray-700 hover:bg-gray-600 text-gray-100' 
+                            : 'bg-gray-200 hover:bg-gray-300 text-gray-800'
+                        }`}
+                      >
+                        Cancel
+                      </button>
+                      <button
+                        onClick={async () => {
+                          if (!newVehicle.name) {
+                            alert('Please enter a vehicle name');
+                            return;
+                          }
+                          await addVehicle(newVehicle);
+                          setShowAddVehicleModal(false);
+                          setNewVehicle({
+                            name: '',
+                            license_plate: '',
+                            vin: '',
+                            insurance_policy: '',
+                            fuel_filter: '',
+                            air_filter: '',
+                            oil_filter: '',
+                            oil_type: '',
+                            oil_capacity: '',
+                            oil_brand: '',
+                            drain_plug: ''
+                          });
+                        }}
+                        className="flex-1 bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg font-medium transition-colors"
+                      >
+                        Add Vehicle
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* Edit Vehicle Modal */}
+            {showEditVehicleModal && editingVehicle && (
+              <div 
+                className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4 modal-backdrop-enter"
+                onClick={() => {
+                  setShowEditVehicleModal(false);
+                  setEditingVehicle(null);
+                }}
+              >
+                <div 
+                  className={`rounded-lg shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto modal-popup-enter ${
+                    darkMode ? 'bg-gray-800' : 'bg-white'
+                  }`}
+                  onClick={(e) => e.stopPropagation()}
+                >
+                  <div className={`sticky top-0 border-b px-6 py-4 flex items-center justify-between ${
+                    darkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-200'
+                  }`} style={{ zIndex: 10 }}>
+                    <h2 className={`text-2xl font-bold ${
+                      darkMode ? 'text-gray-100' : 'text-gray-800'
+                    }`} style={{ fontFamily: "'FoundationOne', 'Courier New', monospace" }}>
+                      Edit Vehicle
+                    </h2>
+                    <button
+                      onClick={() => {
+                        setShowEditVehicleModal(false);
+                        setEditingVehicle(null);
+                      }}
+                      className={`transition-colors ${
+                        darkMode ? 'text-gray-400 hover:text-gray-300' : 'text-gray-400 hover:text-gray-600'
+                      }`}
+                    >
+                      <X className="w-6 h-6" />
+                    </button>
+                  </div>
+                  
+                  <div className="p-6">
+                    <div className="space-y-4">
+                      <div>
+                        <label className={`block text-sm font-medium mb-2 ${
+                          darkMode ? 'text-gray-300' : 'text-gray-700'
+                        }`}>
+                          Vehicle Name *
+                        </label>
+                        <input
+                          type="text"
+                          value={editingVehicle.name}
+                          onChange={(e) => setEditingVehicle({ ...editingVehicle, name: e.target.value })}
+                          className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
+                            darkMode 
+                              ? 'bg-gray-700 border-gray-600 text-gray-100 placeholder-gray-400' 
+                              : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400'
+                          }`}
+                          placeholder="e.g., 1990 Toyota Land Cruiser"
+                        />
+                      </div>
+
+                      <div className="grid grid-cols-2 gap-4">
+                        <div>
+                          <label className={`block text-sm font-medium mb-2 ${
+                            darkMode ? 'text-gray-300' : 'text-gray-700'
+                          }`}>
+                            License Plate
+                          </label>
+                          <input
+                            type="text"
+                            value={editingVehicle.license_plate || ''}
+                            onChange={(e) => setEditingVehicle({ ...editingVehicle, license_plate: e.target.value })}
+                            className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
+                              darkMode 
+                                ? 'bg-gray-700 border-gray-600 text-gray-100 placeholder-gray-400' 
+                                : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400'
+                            }`}
+                            placeholder="ABC-1234"
+                          />
+                        </div>
+
+                        <div>
+                          <label className={`block text-sm font-medium mb-2 ${
+                            darkMode ? 'text-gray-300' : 'text-gray-700'
+                          }`}>
+                            VIN
+                          </label>
+                          <input
+                            type="text"
+                            value={editingVehicle.vin || ''}
+                            onChange={(e) => setEditingVehicle({ ...editingVehicle, vin: e.target.value })}
+                            className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
+                              darkMode 
+                                ? 'bg-gray-700 border-gray-600 text-gray-100 placeholder-gray-400' 
+                                : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400'
+                            }`}
+                            placeholder="17 characters"
+                          />
+                        </div>
+                      </div>
+
+                      <div>
+                        <label className={`block text-sm font-medium mb-2 ${
+                          darkMode ? 'text-gray-300' : 'text-gray-700'
+                        }`}>
+                          Insurance Policy
+                        </label>
+                        <input
+                          type="text"
+                          value={editingVehicle.insurance_policy || ''}
+                          onChange={(e) => setEditingVehicle({ ...editingVehicle, insurance_policy: e.target.value })}
+                          className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
+                            darkMode 
+                              ? 'bg-gray-700 border-gray-600 text-gray-100 placeholder-gray-400' 
+                              : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400'
+                          }`}
+                          placeholder="Policy number"
+                        />
+                      </div>
+
+                      <div className={`pt-4 border-t ${
+                        darkMode ? 'border-gray-700' : 'border-gray-200'
+                      }`}>
+                        <h3 className={`text-lg font-semibold mb-3 ${
+                          darkMode ? 'text-gray-200' : 'text-gray-800'
+                        }`}>
+                          Filters
+                        </h3>
+                        <div className="grid grid-cols-2 gap-4">
+                          <div>
+                            <label className={`block text-sm font-medium mb-2 ${
+                              darkMode ? 'text-gray-300' : 'text-gray-700'
+                            }`}>
+                              Fuel Filter
+                            </label>
+                            <input
+                              type="text"
+                              value={editingVehicle.fuel_filter || ''}
+                              onChange={(e) => setEditingVehicle({ ...editingVehicle, fuel_filter: e.target.value })}
+                              className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
+                                darkMode 
+                                  ? 'bg-gray-700 border-gray-600 text-gray-100 placeholder-gray-400' 
+                                  : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400'
+                              }`}
+                              placeholder="Part number"
+                            />
+                          </div>
+
+                          <div>
+                            <label className={`block text-sm font-medium mb-2 ${
+                              darkMode ? 'text-gray-300' : 'text-gray-700'
+                            }`}>
+                              Air Filter
+                            </label>
+                            <input
+                              type="text"
+                              value={editingVehicle.air_filter || ''}
+                              onChange={(e) => setEditingVehicle({ ...editingVehicle, air_filter: e.target.value })}
+                              className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
+                                darkMode 
+                                  ? 'bg-gray-700 border-gray-600 text-gray-100 placeholder-gray-400' 
+                                  : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400'
+                              }`}
+                              placeholder="Part number"
+                            />
+                          </div>
+                        </div>
+                      </div>
+
+                      <div className={`pt-4 border-t ${
+                        darkMode ? 'border-gray-700' : 'border-gray-200'
+                      }`}>
+                        <h3 className={`text-lg font-semibold mb-3 ${
+                          darkMode ? 'text-gray-200' : 'text-gray-800'
+                        }`}>
+                          Oil Information
+                        </h3>
+                        <div className="space-y-4">
+                          <div>
+                            <label className={`block text-sm font-medium mb-2 ${
+                              darkMode ? 'text-gray-300' : 'text-gray-700'
+                            }`}>
+                              Oil Filter
+                            </label>
+                            <input
+                              type="text"
+                              value={editingVehicle.oil_filter || ''}
+                              onChange={(e) => setEditingVehicle({ ...editingVehicle, oil_filter: e.target.value })}
+                              className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
+                                darkMode 
+                                  ? 'bg-gray-700 border-gray-600 text-gray-100 placeholder-gray-400' 
+                                  : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400'
+                              }`}
+                              placeholder="Part number"
+                            />
+                          </div>
+
+                          <div className="grid grid-cols-2 gap-4">
+                            <div>
+                              <label className={`block text-sm font-medium mb-2 ${
+                                darkMode ? 'text-gray-300' : 'text-gray-700'
+                              }`}>
+                                Oil Type
+                              </label>
+                              <input
+                                type="text"
+                                value={editingVehicle.oil_type || ''}
+                                onChange={(e) => setEditingVehicle({ ...editingVehicle, oil_type: e.target.value })}
+                                className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
+                                  darkMode 
+                                    ? 'bg-gray-700 border-gray-600 text-gray-100 placeholder-gray-400' 
+                                    : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400'
+                                }`}
+                                placeholder="e.g., 10W-30"
+                              />
+                            </div>
+
+                            <div>
+                              <label className={`block text-sm font-medium mb-2 ${
+                                darkMode ? 'text-gray-300' : 'text-gray-700'
+                              }`}>
+                                Oil Capacity
+                              </label>
+                              <input
+                                type="text"
+                                value={editingVehicle.oil_capacity || ''}
+                                onChange={(e) => setEditingVehicle({ ...editingVehicle, oil_capacity: e.target.value })}
+                                className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
+                                  darkMode 
+                                    ? 'bg-gray-700 border-gray-600 text-gray-100 placeholder-gray-400' 
+                                    : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400'
+                                }`}
+                                placeholder="e.g., 6.5 quarts"
+                              />
+                            </div>
+                          </div>
+
+                          <div className="grid grid-cols-2 gap-4">
+                            <div>
+                              <label className={`block text-sm font-medium mb-2 ${
+                                darkMode ? 'text-gray-300' : 'text-gray-700'
+                              }`}>
+                                Oil Brand
+                              </label>
+                              <input
+                                type="text"
+                                value={editingVehicle.oil_brand || ''}
+                                onChange={(e) => setEditingVehicle({ ...editingVehicle, oil_brand: e.target.value })}
+                                className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
+                                  darkMode 
+                                    ? 'bg-gray-700 border-gray-600 text-gray-100 placeholder-gray-400' 
+                                    : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400'
+                                }`}
+                                placeholder="e.g., Mobil 1"
+                              />
+                            </div>
+
+                            <div>
+                              <label className={`block text-sm font-medium mb-2 ${
+                                darkMode ? 'text-gray-300' : 'text-gray-700'
+                              }`}>
+                                Drain Plug
+                              </label>
+                              <input
+                                type="text"
+                                value={editingVehicle.drain_plug || ''}
+                                onChange={(e) => setEditingVehicle({ ...editingVehicle, drain_plug: e.target.value })}
+                                className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
+                                  darkMode 
+                                    ? 'bg-gray-700 border-gray-600 text-gray-100 placeholder-gray-400' 
+                                    : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400'
+                                }`}
+                                placeholder="e.g., 14mm"
+                              />
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="flex gap-3 mt-6">
+                      <button
+                        onClick={() => {
+                          setShowEditVehicleModal(false);
+                          setEditingVehicle(null);
+                        }}
+                        className={`flex-1 px-6 py-3 rounded-lg font-medium transition-colors ${
+                          darkMode 
+                            ? 'bg-gray-700 hover:bg-gray-600 text-gray-100' 
+                            : 'bg-gray-200 hover:bg-gray-300 text-gray-800'
+                        }`}
+                      >
+                        Cancel
+                      </button>
+                      <button
+                        onClick={async () => {
+                          if (!editingVehicle.name) {
+                            alert('Please enter a vehicle name');
+                            return;
+                          }
+                          await updateVehicle(editingVehicle.id, editingVehicle);
+                          setShowEditVehicleModal(false);
+                          setEditingVehicle(null);
+                        }}
+                        className="flex-1 bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg font-medium transition-colors"
+                      >
+                        Save Changes
+                      </button>
+                    </div>
                   </div>
                 </div>
               </div>
