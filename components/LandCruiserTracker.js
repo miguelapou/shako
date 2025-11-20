@@ -5052,10 +5052,10 @@ const LandCruiserTracker = () => {
 
                   {/* Content */}
                   <div className="p-6 space-y-6">
-                    {/* Top Section: Basic Info Card (left) and Image (right) */}
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                      {/* Basic Info Card */}
-                      <div className={`rounded-lg p-6 ${
+                    {/* Top Section: Basic Info Card (left 40%) and Image (right 60%) */}
+                    <div className="grid grid-cols-1 md:grid-cols-5 gap-6">
+                      {/* Basic Info Card - 2 columns (40%) */}
+                      <div className={`md:col-span-2 rounded-lg p-6 ${
                         darkMode ? 'bg-gray-700' : 'bg-gray-50'
                       }`}>
                         <h3 className={`text-lg font-semibold mb-4 ${
@@ -5121,9 +5121,9 @@ const LandCruiserTracker = () => {
                         </div>
                       </div>
 
-                      {/* Vehicle Image */}
+                      {/* Vehicle Image - 3 columns (60%) */}
                       {viewingVehicle.image_url && (
-                        <div className="rounded-lg overflow-hidden">
+                        <div className="md:col-span-3 rounded-lg overflow-hidden">
                           <img 
                             src={viewingVehicle.image_url} 
                             alt={viewingVehicle.nickname || viewingVehicle.name}
