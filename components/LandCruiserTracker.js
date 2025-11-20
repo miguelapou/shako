@@ -1,5 +1,5 @@
 import React, { useState, useMemo, useEffect, useRef } from 'react';
-import { Search, Package, DollarSign, TrendingUp, Truck, CheckCircle, Clock, XCircle, ChevronDown, Plus, X, ExternalLink, ChevronUp, Edit2, Trash2, Moon, Sun, Wrench, List, Target, Calendar, GripVertical, ShoppingCart, Car } from 'lucide-react';
+import { Search, Package, DollarSign, TrendingUp, Truck, CheckCircle, Clock, XCircle, ChevronDown, Plus, X, ExternalLink, ChevronUp, Edit2, Trash2, Moon, Sun, Wrench, List, Target, Calendar, GripVertical, ShoppingCart, Car, Upload, Image as ImageIcon } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 
 // Add Foundation One font
@@ -133,8 +133,12 @@ const LandCruiserTracker = () => {
     oil_capacity: '',
     oil_brand: '',
     drain_plug: '',
-    battery: ''
+    battery: '',
+    image_url: ''
   });
+  const [vehicleImageFile, setVehicleImageFile] = useState(null);
+  const [vehicleImagePreview, setVehicleImagePreview] = useState(null);
+  const [uploadingImage, setUploadingImage] = useState(false);
 
   // Load parts and projects from Supabase on mount
   useEffect(() => {
@@ -463,6 +467,71 @@ const LandCruiserTracker = () => {
       console.error('Error deleting vehicle:', error);
       alert('Error deleting vehicle');
     }
+  };
+
+  const uploadVehicleImage = async (file) => {
+    try {
+      setUploadingImage(true);
+      
+      // Create a unique filename with timestamp
+      const fileExt = file.name.split('.').pop();
+      const fileName = `${Math.random().toString(36).substring(2)}-${Date.now()}.${fileExt}`;
+      const filePath = `vehicle-images/${fileName}`;
+
+      // Upload to Supabase Storage
+      const { data, error } = await supabase.storage
+        .from('vehicles')
+        .upload(filePath, file, {
+          cacheControl: '3600',
+          upsert: false
+        });
+
+      if (error) throw error;
+
+      // Get public URL
+      const { data: { publicUrl } } = supabase.storage
+        .from('vehicles')
+        .getPublicUrl(filePath);
+
+      setUploadingImage(false);
+      return publicUrl;
+    } catch (error) {
+      console.error('Error uploading image:', error);
+      setUploadingImage(false);
+      alert('Error uploading image. Please try again.');
+      return null;
+    }
+  };
+
+  const handleImageFileChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      // Validate file type
+      if (!file.type.startsWith('image/')) {
+        alert('Please select an image file');
+        return;
+      }
+      
+      // Validate file size (max 5MB)
+      if (file.size > 5 * 1024 * 1024) {
+        alert('Image size must be less than 5MB');
+        return;
+      }
+
+      setVehicleImageFile(file);
+      
+      // Create preview
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setVehicleImagePreview(reader.result);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const clearImageSelection = () => {
+    setVehicleImageFile(null);
+    setVehicleImagePreview(null);
   };
 
   // Drag and drop handlers for projects
@@ -3895,8 +3964,24 @@ const LandCruiserTracker = () => {
                     </button>
                   </div>
 
+                  {/* Vehicle Image */}
+                  {vehicle.image_url && (
+                    <div className="mb-4 mt-8">
+                      <img 
+                        src={vehicle.image_url} 
+                        alt={vehicle.nickname || vehicle.name}
+                        className={`w-full h-48 object-cover rounded-lg ${
+                          darkMode ? 'bg-gray-700' : 'bg-gray-200'
+                        }`}
+                        onError={(e) => {
+                          e.target.style.display = 'none';
+                        }}
+                      />
+                    </div>
+                  )}
+
                   {/* Vehicle Header */}
-                  <div className="mb-4 mt-8">
+                  <div className={`mb-4 ${vehicle.image_url ? 'mt-4' : 'mt-8'}`}>
                     <h3 className={`text-xl font-bold mb-1 ${
                       darkMode ? 'text-gray-100' : 'text-gray-900'
                     }`}>
@@ -4089,6 +4174,64 @@ const LandCruiserTracker = () => {
                   
                   <div className="p-6">
                     <div className="space-y-4">
+                      <div>
+                        <label className={`block text-sm font-medium mb-2 ${
+                          darkMode ? 'text-gray-300' : 'text-gray-700'
+                        }`}>
+                          Vehicle Image
+                        </label>
+                        
+                        {/* Image Preview */}
+                        {vehicleImagePreview && (
+                          <div className="mb-3 relative">
+                            <img 
+                              src={vehicleImagePreview} 
+                              alt="Preview"
+                              className={`w-full h-48 object-cover rounded-lg ${
+                                darkMode ? 'bg-gray-700' : 'bg-gray-200'
+                              }`}
+                            />
+                            <button
+                              onClick={clearImageSelection}
+                              className="absolute top-2 right-2 p-1 rounded-full bg-red-600 hover:bg-red-700 text-white transition-colors"
+                            >
+                              <X className="w-4 h-4" />
+                            </button>
+                          </div>
+                        )}
+                        
+                        {/* File Upload Button */}
+                        {!vehicleImagePreview && (
+                          <label className={`flex flex-col items-center justify-center w-full h-32 border-2 border-dashed rounded-lg cursor-pointer transition-colors ${
+                            darkMode 
+                              ? 'border-gray-600 hover:border-gray-500 bg-gray-700/50 hover:bg-gray-700' 
+                              : 'border-gray-300 hover:border-gray-400 bg-gray-50 hover:bg-gray-100'
+                          }`}>
+                            <div className="flex flex-col items-center justify-center pt-5 pb-6">
+                              <Upload className={`w-8 h-8 mb-2 ${
+                                darkMode ? 'text-gray-400' : 'text-gray-500'
+                              }`} />
+                              <p className={`mb-1 text-sm ${
+                                darkMode ? 'text-gray-400' : 'text-gray-600'
+                              }`}>
+                                <span className="font-semibold">Click to upload</span> or drag and drop
+                              </p>
+                              <p className={`text-xs ${
+                                darkMode ? 'text-gray-500' : 'text-gray-500'
+                              }`}>
+                                PNG, JPG, WEBP (MAX. 5MB)
+                              </p>
+                            </div>
+                            <input 
+                              type="file" 
+                              className="hidden" 
+                              accept="image/*"
+                              onChange={handleImageFileChange}
+                            />
+                          </label>
+                        )}
+                      </div>
+
                       <div>
                         <label className={`block text-sm font-medium mb-2 ${
                           darkMode ? 'text-gray-300' : 'text-gray-700'
@@ -4405,7 +4548,10 @@ const LandCruiserTracker = () => {
                   <div className="p-6">
                     <div className="flex gap-3">
                       <button
-                        onClick={() => setShowAddVehicleModal(false)}
+                        onClick={() => {
+                          setShowAddVehicleModal(false);
+                          clearImageSelection();
+                        }}
                         className={`flex-1 px-6 py-3 rounded-lg font-medium transition-colors ${
                           darkMode 
                             ? 'bg-gray-700 hover:bg-gray-600 text-gray-100' 
@@ -4420,10 +4566,23 @@ const LandCruiserTracker = () => {
                             alert('Please enter a nickname');
                             return;
                           }
-                          await addVehicle(newVehicle);
+                          
+                          // Upload image if one is selected
+                          let imageUrl = '';
+                          if (vehicleImageFile) {
+                            imageUrl = await uploadVehicleImage(vehicleImageFile);
+                            if (!imageUrl) {
+                              return; // Upload failed, don't proceed
+                            }
+                          }
+                          
+                          // Add vehicle with image URL
+                          await addVehicle({ ...newVehicle, image_url: imageUrl });
                           setShowAddVehicleModal(false);
                           setNewVehicle({
+                            nickname: '',
                             name: '',
+                            year: '',
                             license_plate: '',
                             vin: '',
                             insurance_policy: '',
@@ -4433,19 +4592,22 @@ const LandCruiserTracker = () => {
                             oil_type: '',
                             oil_capacity: '',
                             oil_brand: '',
-                            drain_plug: ''
+                            drain_plug: '',
+                            battery: '',
+                            image_url: ''
                           });
+                          clearImageSelection();
                         }}
-                        disabled={!newVehicle.nickname}
+                        disabled={!newVehicle.nickname || uploadingImage}
                         className={`flex-1 px-6 py-3 rounded-lg font-medium transition-colors ${
-                          !newVehicle.nickname
+                          !newVehicle.nickname || uploadingImage
                             ? darkMode 
                               ? 'bg-gray-700 text-gray-500 cursor-not-allowed'
                               : 'bg-gray-300 text-gray-500 cursor-not-allowed'
                             : 'bg-blue-600 hover:bg-blue-700 text-white'
                         }`}
                       >
-                        Add Vehicle
+                        {uploadingImage ? 'Uploading...' : 'Add Vehicle'}
                       </button>
                     </div>
                   </div>
@@ -4491,6 +4653,70 @@ const LandCruiserTracker = () => {
                   
                   <div className="p-6">
                     <div className="space-y-4">
+                      <div>
+                        <label className={`block text-sm font-medium mb-2 ${
+                          darkMode ? 'text-gray-300' : 'text-gray-700'
+                        }`}>
+                          Vehicle Image
+                        </label>
+                        
+                        {/* Current Image or Preview */}
+                        {(vehicleImagePreview || editingVehicle.image_url) && (
+                          <div className="mb-3 relative">
+                            <img 
+                              src={vehicleImagePreview || editingVehicle.image_url} 
+                              alt="Vehicle"
+                              className={`w-full h-48 object-cover rounded-lg ${
+                                darkMode ? 'bg-gray-700' : 'bg-gray-200'
+                              }`}
+                            />
+                            <button
+                              onClick={() => {
+                                if (vehicleImagePreview) {
+                                  clearImageSelection();
+                                } else {
+                                  setEditingVehicle({ ...editingVehicle, image_url: '' });
+                                }
+                              }}
+                              className="absolute top-2 right-2 p-1 rounded-full bg-red-600 hover:bg-red-700 text-white transition-colors"
+                            >
+                              <X className="w-4 h-4" />
+                            </button>
+                          </div>
+                        )}
+                        
+                        {/* File Upload Button */}
+                        {!vehicleImagePreview && !editingVehicle.image_url && (
+                          <label className={`flex flex-col items-center justify-center w-full h-32 border-2 border-dashed rounded-lg cursor-pointer transition-colors ${
+                            darkMode 
+                              ? 'border-gray-600 hover:border-gray-500 bg-gray-700/50 hover:bg-gray-700' 
+                              : 'border-gray-300 hover:border-gray-400 bg-gray-50 hover:bg-gray-100'
+                          }`}>
+                            <div className="flex flex-col items-center justify-center pt-5 pb-6">
+                              <Upload className={`w-8 h-8 mb-2 ${
+                                darkMode ? 'text-gray-400' : 'text-gray-500'
+                              }`} />
+                              <p className={`mb-1 text-sm ${
+                                darkMode ? 'text-gray-400' : 'text-gray-600'
+                              }`}>
+                                <span className="font-semibold">Click to upload</span> or drag and drop
+                              </p>
+                              <p className={`text-xs ${
+                                darkMode ? 'text-gray-500' : 'text-gray-500'
+                              }`}>
+                                PNG, JPG, WEBP (MAX. 5MB)
+                              </p>
+                            </div>
+                            <input 
+                              type="file" 
+                              className="hidden" 
+                              accept="image/*"
+                              onChange={handleImageFileChange}
+                            />
+                          </label>
+                        )}
+                      </div>
+
                       <div>
                         <label className={`block text-sm font-medium mb-2 ${
                           darkMode ? 'text-gray-300' : 'text-gray-700'
@@ -4810,6 +5036,7 @@ const LandCruiserTracker = () => {
                         onClick={() => {
                           setShowEditVehicleModal(false);
                           setEditingVehicle(null);
+                          clearImageSelection();
                         }}
                         className={`flex-1 px-6 py-3 rounded-lg font-medium transition-colors ${
                           darkMode 
@@ -4825,20 +5052,32 @@ const LandCruiserTracker = () => {
                             alert('Please enter a nickname');
                             return;
                           }
-                          await updateVehicle(editingVehicle.id, editingVehicle);
+                          
+                          // Upload new image if one is selected
+                          let updatedVehicle = { ...editingVehicle };
+                          if (vehicleImageFile) {
+                            const imageUrl = await uploadVehicleImage(vehicleImageFile);
+                            if (!imageUrl) {
+                              return; // Upload failed, don't proceed
+                            }
+                            updatedVehicle.image_url = imageUrl;
+                          }
+                          
+                          await updateVehicle(editingVehicle.id, updatedVehicle);
                           setShowEditVehicleModal(false);
                           setEditingVehicle(null);
+                          clearImageSelection();
                         }}
-                        disabled={!editingVehicle.nickname}
+                        disabled={!editingVehicle.nickname || uploadingImage}
                         className={`flex-1 px-6 py-3 rounded-lg font-medium transition-colors ${
-                          !editingVehicle.nickname
+                          !editingVehicle.nickname || uploadingImage
                             ? darkMode 
                               ? 'bg-gray-700 text-gray-500 cursor-not-allowed'
                               : 'bg-gray-300 text-gray-500 cursor-not-allowed'
                             : 'bg-blue-600 hover:bg-blue-700 text-white'
                         }`}
                       >
-                        Save Changes
+                        {uploadingImage ? 'Uploading...' : 'Save Changes'}
                       </button>
                     </div>
                   </div>
