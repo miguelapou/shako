@@ -362,7 +362,8 @@ const LandCruiserTracker = () => {
           spent: 0,
           start_date: projectData.start_date && projectData.start_date.trim() !== '' ? projectData.start_date : null,
           target_date: projectData.target_date && projectData.target_date.trim() !== '' ? projectData.target_date : null,
-          priority: projectData.priority || 'medium'
+          priority: projectData.priority || 'medium',
+          vehicle_id: projectData.vehicle_id || null
         }])
         .select();
 
@@ -455,7 +456,15 @@ const LandCruiserTracker = () => {
   };
 
   const deleteVehicle = async (vehicleId) => {
-    if (!confirm('Are you sure you want to delete this vehicle?')) return;
+    const projectsForVehicle = projects.filter(p => p.vehicle_id === vehicleId);
+    
+    if (projectsForVehicle.length > 0) {
+      if (!confirm(`This vehicle has ${projectsForVehicle.length} project(s) linked to it. Deleting it will unlink these projects. Continue?`)) {
+        return;
+      }
+    } else if (!confirm('Are you sure you want to delete this vehicle?')) {
+      return;
+    }
     
     try {
       const { error } = await supabase
@@ -465,10 +474,20 @@ const LandCruiserTracker = () => {
 
       if (error) throw error;
       await loadVehicles();
+      await loadProjects(); // Reload projects to update vehicle_id references
     } catch (error) {
       console.error('Error deleting vehicle:', error);
       alert('Error deleting vehicle');
     }
+  };
+
+  // Helper functions for vehicle-project relationships
+  const getVehicleProjects = (vehicleId) => {
+    return projects.filter(project => project.vehicle_id === vehicleId);
+  };
+
+  const getVehicleProjectCount = (vehicleId) => {
+    return projects.filter(project => project.vehicle_id === vehicleId).length;
   };
 
   const uploadVehicleImage = async (file) => {
@@ -700,7 +719,8 @@ const LandCruiserTracker = () => {
     start_date: '',
     target_date: '',
     priority: 'medium',
-    status: 'planning'
+    status: 'planning',
+    vehicle_id: null
   });
   
   const [darkMode, setDarkMode] = useState(() => {
@@ -2903,11 +2923,24 @@ const LandCruiserTracker = () => {
 
                     {/* Project Header */}
                     <div className="mb-4 mt-8">
-                      <h3 className={`text-xl font-bold mb-2 ${
-                        darkMode ? 'text-gray-100' : 'text-gray-900'
-                      }`}>
-                        {project.name}
-                      </h3>
+                      <div className="flex items-center gap-3 mb-2">
+                        <h3 className={`text-xl font-bold ${
+                          darkMode ? 'text-gray-100' : 'text-gray-900'
+                        }`}>
+                          {project.name}
+                        </h3>
+                        {(() => {
+                          const vehicle = project.vehicle_id ? vehicles.find(v => v.id === project.vehicle_id) : null;
+                          return vehicle && (
+                            <span className={`inline-flex items-center px-2 py-1 rounded text-xs font-medium ${
+                              darkMode ? 'bg-gray-700 text-gray-300' : 'bg-gray-100 text-gray-700'
+                            }`}>
+                              <Car className="w-3 h-3 mr-1" />
+                              {vehicle.nickname || vehicle.name}
+                            </span>
+                          );
+                        })()}
+                      </div>
                       <span className={`inline-block px-3 py-1 rounded-full text-sm font-medium ${
                         statusColors[project.status]
                       }`}>
@@ -3264,6 +3297,33 @@ const LandCruiserTracker = () => {
                           <option value="completed">Completed</option>
                         </select>
                       </div>
+
+                      <div>
+                        <label className={`block text-sm font-medium mb-2 ${
+                          darkMode ? 'text-gray-300' : 'text-gray-700'
+                        }`}>
+                          <div className="flex items-center gap-2">
+                            <Car className="w-4 h-4" />
+                            <span>Linked Vehicle</span>
+                          </div>
+                        </label>
+                        <select
+                          value={newProject.vehicle_id || ''}
+                          onChange={(e) => setNewProject({ ...newProject, vehicle_id: e.target.value ? parseInt(e.target.value) : null })}
+                          className={`w-full h-[42px] px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
+                            darkMode 
+                              ? 'bg-gray-700 border-gray-600 text-gray-100' 
+                              : 'bg-white border-gray-300 text-gray-900'
+                          }`}
+                        >
+                          <option value="">No vehicle</option>
+                          {vehicles.map(vehicle => (
+                            <option key={vehicle.id} value={vehicle.id}>
+                              {vehicle.nickname || vehicle.name}
+                            </option>
+                          ))}
+                        </select>
+                      </div>
                     </div>
                   </div>
                   
@@ -3487,6 +3547,33 @@ const LandCruiserTracker = () => {
                           <option value="in_progress">In Progress</option>
                           <option value="on_hold">On Hold</option>
                           <option value="completed">Completed</option>
+                        </select>
+                      </div>
+
+                      <div>
+                        <label className={`block text-sm font-medium mb-2 ${
+                          darkMode ? 'text-gray-300' : 'text-gray-700'
+                        }`}>
+                          <div className="flex items-center gap-2">
+                            <Car className="w-4 h-4" />
+                            <span>Linked Vehicle</span>
+                          </div>
+                        </label>
+                        <select
+                          value={editingProject.vehicle_id || ''}
+                          onChange={(e) => setEditingProject({ ...editingProject, vehicle_id: e.target.value ? parseInt(e.target.value) : null })}
+                          className={`w-full h-[42px] px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
+                            darkMode 
+                              ? 'bg-gray-700 border-gray-600 text-gray-100' 
+                              : 'bg-white border-gray-300 text-gray-900'
+                          }`}
+                        >
+                          <option value="">No vehicle</option>
+                          {vehicles.map(vehicle => (
+                            <option key={vehicle.id} value={vehicle.id}>
+                              {vehicle.nickname || vehicle.name}
+                            </option>
+                          ))}
                         </select>
                       </div>
                     </div>
@@ -4037,6 +4124,34 @@ const LandCruiserTracker = () => {
                         </span>
                       )}
                     </div>
+
+                    {/* Project Badges */}
+                    {(() => {
+                      const vehicleProjects = getVehicleProjects(vehicle.id);
+                      return vehicleProjects.length > 0 && (
+                        <div className="flex flex-wrap gap-2 mt-3">
+                          {vehicleProjects.slice(0, 3).map(project => (
+                            <span
+                              key={project.id}
+                              className={`inline-flex items-center px-2 py-1 rounded text-xs font-medium ${
+                                darkMode ? 'bg-gray-700 text-gray-300 border border-gray-600' : 'bg-gray-100 text-gray-700 border border-gray-300'
+                              }`}
+                              style={{ borderLeftWidth: '3px', borderLeftColor: project.color || '#3b82f6' }}
+                            >
+                              <Wrench className="w-3 h-3 mr-1" />
+                              {project.name}
+                            </span>
+                          ))}
+                          {vehicleProjects.length > 3 && (
+                            <span className={`inline-flex items-center px-2 py-1 rounded text-xs ${
+                              darkMode ? 'text-gray-500' : 'text-gray-600'
+                            }`}>
+                              +{vehicleProjects.length - 3} more
+                            </span>
+                          )}
+                        </div>
+                      );
+                    })()}
                   </div>
                 </div>
               ))}
@@ -5242,6 +5357,81 @@ const LandCruiserTracker = () => {
                         </div>
                       </div>
                     )}
+
+                    {/* Projects Section */}
+                    {(() => {
+                      const vehicleProjects = getVehicleProjects(viewingVehicle.id);
+                      return vehicleProjects.length > 0 && (
+                        <div className={`pt-6 border-t ${
+                          darkMode ? 'border-gray-700' : 'border-gray-200'
+                        }`}>
+                          <h3 className={`text-lg font-semibold mb-3 ${
+                            darkMode ? 'text-gray-200' : 'text-gray-800'
+                          }`}>
+                            <div className="flex items-center gap-2">
+                              <Wrench className="w-5 h-5" />
+                              <span>Projects ({vehicleProjects.length})</span>
+                            </div>
+                          </h3>
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            {vehicleProjects.map((project) => {
+                              const projectParts = parts.filter(p => p.projectId === project.id);
+                              const projectTotal = projectParts.reduce((sum, part) => sum + part.total, 0);
+                              const deliveredCount = projectParts.filter(p => p.delivered).length;
+
+                              return (
+                                <div
+                                  key={project.id}
+                                  className={`rounded-lg p-4 border-l-4 ${
+                                    darkMode ? 'bg-gray-700' : 'bg-gray-50'
+                                  }`}
+                                  style={{ borderLeftColor: project.color || '#3b82f6' }}
+                                >
+                                  <h4 className={`font-semibold mb-2 ${
+                                    darkMode ? 'text-gray-200' : 'text-gray-800'
+                                  }`}>
+                                    {project.name}
+                                  </h4>
+                                  {project.description && (
+                                    <p className={`text-sm mb-3 ${
+                                      darkMode ? 'text-gray-400' : 'text-gray-600'
+                                    }`}>
+                                      {project.description}
+                                    </p>
+                                  )}
+                                  <div className="flex flex-wrap gap-4 text-xs">
+                                    <div className="flex items-center gap-1">
+                                      <Package className={`w-3 h-3 ${
+                                        darkMode ? 'text-gray-500' : 'text-gray-400'
+                                      }`} />
+                                      <span className={darkMode ? 'text-gray-400' : 'text-gray-600'}>
+                                        {projectParts.length} parts
+                                      </span>
+                                    </div>
+                                    <div className="flex items-center gap-1">
+                                      <CheckCircle className={`w-3 h-3 ${
+                                        darkMode ? 'text-gray-500' : 'text-gray-400'
+                                      }`} />
+                                      <span className={darkMode ? 'text-gray-400' : 'text-gray-600'}>
+                                        {deliveredCount} delivered
+                                      </span>
+                                    </div>
+                                    <div className="flex items-center gap-1">
+                                      <DollarSign className={`w-3 h-3 ${
+                                        darkMode ? 'text-gray-500' : 'text-gray-400'
+                                      }`} />
+                                      <span className={darkMode ? 'text-gray-400' : 'text-gray-600'}>
+                                        ${projectTotal.toFixed(2)}
+                                      </span>
+                                    </div>
+                                  </div>
+                                </div>
+                              );
+                            })}
+                          </div>
+                        </div>
+                      );
+                    })()}
                   </div>
 
                   {/* Footer with Edit Button */}
