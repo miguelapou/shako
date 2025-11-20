@@ -37,13 +37,6 @@ const fontStyles = `
     overflow-y: auto;
   }
 
-  /* Improve touch dragging experience */
-  [data-project-id], [data-vehicle-id] {
-    touch-action: none;
-    -webkit-user-select: none;
-    user-select: none;
-  }
-
   @keyframes popUpCenter {
     0% {
       opacity: 0;
@@ -118,6 +111,9 @@ const LandCruiserTracker = () => {
   const [draggedVehicle, setDraggedVehicle] = useState(null);
   const [dragOverVehicle, setDragOverVehicle] = useState(null);
   
+  // Track the drag handle element for non-passive listeners
+  const dragHandleRef = useRef(null);
+  
   // Touch event handling for mobile drag and drop
   const touchStartY = useRef(0);
   const touchCurrentY = useRef(0);
@@ -161,22 +157,6 @@ const LandCruiserTracker = () => {
     loadProjects();
     loadVehicles();
   }, []);
-
-  // Register non-passive touch event listeners to allow preventDefault
-  useEffect(() => {
-    const handleTouchMove = (e) => {
-      if (draggedProject || draggedVehicle) {
-        e.preventDefault();
-      }
-    };
-
-    // Add non-passive touch move listener to prevent scrolling during drag
-    document.addEventListener('touchmove', handleTouchMove, { passive: false });
-
-    return () => {
-      document.removeEventListener('touchmove', handleTouchMove);
-    };
-  }, [draggedProject, draggedVehicle]);
 
   // Update underline position when active tab changes
   useEffect(() => {
@@ -678,6 +658,7 @@ const LandCruiserTracker = () => {
   };
 
   const handleProjectTouchMove = (e) => {
+    if (!e.touches || !e.touches[0]) return;
     const touch = e.touches[0];
     const moveThreshold = 10; // pixels
     
@@ -696,6 +677,15 @@ const LandCruiserTracker = () => {
     }
     
     if (!draggedProject) return;
+    
+    // Only prevent default if we're dragging
+    if (isDraggingTouch.current && draggedProject) {
+      try {
+        e.preventDefault();
+      } catch (err) {
+        // Passive listener error - ignore
+      }
+    }
     
     touchCurrentY.current = touch.clientY;
     
@@ -774,6 +764,7 @@ const LandCruiserTracker = () => {
   };
 
   const handleVehicleTouchMove = (e) => {
+    if (!e.touches || !e.touches[0]) return;
     const touch = e.touches[0];
     const moveThreshold = 10; // pixels
     
@@ -792,6 +783,15 @@ const LandCruiserTracker = () => {
     }
     
     if (!draggedVehicle) return;
+    
+    // Only prevent default if we're dragging
+    if (isDraggingTouch.current && draggedVehicle) {
+      try {
+        e.preventDefault();
+      } catch (err) {
+        // Passive listener error - ignore
+      }
+    }
     
     touchCurrentY.current = touch.clientY;
     
