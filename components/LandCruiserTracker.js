@@ -2814,7 +2814,7 @@ const LandCruiserTracker = () => {
                     </div>
 
                     {/* Project Header */}
-                    <div className="mb-4 mt-8">
+                    <div className="mb-4 mt-6">
                       <h3 className={`text-xl font-bold mb-2 ${
                         darkMode ? 'text-gray-100' : 'text-gray-900'
                       }`}>
@@ -3896,7 +3896,7 @@ const LandCruiserTracker = () => {
                   </div>
 
                   {/* Vehicle Header */}
-                  <div className="mb-4 mt-8">
+                  <div className="mb-4 mt-6">
                     <h3 className={`text-xl font-bold mb-1 ${
                       darkMode ? 'text-gray-100' : 'text-gray-900'
                     }`}>
