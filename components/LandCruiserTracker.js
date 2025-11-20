@@ -4150,12 +4150,13 @@ const LandCruiserTracker = () => {
                             {vehicleProjects.slice(0, 4).map((project) => (
                               <span
                                 key={project.id}
-                                className={`inline-flex items-center px-2 py-1 rounded text-xs font-medium border w-32 ${
+                                className={`inline-flex items-center px-2 py-1 rounded text-xs font-medium border ${
                                   darkMode ? 'bg-gray-700 text-gray-300 border-gray-600' : 'bg-gray-100 text-gray-700 border-gray-300'
                                 }`}
                                 style={{ 
                                   borderLeftWidth: '3px', 
-                                  borderLeftColor: getPriorityBorderColor(project.priority)
+                                  borderLeftColor: getPriorityBorderColor(project.priority),
+                                  width: 'calc(50% - 4px)'
                                 }}
                               >
                                 <Wrench className="w-3 h-3 mr-1 flex-shrink-0" />
