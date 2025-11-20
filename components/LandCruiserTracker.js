@@ -108,6 +108,8 @@ const LandCruiserTracker = () => {
   const [previousTab, setPreviousTab] = useState('projects');
   const [draggedProject, setDraggedProject] = useState(null);
   const [dragOverProject, setDragOverProject] = useState(null);
+  const [draggedVehicle, setDraggedVehicle] = useState(null);
+  const [dragOverVehicle, setDragOverVehicle] = useState(null);
 
   // Refs for tab underline animation
   const tabRefs = useRef({});
@@ -404,6 +406,7 @@ const LandCruiserTracker = () => {
       const { data, error } = await supabase
         .from('vehicles')
         .select('*')
+        .order('display_order', { ascending: true })
         .order('id', { ascending: true });
 
       if (error) throw error;
@@ -509,6 +512,53 @@ const LandCruiserTracker = () => {
     setDragOverProject(null);
   };
 
+  // Drag and drop handlers for vehicles
+  const handleVehicleDragStart = (e, vehicle) => {
+    setDraggedVehicle(vehicle);
+    e.dataTransfer.effectAllowed = 'move';
+  };
+
+  const handleVehicleDragOver = (e, vehicle) => {
+    e.preventDefault();
+    e.dataTransfer.dropEffect = 'move';
+    if (draggedVehicle && draggedVehicle.id !== vehicle.id) {
+      setDragOverVehicle(vehicle);
+    }
+  };
+
+  const handleVehicleDragLeave = () => {
+    setDragOverVehicle(null);
+  };
+
+  const handleVehicleDrop = (e, targetVehicle) => {
+    e.preventDefault();
+    
+    if (!draggedVehicle || draggedVehicle.id === targetVehicle.id) {
+      setDraggedVehicle(null);
+      setDragOverVehicle(null);
+      return;
+    }
+
+    const draggedIndex = vehicles.findIndex(v => v.id === draggedVehicle.id);
+    const targetIndex = vehicles.findIndex(v => v.id === targetVehicle.id);
+
+    const newVehicles = [...vehicles];
+    const [removed] = newVehicles.splice(draggedIndex, 1);
+    newVehicles.splice(targetIndex, 0, removed);
+
+    setVehicles(newVehicles);
+    setDraggedVehicle(null);
+    setDragOverVehicle(null);
+
+    // Update display_order in database
+    updateVehiclesOrder(newVehicles);
+  };
+
+  const handleVehicleDragEnd = () => {
+    setDraggedVehicle(null);
+    setDragOverVehicle(null);
+  };
+
   // Tab change handler to track animation direction
   const handleTabChange = (newTab) => {
     setPreviousTab(activeTab);
@@ -531,6 +581,25 @@ const LandCruiserTracker = () => {
       }
     } catch (error) {
       console.error('Error updating project order:', error);
+    }
+  };
+
+  const updateVehiclesOrder = async (orderedVehicles) => {
+    try {
+      // Update each vehicle with its new display order
+      const updates = orderedVehicles.map((vehicle, index) => ({
+        id: vehicle.id,
+        display_order: index
+      }));
+
+      for (const update of updates) {
+        await supabase
+          .from('vehicles')
+          .update({ display_order: update.display_order })
+          .eq('id', update.id);
+      }
+    } catch (error) {
+      console.error('Error updating vehicle order:', error);
     }
   };
 
@@ -3710,10 +3779,29 @@ const LandCruiserTracker = () => {
               {vehicles.map((vehicle) => (
                 <div
                   key={vehicle.id}
-                  className={`relative rounded-lg shadow-lg p-6 transition-all hover:shadow-xl ${
-                    darkMode ? 'bg-gray-800' : 'bg-white'
-                  }`}
+                  draggable
+                  onDragStart={(e) => handleVehicleDragStart(e, vehicle)}
+                  onDragOver={(e) => handleVehicleDragOver(e, vehicle)}
+                  onDragLeave={handleVehicleDragLeave}
+                  onDrop={(e) => handleVehicleDrop(e, vehicle)}
+                  onDragEnd={handleVehicleDragEnd}
+                  className={`relative rounded-lg shadow-lg p-6 transition-all hover:shadow-xl cursor-move ${
+                    draggedVehicle?.id === vehicle.id 
+                      ? 'opacity-50' 
+                      : dragOverVehicle?.id === vehicle.id
+                        ? (darkMode ? 'ring-2 ring-blue-500' : 'ring-2 ring-blue-400')
+                        : ''
+                  } ${darkMode ? 'bg-gray-800' : 'bg-white'}`}
                 >
+                  {/* Drag Handle */}
+                  <div 
+                    className={`absolute top-2 left-2 cursor-move ${
+                      darkMode ? 'text-gray-500 hover:text-gray-400' : 'text-gray-400 hover:text-gray-600'
+                    }`}
+                  >
+                    <GripVertical className="w-5 h-5" />
+                  </div>
+
                   {/* Edit and Delete Buttons - Top Right */}
                   <div className="absolute top-2 right-2 flex gap-1">
                     <button
