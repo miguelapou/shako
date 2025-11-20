@@ -118,6 +118,8 @@ const LandCruiserTracker = () => {
   // Vehicle modal states
   const [showAddVehicleModal, setShowAddVehicleModal] = useState(false);
   const [showEditVehicleModal, setShowEditVehicleModal] = useState(false);
+  const [showVehicleDetailModal, setShowVehicleDetailModal] = useState(false);
+  const [viewingVehicle, setViewingVehicle] = useState(null);
   const [editingVehicle, setEditingVehicle] = useState(null);
   const [newVehicle, setNewVehicle] = useState({
     nickname: '',
@@ -722,7 +724,7 @@ const LandCruiserTracker = () => {
   useEffect(() => {
     const isAnyModalOpen = showAddModal || showEditModal || showTrackingModal || 
                           showAddProjectModal || showEditProjectModal || showProjectDetailModal ||
-                          showAddVehicleModal || showEditVehicleModal;
+                          showAddVehicleModal || showEditVehicleModal || showVehicleDetailModal;
     
     if (isAnyModalOpen) {
       document.body.classList.add('modal-open');
@@ -735,7 +737,7 @@ const LandCruiserTracker = () => {
       document.body.classList.remove('modal-open');
     };
   }, [showAddModal, showEditModal, showTrackingModal, showAddProjectModal, 
-      showEditProjectModal, showProjectDetailModal, showAddVehicleModal, showEditVehicleModal]);
+      showEditProjectModal, showProjectDetailModal, showAddVehicleModal, showEditVehicleModal, showVehicleDetailModal]);
 
   const [newPart, setNewPart] = useState({
     part: '',
@@ -2839,12 +2841,9 @@ const LandCruiserTracker = () => {
                   <div
                     key={project.id}
                     data-project-id={project.id}
-                    draggable
-                    onDragStart={(e) => handleDragStart(e, project)}
                     onDragOver={(e) => handleDragOver(e, project)}
                     onDragLeave={handleDragLeave}
                     onDrop={(e) => handleDrop(e, project)}
-                    onDragEnd={handleDragEnd}
                     onClick={() => {
                       setViewingProject(project);
                       setShowProjectDetailModal(true);
@@ -2859,6 +2858,12 @@ const LandCruiserTracker = () => {
                   >
                     {/* Drag Handle - Hidden on mobile */}
                     <div 
+                      draggable
+                      onDragStart={(e) => {
+                        e.stopPropagation();
+                        handleDragStart(e, project);
+                      }}
+                      onDragEnd={handleDragEnd}
                       className={`absolute top-2 left-2 cursor-grab active:cursor-grabbing hidden md:block ${
                         darkMode ? 'text-gray-600 hover:text-gray-400' : 'text-gray-400 hover:text-gray-600'
                       }`}
@@ -3913,13 +3918,14 @@ const LandCruiserTracker = () => {
                 <div
                   key={vehicle.id}
                   data-vehicle-id={vehicle.id}
-                  draggable
-                  onDragStart={(e) => handleVehicleDragStart(e, vehicle)}
                   onDragOver={(e) => handleVehicleDragOver(e, vehicle)}
                   onDragLeave={handleVehicleDragLeave}
                   onDrop={(e) => handleVehicleDrop(e, vehicle)}
-                  onDragEnd={handleVehicleDragEnd}
-                  className={`relative rounded-lg shadow-lg pt-3 pb-6 px-6 transition-all hover:shadow-xl cursor-move ${
+                  onClick={() => {
+                    setViewingVehicle(vehicle);
+                    setShowVehicleDetailModal(true);
+                  }}
+                  className={`relative rounded-lg shadow-lg pt-3 pb-6 px-6 transition-all hover:shadow-xl cursor-pointer ${
                     draggedVehicle?.id === vehicle.id 
                       ? 'opacity-50' 
                       : dragOverVehicle?.id === vehicle.id
@@ -3929,7 +3935,13 @@ const LandCruiserTracker = () => {
                 >
                   {/* Drag Handle - Hidden on mobile */}
                   <div 
-                    className={`absolute top-2 left-2 cursor-move hidden md:block ${
+                    draggable
+                    onDragStart={(e) => {
+                      e.stopPropagation();
+                      handleVehicleDragStart(e, vehicle);
+                    }}
+                    onDragEnd={handleVehicleDragEnd}
+                    className={`absolute top-2 left-2 cursor-grab active:cursor-grabbing hidden md:block ${
                       darkMode ? 'text-gray-500 hover:text-gray-400' : 'text-gray-400 hover:text-gray-600'
                     }`}
                   >
@@ -4011,7 +4023,7 @@ const LandCruiserTracker = () => {
                     )}
                     <div className="flex items-center justify-between gap-2 flex-wrap">
                       {vehicle.vin && (
-                        <span className={`inline-block px-3 py-1 rounded text-xs font-mono ${
+                        <span className={`inline-block px-3 py-1 rounded-full text-xs font-mono ${
                           darkMode ? 'bg-gray-700 text-gray-300' : 'bg-gray-100 text-gray-700'
                         }`}>
                           VIN: {vehicle.vin}
@@ -4025,100 +4037,6 @@ const LandCruiserTracker = () => {
                         </span>
                       )}
                     </div>
-                  </div>
-
-                  {/* Vehicle Details */}
-                  <div className="space-y-3">
-
-                    {vehicle.insurance_policy && (
-                      <div>
-                        <p className={`text-xs mb-1 ${
-                          darkMode ? 'text-gray-400' : 'text-gray-600'
-                        }`}>
-                          Insurance Policy
-                        </p>
-                        <p className={`text-sm ${
-                          darkMode ? 'text-gray-200' : 'text-gray-800'
-                        }`}>
-                          {vehicle.insurance_policy}
-                        </p>
-                      </div>
-                    )}
-
-                    {/* Maintenance Info */}
-                    {(vehicle.fuel_filter || vehicle.air_filter) && (
-                      <div className={`pt-3 border-t ${
-                        darkMode ? 'border-gray-600' : 'border-gray-200'
-                      }`}>
-                        <p className={`text-xs font-semibold mb-2 ${
-                          darkMode ? 'text-gray-300' : 'text-gray-700'
-                        }`}>
-                          Filters
-                        </p>
-                        {vehicle.fuel_filter && (
-                          <p className={`text-xs ${
-                            darkMode ? 'text-gray-400' : 'text-gray-600'
-                          }`}>
-                            Fuel: {vehicle.fuel_filter}
-                          </p>
-                        )}
-                        {vehicle.air_filter && (
-                          <p className={`text-xs ${
-                            darkMode ? 'text-gray-400' : 'text-gray-600'
-                          }`}>
-                            Air: {vehicle.air_filter}
-                          </p>
-                        )}
-                      </div>
-                    )}
-
-                    {/* Oil Info */}
-                    {(vehicle.oil_filter || vehicle.oil_type || vehicle.oil_capacity || vehicle.oil_brand || vehicle.drain_plug) && (
-                      <div className={`pt-3 border-t ${
-                        darkMode ? 'border-gray-600' : 'border-gray-200'
-                      }`}>
-                        <p className={`text-xs font-semibold mb-2 ${
-                          darkMode ? 'text-gray-300' : 'text-gray-700'
-                        }`}>
-                          Oil Info
-                        </p>
-                        {vehicle.oil_filter && (
-                          <p className={`text-xs ${
-                            darkMode ? 'text-gray-400' : 'text-gray-600'
-                          }`}>
-                            Filter: {vehicle.oil_filter}
-                          </p>
-                        )}
-                        {vehicle.oil_type && (
-                          <p className={`text-xs ${
-                            darkMode ? 'text-gray-400' : 'text-gray-600'
-                          }`}>
-                            Type: {vehicle.oil_type}
-                          </p>
-                        )}
-                        {vehicle.oil_capacity && (
-                          <p className={`text-xs ${
-                            darkMode ? 'text-gray-400' : 'text-gray-600'
-                          }`}>
-                            Capacity: {vehicle.oil_capacity}
-                          </p>
-                        )}
-                        {vehicle.oil_brand && (
-                          <p className={`text-xs ${
-                            darkMode ? 'text-gray-400' : 'text-gray-600'
-                          }`}>
-                            Brand: {vehicle.oil_brand}
-                          </p>
-                        )}
-                        {vehicle.drain_plug && (
-                          <p className={`text-xs ${
-                            darkMode ? 'text-gray-400' : 'text-gray-600'
-                          }`}>
-                            Drain Plug: {vehicle.drain_plug}
-                          </p>
-                        )}
-                      </div>
-                    )}
                   </div>
                 </div>
               ))}
@@ -5090,6 +5008,249 @@ const LandCruiserTracker = () => {
                         {uploadingImage ? 'Uploading...' : 'Save Changes'}
                       </button>
                     </div>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* Vehicle Detail Modal */}
+            {showVehicleDetailModal && viewingVehicle && (
+              <div 
+                className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50 modal-backdrop modal-backdrop-enter"
+                onClick={() => {
+                  setShowVehicleDetailModal(false);
+                  setViewingVehicle(null);
+                }}
+              >
+                <div 
+                  className={`rounded-lg shadow-xl max-w-3xl w-full max-h-[90vh] overflow-y-auto modal-content modal-popup-enter ${
+                    darkMode ? 'bg-gray-800' : 'bg-white'
+                  }`}
+                  onClick={(e) => e.stopPropagation()}
+                >
+                  {/* Header */}
+                  <div className={`sticky top-0 z-10 px-6 py-4 border-b flex items-center justify-between ${
+                    darkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-200'
+                  }`}>
+                    <h2 className={`text-2xl font-bold ${
+                      darkMode ? 'text-gray-100' : 'text-gray-900'
+                    }`}>
+                      {viewingVehicle.nickname || viewingVehicle.name || 'Vehicle Details'}
+                    </h2>
+                    <button
+                      onClick={() => {
+                        setShowVehicleDetailModal(false);
+                        setViewingVehicle(null);
+                      }}
+                      className={`p-2 rounded-md transition-colors ${
+                        darkMode ? 'hover:bg-gray-700 text-gray-400' : 'hover:bg-gray-100 text-gray-600'
+                      }`}
+                    >
+                      <X className="w-5 h-5" />
+                    </button>
+                  </div>
+
+                  {/* Content */}
+                  <div className="p-6 space-y-6">
+                    {/* Vehicle Image */}
+                    {viewingVehicle.image_url && (
+                      <div className="rounded-lg overflow-hidden">
+                        <img 
+                          src={viewingVehicle.image_url} 
+                          alt={viewingVehicle.nickname || viewingVehicle.name}
+                          className="w-full h-64 object-cover"
+                        />
+                      </div>
+                    )}
+
+                    {/* Basic Info */}
+                    <div>
+                      <h3 className={`text-lg font-semibold mb-3 ${
+                        darkMode ? 'text-gray-200' : 'text-gray-800'
+                      }`}>
+                        Basic Information
+                      </h3>
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        {viewingVehicle.year && (
+                          <div>
+                            <p className={`text-sm font-medium mb-1 ${
+                              darkMode ? 'text-gray-400' : 'text-gray-600'
+                            }`}>Year</p>
+                            <p className={`text-base ${
+                              darkMode ? 'text-gray-100' : 'text-gray-900'
+                            }`}>{viewingVehicle.year}</p>
+                          </div>
+                        )}
+                        {viewingVehicle.name && (
+                          <div>
+                            <p className={`text-sm font-medium mb-1 ${
+                              darkMode ? 'text-gray-400' : 'text-gray-600'
+                            }`}>Model</p>
+                            <p className={`text-base ${
+                              darkMode ? 'text-gray-100' : 'text-gray-900'
+                            }`}>{viewingVehicle.name}</p>
+                          </div>
+                        )}
+                        {viewingVehicle.license_plate && (
+                          <div>
+                            <p className={`text-sm font-medium mb-1 ${
+                              darkMode ? 'text-gray-400' : 'text-gray-600'
+                            }`}>License Plate</p>
+                            <p className={`text-base ${
+                              darkMode ? 'text-gray-100' : 'text-gray-900'
+                            }`}>{viewingVehicle.license_plate}</p>
+                          </div>
+                        )}
+                        {viewingVehicle.vin && (
+                          <div>
+                            <p className={`text-sm font-medium mb-1 ${
+                              darkMode ? 'text-gray-400' : 'text-gray-600'
+                            }`}>VIN</p>
+                            <p className={`text-base font-mono ${
+                              darkMode ? 'text-gray-100' : 'text-gray-900'
+                            }`}>{viewingVehicle.vin}</p>
+                          </div>
+                        )}
+                        {viewingVehicle.insurance_policy && (
+                          <div className="md:col-span-2">
+                            <p className={`text-sm font-medium mb-1 ${
+                              darkMode ? 'text-gray-400' : 'text-gray-600'
+                            }`}>Insurance Policy</p>
+                            <p className={`text-base ${
+                              darkMode ? 'text-gray-100' : 'text-gray-900'
+                            }`}>{viewingVehicle.insurance_policy}</p>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+
+                    {/* Filters Section */}
+                    {(viewingVehicle.fuel_filter || viewingVehicle.air_filter) && (
+                      <div className={`pt-6 border-t ${
+                        darkMode ? 'border-gray-700' : 'border-gray-200'
+                      }`}>
+                        <h3 className={`text-lg font-semibold mb-3 ${
+                          darkMode ? 'text-gray-200' : 'text-gray-800'
+                        }`}>
+                          Filters
+                        </h3>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                          {viewingVehicle.fuel_filter && (
+                            <div>
+                              <p className={`text-sm font-medium mb-1 ${
+                                darkMode ? 'text-gray-400' : 'text-gray-600'
+                              }`}>Fuel Filter</p>
+                              <p className={`text-base ${
+                                darkMode ? 'text-gray-100' : 'text-gray-900'
+                              }`}>{viewingVehicle.fuel_filter}</p>
+                            </div>
+                          )}
+                          {viewingVehicle.air_filter && (
+                            <div>
+                              <p className={`text-sm font-medium mb-1 ${
+                                darkMode ? 'text-gray-400' : 'text-gray-600'
+                              }`}>Air Filter</p>
+                              <p className={`text-base ${
+                                darkMode ? 'text-gray-100' : 'text-gray-900'
+                              }`}>{viewingVehicle.air_filter}</p>
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Oil Info Section */}
+                    {(viewingVehicle.oil_filter || viewingVehicle.oil_type || viewingVehicle.oil_capacity || viewingVehicle.oil_brand || viewingVehicle.drain_plug || viewingVehicle.battery) && (
+                      <div className={`pt-6 border-t ${
+                        darkMode ? 'border-gray-700' : 'border-gray-200'
+                      }`}>
+                        <h3 className={`text-lg font-semibold mb-3 ${
+                          darkMode ? 'text-gray-200' : 'text-gray-800'
+                        }`}>
+                          Maintenance Information
+                        </h3>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                          {viewingVehicle.oil_filter && (
+                            <div>
+                              <p className={`text-sm font-medium mb-1 ${
+                                darkMode ? 'text-gray-400' : 'text-gray-600'
+                              }`}>Oil Filter</p>
+                              <p className={`text-base ${
+                                darkMode ? 'text-gray-100' : 'text-gray-900'
+                              }`}>{viewingVehicle.oil_filter}</p>
+                            </div>
+                          )}
+                          {viewingVehicle.oil_type && (
+                            <div>
+                              <p className={`text-sm font-medium mb-1 ${
+                                darkMode ? 'text-gray-400' : 'text-gray-600'
+                              }`}>Oil Type</p>
+                              <p className={`text-base ${
+                                darkMode ? 'text-gray-100' : 'text-gray-900'
+                              }`}>{viewingVehicle.oil_type}</p>
+                            </div>
+                          )}
+                          {viewingVehicle.oil_capacity && (
+                            <div>
+                              <p className={`text-sm font-medium mb-1 ${
+                                darkMode ? 'text-gray-400' : 'text-gray-600'
+                              }`}>Oil Capacity</p>
+                              <p className={`text-base ${
+                                darkMode ? 'text-gray-100' : 'text-gray-900'
+                              }`}>{viewingVehicle.oil_capacity}</p>
+                            </div>
+                          )}
+                          {viewingVehicle.oil_brand && (
+                            <div>
+                              <p className={`text-sm font-medium mb-1 ${
+                                darkMode ? 'text-gray-400' : 'text-gray-600'
+                              }`}>Oil Brand</p>
+                              <p className={`text-base ${
+                                darkMode ? 'text-gray-100' : 'text-gray-900'
+                              }`}>{viewingVehicle.oil_brand}</p>
+                            </div>
+                          )}
+                          {viewingVehicle.drain_plug && (
+                            <div>
+                              <p className={`text-sm font-medium mb-1 ${
+                                darkMode ? 'text-gray-400' : 'text-gray-600'
+                              }`}>Drain Plug</p>
+                              <p className={`text-base ${
+                                darkMode ? 'text-gray-100' : 'text-gray-900'
+                              }`}>{viewingVehicle.drain_plug}</p>
+                            </div>
+                          )}
+                          {viewingVehicle.battery && (
+                            <div>
+                              <p className={`text-sm font-medium mb-1 ${
+                                darkMode ? 'text-gray-400' : 'text-gray-600'
+                              }`}>Battery Type</p>
+                              <p className={`text-base ${
+                                darkMode ? 'text-gray-100' : 'text-gray-900'
+                              }`}>{viewingVehicle.battery}</p>
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Footer with Edit Button */}
+                  <div className={`border-t p-6 flex justify-end ${
+                    darkMode ? 'border-gray-700' : 'border-gray-200'
+                  }`}>
+                    <button
+                      onClick={() => {
+                        setShowVehicleDetailModal(false);
+                        setEditingVehicle(viewingVehicle);
+                        setViewingVehicle(null);
+                        setShowEditVehicleModal(true);
+                      }}
+                      className="px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium transition-colors flex items-center gap-2"
+                    >
+                      <Edit2 className="w-4 h-4" />
+                      Edit Vehicle
+                    </button>
                   </div>
                 </div>
               </div>
