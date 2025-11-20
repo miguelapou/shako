@@ -3373,32 +3373,30 @@ const LandCruiserTracker = () => {
                   }`}
                   onClick={(e) => e.stopPropagation()}
                 >
-                  <div className={`sticky top-0 border-b px-6 py-4 flex items-center justify-between rounded-t-lg ${
+                  <div className={`sticky top-0 border-b px-6 py-4 rounded-t-lg ${
                     darkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-200'
                   }`} style={{ zIndex: 10 }}>
-                    <h2 className={`text-2xl font-bold ${
-                      darkMode ? 'text-gray-100' : 'text-gray-800'
-                    }`} style={{ fontFamily: "'FoundationOne', 'Courier New', monospace" }}>
-                      {viewingProject.name}
-                    </h2>
-                    <button
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        setEditingProject({
-                          ...viewingProject,
-                          start_date: viewingProject.start_date ? viewingProject.start_date.split('T')[0] : '',
-                          target_date: viewingProject.target_date ? viewingProject.target_date.split('T')[0] : ''
-                        });
-                        setShowProjectDetailModal(false);
-                        setShowEditProjectModal(true);
-                        setViewingProject(null);
-                      }}
-                      className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-medium transition-colors"
-                      title="Edit project"
-                    >
-                      <Edit2 className="w-4 h-4" />
-                      Edit
-                    </button>
+                    <div className="flex items-center justify-between">
+                      <h2 className={`text-2xl font-bold ${
+                        darkMode ? 'text-gray-100' : 'text-gray-800'
+                      }`} style={{ fontFamily: "'FoundationOne', 'Courier New', monospace" }}>
+                        {viewingProject.name}
+                      </h2>
+                      <button
+                        onClick={() => {
+                          setShowProjectDetailModal(false);
+                          setViewingProject(null);
+                        }}
+                        className={`p-2 rounded-lg transition-colors ${
+                          darkMode 
+                            ? 'hover:bg-gray-700 text-gray-400 hover:text-gray-200' 
+                            : 'hover:bg-gray-100 text-gray-500 hover:text-gray-700'
+                        }`}
+                        title="Close"
+                      >
+                        <X className="w-5 h-5" />
+                      </button>
+                    </div>
                   </div>
                   
                   <div className="p-6">
@@ -3422,13 +3420,34 @@ const LandCruiserTracker = () => {
 
                       return (
                         <>
-                          {/* Status Badge */}
-                          <div className="mb-6">
+                          {/* Status Badge and Edit Button */}
+                          <div className="flex items-center justify-between mb-6">
                             <span className={`inline-block px-4 py-2 rounded-full text-sm font-medium ${
                               statusColors[viewingProject.status]
                             }`}>
                               {viewingProject.status.replace('_', ' ').toUpperCase()}
                             </span>
+                            <button
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                setEditingProject({
+                                  ...viewingProject,
+                                  start_date: viewingProject.start_date ? viewingProject.start_date.split('T')[0] : '',
+                                  target_date: viewingProject.target_date ? viewingProject.target_date.split('T')[0] : ''
+                                });
+                                setShowProjectDetailModal(false);
+                                setShowEditProjectModal(true);
+                                setViewingProject(null);
+                              }}
+                              className={`p-2 rounded-lg transition-colors ${
+                                darkMode 
+                                  ? 'hover:bg-gray-700 text-gray-400 hover:text-blue-400' 
+                                  : 'hover:bg-gray-100 text-gray-500 hover:text-blue-600'
+                              }`}
+                              title="Edit project"
+                            >
+                              <Edit2 className="w-5 h-5" />
+                            </button>
                           </div>
 
                           {/* Description */}
