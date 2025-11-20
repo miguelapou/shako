@@ -3970,8 +3970,8 @@ const LandCruiserTracker = () => {
                       <img 
                         src={vehicle.image_url} 
                         alt={vehicle.nickname || vehicle.name}
-                        className={`w-full h-48 object-cover rounded-lg ${
-                          darkMode ? 'bg-gray-700' : 'bg-gray-200'
+                        className={`w-full h-48 object-cover rounded-lg border ${
+                          darkMode ? 'bg-gray-700 border-gray-600' : 'bg-gray-200 border-gray-300'
                         }`}
                         onError={(e) => {
                           e.target.style.display = 'none';
