@@ -2577,6 +2577,9 @@ const LandCruiserTracker = () => {
                   <th className={`px-6 py-4 text-left text-xs font-semibold uppercase tracking-wider ${
                     darkMode ? 'text-gray-300' : 'text-slate-700'
                   }`}>Project</th>
+                  <th className={`px-6 py-4 text-left text-xs font-semibold uppercase tracking-wider ${
+                    darkMode ? 'text-gray-300' : 'text-slate-700'
+                  }`}>Vehicle</th>
                   <th 
                     onClick={() => handleSort('price')}
                     className={`px-6 py-4 text-right text-xs font-semibold uppercase tracking-wider cursor-pointer transition-colors ${
@@ -2647,6 +2650,24 @@ const LandCruiserTracker = () => {
                     </td>
                     <td className="px-6 py-4 text-center">
                       <ProjectDropdown part={part} />
+                    </td>
+                    <td className="px-6 py-4 text-center">
+                      {(() => {
+                        const partProject = part.projectId ? projects.find(p => p.id === part.projectId) : null;
+                        const vehicle = partProject?.vehicle_id ? vehicles.find(v => v.id === partProject.vehicle_id) : null;
+                        return vehicle ? (
+                          <span className={`inline-flex items-center px-2 py-1 rounded text-xs font-medium ${
+                            darkMode ? 'bg-gray-700 text-gray-300' : 'bg-gray-100 text-gray-700'
+                          }`}>
+                            <Car className="w-3 h-3 mr-1" />
+                            {vehicle.nickname || vehicle.name}
+                          </span>
+                        ) : (
+                          <div className={`text-sm text-center ${
+                            darkMode ? 'text-gray-600' : 'text-slate-400'
+                          }`}>—</div>
+                        );
+                      })()}
                     </td>
                     <td className="px-6 py-4 text-right">
                       <div className={`text-sm ${
@@ -2756,6 +2777,23 @@ const LandCruiserTracker = () => {
                         <ProjectDropdown part={part} />
                       </div>
                     </div>
+                    {(() => {
+                      const partProject = part.projectId ? projects.find(p => p.id === part.projectId) : null;
+                      const vehicle = partProject?.vehicle_id ? vehicles.find(v => v.id === partProject.vehicle_id) : null;
+                      return vehicle && (
+                        <div className="flex items-center gap-2">
+                          <p className={`text-xs ${
+                            darkMode ? 'text-gray-400' : 'text-gray-600'
+                          }`}>Vehicle:</p>
+                          <span className={`inline-flex items-center px-2 py-0.5 rounded text-xs font-medium ${
+                            darkMode ? 'bg-gray-700 text-gray-300' : 'bg-gray-100 text-gray-700'
+                          }`}>
+                            <Car className="w-3 h-3 mr-1" />
+                            {vehicle.nickname || vehicle.name}
+                          </span>
+                        </div>
+                      );
+                    })()}
                   </div>
                 </div>
 
@@ -3709,11 +3747,24 @@ const LandCruiserTracker = () => {
                     darkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-200'
                   }`} style={{ zIndex: 10 }}>
                     <div className="flex items-center justify-between">
-                      <h2 className={`text-2xl font-bold ${
-                        darkMode ? 'text-gray-100' : 'text-gray-800'
-                      }`} style={{ fontFamily: "'FoundationOne', 'Courier New', monospace" }}>
-                        {viewingProject.name}
-                      </h2>
+                      <div className="flex items-center gap-3">
+                        <h2 className={`text-2xl font-bold ${
+                          darkMode ? 'text-gray-100' : 'text-gray-800'
+                        }`} style={{ fontFamily: "'FoundationOne', 'Courier New', monospace" }}>
+                          {viewingProject.name}
+                        </h2>
+                        {(() => {
+                          const vehicle = viewingProject.vehicle_id ? vehicles.find(v => v.id === viewingProject.vehicle_id) : null;
+                          return vehicle && (
+                            <span className={`inline-flex items-center px-2 py-1 rounded text-xs font-medium ${
+                              darkMode ? 'bg-gray-700 text-gray-300' : 'bg-gray-100 text-gray-700'
+                            }`}>
+                              <Car className="w-3 h-3 mr-1" />
+                              {vehicle.nickname || vehicle.name}
+                            </span>
+                          );
+                        })()}
+                      </div>
                       <button
                         onClick={() => {
                           setShowProjectDetailModal(false);
@@ -5383,6 +5434,14 @@ const LandCruiserTracker = () => {
                     {/* Projects Section */}
                     {(() => {
                       const vehicleProjects = getVehicleProjects(viewingVehicle.id);
+                      const getPriorityBorderColor = (priority) => {
+                        const priorityColors = {
+                          low: '#10b981',    // green
+                          medium: '#f59e0b', // yellow/amber
+                          high: '#ef4444',   // red
+                        };
+                        return priorityColors[priority] || '#6b7280'; // gray fallback
+                      };
                       return vehicleProjects.length > 0 && (
                         <div className={`pt-6 border-t ${
                           darkMode ? 'border-gray-700' : 'border-gray-200'
@@ -5407,7 +5466,7 @@ const LandCruiserTracker = () => {
                                   className={`rounded-lg p-4 border-l-4 ${
                                     darkMode ? 'bg-gray-700' : 'bg-gray-50'
                                   }`}
-                                  style={{ borderLeftColor: project.color || '#3b82f6' }}
+                                  style={{ borderLeftColor: getPriorityBorderColor(project.priority) }}
                                 >
                                   <h4 className={`font-semibold mb-2 ${
                                     darkMode ? 'text-gray-200' : 'text-gray-800'
