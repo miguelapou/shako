@@ -5329,7 +5329,7 @@ const LandCruiserTracker = () => {
                 })}
               >
                 <div 
-                  className={`rounded-lg shadow-xl max-w-3xl w-full max-h-[90vh] overflow-y-auto modal-content ${
+                  className={`rounded-lg shadow-xl max-w-5xl w-full max-h-[90vh] overflow-y-auto modal-content ${
                     isModalClosing ? 'modal-popup-exit' : 'modal-popup-enter'
                   } ${darkMode ? 'bg-gray-800' : 'bg-white'}`}
                   onClick={(e) => e.stopPropagation()}
@@ -5358,10 +5358,23 @@ const LandCruiserTracker = () => {
 
                   {/* Content */}
                   <div className="p-6 space-y-6">
-                    {/* Top Section: Basic Info Card (left 40%) and Image (right 60%) */}
-                    <div className="grid grid-cols-1 md:grid-cols-5 gap-6">
-                      {/* Basic Info Card - 2 columns (40%) */}
-                      <div className={`md:col-span-2 rounded-lg p-6 ${
+                    {/* Top Section: Image first on mobile, then Basic Info */}
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                      {/* Vehicle Image - Full width on mobile (order-first), 2 columns on desktop */}
+                      {viewingVehicle.image_url && (
+                        <div className="order-first md:order-last md:col-span-2 rounded-lg overflow-hidden">
+                          <img 
+                            src={viewingVehicle.image_url} 
+                            alt={viewingVehicle.nickname || viewingVehicle.name}
+                            loading="lazy"
+                            decoding="async"
+                            className="w-full h-full object-cover min-h-[300px]"
+                          />
+                        </div>
+                      )}
+                      
+                      {/* Basic Info Card - Full width on mobile (order-last), 1 column on desktop */}
+                      <div className={`order-last md:order-first md:col-span-1 rounded-lg p-6 ${
                         darkMode ? 'bg-gray-700' : 'bg-gray-50'
                       }`}>
                         <h3 className={`text-lg font-semibold mb-4 ${
@@ -5426,19 +5439,6 @@ const LandCruiserTracker = () => {
                           )}
                         </div>
                       </div>
-
-                      {/* Vehicle Image - 3 columns (60%) */}
-                      {viewingVehicle.image_url && (
-                        <div className="md:col-span-3 rounded-lg overflow-hidden">
-                          <img 
-                            src={viewingVehicle.image_url} 
-                            alt={viewingVehicle.nickname || viewingVehicle.name}
-                            loading="lazy"
-                            decoding="async"
-                            className="w-full h-full object-cover min-h-[300px]"
-                          />
-                        </div>
-                      )}
                     </div>
 
                     {/* Filters Section */}
@@ -5451,7 +5451,7 @@ const LandCruiserTracker = () => {
                         }`}>
                           Filters
                         </h3>
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                           {viewingVehicle.fuel_filter && (
                             <div>
                               <p className={`text-sm font-medium mb-1 ${
@@ -5486,7 +5486,7 @@ const LandCruiserTracker = () => {
                         }`}>
                           Maintenance Information
                         </h3>
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                           {viewingVehicle.oil_filter && (
                             <div>
                               <p className={`text-sm font-medium mb-1 ${
