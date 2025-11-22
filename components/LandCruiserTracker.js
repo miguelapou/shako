@@ -2901,7 +2901,7 @@ const LandCruiserTracker = () => {
               <div 
                 key={part.id}
                 onClick={() => openEditModal(part)}
-                className={`rounded-lg shadow-lg p-4 transition-all hover:shadow-xl cursor-pointer flex flex-col ${
+                className={`rounded-lg shadow-lg p-4 transition-all hover:shadow-xl cursor-pointer flex flex-col min-h-[320px] ${
                   darkMode 
                     ? 'bg-gray-800' 
                     : 'bg-white'
