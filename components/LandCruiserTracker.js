@@ -56,21 +56,6 @@ const calculateVehicleTotalSpent = (vehicleId, projects, parts) => {
   }, 0);
 };
 
-// Convert hex color to muted version (reduces opacity)
-const getMutedColor = (hexColor, darkMode) => {
-  if (!hexColor) return darkMode ? 'rgba(59, 130, 246, 0.3)' : 'rgba(59, 130, 246, 0.4)';
-  
-  // Parse hex color
-  const hex = hexColor.replace('#', '');
-  const r = parseInt(hex.substr(0, 2), 16);
-  const g = parseInt(hex.substr(2, 2), 16);
-  const b = parseInt(hex.substr(4, 2), 16);
-  
-  // Return as rgba with reduced opacity (30% for dark mode, 40% for light mode)
-  const opacity = darkMode ? 0.3 : 0.4;
-  return `rgba(${r}, ${g}, ${b}, ${opacity})`;
-};
-
 // Calculate project totals
 const calculateProjectTotal = (projectId, parts) => {
   return parts
@@ -129,6 +114,13 @@ const fontStyles = `
   /* Force scrollbar to always be visible to prevent layout shift */
   html {
     overflow-y: scroll;
+  }
+
+  /* Prevent background scroll when modal is open */
+  body.modal-open {
+    overflow: hidden;
+    position: fixed;
+    width: 100%;
   }
 
   /* Prevent touch scrolling on modal backdrop */
@@ -243,44 +235,6 @@ const fontStyles = `
   .slide-in-left {
     animation: slideInFromLeft 0.4s cubic-bezier(0.16, 1, 0.3, 1);
   }
-
-  /* Garage Door Loading Spinner */
-  .garage-spinner {
-    width: 100px;
-    height: 120px;
-    position: relative;
-    overflow: hidden;
-    border: 2px solid #555;
-  }
-
-  .door-segment {
-    height: 30px;
-    background-color: #ccc;
-    border-bottom: 1px solid #555;
-    position: absolute;
-    width: 100%;
-  }
-
-  .door-segment:nth-child(1) { bottom: 0px; }
-  .door-segment:nth-child(2) { bottom: 30px; }
-  .door-segment:nth-child(3) { bottom: 60px; }
-  .door-segment:nth-child(4) { bottom: 90px; }
-
-  @keyframes openGarage {
-    0% { transform: translateY(0) scaleY(1); opacity: 1; }
-    50% { opacity: 1; }
-    100% { transform: translateY(-150px) scaleY(0.5); opacity: 0; }
-  }
-
-  .door-segment {
-    animation: openGarage 2s infinite cubic-bezier(0.25, 0.46, 0.45, 0.94);
-    animation-fill-mode: forwards;
-  }
-
-  .door-segment:nth-child(1) { animation-delay: 0s; }
-  .door-segment:nth-child(2) { animation-delay: 0.1s; }
-  .door-segment:nth-child(3) { animation-delay: 0.2s; }
-  .door-segment:nth-child(4) { animation-delay: 0.3s; }
 `;
 
 const LandCruiserTracker = () => {
@@ -294,10 +248,6 @@ const LandCruiserTracker = () => {
   const [dragOverProject, setDragOverProject] = useState(null);
   const [draggedVehicle, setDraggedVehicle] = useState(null);
   const [dragOverVehicle, setDragOverVehicle] = useState(null);
-
-  // Track if we're transitioning between modals to prevent scroll jumping
-  const isTransitioningModals = useRef(false);
-  const savedScrollPosition = useRef(0);
 
   // Refs for tab underline animation
   const tabRefs = useRef({});
@@ -907,8 +857,6 @@ const LandCruiserTracker = () => {
   const [showAddModal, setShowAddModal] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
   const [showTrackingModal, setShowTrackingModal] = useState(false);
-  const [showPartDetailModal, setShowPartDetailModal] = useState(false);
-  const [viewingPart, setViewingPart] = useState(null);
   const [trackingModalPartId, setTrackingModalPartId] = useState(null);
   const [trackingInput, setTrackingInput] = useState('');
   const [editingPart, setEditingPart] = useState(null);
@@ -952,38 +900,20 @@ const LandCruiserTracker = () => {
   useEffect(() => {
     const isAnyModalOpen = showAddModal || showEditModal || showTrackingModal || 
                           showAddProjectModal || showEditProjectModal || showProjectDetailModal ||
-                          showAddVehicleModal || showEditVehicleModal || showVehicleDetailModal ||
-                          showPartDetailModal;
+                          showAddVehicleModal || showEditVehicleModal || showVehicleDetailModal;
     
     if (isAnyModalOpen) {
-      // Store current scroll position when opening a modal
-      if (savedScrollPosition.current === 0) {
-        savedScrollPosition.current = window.scrollY;
-      }
-      document.body.style.position = 'fixed';
-      document.body.style.top = `-${savedScrollPosition.current}px`;
-      document.body.style.width = '100%';
+      document.body.classList.add('modal-open');
     } else {
-      // Remove fixed positioning but maintain scroll position
-      document.body.style.position = '';
-      document.body.style.top = '';
-      document.body.style.width = '';
-      
-      // Restore scroll position
-      if (savedScrollPosition.current > 0) {
-        window.scrollTo(0, savedScrollPosition.current);
-        savedScrollPosition.current = 0; // Reset for next modal
-      }
+      document.body.classList.remove('modal-open');
     }
     
     // Cleanup on unmount
     return () => {
-      document.body.style.position = '';
-      document.body.style.top = '';
-      document.body.style.width = '';
+      document.body.classList.remove('modal-open');
     };
   }, [showAddModal, showEditModal, showTrackingModal, showAddProjectModal, 
-      showEditProjectModal, showProjectDetailModal, showAddVehicleModal, showEditVehicleModal, showVehicleDetailModal, showPartDetailModal]);
+      showEditProjectModal, showProjectDetailModal, showAddVehicleModal, showEditVehicleModal, showVehicleDetailModal]);
 
   const [newPart, setNewPart] = useState({
     part: '',
@@ -1118,11 +1048,19 @@ const LandCruiserTracker = () => {
   };
 
   const openEditModal = (part) => {
+    // Store current scroll position before opening modal
+    const scrollPosition = window.scrollY || window.pageYOffset;
+    
     setEditingPart({
       ...part,
       status: part.delivered ? 'delivered' : (part.shipped ? 'shipped' : (part.purchased ? 'purchased' : 'pending'))
     });
     setShowEditModal(true);
+    
+    // Restore scroll position after modal opens
+    requestAnimationFrame(() => {
+      window.scrollTo(0, scrollPosition);
+    });
   };
 
   const saveEditedPart = async () => {
@@ -1755,7 +1693,7 @@ const LandCruiserTracker = () => {
             <div>
               <h1 className={`text-2xl sm:text-3xl lg:text-4xl font-bold mb-2 ${
                 darkMode ? 'text-gray-100' : 'text-slate-800'
-              }`} style={{ fontFamily: "'FoundationOne', 'Courier New', monospace" }}>{'\u{1F5FB}'} TAKUMI GARAGE</h1>
+              }`} style={{ fontFamily: "'FoundationOne', 'Courier New', monospace" }}>ðŸ—» TAKUMI GARAGE</h1>
             </div>
             <div className="flex items-center gap-2 sm:gap-3">
               <button
@@ -1856,13 +1794,8 @@ const LandCruiserTracker = () => {
         {loading && (
           <div className="flex items-center justify-center py-20">
             <div className="text-center">
-              <div className="garage-spinner mx-auto mb-4">
-                <div className="door-segment"></div>
-                <div className="door-segment"></div>
-                <div className="door-segment"></div>
-                <div className="door-segment"></div>
-              </div>
-              <p className={`text-lg font-medium ${darkMode ? 'text-gray-300' : 'text-slate-600'}`}>Opening your garage...</p>
+              <div className="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mb-4"></div>
+              <p className="text-slate-600">Opening your garage...</p>
             </div>
           </div>
         )}
@@ -1902,7 +1835,7 @@ const LandCruiserTracker = () => {
               
               <div className="p-6">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div className="md:col-span-1">
+                  <div>
                     <label className={`block text-sm font-medium mb-2 ${
                       darkMode ? 'text-gray-300' : 'text-gray-700'
                     }`}>
@@ -1921,8 +1854,6 @@ const LandCruiserTracker = () => {
                       required
                     />
                   </div>
-                  
-                  <div></div>
                   
                   <div>
                     <label className={`block text-sm font-medium mb-2 ${
@@ -2276,7 +2207,7 @@ const LandCruiserTracker = () => {
               
               <div className="p-6">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div className="md:col-span-1">
+                  <div>
                     <label className={`block text-sm font-medium mb-2 ${
                       darkMode ? 'text-gray-300' : 'text-gray-700'
                     }`}>
@@ -2295,8 +2226,6 @@ const LandCruiserTracker = () => {
                       required
                     />
                   </div>
-                  
-                  <div></div>
                   
                   <div>
                     <label className={`block text-sm font-medium mb-2 ${
@@ -2568,230 +2497,6 @@ const LandCruiserTracker = () => {
           </div>
         )}
 
-        {/* Part Detail Modal */}
-        {showPartDetailModal && viewingPart && (
-          <div 
-            className={`fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4 modal-backdrop ${
-              isModalClosing ? 'modal-backdrop-exit' : 'modal-backdrop-enter'
-            }`}
-            onClick={() => handleCloseModal(() => {
-              setShowPartDetailModal(false);
-              setViewingPart(null);
-            })}
-          >
-            <div 
-              className={`rounded-lg shadow-xl max-w-4xl w-full max-h-[90vh] modal-content ${
-                isModalClosing ? 'modal-popup-exit' : 'modal-popup-enter'
-              } ${darkMode ? 'bg-gray-800' : 'bg-white'}`}
-              onClick={(e) => e.stopPropagation()}
-            >
-              <div className={`sticky top-0 border-b px-6 py-4 rounded-t-lg ${
-                darkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-200'
-              }`} style={{ zIndex: 10 }}>
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-3">
-                    <h2 className={`text-2xl font-bold ${
-                      darkMode ? 'text-gray-100' : 'text-gray-800'
-                    }`} style={{ fontFamily: "'FoundationOne', 'Courier New', monospace" }}>
-                      {viewingPart.part}
-                    </h2>
-                    {(() => {
-                      const partProject = viewingPart.projectId ? projects.find(p => p.id === viewingPart.projectId) : null;
-                      const vehicle = partProject?.vehicle_id ? vehicles.find(v => v.id === partProject.vehicle_id) : null;
-                      return vehicle && (
-                        <span className={`inline-flex items-center px-2 py-1 rounded text-xs font-medium ${
-                          darkMode ? 'bg-gray-700 text-gray-300' : 'bg-gray-100 text-gray-700'
-                        }`}>
-                          <Car className="w-3 h-3 mr-1" style={{ color: vehicle.color || '#3B82F6' }} />
-                          {vehicle.nickname || vehicle.name}
-                        </span>
-                      );
-                    })()}
-                  </div>
-                  <button
-                    onClick={() => handleCloseModal(() => {
-                      setShowPartDetailModal(false);
-                      setViewingPart(null);
-                    })}
-                    className={`transition-colors ${
-                      darkMode ? 'text-gray-400 hover:text-gray-300' : 'text-gray-400 hover:text-gray-600'
-                    }`}
-                  >
-                    <X className="w-6 h-6" />
-                  </button>
-                </div>
-              </div>
-
-              <div className="p-6 overflow-y-auto">
-                {/* Status Badge */}
-                <div className="mb-6">
-                  <div className={`inline-flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium border ${getStatusColor(viewingPart)}`}>
-                    {getStatusIcon(viewingPart)}
-                    <span>{getStatusText(viewingPart)}</span>
-                  </div>
-                </div>
-
-                {/* Part Details Grid */}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-                  {/* Left Column */}
-                  <div className={`rounded-lg p-4 ${
-                    darkMode ? 'bg-gray-700' : 'bg-gray-50'
-                  }`}>
-                    <h3 className={`text-lg font-semibold mb-4 ${
-                      darkMode ? 'text-gray-200' : 'text-gray-800'
-                    }`}>Part Information</h3>
-                    <div className="space-y-4">
-                      {viewingPart.partNumber && viewingPart.partNumber !== '-' && (
-                        <div>
-                          <p className={`text-sm font-medium mb-1 ${
-                            darkMode ? 'text-gray-400' : 'text-gray-600'
-                          }`}>Part Number</p>
-                          <p className={`text-base font-mono ${
-                            darkMode ? 'text-gray-100' : 'text-gray-900'
-                          }`}>{viewingPart.partNumber}</p>
-                        </div>
-                      )}
-                      {viewingPart.vendor && (
-                        <div>
-                          <p className={`text-sm font-medium mb-2 ${
-                            darkMode ? 'text-gray-400' : 'text-gray-600'
-                          }`}>Vendor</p>
-                          <span className={`inline-block px-3 py-1 rounded-full text-sm font-medium ${getVendorColor(viewingPart.vendor)}`}>
-                            {viewingPart.vendor}
-                          </span>
-                        </div>
-                      )}
-                      {viewingPart.projectId && (() => {
-                        const project = projects.find(p => p.id === viewingPart.projectId);
-                        return project && (
-                          <div>
-                            <p className={`text-sm font-medium mb-2 ${
-                              darkMode ? 'text-gray-400' : 'text-gray-600'
-                            }`}>Project</p>
-                            <span className={`inline-block px-3 py-1 rounded-full text-sm font-medium ${
-                              darkMode ? 'bg-blue-900/30 text-blue-200 border border-blue-700' : 'bg-blue-50 text-blue-800 border border-blue-200'
-                            }`}>
-                              {project.name}
-                            </span>
-                          </div>
-                        );
-                      })()}
-                    </div>
-                  </div>
-
-                  {/* Right Column - Cost Breakdown */}
-                  <div className={`rounded-lg p-4 ${
-                    darkMode ? 'bg-gray-700' : 'bg-gray-50'
-                  }`}>
-                    <h3 className={`text-lg font-semibold mb-4 ${
-                      darkMode ? 'text-gray-200' : 'text-gray-800'
-                    }`}>Cost Breakdown</h3>
-                    <div className="space-y-3">
-                      <div className="flex justify-between items-center">
-                        <span className={`text-sm ${
-                          darkMode ? 'text-gray-400' : 'text-gray-600'
-                        }`}>Part Price</span>
-                        <span className={`text-lg font-semibold ${
-                          darkMode ? 'text-gray-100' : 'text-gray-900'
-                        }`}>${viewingPart.price.toFixed(2)}</span>
-                      </div>
-                      {viewingPart.shipping > 0 && (
-                        <div className="flex justify-between items-center">
-                          <span className={`text-sm ${
-                            darkMode ? 'text-gray-400' : 'text-gray-600'
-                          }`}>Shipping</span>
-                          <span className={`text-lg font-semibold ${
-                            darkMode ? 'text-gray-100' : 'text-gray-900'
-                          }`}>${viewingPart.shipping.toFixed(2)}</span>
-                        </div>
-                      )}
-                      {viewingPart.duties > 0 && (
-                        <div className="flex justify-between items-center">
-                          <span className={`text-sm ${
-                            darkMode ? 'text-gray-400' : 'text-gray-600'
-                          }`}>Import Duties</span>
-                          <span className={`text-lg font-semibold ${
-                            darkMode ? 'text-gray-100' : 'text-gray-900'
-                          }`}>${viewingPart.duties.toFixed(2)}</span>
-                        </div>
-                      )}
-                      <div className={`pt-3 mt-3 border-t flex justify-between items-center ${
-                        darkMode ? 'border-gray-600' : 'border-gray-300'
-                      }`}>
-                        <span className={`text-base font-semibold ${
-                          darkMode ? 'text-gray-200' : 'text-gray-800'
-                        }`}>Total</span>
-                        <span className={`text-2xl font-bold ${
-                          darkMode ? 'text-green-400' : 'text-green-600'
-                        }`}>${viewingPart.total.toFixed(2)}</span>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Tracking Information */}
-                {viewingPart.tracking && (
-                  <div className={`pt-6 border-t ${
-                    darkMode ? 'border-gray-700' : 'border-gray-200'
-                  }`}>
-                    <h3 className={`text-lg font-semibold mb-3 ${
-                      darkMode ? 'text-gray-200' : 'text-gray-800'
-                    }`}>Tracking Information</h3>
-                    <div className="flex items-center gap-3">
-                      <span className={`text-sm ${
-                        darkMode ? 'text-gray-400' : 'text-gray-600'
-                      }`}>Carrier:</span>
-                      {getTrackingUrl(viewingPart.tracking) ? (
-                        <a
-                          href={getTrackingUrl(viewingPart.tracking)}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-lg transition-colors"
-                          onClick={(e) => e.stopPropagation()}
-                        >
-                          Track via {getCarrierName(viewingPart.tracking)}
-                          <ExternalLink className="w-4 h-4" />
-                        </a>
-                      ) : (
-                        <span className={`inline-block px-4 py-2 rounded-lg text-sm font-medium ${
-                          darkMode ? 'bg-gray-700 text-gray-300' : 'bg-gray-200 text-gray-700'
-                        }`}>
-                          {getCarrierName(viewingPart.tracking)}
-                        </span>
-                      )}
-                    </div>
-                  </div>
-                )}
-              </div>
-
-              {/* Footer with Edit Button */}
-              <div className={`border-t p-6 flex justify-end ${
-                darkMode ? 'border-gray-700' : 'border-gray-200'
-              }`}>
-                <button
-                  onClick={() => {
-                    // Set transition flag to prevent scroll restoration
-                    isTransitioningModals.current = true;
-                    const partToEdit = viewingPart;
-                    setEditingPart({
-                      ...partToEdit,
-                      status: partToEdit.delivered ? 'delivered' : (partToEdit.shipped ? 'shipped' : (partToEdit.purchased ? 'purchased' : 'pending'))
-                    });
-                    setShowEditModal(true);
-                    // Close detail modal immediately
-                    setShowPartDetailModal(false);
-                    setViewingPart(null);
-                  }}
-                  className="px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium transition-colors flex items-center gap-2"
-                >
-                  <Edit2 className="w-4 h-4" />
-                  Edit
-                </button>
-              </div>
-            </div>
-          </div>
-        )}
-
         {/* PARTS TAB CONTENT */}
         {activeTab === 'parts' && (
           <div className="slide-in-left">
@@ -3001,7 +2706,6 @@ const LandCruiserTracker = () => {
 
         {/* Parts Table */}
         {/* Desktop Table View - Hidden on mobile */}
-        {filteredParts.length > 0 ? (
         <div className={`hidden md:block rounded-lg shadow-md overflow-hidden ${
           darkMode ? 'bg-gray-800' : 'bg-white'
         }`}>
@@ -3078,10 +2782,7 @@ const LandCruiserTracker = () => {
                 {filteredParts.map((part) => (
                   <tr 
                     key={part.id} 
-                    onClick={() => {
-                      setViewingPart(part);
-                      setShowPartDetailModal(true);
-                    }}
+                    onClick={() => openEditModal(part)}
                     className={`transition-colors cursor-pointer ${
                       darkMode ? 'hover:bg-gray-700' : 'hover:bg-slate-50'
                     }`}
@@ -3100,13 +2801,9 @@ const LandCruiserTracker = () => {
                           darkMode ? 'text-gray-300' : 'text-slate-600'
                         }`}>{part.partNumber}</div>
                       ) : (
-                        <span className={`inline-block px-2 py-1 rounded text-xs font-medium border ${
-                          darkMode 
-                            ? 'bg-gray-700/50 text-gray-500 border-gray-600' 
-                            : 'bg-gray-100 text-gray-500 border-gray-300'
-                        }`}>
-                          No Part #
-                        </span>
+                        <div className={`text-sm text-center ${
+                          darkMode ? 'text-gray-600' : 'text-slate-400'
+                        }`}>â€”</div>
                       )}
                     </td>
                     <td className="px-6 py-4">
@@ -3115,13 +2812,9 @@ const LandCruiserTracker = () => {
                           {part.vendor}
                         </span>
                       ) : (
-                        <span className={`inline-block px-3 py-1 rounded-full text-xs font-medium text-center border ${
-                          darkMode 
-                            ? 'bg-gray-700/50 text-gray-500 border-gray-600' 
-                            : 'bg-gray-100 text-gray-500 border-gray-300'
-                        }`}>
-                          No Vendor
-                        </span>
+                        <div className={`text-sm text-center ${
+                          darkMode ? 'text-gray-600' : 'text-slate-400'
+                        }`}>â€”</div>
                       )}
                     </td>
                     <td className="px-6 py-4 text-center">
@@ -3139,13 +2832,9 @@ const LandCruiserTracker = () => {
                             {vehicle.nickname || vehicle.name}
                           </span>
                         ) : (
-                          <span className={`inline-block px-2 py-1 rounded text-xs font-medium border ${
-                            darkMode 
-                              ? 'bg-gray-700/50 text-gray-500 border-gray-600' 
-                              : 'bg-gray-100 text-gray-500 border-gray-300'
-                          }`}>
-                            No Vehicle
-                          </span>
+                          <div className={`text-sm text-center ${
+                            darkMode ? 'text-gray-600' : 'text-slate-400'
+                          }`}>â€”</div>
                         );
                       })()}
                     </td>
@@ -3180,13 +2869,9 @@ const LandCruiserTracker = () => {
                           </div>
                         )
                       ) : (
-                        <span className={`inline-flex items-center justify-center px-3 py-1.5 text-xs font-medium rounded-md w-28 border ${
-                          darkMode 
-                            ? 'bg-gray-700/50 text-gray-500 border-gray-600' 
-                            : 'bg-gray-100 text-gray-500 border-gray-300'
-                        }`}>
-                          No Tracking
-                        </span>
+                        <div className={`text-sm text-center ${
+                          darkMode ? 'text-gray-600' : 'text-slate-400'
+                        }`}>â€”</div>
                       )}
                     </td>
                   </tr>
@@ -3205,47 +2890,13 @@ const LandCruiserTracker = () => {
             </p>
           </div>
         </div>
-        ) : (
-          <div className={`hidden md:block text-center py-16 rounded-lg ${
-            darkMode ? 'bg-gray-800' : 'bg-white'
-          }`}>
-            <Package className={`w-20 h-20 mx-auto mb-4 ${
-              darkMode ? 'text-gray-600' : 'text-gray-400'
-            }`} />
-            <h3 className={`text-xl font-semibold mb-2 ${
-              darkMode ? 'text-gray-300' : 'text-gray-700'
-            }`}>
-              No Parts Found
-            </h3>
-            <p className={`mb-4 ${
-              darkMode ? 'text-gray-400' : 'text-gray-600'
-            }`}>
-              {searchTerm || statusFilter !== 'all' || vendorFilter !== 'all' 
-                ? 'Try adjusting your filters or search term'
-                : 'Start tracking your parts by adding your first one'}
-            </p>
-            {!searchTerm && statusFilter === 'all' && vendorFilter === 'all' && (
-              <button
-                onClick={() => setShowAddModal(true)}
-                className="inline-flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg shadow-md transition-colors font-medium"
-              >
-                <Plus className="w-5 h-5" />
-                Add First Part
-              </button>
-            )}
-          </div>
-        )}
 
         {/* Mobile Card View - Visible only on mobile */}
-        {filteredParts.length > 0 ? (
         <div className="md:hidden grid grid-cols-1 gap-4">
             {filteredParts.map((part) => (
               <div 
                 key={part.id}
-                onClick={() => {
-                  setViewingPart(part);
-                  setShowPartDetailModal(true);
-                }}
+                onClick={() => openEditModal(part)}
                 className={`rounded-lg shadow-lg p-4 transition-all hover:shadow-xl cursor-pointer ${
                   darkMode 
                     ? 'bg-gray-800' 
@@ -3352,9 +3003,9 @@ const LandCruiserTracker = () => {
                 </div>
 
                 {/* Tracking */}
-                <div onClick={(e) => e.stopPropagation()}>
-                  {part.tracking ? (
-                    getTrackingUrl(part.tracking) ? (
+                {part.tracking && (
+                  <div onClick={(e) => e.stopPropagation()}>
+                    {getTrackingUrl(part.tracking) ? (
                       <a
                         href={getTrackingUrl(part.tracking)}
                         target="_blank"
@@ -3371,17 +3022,9 @@ const LandCruiserTracker = () => {
                       }`}>
                         {getCarrierName(part.tracking)}
                       </div>
-                    )
-                  ) : (
-                    <span className={`inline-flex items-center px-3 py-1.5 text-xs font-medium rounded-lg border ${
-                      darkMode 
-                        ? 'bg-gray-700/50 text-gray-500 border-gray-600' 
-                        : 'bg-gray-100 text-gray-500 border-gray-300'
-                    }`}>
-                      No Tracking
-                    </span>
-                  )}
-                </div>
+                    )}
+                  </div>
+                )}
                 
                 {/* Part Number - Bottom Right Corner */}
                 {part.partNumber && part.partNumber !== '-' && (
@@ -3394,36 +3037,6 @@ const LandCruiserTracker = () => {
               </div>
             ))}
           </div>
-        ) : (
-          <div className={`md:hidden text-center py-16 rounded-lg ${
-            darkMode ? 'bg-gray-800' : 'bg-white'
-          }`}>
-            <Package className={`w-20 h-20 mx-auto mb-4 ${
-              darkMode ? 'text-gray-600' : 'text-gray-400'
-            }`} />
-            <h3 className={`text-xl font-semibold mb-2 ${
-              darkMode ? 'text-gray-300' : 'text-gray-700'
-            }`}>
-              No Parts Found
-            </h3>
-            <p className={`mb-4 ${
-              darkMode ? 'text-gray-400' : 'text-gray-600'
-            }`}>
-              {searchTerm || statusFilter !== 'all' || vendorFilter !== 'all' 
-                ? 'Try adjusting your filters or search term'
-                : 'Start tracking your parts by adding your first one'}
-            </p>
-            {!searchTerm && statusFilter === 'all' && vendorFilter === 'all' && (
-              <button
-                onClick={() => setShowAddModal(true)}
-                className="inline-flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg shadow-md transition-colors font-medium"
-              >
-                <Plus className="w-5 h-5" />
-                Add First Part
-              </button>
-            )}
-          </div>
-        )}
         </>
           </div>
         )}
@@ -3454,7 +3067,7 @@ const LandCruiserTracker = () => {
                     }}
                     className={`relative rounded-lg shadow-lg pt-3 pb-6 px-6 transition-all hover:shadow-xl cursor-pointer ${
                       draggedProject?.id === project.id 
-                        ? 'ring-2 ring-blue-500 ring-offset-2' 
+                        ? 'opacity-50' 
                         : dragOverProject?.id === project.id
                           ? (darkMode ? 'ring-2 ring-blue-500' : 'ring-2 ring-blue-400')
                           : ''
@@ -3466,12 +3079,6 @@ const LandCruiserTracker = () => {
                       onDragStart={(e) => {
                         e.stopPropagation();
                         handleDragStart(e, project);
-                        // Set the entire card as the drag image, positioned at top-left
-                        const card = e.currentTarget.closest('[data-project-id]');
-                        if (card) {
-                          // Position the drag image so cursor is at the grip icon location (top-left area)
-                          e.dataTransfer.setDragImage(card, 20, 20);
-                        }
                       }}
                       onDragEnd={handleDragEnd}
                       className={`absolute top-2 left-2 cursor-grab active:cursor-grabbing hidden md:block ${
@@ -3482,8 +3089,8 @@ const LandCruiserTracker = () => {
                       <GripVertical className="w-5 h-5" />
                     </div>
 
-                    {/* Edit Button - Top Right */}
-                    <div className="absolute top-2 right-2" onClick={(e) => e.stopPropagation()}>
+                    {/* Edit and Delete Buttons - Top Right */}
+                    <div className="absolute top-2 right-2 flex gap-1" onClick={(e) => e.stopPropagation()}>
                       <button
                         onClick={() => {
                           setEditingProject({
@@ -3499,6 +3106,15 @@ const LandCruiserTracker = () => {
                         title="Edit project"
                       >
                         <Edit2 className="w-5 h-5" />
+                      </button>
+                      <button
+                        onClick={() => deleteProject(project.id)}
+                        className={`p-2 rounded-md transition-colors ${
+                          darkMode ? 'hover:bg-gray-700 text-gray-500 hover:text-red-400' : 'hover:bg-gray-100 text-gray-500 hover:text-red-600'
+                        }`}
+                        title="Delete project"
+                      >
+                        <Trash2 className="w-5 h-5" />
                       </button>
                     </div>
 
@@ -3581,9 +3197,7 @@ const LandCruiserTracker = () => {
                           Spent
                         </p>
                         <p className={`text-lg font-bold ${
-                          linkedPartsTotal > project.budget
-                            ? (darkMode ? 'text-red-400' : 'text-red-600')
-                            : (darkMode ? 'text-green-400' : 'text-green-600')
+                          darkMode ? 'text-gray-100' : 'text-gray-900'
                         }`}>
                           ${linkedPartsTotal.toFixed(2)}
                         </p>
@@ -4239,16 +3853,6 @@ const LandCruiserTracker = () => {
                   <div className="p-6">
                     <div className="flex gap-3">
                       <button
-                        onClick={() => deleteProject(editingProject.id)}
-                        className={`px-6 py-3 rounded-lg font-medium transition-colors ${
-                          darkMode 
-                            ? 'bg-red-600/20 text-red-400 hover:bg-red-600/30 hover:text-red-300' 
-                            : 'bg-red-50 text-red-600 hover:bg-red-100'
-                        }`}
-                      >
-                        Delete
-                      </button>
-                      <button
                         onClick={() => {
                           setShowEditProjectModal(false);
                           setEditingProject(null);
@@ -4370,7 +3974,6 @@ const LandCruiserTracker = () => {
                             <button
                               onClick={(e) => {
                                 e.stopPropagation();
-                                isTransitioningModals.current = true;
                                 setEditingProject({
                                   ...viewingProject,
                                   start_date: viewingProject.start_date ? viewingProject.start_date.split('T')[0] : '',
@@ -4624,12 +4227,12 @@ const LandCruiserTracker = () => {
                   }}
                   className={`relative rounded-lg shadow-lg pt-3 pb-6 px-6 transition-all hover:shadow-xl cursor-pointer border-t-4 ${
                     draggedVehicle?.id === vehicle.id 
-                      ? 'ring-2 ring-blue-500 ring-offset-2' 
+                      ? 'opacity-50' 
                       : dragOverVehicle?.id === vehicle.id
                         ? (darkMode ? 'ring-2 ring-blue-500' : 'ring-2 ring-blue-400')
                         : ''
                   } ${darkMode ? 'bg-gray-800' : 'bg-white'}`}
-                  style={{ borderTopColor: getMutedColor(vehicle.color, darkMode) }}
+                  style={{ borderTopColor: vehicle.color || '#3B82F6' }}
                 >
                   {/* Drag Handle - Hidden on mobile */}
                   <div 
@@ -4637,12 +4240,6 @@ const LandCruiserTracker = () => {
                     onDragStart={(e) => {
                       e.stopPropagation();
                       handleVehicleDragStart(e, vehicle);
-                      // Set the entire card as the drag image, positioned at top-left
-                      const card = e.currentTarget.closest('[data-vehicle-id]');
-                      if (card) {
-                        // Position the drag image so cursor is at the grip icon location (top-left area)
-                        e.dataTransfer.setDragImage(card, 20, 20);
-                      }
                     }}
                     onDragEnd={handleVehicleDragEnd}
                     className={`absolute top-2 left-2 cursor-grab active:cursor-grabbing hidden md:block ${
@@ -4652,8 +4249,8 @@ const LandCruiserTracker = () => {
                     <GripVertical className="w-5 h-5" />
                   </div>
 
-                  {/* Edit Button - Top Right */}
-                  <div className="absolute top-2 right-2">
+                  {/* Edit and Delete Buttons - Top Right */}
+                  <div className="absolute top-2 right-2 flex gap-1">
                     <button
                       onClick={(e) => {
                         e.stopPropagation();
@@ -4666,6 +4263,32 @@ const LandCruiserTracker = () => {
                       title="Edit vehicle"
                     >
                       <Edit2 className="w-5 h-5" />
+                    </button>
+                    <button
+                      onClick={async (e) => {
+                        e.stopPropagation();
+                        if (window.confirm(`Are you sure you want to delete ${vehicle.name}?`)) {
+                          try {
+                            const { error } = await supabase
+                              .from('vehicles')
+                              .delete()
+                              .eq('id', vehicle.id);
+                            
+                            if (error) throw error;
+                            
+                            await loadVehicles();
+                          } catch (error) {
+                            console.error('Error deleting vehicle:', error);
+                            alert('Error deleting vehicle');
+                          }
+                        }
+                      }}
+                      className={`p-2 rounded-md transition-colors ${
+                        darkMode ? 'hover:bg-gray-700 text-gray-500 hover:text-red-400' : 'hover:bg-gray-100 text-gray-500 hover:text-red-600'
+                      }`}
+                      title="Delete vehicle"
+                    >
+                      <Trash2 className="w-5 h-5" />
                     </button>
                   </div>
 
@@ -4828,104 +4451,44 @@ const LandCruiserTracker = () => {
                   </div>
                   
                   <div className="p-6">
-                    <div className="space-y-4">
-                      <div>
-                        <label className={`block text-sm font-medium mb-2 ${
-                          darkMode ? 'text-gray-300' : 'text-gray-700'
-                        }`}>
-                          Vehicle Image
-                        </label>
-                        
-                        {/* Image Preview */}
-                        {vehicleImagePreview && (
-                          <div className="mb-3 relative">
-                            <img 
-                              src={vehicleImagePreview} 
-                              alt="Preview"
-                              className={`w-full h-48 object-cover rounded-lg ${
-                                darkMode ? 'bg-gray-700' : 'bg-gray-200'
-                              }`}
-                            />
-                            <button
-                              onClick={clearImageSelection}
-                              className="absolute top-2 right-2 p-1 rounded-full bg-red-600 hover:bg-red-700 text-white transition-colors"
-                            >
-                              <X className="w-4 h-4" />
-                            </button>
-                          </div>
-                        )}
-                        
-                        {/* File Upload Button */}
-                        {!vehicleImagePreview && (
-                          <label className={`flex flex-col items-center justify-center w-full h-32 border-2 border-dashed rounded-lg cursor-pointer transition-colors ${
-                            darkMode 
-                              ? 'border-gray-600 hover:border-gray-500 bg-gray-700/50 hover:bg-gray-700' 
-                              : 'border-gray-300 hover:border-gray-400 bg-gray-50 hover:bg-gray-100'
+                    {/* Two Column Layout */}
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                      {/* Left Column - Form Fields */}
+                      <div className="space-y-4">
+                        <div>
+                          <label className={`block text-sm font-medium mb-2 ${
+                            darkMode ? 'text-gray-300' : 'text-gray-700'
                           }`}>
-                            <div className="flex flex-col items-center justify-center pt-5 pb-6">
-                              <Upload className={`w-8 h-8 mb-2 ${
-                                darkMode ? 'text-gray-400' : 'text-gray-500'
-                              }`} />
-                              <p className={`mb-1 text-sm ${
-                                darkMode ? 'text-gray-400' : 'text-gray-600'
-                              }`}>
-                                <span className="font-semibold">Click to upload</span> or drag and drop
-                              </p>
-                              <p className={`text-xs ${
-                                darkMode ? 'text-gray-500' : 'text-gray-500'
-                              }`}>
-                                PNG, JPG, WEBP (MAX. 5MB)
-                              </p>
-                            </div>
-                            <input 
-                              type="file" 
-                              className="hidden" 
-                              accept="image/*"
-                              onChange={handleImageFileChange}
-                            />
+                            Nickname *
                           </label>
-                        )}
-                      </div>
-
-                      <div>
-                        <label className={`block text-sm font-medium mb-2 ${
-                          darkMode ? 'text-gray-300' : 'text-gray-700'
-                        }`}>
-                          Nickname *
-                        </label>
-                        <input
-                          type="text"
-                          value={newVehicle.nickname}
-                          onChange={(e) => setNewVehicle({ ...newVehicle, nickname: e.target.value })}
-                          className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
-                            darkMode 
-                              ? 'bg-gray-700 border-gray-600 text-gray-100 placeholder-gray-400' 
-                              : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400'
-                          }`}
-                          placeholder=""
-                        />
-                      </div>
-
-                      <div>
-                        <label className={`block text-sm font-medium mb-2 ${
-                          darkMode ? 'text-gray-300' : 'text-gray-700'
-                        }`}>
-                          Vehicle Color
-                        </label>
-                        <div className="flex items-center gap-3">
                           <input
-                            type="color"
-                            value={newVehicle.color || '#3B82F6'}
-                            onChange={(e) => setNewVehicle({ ...newVehicle, color: e.target.value })}
-                            className="h-10 w-20 rounded cursor-pointer border-2 border-gray-300"
+                            type="text"
+                            value={newVehicle.nickname}
+                            onChange={(e) => setNewVehicle({ ...newVehicle, nickname: e.target.value })}
+                            className={inputClasses(darkMode)}
+                            placeholder=""
                           />
-                          <span className={`text-sm font-mono ${
-                            darkMode ? 'text-gray-400' : 'text-gray-600'
-                          }`}>{newVehicle.color || '#3B82F6'}</span>
                         </div>
-                      </div>
 
-                      <div className="grid grid-cols-2 gap-4">
+                        <div>
+                          <label className={`block text-sm font-medium mb-2 ${
+                            darkMode ? 'text-gray-300' : 'text-gray-700'
+                          }`}>
+                            Vehicle Color
+                          </label>
+                          <div className="flex items-center gap-3">
+                            <input
+                              type="color"
+                              value={newVehicle.color || '#3B82F6'}
+                              onChange={(e) => setNewVehicle({ ...newVehicle, color: e.target.value })}
+                              className="h-10 w-20 rounded cursor-pointer border-2 border-gray-300"
+                            />
+                            <span className={`text-sm font-mono ${
+                              darkMode ? 'text-gray-400' : 'text-gray-600'
+                            }`}>{newVehicle.color || '#3B82F6'}</span>
+                          </div>
+                        </div>
+
                         <div>
                           <label className={`block text-sm font-medium mb-2 ${
                             darkMode ? 'text-gray-300' : 'text-gray-700'
@@ -4965,8 +4528,85 @@ const LandCruiserTracker = () => {
                             placeholder=""
                           />
                         </div>
+
+                        <div>
+                          <label className={`block text-sm font-medium mb-2 ${
+                            darkMode ? 'text-gray-300' : 'text-gray-700'
+                          }`}>
+                            Insurance Policy
+                          </label>
+                          <input
+                            type="text"
+                            value={newVehicle.insurance_policy}
+                            onChange={(e) => setNewVehicle({ ...newVehicle, insurance_policy: e.target.value })}
+                            className={inputClasses(darkMode)}
+                            placeholder=""
+                          />
+                        </div>
                       </div>
 
+                      {/* Right Column - Image Upload */}
+                      <div>
+                        <label className={`block text-sm font-medium mb-2 ${
+                          darkMode ? 'text-gray-300' : 'text-gray-700'
+                        }`}>
+                          Vehicle Image
+                        </label>
+                        
+                        {/* Image Preview */}
+                        {vehicleImagePreview && (
+                          <div className="relative h-full min-h-[300px]">
+                            <img 
+                              src={vehicleImagePreview} 
+                              alt="Preview"
+                              className={`w-full h-full object-cover rounded-lg ${
+                                darkMode ? 'bg-gray-700' : 'bg-gray-200'
+                              }`}
+                            />
+                            <button
+                              onClick={clearImageSelection}
+                              className="absolute top-2 right-2 p-1 rounded-full bg-red-600 hover:bg-red-700 text-white transition-colors"
+                            >
+                              <X className="w-4 h-4" />
+                            </button>
+                          </div>
+                        )}
+                        
+                        {/* File Upload Button */}
+                        {!vehicleImagePreview && (
+                          <label className={`flex flex-col items-center justify-center w-full h-full min-h-[300px] border-2 border-dashed rounded-lg cursor-pointer transition-colors ${
+                            darkMode 
+                              ? 'border-gray-600 hover:border-gray-500 bg-gray-700/50 hover:bg-gray-700' 
+                              : 'border-gray-300 hover:border-gray-400 bg-gray-50 hover:bg-gray-100'
+                          }`}>
+                            <div className="flex flex-col items-center justify-center py-6">
+                              <Upload className={`w-12 h-12 mb-3 ${
+                                darkMode ? 'text-gray-400' : 'text-gray-500'
+                              }`} />
+                              <p className={`mb-2 text-sm ${
+                                darkMode ? 'text-gray-400' : 'text-gray-600'
+                              }`}>
+                                <span className="font-semibold">Click to upload</span> or drag and drop
+                              </p>
+                              <p className={`text-xs ${
+                                darkMode ? 'text-gray-500' : 'text-gray-500'
+                              }`}>
+                                PNG, JPG, WEBP (MAX. 5MB)
+                              </p>
+                            </div>
+                            <input 
+                              type="file" 
+                              className="hidden" 
+                              accept="image/*"
+                              onChange={handleImageFileChange}
+                            />
+                          </label>
+                        )}
+                      </div>
+                    </div>
+
+                    {/* Full Width Fields Below */}
+                    <div className="space-y-4">
                       <div className="grid grid-cols-2 gap-4">
                         <div>
                           <label className={`block text-sm font-medium mb-2 ${
@@ -5005,25 +4645,6 @@ const LandCruiserTracker = () => {
                             placeholder=""
                           />
                         </div>
-                      </div>
-
-                      <div>
-                        <label className={`block text-sm font-medium mb-2 ${
-                          darkMode ? 'text-gray-300' : 'text-gray-700'
-                        }`}>
-                          Insurance Policy
-                        </label>
-                        <input
-                          type="text"
-                          value={newVehicle.insurance_policy}
-                          onChange={(e) => setNewVehicle({ ...newVehicle, insurance_policy: e.target.value })}
-                          className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
-                            darkMode 
-                              ? 'bg-gray-700 border-gray-600 text-gray-100 placeholder-gray-400' 
-                              : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400'
-                          }`}
-                          placeholder=""
-                        />
                       </div>
 
                       <div className={`pt-4 border-t ${
@@ -5093,11 +4714,7 @@ const LandCruiserTracker = () => {
                             type="text"
                             value={newVehicle.battery}
                             onChange={(e) => setNewVehicle({ ...newVehicle, battery: e.target.value })}
-                            className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
-                              darkMode 
-                                ? 'bg-gray-700 border-gray-600 text-gray-100 placeholder-gray-400' 
-                                : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400'
-                            }`}
+                            className={inputClasses(darkMode)}
                             placeholder=""
                           />
                         </div>
@@ -5122,11 +4739,7 @@ const LandCruiserTracker = () => {
                               type="text"
                               value={newVehicle.oil_filter}
                               onChange={(e) => setNewVehicle({ ...newVehicle, oil_filter: e.target.value })}
-                              className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
-                                darkMode 
-                                  ? 'bg-gray-700 border-gray-600 text-gray-100 placeholder-gray-400' 
-                                  : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400'
-                              }`}
+                              className={inputClasses(darkMode)}
                               placeholder=""
                             />
                           </div>
@@ -5328,110 +4941,44 @@ const LandCruiserTracker = () => {
                   </div>
                   
                   <div className="p-6">
-                    <div className="space-y-4">
-                      <div>
-                        <label className={`block text-sm font-medium mb-2 ${
-                          darkMode ? 'text-gray-300' : 'text-gray-700'
-                        }`}>
-                          Vehicle Image
-                        </label>
-                        
-                        {/* Current Image or Preview */}
-                        {(vehicleImagePreview || editingVehicle.image_url) && (
-                          <div className="mb-3 relative">
-                            <img 
-                              src={vehicleImagePreview || editingVehicle.image_url} 
-                              alt="Vehicle"
-                              className={`w-full h-48 object-cover rounded-lg ${
-                                darkMode ? 'bg-gray-700' : 'bg-gray-200'
-                              }`}
-                            />
-                            <button
-                              onClick={() => {
-                                if (vehicleImagePreview) {
-                                  clearImageSelection();
-                                } else {
-                                  setEditingVehicle({ ...editingVehicle, image_url: '' });
-                                }
-                              }}
-                              className="absolute top-2 right-2 p-1 rounded-full bg-red-600 hover:bg-red-700 text-white transition-colors"
-                            >
-                              <X className="w-4 h-4" />
-                            </button>
-                          </div>
-                        )}
-                        
-                        {/* File Upload Button */}
-                        {!vehicleImagePreview && !editingVehicle.image_url && (
-                          <label className={`flex flex-col items-center justify-center w-full h-32 border-2 border-dashed rounded-lg cursor-pointer transition-colors ${
-                            darkMode 
-                              ? 'border-gray-600 hover:border-gray-500 bg-gray-700/50 hover:bg-gray-700' 
-                              : 'border-gray-300 hover:border-gray-400 bg-gray-50 hover:bg-gray-100'
+                    {/* Two Column Layout */}
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                      {/* Left Column - Form Fields */}
+                      <div className="space-y-4">
+                        <div>
+                          <label className={`block text-sm font-medium mb-2 ${
+                            darkMode ? 'text-gray-300' : 'text-gray-700'
                           }`}>
-                            <div className="flex flex-col items-center justify-center pt-5 pb-6">
-                              <Upload className={`w-8 h-8 mb-2 ${
-                                darkMode ? 'text-gray-400' : 'text-gray-500'
-                              }`} />
-                              <p className={`mb-1 text-sm ${
-                                darkMode ? 'text-gray-400' : 'text-gray-600'
-                              }`}>
-                                <span className="font-semibold">Click to upload</span> or drag and drop
-                              </p>
-                              <p className={`text-xs ${
-                                darkMode ? 'text-gray-500' : 'text-gray-500'
-                              }`}>
-                                PNG, JPG, WEBP (MAX. 5MB)
-                              </p>
-                            </div>
-                            <input 
-                              type="file" 
-                              className="hidden" 
-                              accept="image/*"
-                              onChange={handleImageFileChange}
-                            />
+                            Nickname *
                           </label>
-                        )}
-                      </div>
-
-                      <div>
-                        <label className={`block text-sm font-medium mb-2 ${
-                          darkMode ? 'text-gray-300' : 'text-gray-700'
-                        }`}>
-                          Nickname *
-                        </label>
-                        <input
-                          type="text"
-                          value={editingVehicle.nickname || ''}
-                          onChange={(e) => setEditingVehicle({ ...editingVehicle, nickname: e.target.value })}
-                          className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
-                            darkMode 
-                              ? 'bg-gray-700 border-gray-600 text-gray-100 placeholder-gray-400' 
-                              : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400'
-                          }`}
-                          placeholder=""
-                        />
-                      </div>
-
-                      <div>
-                        <label className={`block text-sm font-medium mb-2 ${
-                          darkMode ? 'text-gray-300' : 'text-gray-700'
-                        }`}>
-                          Vehicle Color
-                        </label>
-                        <div className="flex items-center gap-3">
                           <input
-                            type="color"
-                            value={editingVehicle.color || '#3B82F6'}
-                            onChange={(e) => setEditingVehicle({ ...editingVehicle, color: e.target.value })}
-                            className="h-10 w-20 rounded cursor-pointer border-2 border-gray-300"
+                            type="text"
+                            value={editingVehicle.nickname || ''}
+                            onChange={(e) => setEditingVehicle({ ...editingVehicle, nickname: e.target.value })}
+                            className={inputClasses(darkMode)}
+                            placeholder=""
                           />
-                          <span className={`text-sm font-mono ${
-                            darkMode ? 'text-gray-400' : 'text-gray-600'
-                          }`}>{editingVehicle.color || '#3B82F6'}</span>
                         </div>
-                      </div>
 
-                      <div className="grid grid-cols-2 gap-4">
+                        <div>
+                          <label className={`block text-sm font-medium mb-2 ${
+                            darkMode ? 'text-gray-300' : 'text-gray-700'
+                          }`}>
+                            Vehicle Color
+                          </label>
+                          <div className="flex items-center gap-3">
+                            <input
+                              type="color"
+                              value={editingVehicle.color || '#3B82F6'}
+                              onChange={(e) => setEditingVehicle({ ...editingVehicle, color: e.target.value })}
+                              className="h-10 w-20 rounded cursor-pointer border-2 border-gray-300"
+                            />
+                            <span className={`text-sm font-mono ${
+                              darkMode ? 'text-gray-400' : 'text-gray-600'
+                            }`}>{editingVehicle.color || '#3B82F6'}</span>
+                          </div>
+                        </div>
+
                         <div>
                           <label className={`block text-sm font-medium mb-2 ${
                             darkMode ? 'text-gray-300' : 'text-gray-700'
@@ -5471,8 +5018,91 @@ const LandCruiserTracker = () => {
                             placeholder=""
                           />
                         </div>
+
+                        <div>
+                          <label className={`block text-sm font-medium mb-2 ${
+                            darkMode ? 'text-gray-300' : 'text-gray-700'
+                          }`}>
+                            Insurance Policy
+                          </label>
+                          <input
+                            type="text"
+                            value={editingVehicle.insurance_policy || ''}
+                            onChange={(e) => setEditingVehicle({ ...editingVehicle, insurance_policy: e.target.value })}
+                            className={inputClasses(darkMode)}
+                            placeholder=""
+                          />
+                        </div>
                       </div>
 
+                      {/* Right Column - Image Upload */}
+                      <div>
+                        <label className={`block text-sm font-medium mb-2 ${
+                          darkMode ? 'text-gray-300' : 'text-gray-700'
+                        }`}>
+                          Vehicle Image
+                        </label>
+                        
+                        {/* Current Image or Preview */}
+                        {(vehicleImagePreview || editingVehicle.image_url) && (
+                          <div className="relative h-full min-h-[300px]">
+                            <img 
+                              src={vehicleImagePreview || editingVehicle.image_url} 
+                              alt="Vehicle"
+                              className={`w-full h-full object-cover rounded-lg ${
+                                darkMode ? 'bg-gray-700' : 'bg-gray-200'
+                              }`}
+                            />
+                            <button
+                              onClick={() => {
+                                if (vehicleImagePreview) {
+                                  clearImageSelection();
+                                } else {
+                                  setEditingVehicle({ ...editingVehicle, image_url: '' });
+                                }
+                              }}
+                              className="absolute top-2 right-2 p-1 rounded-full bg-red-600 hover:bg-red-700 text-white transition-colors"
+                            >
+                              <X className="w-4 h-4" />
+                            </button>
+                          </div>
+                        )}
+                        
+                        {/* File Upload Button */}
+                        {!vehicleImagePreview && !editingVehicle.image_url && (
+                          <label className={`flex flex-col items-center justify-center w-full h-full min-h-[300px] border-2 border-dashed rounded-lg cursor-pointer transition-colors ${
+                            darkMode 
+                              ? 'border-gray-600 hover:border-gray-500 bg-gray-700/50 hover:bg-gray-700' 
+                              : 'border-gray-300 hover:border-gray-400 bg-gray-50 hover:bg-gray-100'
+                          }`}>
+                            <div className="flex flex-col items-center justify-center py-6">
+                              <Upload className={`w-12 h-12 mb-3 ${
+                                darkMode ? 'text-gray-400' : 'text-gray-500'
+                              }`} />
+                              <p className={`mb-2 text-sm ${
+                                darkMode ? 'text-gray-400' : 'text-gray-600'
+                              }`}>
+                                <span className="font-semibold">Click to upload</span> or drag and drop
+                              </p>
+                              <p className={`text-xs ${
+                                darkMode ? 'text-gray-500' : 'text-gray-500'
+                              }`}>
+                                PNG, JPG, WEBP (MAX. 5MB)
+                              </p>
+                            </div>
+                            <input 
+                              type="file" 
+                              className="hidden" 
+                              accept="image/*"
+                              onChange={handleImageFileChange}
+                            />
+                          </label>
+                        )}
+                      </div>
+                    </div>
+
+                    {/* Full Width Fields Below */}
+                    <div className="space-y-4">
                       <div className="grid grid-cols-2 gap-4">
                         <div>
                           <label className={`block text-sm font-medium mb-2 ${
@@ -5511,25 +5141,6 @@ const LandCruiserTracker = () => {
                             placeholder=""
                           />
                         </div>
-                      </div>
-
-                      <div>
-                        <label className={`block text-sm font-medium mb-2 ${
-                          darkMode ? 'text-gray-300' : 'text-gray-700'
-                        }`}>
-                          Insurance Policy
-                        </label>
-                        <input
-                          type="text"
-                          value={editingVehicle.insurance_policy || ''}
-                          onChange={(e) => setEditingVehicle({ ...editingVehicle, insurance_policy: e.target.value })}
-                          className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
-                            darkMode 
-                              ? 'bg-gray-700 border-gray-600 text-gray-100 placeholder-gray-400' 
-                              : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400'
-                          }`}
-                          placeholder=""
-                        />
                       </div>
 
                       <div className={`pt-4 border-t ${
@@ -5599,11 +5210,7 @@ const LandCruiserTracker = () => {
                             type="text"
                             value={editingVehicle.battery || ''}
                             onChange={(e) => setEditingVehicle({ ...editingVehicle, battery: e.target.value })}
-                            className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
-                              darkMode 
-                                ? 'bg-gray-700 border-gray-600 text-gray-100 placeholder-gray-400' 
-                                : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400'
-                            }`}
+                            className={inputClasses(darkMode)}
                             placeholder=""
                           />
                         </div>
@@ -5628,11 +5235,7 @@ const LandCruiserTracker = () => {
                               type="text"
                               value={editingVehicle.oil_filter || ''}
                               onChange={(e) => setEditingVehicle({ ...editingVehicle, oil_filter: e.target.value })}
-                              className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
-                                darkMode 
-                                  ? 'bg-gray-700 border-gray-600 text-gray-100 placeholder-gray-400' 
-                                  : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400'
-                              }`}
+                              className={inputClasses(darkMode)}
                               placeholder=""
                             />
                           </div>
@@ -5727,16 +5330,6 @@ const LandCruiserTracker = () => {
                   
                   <div className="p-6">
                     <div className="flex gap-3">
-                      <button
-                        onClick={() => deleteVehicle(editingVehicle.id)}
-                        className={`px-6 py-3 rounded-lg font-medium transition-colors ${
-                          darkMode 
-                            ? 'bg-red-600/20 text-red-400 hover:bg-red-600/30 hover:text-red-300' 
-                            : 'bg-red-50 text-red-600 hover:bg-red-100'
-                        }`}
-                      >
-                        Delete
-                      </button>
                       <button
                         onClick={() => {
                           setShowEditVehicleModal(false);
@@ -6132,7 +5725,6 @@ const LandCruiserTracker = () => {
                   }`}>
                     <button
                       onClick={() => {
-                        isTransitioningModals.current = true;
                         setShowVehicleDetailModal(false);
                         setEditingVehicle(viewingVehicle);
                         setViewingVehicle(null);
