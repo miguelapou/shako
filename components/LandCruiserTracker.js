@@ -1835,7 +1835,7 @@ const LandCruiserTracker = () => {
               
               <div className="p-6">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div className="md:col-span-2">
+                  <div>
                     <label className={`block text-sm font-medium mb-2 ${
                       darkMode ? 'text-gray-300' : 'text-gray-700'
                     }`}>
@@ -2207,7 +2207,7 @@ const LandCruiserTracker = () => {
               
               <div className="p-6">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div className="md:col-span-2">
+                  <div>
                     <label className={`block text-sm font-medium mb-2 ${
                       darkMode ? 'text-gray-300' : 'text-gray-700'
                     }`}>
@@ -3065,7 +3065,7 @@ const LandCruiserTracker = () => {
                       setViewingProject(project);
                       setShowProjectDetailModal(true);
                     }}
-                    className={`relative rounded-lg shadow-lg pt-3 pb-6 px-6 transition-all hover:shadow-xl cursor-pointer ${
+                    className={`relative rounded-lg shadow-lg pt-3 pb-6 px-6 transition-all hover:shadow-xl cursor-pointer flex flex-col ${
                       draggedProject?.id === project.id 
                         ? 'opacity-50' 
                         : dragOverProject?.id === project.id
@@ -3118,8 +3118,10 @@ const LandCruiserTracker = () => {
                       </button>
                     </div>
 
-                    {/* Project Header */}
-                    <div className="mb-4 mt-8">
+                    {/* Main Content - grows to push linked parts to bottom */}
+                    <div className="flex-grow">
+                      {/* Project Header */}
+                      <div className="mb-4 mt-8">
                       <div className="mb-2">
                         <h3 className={`text-xl font-bold mb-2 ${
                           darkMode ? 'text-gray-100' : 'text-gray-900'
@@ -3251,6 +3253,7 @@ const LandCruiserTracker = () => {
                         </span>
                       </div>
                     </div>
+                    </div>
 
                     {/* Linked Parts */}
                     {(() => {
@@ -3361,7 +3364,7 @@ const LandCruiserTracker = () => {
 
                   <div className="p-6">
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      <div className="md:col-span-2">
+                      <div>
                         <label className={`block text-sm font-medium mb-2 ${
                           darkMode ? 'text-gray-300' : 'text-gray-700'
                         }`}>
@@ -3380,6 +3383,8 @@ const LandCruiserTracker = () => {
                           required
                         />
                       </div>
+
+                      <div></div>
 
                       <div className="md:col-span-2">
                         <label className={`block text-sm font-medium mb-2 ${
@@ -3619,7 +3624,7 @@ const LandCruiserTracker = () => {
 
                   <div className="p-6">
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      <div className="md:col-span-2">
+                      <div>
                         <label className={`block text-sm font-medium mb-2 ${
                           darkMode ? 'text-gray-300' : 'text-gray-700'
                         }`}>
@@ -3636,6 +3641,8 @@ const LandCruiserTracker = () => {
                           }`}
                         />
                       </div>
+
+                      <div></div>
 
                       <div className="md:col-span-2">
                         <label className={`block text-sm font-medium mb-2 ${
