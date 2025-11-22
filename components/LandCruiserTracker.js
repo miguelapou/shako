@@ -1731,7 +1731,7 @@ const LandCruiserTracker = () => {
             <div>
               <h1 className={`text-2xl sm:text-3xl lg:text-4xl font-bold mb-2 ${
                 darkMode ? 'text-gray-100' : 'text-slate-800'
-              }`} style={{ fontFamily: "'FoundationOne', 'Courier New', monospace" }}>ðŸ—» TAKUMI GARAGE</h1>
+              }`} style={{ fontFamily: "'FoundationOne', 'Courier New', monospace" }}>TAKUMI GARAGE</h1>
             </div>
             <div className="flex items-center gap-2 sm:gap-3">
               <button
@@ -2850,7 +2850,7 @@ const LandCruiserTracker = () => {
                       ) : (
                         <div className={`text-sm text-center ${
                           darkMode ? 'text-gray-600' : 'text-slate-400'
-                        }`}>â€”</div>
+                        }`}>-</div>
                       )}
                     </td>
                     <td className="px-6 py-4">
@@ -2861,7 +2861,7 @@ const LandCruiserTracker = () => {
                       ) : (
                         <div className={`text-sm text-center ${
                           darkMode ? 'text-gray-600' : 'text-slate-400'
-                        }`}>â€”</div>
+                        }`}>-</div>
                       )}
                     </td>
                     <td className="px-6 py-4 text-center">
@@ -2881,7 +2881,7 @@ const LandCruiserTracker = () => {
                         ) : (
                           <div className={`text-sm text-center ${
                             darkMode ? 'text-gray-600' : 'text-slate-400'
-                          }`}>â€”</div>
+                          }`}>-</div>
                         );
                       })()}
                     </td>
@@ -2918,7 +2918,7 @@ const LandCruiserTracker = () => {
                       ) : (
                         <div className={`text-sm text-center ${
                           darkMode ? 'text-gray-600' : 'text-slate-400'
-                        }`}>â€”</div>
+                        }`}>-</div>
                       )}
                     </td>
                   </tr>
