@@ -295,6 +295,10 @@ const LandCruiserTracker = () => {
   const [draggedVehicle, setDraggedVehicle] = useState(null);
   const [dragOverVehicle, setDragOverVehicle] = useState(null);
 
+  // Track if we're transitioning between modals to prevent scroll jumping
+  const isTransitioningModals = useRef(false);
+  const savedScrollPosition = useRef(0);
+
   // Refs for tab underline animation
   const tabRefs = useRef({});
   const [underlineStyle, setUnderlineStyle] = useState({ left: 0, width: 0 });
@@ -952,20 +956,28 @@ const LandCruiserTracker = () => {
                           showPartDetailModal;
     
     if (isAnyModalOpen) {
-      // Store current scroll position
-      const scrollY = window.scrollY;
+      // Store current scroll position only if not transitioning
+      if (!isTransitioningModals.current) {
+        savedScrollPosition.current = window.scrollY;
+      }
       document.body.style.position = 'fixed';
-      document.body.style.top = `-${scrollY}px`;
+      document.body.style.top = `-${savedScrollPosition.current}px`;
       document.body.style.width = '100%';
     } else {
-      // Restore scroll position
-      const scrollY = document.body.style.top;
+      // Restore scroll position only if not transitioning to another modal
+      const scrollY = savedScrollPosition.current;
       document.body.style.position = '';
       document.body.style.top = '';
       document.body.style.width = '';
-      if (scrollY) {
-        window.scrollTo(0, parseInt(scrollY || '0') * -1);
+      
+      if (!isTransitioningModals.current && scrollY) {
+        window.scrollTo(0, scrollY);
       }
+      
+      // Reset transition flag after a brief delay
+      setTimeout(() => {
+        isTransitioningModals.current = false;
+      }, 100);
     }
     
     // Cleanup on unmount
@@ -2762,8 +2774,16 @@ const LandCruiserTracker = () => {
               }`}>
                 <button
                   onClick={() => {
+                    // Set transition flag to prevent scroll restoration
+                    isTransitioningModals.current = true;
+                    const partToEdit = viewingPart;
+                    setEditingPart({
+                      ...partToEdit,
+                      status: partToEdit.delivered ? 'delivered' : (partToEdit.shipped ? 'shipped' : (partToEdit.purchased ? 'purchased' : 'pending'))
+                    });
+                    setShowEditModal(true);
+                    // Close detail modal immediately
                     setShowPartDetailModal(false);
-                    openEditModal(viewingPart);
                     setViewingPart(null);
                   }}
                   className="px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium transition-colors flex items-center gap-2"
@@ -4265,6 +4285,7 @@ const LandCruiserTracker = () => {
                             <button
                               onClick={(e) => {
                                 e.stopPropagation();
+                                isTransitioningModals.current = true;
                                 setEditingProject({
                                   ...viewingProject,
                                   start_date: viewingProject.start_date ? viewingProject.start_date.split('T')[0] : '',
@@ -6042,6 +6063,7 @@ const LandCruiserTracker = () => {
                   }`}>
                     <button
                       onClick={() => {
+                        isTransitioningModals.current = true;
                         setShowVehicleDetailModal(false);
                         setEditingVehicle(viewingVehicle);
                         setViewingVehicle(null);
