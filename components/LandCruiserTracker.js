@@ -29,12 +29,14 @@ const fontStyles = `
   /* Prevent touch scrolling on modal backdrop */
   .modal-backdrop {
     touch-action: none;
+    transition: opacity 0.2s ease-out;
   }
 
   /* Enable smooth scrolling on modal content */
   .modal-content {
     -webkit-overflow-scrolling: touch;
     overflow-y: auto;
+    transition: transform 0.2s cubic-bezier(0.4, 0, 1, 1), opacity 0.2s ease-out;
   }
 
   @keyframes popUpCenter {
@@ -51,12 +53,35 @@ const fontStyles = `
     }
   }
 
+  @keyframes popDownCenter {
+    0% {
+      opacity: 1;
+      transform: scale(1);
+    }
+    50% {
+      transform: scale(1.02);
+    }
+    100% {
+      opacity: 0;
+      transform: scale(0.7);
+    }
+  }
+
   @keyframes fadeIn {
     from {
       opacity: 0;
     }
     to {
       opacity: 1;
+    }
+  }
+
+  @keyframes fadeOut {
+    from {
+      opacity: 1;
+    }
+    to {
+      opacity: 0;
     }
   }
 
@@ -86,8 +111,16 @@ const fontStyles = `
     animation: popUpCenter 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
   }
 
+  .modal-popup-exit {
+    animation: popDownCenter 0.2s cubic-bezier(0.4, 0, 1, 1);
+  }
+
   .modal-backdrop-enter {
     animation: fadeIn 0.3s ease-out;
+  }
+
+  .modal-backdrop-exit {
+    animation: fadeOut 0.2s ease-in;
   }
 
   .slide-in-right {
@@ -147,8 +180,15 @@ const LandCruiserTracker = () => {
   useEffect(() => {
     loadParts();
     loadProjects();
-    loadVehicles();
+    // Don't load vehicles on initial mount, only when tab is accessed
   }, []);
+
+  // Load vehicles when the vehicles tab is accessed
+  useEffect(() => {
+    if (activeTab === 'vehicles' && vehicles.length === 0) {
+      loadVehicles();
+    }
+  }, [activeTab]);
 
   // Update underline position when active tab changes
   useEffect(() => {
@@ -491,6 +531,15 @@ const LandCruiserTracker = () => {
     return projects.filter(project => project.vehicle_id === vehicleId).length;
   };
 
+  // Handle modal closing with exit animation
+  const handleCloseModal = (closeCallback) => {
+    setIsModalClosing(true);
+    setTimeout(() => {
+      closeCallback();
+      setIsModalClosing(false);
+    }, 200); // Duration matches the exit animation
+  };
+
   const uploadVehicleImage = async (file) => {
     try {
       setUploadingImage(true);
@@ -706,6 +755,7 @@ const LandCruiserTracker = () => {
   const [trackingModalPartId, setTrackingModalPartId] = useState(null);
   const [trackingInput, setTrackingInput] = useState('');
   const [editingPart, setEditingPart] = useState(null);
+  const [isModalClosing, setIsModalClosing] = useState(false);
   
   // Project-related state
   const [showAddProjectModal, setShowAddProjectModal] = useState(false);
@@ -4139,12 +4189,18 @@ const LandCruiserTracker = () => {
                       <img 
                         src={vehicle.image_url} 
                         alt={vehicle.nickname || vehicle.name}
+                        loading="lazy"
+                        decoding="async"
                         className={`w-full h-48 object-cover rounded-lg border ${
                           darkMode ? 'bg-gray-700 border-gray-600' : 'bg-gray-200 border-gray-300'
                         }`}
                         onError={(e) => {
                           e.target.style.display = 'none';
                         }}
+                        onLoad={(e) => {
+                          e.target.style.opacity = '1';
+                        }}
+                        style={{ opacity: 0, transition: 'opacity 0.3s ease-in' }}
                       />
                     </div>
                   )}
@@ -4264,13 +4320,15 @@ const LandCruiserTracker = () => {
             {/* Add Vehicle Modal */}
             {showAddVehicleModal && (
               <div 
-                className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4 modal-backdrop-enter modal-backdrop"
-                onClick={() => setShowAddVehicleModal(false)}
+                className={`fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4 modal-backdrop ${
+                  isModalClosing ? 'modal-backdrop-exit' : 'modal-backdrop-enter'
+                }`}
+                onClick={() => handleCloseModal(() => setShowAddVehicleModal(false))}
               >
                 <div 
-                  className={`rounded-lg shadow-xl max-w-2xl w-full max-h-[90vh] modal-popup-enter modal-content ${
-                    darkMode ? 'bg-gray-800' : 'bg-white'
-                  }`}
+                  className={`rounded-lg shadow-xl max-w-2xl w-full max-h-[90vh] modal-content ${
+                    isModalClosing ? 'modal-popup-exit' : 'modal-popup-enter'
+                  } ${darkMode ? 'bg-gray-800' : 'bg-white'}`}
                   onClick={(e) => e.stopPropagation()}
                 >
                   <div className={`sticky top-0 border-b px-6 py-4 flex items-center justify-between ${
@@ -4282,7 +4340,7 @@ const LandCruiserTracker = () => {
                       Add Vehicle
                     </h2>
                     <button
-                      onClick={() => setShowAddVehicleModal(false)}
+                      onClick={() => handleCloseModal(() => setShowAddVehicleModal(false))}
                       className={`transition-colors ${
                         darkMode ? 'text-gray-400 hover:text-gray-300' : 'text-gray-400 hover:text-gray-600'
                       }`}
@@ -5356,6 +5414,8 @@ const LandCruiserTracker = () => {
                           <img 
                             src={viewingVehicle.image_url} 
                             alt={viewingVehicle.nickname || viewingVehicle.name}
+                            loading="lazy"
+                            decoding="async"
                             className="w-full h-full object-cover min-h-[300px]"
                           />
                         </div>
