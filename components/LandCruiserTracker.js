@@ -910,6 +910,8 @@ const LandCruiserTracker = () => {
   const [showAddModal, setShowAddModal] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
   const [showTrackingModal, setShowTrackingModal] = useState(false);
+  const [showPartDetailModal, setShowPartDetailModal] = useState(false);
+  const [viewingPart, setViewingPart] = useState(null);
   const [trackingModalPartId, setTrackingModalPartId] = useState(null);
   const [trackingInput, setTrackingInput] = useState('');
   const [editingPart, setEditingPart] = useState(null);
@@ -953,7 +955,8 @@ const LandCruiserTracker = () => {
   useEffect(() => {
     const isAnyModalOpen = showAddModal || showEditModal || showTrackingModal || 
                           showAddProjectModal || showEditProjectModal || showProjectDetailModal ||
-                          showAddVehicleModal || showEditVehicleModal || showVehicleDetailModal;
+                          showAddVehicleModal || showEditVehicleModal || showVehicleDetailModal ||
+                          showPartDetailModal;
     
     if (isAnyModalOpen) {
       document.body.classList.add('modal-open');
@@ -966,7 +969,7 @@ const LandCruiserTracker = () => {
       document.body.classList.remove('modal-open');
     };
   }, [showAddModal, showEditModal, showTrackingModal, showAddProjectModal, 
-      showEditProjectModal, showProjectDetailModal, showAddVehicleModal, showEditVehicleModal, showVehicleDetailModal]);
+      showEditProjectModal, showProjectDetailModal, showAddVehicleModal, showEditVehicleModal, showVehicleDetailModal, showPartDetailModal]);
 
   const [newPart, setNewPart] = useState({
     part: '',
@@ -2559,6 +2562,222 @@ const LandCruiserTracker = () => {
           </div>
         )}
 
+        {/* Part Detail Modal */}
+        {showPartDetailModal && viewingPart && (
+          <div 
+            className={`fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4 modal-backdrop ${
+              isModalClosing ? 'modal-backdrop-exit' : 'modal-backdrop-enter'
+            }`}
+            onClick={() => handleCloseModal(() => {
+              setShowPartDetailModal(false);
+              setViewingPart(null);
+            })}
+          >
+            <div 
+              className={`rounded-lg shadow-xl max-w-4xl w-full max-h-[90vh] modal-content ${
+                isModalClosing ? 'modal-popup-exit' : 'modal-popup-enter'
+              } ${darkMode ? 'bg-gray-800' : 'bg-white'}`}
+              onClick={(e) => e.stopPropagation()}
+            >
+              <div className={`sticky top-0 border-b px-6 py-4 rounded-t-lg ${
+                darkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-200'
+              }`} style={{ zIndex: 10 }}>
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-3">
+                    <h2 className={`text-2xl font-bold ${
+                      darkMode ? 'text-gray-100' : 'text-gray-800'
+                    }`} style={{ fontFamily: "'FoundationOne', 'Courier New', monospace" }}>
+                      {viewingPart.part}
+                    </h2>
+                    {(() => {
+                      const partProject = viewingPart.projectId ? projects.find(p => p.id === viewingPart.projectId) : null;
+                      const vehicle = partProject?.vehicle_id ? vehicles.find(v => v.id === partProject.vehicle_id) : null;
+                      return vehicle && (
+                        <span className={`inline-flex items-center px-2 py-1 rounded text-xs font-medium ${
+                          darkMode ? 'bg-gray-700 text-gray-300' : 'bg-gray-100 text-gray-700'
+                        }`}>
+                          <Car className="w-3 h-3 mr-1" style={{ color: vehicle.color || '#3B82F6' }} />
+                          {vehicle.nickname || vehicle.name}
+                        </span>
+                      );
+                    })()}
+                  </div>
+                  <button
+                    onClick={() => handleCloseModal(() => {
+                      setShowPartDetailModal(false);
+                      setViewingPart(null);
+                    })}
+                    className={`transition-colors ${
+                      darkMode ? 'text-gray-400 hover:text-gray-300' : 'text-gray-400 hover:text-gray-600'
+                    }`}
+                  >
+                    <X className="w-6 h-6" />
+                  </button>
+                </div>
+              </div>
+
+              <div className="p-6 overflow-y-auto">
+                {/* Status Badge */}
+                <div className="mb-6">
+                  <div className={`inline-flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium border ${getStatusColor(viewingPart)}`}>
+                    {getStatusIcon(viewingPart)}
+                    <span>{getStatusText(viewingPart)}</span>
+                  </div>
+                </div>
+
+                {/* Part Details Grid */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                  {/* Left Column */}
+                  <div className={`rounded-lg p-4 ${
+                    darkMode ? 'bg-gray-700' : 'bg-gray-50'
+                  }`}>
+                    <h3 className={`text-lg font-semibold mb-4 ${
+                      darkMode ? 'text-gray-200' : 'text-gray-800'
+                    }`}>Part Information</h3>
+                    <div className="space-y-4">
+                      {viewingPart.partNumber && viewingPart.partNumber !== '-' && (
+                        <div>
+                          <p className={`text-sm font-medium mb-1 ${
+                            darkMode ? 'text-gray-400' : 'text-gray-600'
+                          }`}>Part Number</p>
+                          <p className={`text-base font-mono ${
+                            darkMode ? 'text-gray-100' : 'text-gray-900'
+                          }`}>{viewingPart.partNumber}</p>
+                        </div>
+                      )}
+                      {viewingPart.vendor && (
+                        <div>
+                          <p className={`text-sm font-medium mb-2 ${
+                            darkMode ? 'text-gray-400' : 'text-gray-600'
+                          }`}>Vendor</p>
+                          <span className={`inline-block px-3 py-1 rounded-full text-sm font-medium ${getVendorColor(viewingPart.vendor)}`}>
+                            {viewingPart.vendor}
+                          </span>
+                        </div>
+                      )}
+                      {viewingPart.projectId && (() => {
+                        const project = projects.find(p => p.id === viewingPart.projectId);
+                        return project && (
+                          <div>
+                            <p className={`text-sm font-medium mb-2 ${
+                              darkMode ? 'text-gray-400' : 'text-gray-600'
+                            }`}>Project</p>
+                            <span className={`inline-block px-3 py-1 rounded-full text-sm font-medium ${
+                              darkMode ? 'bg-blue-900/30 text-blue-200 border border-blue-700' : 'bg-blue-50 text-blue-800 border border-blue-200'
+                            }`}>
+                              {project.name}
+                            </span>
+                          </div>
+                        );
+                      })()}
+                    </div>
+                  </div>
+
+                  {/* Right Column - Cost Breakdown */}
+                  <div className={`rounded-lg p-4 ${
+                    darkMode ? 'bg-gray-700' : 'bg-gray-50'
+                  }`}>
+                    <h3 className={`text-lg font-semibold mb-4 ${
+                      darkMode ? 'text-gray-200' : 'text-gray-800'
+                    }`}>Cost Breakdown</h3>
+                    <div className="space-y-3">
+                      <div className="flex justify-between items-center">
+                        <span className={`text-sm ${
+                          darkMode ? 'text-gray-400' : 'text-gray-600'
+                        }`}>Part Price</span>
+                        <span className={`text-lg font-semibold ${
+                          darkMode ? 'text-gray-100' : 'text-gray-900'
+                        }`}>${viewingPart.price.toFixed(2)}</span>
+                      </div>
+                      {viewingPart.shipping > 0 && (
+                        <div className="flex justify-between items-center">
+                          <span className={`text-sm ${
+                            darkMode ? 'text-gray-400' : 'text-gray-600'
+                          }`}>Shipping</span>
+                          <span className={`text-lg font-semibold ${
+                            darkMode ? 'text-gray-100' : 'text-gray-900'
+                          }`}>${viewingPart.shipping.toFixed(2)}</span>
+                        </div>
+                      )}
+                      {viewingPart.duties > 0 && (
+                        <div className="flex justify-between items-center">
+                          <span className={`text-sm ${
+                            darkMode ? 'text-gray-400' : 'text-gray-600'
+                          }`}>Import Duties</span>
+                          <span className={`text-lg font-semibold ${
+                            darkMode ? 'text-gray-100' : 'text-gray-900'
+                          }`}>${viewingPart.duties.toFixed(2)}</span>
+                        </div>
+                      )}
+                      <div className={`pt-3 mt-3 border-t flex justify-between items-center ${
+                        darkMode ? 'border-gray-600' : 'border-gray-300'
+                      }`}>
+                        <span className={`text-base font-semibold ${
+                          darkMode ? 'text-gray-200' : 'text-gray-800'
+                        }`}>Total</span>
+                        <span className={`text-2xl font-bold ${
+                          darkMode ? 'text-green-400' : 'text-green-600'
+                        }`}>${viewingPart.total.toFixed(2)}</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Tracking Information */}
+                {viewingPart.tracking && (
+                  <div className={`pt-6 border-t ${
+                    darkMode ? 'border-gray-700' : 'border-gray-200'
+                  }`}>
+                    <h3 className={`text-lg font-semibold mb-3 ${
+                      darkMode ? 'text-gray-200' : 'text-gray-800'
+                    }`}>Tracking Information</h3>
+                    <div className="flex items-center gap-3">
+                      <span className={`text-sm ${
+                        darkMode ? 'text-gray-400' : 'text-gray-600'
+                      }`}>Carrier:</span>
+                      {getTrackingUrl(viewingPart.tracking) ? (
+                        <a
+                          href={getTrackingUrl(viewingPart.tracking)}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-lg transition-colors"
+                          onClick={(e) => e.stopPropagation()}
+                        >
+                          Track via {getCarrierName(viewingPart.tracking)}
+                          <ExternalLink className="w-4 h-4" />
+                        </a>
+                      ) : (
+                        <span className={`inline-block px-4 py-2 rounded-lg text-sm font-medium ${
+                          darkMode ? 'bg-gray-700 text-gray-300' : 'bg-gray-200 text-gray-700'
+                        }`}>
+                          {getCarrierName(viewingPart.tracking)}
+                        </span>
+                      )}
+                    </div>
+                  </div>
+                )}
+              </div>
+
+              {/* Footer with Edit Button */}
+              <div className={`border-t p-6 flex justify-end ${
+                darkMode ? 'border-gray-700' : 'border-gray-200'
+              }`}>
+                <button
+                  onClick={() => {
+                    setShowPartDetailModal(false);
+                    openEditModal(viewingPart);
+                    setViewingPart(null);
+                  }}
+                  className="px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium transition-colors flex items-center gap-2"
+                >
+                  <Edit2 className="w-4 h-4" />
+                  Edit
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
         {/* PARTS TAB CONTENT */}
         {activeTab === 'parts' && (
           <div className="slide-in-left">
@@ -2844,7 +3063,10 @@ const LandCruiserTracker = () => {
                 {filteredParts.map((part) => (
                   <tr 
                     key={part.id} 
-                    onClick={() => openEditModal(part)}
+                    onClick={() => {
+                      setViewingPart(part);
+                      setShowPartDetailModal(true);
+                    }}
                     className={`transition-colors cursor-pointer ${
                       darkMode ? 'hover:bg-gray-700' : 'hover:bg-slate-50'
                     }`}
@@ -2958,7 +3180,10 @@ const LandCruiserTracker = () => {
             {filteredParts.map((part) => (
               <div 
                 key={part.id}
-                onClick={() => openEditModal(part)}
+                onClick={() => {
+                  setViewingPart(part);
+                  setShowPartDetailModal(true);
+                }}
                 className={`rounded-lg shadow-lg p-4 transition-all hover:shadow-xl cursor-pointer ${
                   darkMode 
                     ? 'bg-gray-800' 
