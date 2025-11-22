@@ -2988,14 +2988,14 @@ const LandCruiserTracker = () => {
                   </div>
                 )}
                 
-                {/* Part Number - Bottom Right Corner */}
-                {part.partNumber && part.partNumber !== '-' && (
-                  <div className="flex justify-end mt-2">
+                {/* Part Number - Bottom Right Corner - always reserve space */}
+                <div className="flex justify-end mt-2 min-h-[14px]">
+                  {part.partNumber && part.partNumber !== '-' && (
                     <p className={`text-[10px] font-mono ${
                       darkMode ? 'text-gray-500' : 'text-gray-400'
                     }`}>{part.partNumber}</p>
-                  </div>
-                )}
+                  )}
+                </div>
                 </div>
 
                 {/* Price Breakdown - More compact grid */}
