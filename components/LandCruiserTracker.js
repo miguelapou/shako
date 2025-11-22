@@ -136,7 +136,8 @@ const LandCruiserTracker = () => {
     oil_brand: '',
     drain_plug: '',
     battery: '',
-    image_url: ''
+    image_url: '',
+    color: '#3B82F6' // Default blue color
   });
   const [vehicleImageFile, setVehicleImageFile] = useState(null);
   const [vehicleImagePreview, setVehicleImagePreview] = useState(null);
@@ -2659,7 +2660,7 @@ const LandCruiserTracker = () => {
                           <span className={`inline-flex items-center px-2 py-1 rounded text-xs font-medium ${
                             darkMode ? 'bg-gray-700 text-gray-300' : 'bg-gray-100 text-gray-700'
                           }`}>
-                            <Car className="w-3 h-3 mr-1" />
+                            <Car className="w-3 h-3 mr-1" style={{ color: vehicle.color || '#3B82F6' }} />
                             {vehicle.nickname || vehicle.name}
                           </span>
                         ) : (
@@ -2687,6 +2688,7 @@ const LandCruiserTracker = () => {
                             target="_blank"
                             rel="noopener noreferrer"
                             className="inline-flex items-center justify-center gap-1.5 px-3 py-1.5 bg-blue-400 hover:bg-blue-500 text-white text-sm font-medium rounded-md transition-colors w-28"
+                            onClick={(e) => e.stopPropagation()}
                           >
                             {getCarrierName(part.tracking)}
                             <ExternalLink className="w-3.5 h-3.5" />
@@ -2780,7 +2782,7 @@ const LandCruiserTracker = () => {
                         <span className={`inline-flex items-center px-2 py-0.5 rounded text-xs font-medium ${
                           darkMode ? 'bg-gray-700 text-gray-300' : 'bg-gray-100 text-gray-700'
                         }`}>
-                          <Car className="w-3 h-3 mr-1" />
+                          <Car className="w-3 h-3 mr-1" style={{ color: vehicle.color || '#3B82F6' }} />
                           {vehicle.nickname || vehicle.name}
                         </span>
                       </div>
@@ -2861,7 +2863,7 @@ const LandCruiserTracker = () => {
                   <div className="flex justify-end mt-2">
                     <p className={`text-[10px] font-mono ${
                       darkMode ? 'text-gray-500' : 'text-gray-400'
-                    }`}>#{part.partNumber}</p>
+                    }`}>{part.partNumber}</p>
                   </div>
                 )}
               </div>
@@ -2973,7 +2975,7 @@ const LandCruiserTracker = () => {
                             <span className={`inline-flex items-center px-2 py-1 rounded text-xs font-medium ${
                               darkMode ? 'bg-gray-700 text-gray-300' : 'bg-gray-100 text-gray-700'
                             }`}>
-                              <Car className="w-3 h-3 mr-1" />
+                              <Car className="w-3 h-3 mr-1" style={{ color: vehicle.color || '#3B82F6' }} />
                               {vehicle.nickname || vehicle.name}
                             </span>
                           );
@@ -3759,7 +3761,7 @@ const LandCruiserTracker = () => {
                             <span className={`inline-flex items-center px-2 py-1 rounded text-xs font-medium ${
                               darkMode ? 'bg-gray-700 text-gray-300' : 'bg-gray-100 text-gray-700'
                             }`}>
-                              <Car className="w-3 h-3 mr-1" />
+                              <Car className="w-3 h-3 mr-1" style={{ color: vehicle.color || '#3B82F6' }} />
                               {vehicle.nickname || vehicle.name}
                             </span>
                           );
@@ -4064,13 +4066,14 @@ const LandCruiserTracker = () => {
                     setViewingVehicle(vehicle);
                     setShowVehicleDetailModal(true);
                   }}
-                  className={`relative rounded-lg shadow-lg pt-3 pb-6 px-6 transition-all hover:shadow-xl cursor-pointer ${
+                  className={`relative rounded-lg shadow-lg pt-3 pb-6 px-6 transition-all hover:shadow-xl cursor-pointer border-t-4 ${
                     draggedVehicle?.id === vehicle.id 
                       ? 'opacity-50' 
                       : dragOverVehicle?.id === vehicle.id
                         ? (darkMode ? 'ring-2 ring-blue-500' : 'ring-2 ring-blue-400')
                         : ''
                   } ${darkMode ? 'bg-gray-800' : 'bg-white'}`}
+                  style={{ borderTopColor: vehicle.color || '#3B82F6' }}
                 >
                   {/* Drag Handle - Hidden on mobile */}
                   <div 
@@ -4365,6 +4368,25 @@ const LandCruiserTracker = () => {
                           }`}
                           placeholder=""
                         />
+                      </div>
+
+                      <div>
+                        <label className={`block text-sm font-medium mb-2 ${
+                          darkMode ? 'text-gray-300' : 'text-gray-700'
+                        }`}>
+                          Vehicle Color
+                        </label>
+                        <div className="flex items-center gap-3">
+                          <input
+                            type="color"
+                            value={newVehicle.color || '#3B82F6'}
+                            onChange={(e) => setNewVehicle({ ...newVehicle, color: e.target.value })}
+                            className="h-10 w-20 rounded cursor-pointer border-2 border-gray-300"
+                          />
+                          <span className={`text-sm font-mono ${
+                            darkMode ? 'text-gray-400' : 'text-gray-600'
+                          }`}>{newVehicle.color || '#3B82F6'}</span>
+                        </div>
                       </div>
 
                       <div className="grid grid-cols-2 gap-4">
@@ -4850,6 +4872,25 @@ const LandCruiserTracker = () => {
                           }`}
                           placeholder=""
                         />
+                      </div>
+
+                      <div>
+                        <label className={`block text-sm font-medium mb-2 ${
+                          darkMode ? 'text-gray-300' : 'text-gray-700'
+                        }`}>
+                          Vehicle Color
+                        </label>
+                        <div className="flex items-center gap-3">
+                          <input
+                            type="color"
+                            value={editingVehicle.color || '#3B82F6'}
+                            onChange={(e) => setEditingVehicle({ ...editingVehicle, color: e.target.value })}
+                            className="h-10 w-20 rounded cursor-pointer border-2 border-gray-300"
+                          />
+                          <span className={`text-sm font-mono ${
+                            darkMode ? 'text-gray-400' : 'text-gray-600'
+                          }`}>{editingVehicle.color || '#3B82F6'}</span>
+                        </div>
                       </div>
 
                       <div className="grid grid-cols-2 gap-4">
