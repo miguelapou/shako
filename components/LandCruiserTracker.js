@@ -1646,7 +1646,7 @@ const LandCruiserTracker = () => {
           <div className="flex items-center justify-center py-20">
             <div className="text-center">
               <div className="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mb-4"></div>
-              <p className="text-slate-600">Loading parts from database...</p>
+              <p className="text-slate-600">Opening your garage...</p>
             </div>
           </div>
         )}
@@ -2745,20 +2745,9 @@ const LandCruiserTracker = () => {
                   </div>
                 </div>
 
-                {/* Part Number + Vendor + Project - All on one or two lines */}
-                <div className="space-y-2 mb-3">
-                  {part.partNumber && part.partNumber !== '-' && (
-                    <div className="flex items-center gap-2">
-                      <p className={`text-xs ${
-                        darkMode ? 'text-gray-400' : 'text-gray-600'
-                      }`}>Part #:</p>
-                      <p className={`text-xs font-mono ${
-                        darkMode ? 'text-gray-300' : 'text-gray-700'
-                      }`}>{part.partNumber}</p>
-                    </div>
-                  )}
-                  
-                  <div className="flex items-center gap-3 flex-wrap">
+                {/* Vendor (left) + Project (right) on same line */}
+                <div className="mb-3">
+                  <div className="flex items-center justify-between gap-3">
                     {part.vendor && (
                       <div className="flex items-center gap-2">
                         <p className={`text-xs ${
@@ -2777,24 +2766,26 @@ const LandCruiserTracker = () => {
                         <ProjectDropdown part={part} />
                       </div>
                     </div>
-                    {(() => {
-                      const partProject = part.projectId ? projects.find(p => p.id === part.projectId) : null;
-                      const vehicle = partProject?.vehicle_id ? vehicles.find(v => v.id === partProject.vehicle_id) : null;
-                      return vehicle && (
-                        <div className="flex items-center gap-2">
-                          <p className={`text-xs ${
-                            darkMode ? 'text-gray-400' : 'text-gray-600'
-                          }`}>Vehicle:</p>
-                          <span className={`inline-flex items-center px-2 py-0.5 rounded text-xs font-medium ${
-                            darkMode ? 'bg-gray-700 text-gray-300' : 'bg-gray-100 text-gray-700'
-                          }`}>
-                            <Car className="w-3 h-3 mr-1" />
-                            {vehicle.nickname || vehicle.name}
-                          </span>
-                        </div>
-                      );
-                    })()}
                   </div>
+                  
+                  {/* Vehicle info on second line if available */}
+                  {(() => {
+                    const partProject = part.projectId ? projects.find(p => p.id === part.projectId) : null;
+                    const vehicle = partProject?.vehicle_id ? vehicles.find(v => v.id === partProject.vehicle_id) : null;
+                    return vehicle && (
+                      <div className="flex items-center gap-2 mt-2">
+                        <p className={`text-xs ${
+                          darkMode ? 'text-gray-400' : 'text-gray-600'
+                        }`}>Vehicle:</p>
+                        <span className={`inline-flex items-center px-2 py-0.5 rounded text-xs font-medium ${
+                          darkMode ? 'bg-gray-700 text-gray-300' : 'bg-gray-100 text-gray-700'
+                        }`}>
+                          <Car className="w-3 h-3 mr-1" />
+                          {vehicle.nickname || vehicle.name}
+                        </span>
+                      </div>
+                    );
+                  })()}
                 </div>
 
                 {/* Price Breakdown - More compact grid */}
@@ -2843,7 +2834,7 @@ const LandCruiserTracker = () => {
 
                 {/* Tracking */}
                 {part.tracking && (
-                  <div>
+                  <div onClick={(e) => e.stopPropagation()}>
                     {getTrackingUrl(part.tracking) ? (
                       <a
                         href={getTrackingUrl(part.tracking)}
@@ -2862,6 +2853,15 @@ const LandCruiserTracker = () => {
                         {getCarrierName(part.tracking)}
                       </div>
                     )}
+                  </div>
+                )}
+                
+                {/* Part Number - Bottom Right Corner */}
+                {part.partNumber && part.partNumber !== '-' && (
+                  <div className="flex justify-end mt-2">
+                    <p className={`text-[10px] font-mono ${
+                      darkMode ? 'text-gray-500' : 'text-gray-400'
+                    }`}>#{part.partNumber}</p>
                   </div>
                 )}
               </div>
