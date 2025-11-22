@@ -3100,9 +3100,13 @@ const LandCruiserTracker = () => {
                           darkMode ? 'text-gray-300' : 'text-slate-600'
                         }`}>{part.partNumber}</div>
                       ) : (
-                        <div className={`text-sm text-center ${
-                          darkMode ? 'text-gray-600' : 'text-slate-400'
-                        }`}>-</div>
+                        <span className={`inline-block px-2 py-1 rounded text-xs font-medium border ${
+                          darkMode 
+                            ? 'bg-gray-700/50 text-gray-500 border-gray-600' 
+                            : 'bg-gray-100 text-gray-500 border-gray-300'
+                        }`}>
+                          No Part #
+                        </span>
                       )}
                     </td>
                     <td className="px-6 py-4">
@@ -3111,9 +3115,13 @@ const LandCruiserTracker = () => {
                           {part.vendor}
                         </span>
                       ) : (
-                        <div className={`text-sm text-center ${
-                          darkMode ? 'text-gray-600' : 'text-slate-400'
-                        }`}>-</div>
+                        <span className={`inline-block px-3 py-1 rounded-full text-xs font-medium text-center border ${
+                          darkMode 
+                            ? 'bg-gray-700/50 text-gray-500 border-gray-600' 
+                            : 'bg-gray-100 text-gray-500 border-gray-300'
+                        }`}>
+                          No Vendor
+                        </span>
                       )}
                     </td>
                     <td className="px-6 py-4 text-center">
@@ -3131,9 +3139,13 @@ const LandCruiserTracker = () => {
                             {vehicle.nickname || vehicle.name}
                           </span>
                         ) : (
-                          <div className={`text-sm text-center ${
-                            darkMode ? 'text-gray-600' : 'text-slate-400'
-                          }`}>-</div>
+                          <span className={`inline-block px-2 py-1 rounded text-xs font-medium border ${
+                            darkMode 
+                              ? 'bg-gray-700/50 text-gray-500 border-gray-600' 
+                              : 'bg-gray-100 text-gray-500 border-gray-300'
+                          }`}>
+                            No Vehicle
+                          </span>
                         );
                       })()}
                     </td>
@@ -3168,9 +3180,13 @@ const LandCruiserTracker = () => {
                           </div>
                         )
                       ) : (
-                        <div className={`text-sm text-center ${
-                          darkMode ? 'text-gray-600' : 'text-slate-400'
-                        }`}>-</div>
+                        <span className={`inline-flex items-center justify-center px-3 py-1.5 text-xs font-medium rounded-md w-28 border ${
+                          darkMode 
+                            ? 'bg-gray-700/50 text-gray-500 border-gray-600' 
+                            : 'bg-gray-100 text-gray-500 border-gray-300'
+                        }`}>
+                          No Tracking
+                        </span>
                       )}
                     </td>
                   </tr>
@@ -3336,9 +3352,9 @@ const LandCruiserTracker = () => {
                 </div>
 
                 {/* Tracking */}
-                {part.tracking && (
-                  <div onClick={(e) => e.stopPropagation()}>
-                    {getTrackingUrl(part.tracking) ? (
+                <div onClick={(e) => e.stopPropagation()}>
+                  {part.tracking ? (
+                    getTrackingUrl(part.tracking) ? (
                       <a
                         href={getTrackingUrl(part.tracking)}
                         target="_blank"
@@ -3355,9 +3371,17 @@ const LandCruiserTracker = () => {
                       }`}>
                         {getCarrierName(part.tracking)}
                       </div>
-                    )}
-                  </div>
-                )}
+                    )
+                  ) : (
+                    <span className={`inline-flex items-center px-3 py-1.5 text-xs font-medium rounded-lg border ${
+                      darkMode 
+                        ? 'bg-gray-700/50 text-gray-500 border-gray-600' 
+                        : 'bg-gray-100 text-gray-500 border-gray-300'
+                    }`}>
+                      No Tracking
+                    </span>
+                  )}
+                </div>
                 
                 {/* Part Number - Bottom Right Corner */}
                 {part.partNumber && part.partNumber !== '-' && (
@@ -3458,8 +3482,8 @@ const LandCruiserTracker = () => {
                       <GripVertical className="w-5 h-5" />
                     </div>
 
-                    {/* Edit and Delete Buttons - Top Right */}
-                    <div className="absolute top-2 right-2 flex gap-1" onClick={(e) => e.stopPropagation()}>
+                    {/* Edit Button - Top Right */}
+                    <div className="absolute top-2 right-2" onClick={(e) => e.stopPropagation()}>
                       <button
                         onClick={() => {
                           setEditingProject({
@@ -3475,15 +3499,6 @@ const LandCruiserTracker = () => {
                         title="Edit project"
                       >
                         <Edit2 className="w-5 h-5" />
-                      </button>
-                      <button
-                        onClick={() => deleteProject(project.id)}
-                        className={`p-2 rounded-md transition-colors ${
-                          darkMode ? 'hover:bg-gray-700 text-gray-500 hover:text-red-400' : 'hover:bg-gray-100 text-gray-500 hover:text-red-600'
-                        }`}
-                        title="Delete project"
-                      >
-                        <Trash2 className="w-5 h-5" />
                       </button>
                     </div>
 
@@ -4224,6 +4239,16 @@ const LandCruiserTracker = () => {
                   <div className="p-6">
                     <div className="flex gap-3">
                       <button
+                        onClick={() => deleteProject(editingProject.id)}
+                        className={`px-6 py-3 rounded-lg font-medium transition-colors ${
+                          darkMode 
+                            ? 'bg-red-600/20 text-red-400 hover:bg-red-600/30 hover:text-red-300' 
+                            : 'bg-red-50 text-red-600 hover:bg-red-100'
+                        }`}
+                      >
+                        Delete
+                      </button>
+                      <button
                         onClick={() => {
                           setShowEditProjectModal(false);
                           setEditingProject(null);
@@ -4627,8 +4652,8 @@ const LandCruiserTracker = () => {
                     <GripVertical className="w-5 h-5" />
                   </div>
 
-                  {/* Edit and Delete Buttons - Top Right */}
-                  <div className="absolute top-2 right-2 flex gap-1">
+                  {/* Edit Button - Top Right */}
+                  <div className="absolute top-2 right-2">
                     <button
                       onClick={(e) => {
                         e.stopPropagation();
@@ -4641,32 +4666,6 @@ const LandCruiserTracker = () => {
                       title="Edit vehicle"
                     >
                       <Edit2 className="w-5 h-5" />
-                    </button>
-                    <button
-                      onClick={async (e) => {
-                        e.stopPropagation();
-                        if (window.confirm(`Are you sure you want to delete ${vehicle.name}?`)) {
-                          try {
-                            const { error } = await supabase
-                              .from('vehicles')
-                              .delete()
-                              .eq('id', vehicle.id);
-                            
-                            if (error) throw error;
-                            
-                            await loadVehicles();
-                          } catch (error) {
-                            console.error('Error deleting vehicle:', error);
-                            alert('Error deleting vehicle');
-                          }
-                        }
-                      }}
-                      className={`p-2 rounded-md transition-colors ${
-                        darkMode ? 'hover:bg-gray-700 text-gray-500 hover:text-red-400' : 'hover:bg-gray-100 text-gray-500 hover:text-red-600'
-                      }`}
-                      title="Delete vehicle"
-                    >
-                      <Trash2 className="w-5 h-5" />
                     </button>
                   </div>
 
@@ -5728,6 +5727,16 @@ const LandCruiserTracker = () => {
                   
                   <div className="p-6">
                     <div className="flex gap-3">
+                      <button
+                        onClick={() => deleteVehicle(editingVehicle.id)}
+                        className={`px-6 py-3 rounded-lg font-medium transition-colors ${
+                          darkMode 
+                            ? 'bg-red-600/20 text-red-400 hover:bg-red-600/30 hover:text-red-300' 
+                            : 'bg-red-50 text-red-600 hover:bg-red-100'
+                        }`}
+                      >
+                        Delete
+                      </button>
                       <button
                         onClick={() => {
                           setShowEditVehicleModal(false);
