@@ -2999,7 +2999,7 @@ const LandCruiserTracker = () => {
                 </div>
 
                 {/* Price Breakdown - More compact grid */}
-                <div className={`p-3 rounded-lg mb-3 ${
+                <div className={`p-3 rounded-lg ${
                   darkMode ? 'bg-gray-700' : 'bg-gray-50'
                 }`}>
                   <div className="grid grid-cols-3 gap-2">
