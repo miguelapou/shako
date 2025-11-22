@@ -2140,23 +2140,39 @@ const LandCruiserTracker = () => {
               } ${darkMode ? 'bg-gray-800' : 'bg-white'}`}
               onClick={(e) => e.stopPropagation()}
             >
-              <div className={`sticky top-0 border-b px-6 py-4 flex items-center justify-between ${
+              <div className={`sticky top-0 border-b px-6 py-4 ${
                 darkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-200'
-              }`}>
-                <h2 className={`text-2xl font-bold ${
-                  darkMode ? 'text-gray-100' : 'text-gray-800'
-                }`} style={{ fontFamily: "'FoundationOne', 'Courier New', monospace" }}>Edit Part</h2>
-                <button
-                  onClick={() => handleCloseModal(() => {
-                    setShowEditModal(false);
-                    setEditingPart(null);
-                  })}
-                  className={`transition-colors ${
-                    darkMode ? 'text-gray-400 hover:text-gray-300' : 'text-gray-400 hover:text-gray-600'
-                  }`}
-                >
-                  <X className="w-6 h-6" />
-                </button>
+              }`} style={{ zIndex: 10 }}>
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-3">
+                    <h2 className={`text-2xl font-bold ${
+                      darkMode ? 'text-gray-100' : 'text-gray-800'
+                    }`} style={{ fontFamily: "'FoundationOne', 'Courier New', monospace" }}>Edit Part</h2>
+                    {(() => {
+                      const partProject = editingPart.projectId ? projects.find(p => p.id === editingPart.projectId) : null;
+                      const vehicle = partProject?.vehicle_id ? vehicles.find(v => v.id === partProject.vehicle_id) : null;
+                      return vehicle && (
+                        <span className={`inline-flex items-center px-2 py-1 rounded text-xs font-medium ${
+                          darkMode ? 'bg-gray-700 text-gray-300' : 'bg-gray-100 text-gray-700'
+                        }`}>
+                          <Car className="w-3 h-3 mr-1" style={{ color: vehicle.color || '#3B82F6' }} />
+                          {vehicle.nickname || vehicle.name}
+                        </span>
+                      );
+                    })()}
+                  </div>
+                  <button
+                    onClick={() => handleCloseModal(() => {
+                      setShowEditModal(false);
+                      setEditingPart(null);
+                    })}
+                    className={`transition-colors ${
+                      darkMode ? 'text-gray-400 hover:text-gray-300' : 'text-gray-400 hover:text-gray-600'
+                    }`}
+                  >
+                    <X className="w-6 h-6" />
+                  </button>
+                </div>
               </div>
               
               <div className="p-6">
@@ -2337,25 +2353,6 @@ const LandCruiserTracker = () => {
                         </option>
                       ))}
                     </select>
-                    
-                    {/* Show linked vehicle if project has one */}
-                    {(() => {
-                      const partProject = editingPart.projectId ? projects.find(p => p.id === editingPart.projectId) : null;
-                      const vehicle = partProject?.vehicle_id ? vehicles.find(v => v.id === partProject.vehicle_id) : null;
-                      return vehicle && (
-                        <div className="flex items-center gap-2 mt-3">
-                          <p className={`text-xs ${
-                            darkMode ? 'text-gray-400' : 'text-gray-600'
-                          }`}>Linked Vehicle:</p>
-                          <span className={`inline-flex items-center px-2 py-1 rounded text-xs font-medium border ${
-                            darkMode ? 'bg-gray-700 text-gray-300 border-gray-600' : 'bg-gray-100 text-gray-700 border-gray-300'
-                          }`}>
-                            <Car className="w-3 h-3 mr-1" style={{ color: vehicle.color || '#3B82F6' }} />
-                            {vehicle.nickname || vehicle.name}
-                          </span>
-                        </div>
-                      );
-                    })()}
                   </div>
                   
                   <div className={`md:col-span-2 border rounded-lg p-4 ${
@@ -3424,7 +3421,7 @@ const LandCruiserTracker = () => {
                           type="date"
                           value={newProject.start_date}
                           onChange={(e) => setNewProject({ ...newProject, start_date: e.target.value })}
-                          className={`w-full md:max-w-md h-[42px] px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
+                          className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
                             darkMode 
                               ? 'bg-gray-700 border-gray-600 text-gray-100' 
                               : 'bg-white border-gray-300 text-gray-900'
@@ -3442,7 +3439,7 @@ const LandCruiserTracker = () => {
                           type="date"
                           value={newProject.target_date}
                           onChange={(e) => setNewProject({ ...newProject, target_date: e.target.value })}
-                          className={`w-full md:max-w-md h-[42px] px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
+                          className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
                             darkMode 
                               ? 'bg-gray-700 border-gray-600 text-gray-100' 
                               : 'bg-white border-gray-300 text-gray-900'
@@ -3678,7 +3675,7 @@ const LandCruiserTracker = () => {
                           type="date"
                           value={editingProject.start_date || ''}
                           onChange={(e) => setEditingProject({ ...editingProject, start_date: e.target.value })}
-                          className={`w-full md:max-w-md h-[42px] px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
+                          className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
                             darkMode 
                               ? 'bg-gray-700 border-gray-600 text-gray-100' 
                               : 'bg-white border-gray-300 text-gray-900'
@@ -3696,7 +3693,7 @@ const LandCruiserTracker = () => {
                           type="date"
                           value={editingProject.target_date || ''}
                           onChange={(e) => setEditingProject({ ...editingProject, target_date: e.target.value })}
-                          className={`w-full md:max-w-md h-[42px] px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
+                          className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
                             darkMode 
                               ? 'bg-gray-700 border-gray-600 text-gray-100' 
                               : 'bg-white border-gray-300 text-gray-900'
