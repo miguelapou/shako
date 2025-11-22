@@ -2,6 +2,103 @@ import React, { useState, useMemo, useEffect, useRef } from 'react';
 import { Search, Package, DollarSign, TrendingUp, Truck, CheckCircle, Clock, XCircle, ChevronDown, Plus, X, ExternalLink, ChevronUp, Edit2, Trash2, Moon, Sun, Wrench, List, Target, Calendar, GripVertical, ShoppingCart, Car, Upload, Image as ImageIcon } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 
+// ========================================
+// CONSTANTS & UTILITIES
+// ========================================
+
+// Status color mappings
+const getStatusColors = (darkMode) => ({
+  planning: darkMode ? 'bg-gray-600 text-gray-200' : 'bg-gray-200 text-gray-800',
+  in_progress: darkMode ? 'bg-blue-600 text-blue-100' : 'bg-blue-100 text-blue-800',
+  completed: darkMode ? 'bg-green-600 text-green-100' : 'bg-green-100 text-green-800',
+  on_hold: darkMode ? 'bg-yellow-600 text-yellow-100' : 'bg-yellow-100 text-yellow-800'
+});
+
+// Priority color mappings
+const getPriorityColors = (darkMode) => ({
+  low: darkMode ? 'text-green-400' : 'text-green-600',
+  medium: darkMode ? 'text-yellow-400' : 'text-yellow-600',
+  high: darkMode ? 'text-red-400' : 'text-red-600'
+});
+
+// Priority border colors
+const getPriorityBorderColor = (priority) => {
+  const colors = {
+    low: '#10b981',
+    medium: '#f59e0b',
+    high: '#ef4444',
+  };
+  return colors[priority] || '#6b7280';
+};
+
+// Vendor color mapping
+const getVendorColor = (vendor) => {
+  if (!vendor) return 'bg-gray-100 text-gray-700 border border-gray-200';
+  
+  const vendorLower = vendor.toLowerCase();
+  if (vendorLower === 'toyota') return 'bg-red-100 text-red-700 border border-red-200';
+  if (vendorLower === 'ebay') return 'bg-green-100 text-green-700 border border-green-200';
+  if (vendorLower === 'etsy') return 'bg-orange-100 text-orange-700 border border-orange-200';
+  if (vendorLower === 'partsnext') return 'bg-yellow-100 text-yellow-700 border border-yellow-200';
+  if (vendorLower === 'best buy') return 'bg-purple-100 text-purple-700 border border-purple-200';
+  if (vendorLower === 'amazon') return 'bg-blue-100 text-blue-700 border border-blue-200';
+  if (vendorLower === 'jauce') return 'bg-fuchsia-100 text-fuchsia-700 border border-fuchsia-200';
+  
+  return 'bg-gray-100 text-gray-700 border border-gray-200';
+};
+
+// Calculate total spent for a vehicle
+const calculateVehicleTotalSpent = (vehicleId, projects, parts) => {
+  const vehicleProjects = projects.filter(p => p.vehicle_id === vehicleId);
+  return vehicleProjects.reduce((sum, project) => {
+    const projectParts = parts.filter(part => part.projectId === project.id);
+    return sum + projectParts.reduce((partSum, part) => partSum + (part.total || 0), 0);
+  }, 0);
+};
+
+// Calculate project totals
+const calculateProjectTotal = (projectId, parts) => {
+  return parts
+    .filter(part => part.projectId === projectId)
+    .reduce((sum, part) => sum + (part.total || 0), 0);
+};
+
+// Dark mode class helper
+const dmClass = (darkMode, darkClass, lightClass) => {
+  return darkMode ? darkClass : lightClass;
+};
+
+// Common input field classes
+const inputClasses = (darkMode, additionalClasses = '') => {
+  const base = `w-full md:max-w-md px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${additionalClasses}`;
+  const theme = darkMode 
+    ? 'bg-gray-700 border-gray-600 text-gray-100 placeholder-gray-400' 
+    : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400';
+  return `${base} ${theme}`;
+};
+
+// Common select field classes
+const selectClasses = (darkMode, additionalClasses = '') => {
+  const base = `w-full h-[42px] px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${additionalClasses}`;
+  const theme = darkMode 
+    ? 'bg-gray-700 border-gray-600 text-gray-100' 
+    : 'bg-white border-gray-300 text-gray-900';
+  return `${base} ${theme}`;
+};
+
+// Common button classes
+const buttonClasses = (darkMode, variant = 'primary') => {
+  if (variant === 'primary') {
+    return 'px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium transition-colors';
+  }
+  if (variant === 'secondary') {
+    return darkMode 
+      ? 'px-6 py-3 bg-gray-700 hover:bg-gray-600 text-gray-100 rounded-lg font-medium transition-colors'
+      : 'px-6 py-3 bg-gray-200 hover:bg-gray-300 text-gray-800 rounded-lg font-medium transition-colors';
+  }
+  return '';
+};
+
 // Add Foundation One font
 const fontStyles = `
   @font-face {
@@ -1341,21 +1438,6 @@ const LandCruiserTracker = () => {
     if (upper.includes('LOCAL')) return 'Local';
     
     return tracking; // Return as-is if unknown
-  };
-
-  const getVendorColor = (vendor) => {
-    if (!vendor) return 'bg-gray-100 text-gray-700 border border-gray-200';
-    
-    const vendorLower = vendor.toLowerCase();
-    if (vendorLower === 'toyota') return 'bg-red-100 text-red-700 border border-red-200';
-    if (vendorLower === 'ebay') return 'bg-green-100 text-green-700 border border-green-200';
-    if (vendorLower === 'etsy') return 'bg-orange-100 text-orange-700 border border-orange-200';
-    if (vendorLower === 'partsnext') return 'bg-yellow-100 text-yellow-700 border border-yellow-200';
-    if (vendorLower === 'best buy') return 'bg-purple-100 text-purple-700 border border-purple-200';
-    if (vendorLower === 'amazon') return 'bg-blue-100 text-blue-700 border border-blue-200';
-    if (vendorLower === 'jauce') return 'bg-fuchsia-100 text-fuchsia-700 border border-fuchsia-200';
-    
-    return 'bg-gray-100 text-gray-700 border border-gray-200';
   };
 
   const VendorSelect = ({ value, onChange, darkMode }) => {
@@ -2940,21 +3022,10 @@ const LandCruiserTracker = () => {
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {projects.map((project) => {
                 // Calculate spent based on linked parts
-                const linkedPartsTotal = parts
-                  .filter(part => part.projectId === project.id)
-                  .reduce((sum, part) => sum + (part.total || 0), 0);
+                const linkedPartsTotal = calculateProjectTotal(project.id, parts);
                 const progress = project.budget > 0 ? (linkedPartsTotal / project.budget) * 100 : 0;
-                const statusColors = {
-                  planning: darkMode ? 'bg-gray-600 text-gray-200' : 'bg-gray-200 text-gray-800',
-                  in_progress: darkMode ? 'bg-blue-600 text-blue-100' : 'bg-blue-100 text-blue-800',
-                  completed: darkMode ? 'bg-green-600 text-green-100' : 'bg-green-100 text-green-800',
-                  on_hold: darkMode ? 'bg-yellow-600 text-yellow-100' : 'bg-yellow-100 text-yellow-800'
-                };
-                const priorityColors = {
-                  low: darkMode ? 'text-green-400' : 'text-green-600',
-                  medium: darkMode ? 'text-yellow-400' : 'text-yellow-600',
-                  high: darkMode ? 'text-red-400' : 'text-red-600'
-                };
+                const statusColors = getStatusColors(darkMode);
+                const priorityColors = getPriorityColors(darkMode);
 
                 return (
                   <div
@@ -3854,21 +3925,11 @@ const LandCruiserTracker = () => {
                   <div className="p-6">
                     {(() => {
                       const linkedParts = parts.filter(part => part.projectId === viewingProject.id);
-                      const linkedPartsTotal = linkedParts.reduce((sum, part) => sum + (part.total || 0), 0);
+                      const linkedPartsTotal = calculateProjectTotal(viewingProject.id, parts);
                       const progress = viewingProject.budget > 0 ? (linkedPartsTotal / viewingProject.budget) * 100 : 0;
                       
-                      const statusColors = {
-                        planning: darkMode ? 'bg-gray-600 text-gray-200' : 'bg-gray-200 text-gray-800',
-                        in_progress: darkMode ? 'bg-blue-600 text-blue-100' : 'bg-blue-100 text-blue-800',
-                        completed: darkMode ? 'bg-green-600 text-green-100' : 'bg-green-100 text-green-800',
-                        on_hold: darkMode ? 'bg-yellow-600 text-yellow-100' : 'bg-yellow-100 text-yellow-800'
-                      };
-                      
-                      const priorityColors = {
-                        low: darkMode ? 'text-green-400' : 'text-green-600',
-                        medium: darkMode ? 'text-yellow-400' : 'text-yellow-600',
-                        high: darkMode ? 'text-red-400' : 'text-red-600'
-                      };
+                      const statusColors = getStatusColors(darkMode);
+                      const priorityColors = getPriorityColors(darkMode);
 
                       return (
                         <>
@@ -4256,14 +4317,6 @@ const LandCruiserTracker = () => {
                     {/* Project Badges */}
                     {(() => {
                       const vehicleProjects = getVehicleProjects(vehicle.id);
-                      const getPriorityBorderColor = (priority) => {
-                        const priorityColors = {
-                          low: '#10b981',    // green
-                          medium: '#f59e0b', // yellow/amber
-                          high: '#ef4444',   // red
-                        };
-                        return priorityColors[priority] || '#6b7280'; // gray fallback
-                      };
                       return vehicleProjects.length > 0 && (
                         <div className={`mt-4 pt-4 border-t ${
                           darkMode ? 'border-gray-700' : 'border-gray-200'
@@ -4436,11 +4489,7 @@ const LandCruiserTracker = () => {
                           type="text"
                           value={newVehicle.nickname}
                           onChange={(e) => setNewVehicle({ ...newVehicle, nickname: e.target.value })}
-                          className={`w-full md:max-w-md px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
-                            darkMode 
-                              ? 'bg-gray-700 border-gray-600 text-gray-100 placeholder-gray-400' 
-                              : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400'
-                          }`}
+                          className={inputClasses(darkMode)}
                           placeholder=""
                         />
                       </div>
@@ -4556,11 +4605,7 @@ const LandCruiserTracker = () => {
                           type="text"
                           value={newVehicle.insurance_policy}
                           onChange={(e) => setNewVehicle({ ...newVehicle, insurance_policy: e.target.value })}
-                          className={`w-full md:max-w-md px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
-                            darkMode 
-                              ? 'bg-gray-700 border-gray-600 text-gray-100 placeholder-gray-400' 
-                              : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400'
-                          }`}
+                          className={inputClasses(darkMode)}
                           placeholder=""
                         />
                       </div>
@@ -4632,11 +4677,7 @@ const LandCruiserTracker = () => {
                             type="text"
                             value={newVehicle.battery}
                             onChange={(e) => setNewVehicle({ ...newVehicle, battery: e.target.value })}
-                            className={`w-full md:max-w-md px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
-                              darkMode 
-                                ? 'bg-gray-700 border-gray-600 text-gray-100 placeholder-gray-400' 
-                                : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400'
-                            }`}
+                            className={inputClasses(darkMode)}
                             placeholder=""
                           />
                         </div>
@@ -4661,11 +4702,7 @@ const LandCruiserTracker = () => {
                               type="text"
                               value={newVehicle.oil_filter}
                               onChange={(e) => setNewVehicle({ ...newVehicle, oil_filter: e.target.value })}
-                              className={`w-full md:max-w-md px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
-                                darkMode 
-                                  ? 'bg-gray-700 border-gray-600 text-gray-100 placeholder-gray-400' 
-                                  : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400'
-                              }`}
+                              className={inputClasses(darkMode)}
                               placeholder=""
                             />
                           </div>
@@ -4942,11 +4979,7 @@ const LandCruiserTracker = () => {
                           type="text"
                           value={editingVehicle.nickname || ''}
                           onChange={(e) => setEditingVehicle({ ...editingVehicle, nickname: e.target.value })}
-                          className={`w-full md:max-w-md px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
-                            darkMode 
-                              ? 'bg-gray-700 border-gray-600 text-gray-100 placeholder-gray-400' 
-                              : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400'
-                          }`}
+                          className={inputClasses(darkMode)}
                           placeholder=""
                         />
                       </div>
@@ -5062,11 +5095,7 @@ const LandCruiserTracker = () => {
                           type="text"
                           value={editingVehicle.insurance_policy || ''}
                           onChange={(e) => setEditingVehicle({ ...editingVehicle, insurance_policy: e.target.value })}
-                          className={`w-full md:max-w-md px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
-                            darkMode 
-                              ? 'bg-gray-700 border-gray-600 text-gray-100 placeholder-gray-400' 
-                              : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400'
-                          }`}
+                          className={inputClasses(darkMode)}
                           placeholder=""
                         />
                       </div>
@@ -5138,11 +5167,7 @@ const LandCruiserTracker = () => {
                             type="text"
                             value={editingVehicle.battery || ''}
                             onChange={(e) => setEditingVehicle({ ...editingVehicle, battery: e.target.value })}
-                            className={`w-full md:max-w-md px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
-                              darkMode 
-                                ? 'bg-gray-700 border-gray-600 text-gray-100 placeholder-gray-400' 
-                                : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400'
-                            }`}
+                            className={inputClasses(darkMode)}
                             placeholder=""
                           />
                         </div>
@@ -5167,11 +5192,7 @@ const LandCruiserTracker = () => {
                               type="text"
                               value={editingVehicle.oil_filter || ''}
                               onChange={(e) => setEditingVehicle({ ...editingVehicle, oil_filter: e.target.value })}
-                              className={`w-full md:max-w-md px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
-                                darkMode 
-                                  ? 'bg-gray-700 border-gray-600 text-gray-100 placeholder-gray-400' 
-                                  : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400'
-                              }`}
+                              className={inputClasses(darkMode)}
                               placeholder=""
                             />
                           </div>
@@ -5443,10 +5464,7 @@ const LandCruiserTracker = () => {
                           {/* Total Spent on Linked Projects */}
                           {(() => {
                             const vehicleProjects = projects.filter(p => p.vehicle_id === viewingVehicle.id);
-                            const totalSpent = vehicleProjects.reduce((sum, project) => {
-                              const projectParts = parts.filter(part => part.projectId === project.id);
-                              return sum + projectParts.reduce((partSum, part) => partSum + (part.total || 0), 0);
-                            }, 0);
+                            const totalSpent = calculateVehicleTotalSpent(viewingVehicle.id, projects, parts);
                             
                             return (
                               <div className={`pt-4 mt-4 border-t ${
@@ -5585,14 +5603,6 @@ const LandCruiserTracker = () => {
                     {/* Projects Section */}
                     {(() => {
                       const vehicleProjects = getVehicleProjects(viewingVehicle.id);
-                      const getPriorityBorderColor = (priority) => {
-                        const priorityColors = {
-                          low: '#10b981',    // green
-                          medium: '#f59e0b', // yellow/amber
-                          high: '#ef4444',   // red
-                        };
-                        return priorityColors[priority] || '#6b7280'; // gray fallback
-                      };
                       return vehicleProjects.length > 0 && (
                         <div className={`pt-6 border-t ${
                           darkMode ? 'border-gray-700' : 'border-gray-200'
