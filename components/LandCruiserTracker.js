@@ -5386,9 +5386,38 @@ const LandCruiserTracker = () => {
                         <h3 className={`text-lg font-semibold mb-4 ${
                           darkMode ? 'text-gray-200' : 'text-gray-800'
                         }`}>
-                          Basic Information
+                          Basic Info
                         </h3>
                         <div className="space-y-4">
+                          {/* Total Spent on Linked Projects */}
+                          {(() => {
+                            const vehicleProjects = projects.filter(p => p.vehicle_id === viewingVehicle.id);
+                            const totalSpent = vehicleProjects.reduce((sum, project) => {
+                              const projectParts = parts.filter(part => part.projectId === project.id);
+                              return sum + projectParts.reduce((partSum, part) => partSum + (part.total || 0), 0);
+                            }, 0);
+                            
+                            return (
+                              <div className={`pb-4 mb-4 border-b ${
+                                darkMode ? 'border-gray-600' : 'border-gray-300'
+                              }`}>
+                                <p className={`text-sm font-medium mb-2 ${
+                                  darkMode ? 'text-gray-400' : 'text-gray-600'
+                                }`}>Total Spent</p>
+                                <p className={`text-2xl font-bold ${
+                                  darkMode ? 'text-green-400' : 'text-green-600'
+                                }`}>${totalSpent.toFixed(2)}</p>
+                                {vehicleProjects.length > 0 && (
+                                  <p className={`text-xs mt-1 ${
+                                    darkMode ? 'text-gray-500' : 'text-gray-500'
+                                  }`}>
+                                    {vehicleProjects.length} project{vehicleProjects.length !== 1 ? 's' : ''}
+                                  </p>
+                                )}
+                              </div>
+                            );
+                          })()}
+                          
                           {viewingVehicle.year && (
                             <div>
                               <p className={`text-sm font-medium mb-1 ${
