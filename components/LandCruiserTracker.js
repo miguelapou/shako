@@ -1700,7 +1700,7 @@ const LandCruiserTracker = () => {
             onClick={() => handleCloseModal(() => setShowAddModal(false))}
           >
             <div 
-              className={`rounded-lg shadow-xl max-w-2xl w-full max-h-[90vh] modal-content ${
+              className={`rounded-lg shadow-xl max-w-4xl w-full max-h-[90vh] modal-content ${
                 isModalClosing ? 'modal-popup-exit' : 'modal-popup-enter'
               } ${darkMode ? 'bg-gray-800' : 'bg-white'}`}
               onClick={(e) => e.stopPropagation()}
@@ -2053,7 +2053,7 @@ const LandCruiserTracker = () => {
             })}
           >
             <div 
-              className={`rounded-lg shadow-xl max-w-2xl w-full max-h-[90vh] modal-content ${
+              className={`rounded-lg shadow-xl max-w-4xl w-full max-h-[90vh] modal-content ${
                 isModalClosing ? 'modal-popup-exit' : 'modal-popup-enter'
               } ${darkMode ? 'bg-gray-800' : 'bg-white'}`}
               onClick={(e) => e.stopPropagation()}
@@ -3236,7 +3236,7 @@ const LandCruiserTracker = () => {
                 onClick={() => handleCloseModal(() => setShowAddProjectModal(false))}
               >
                 <div 
-                  className={`rounded-lg shadow-xl max-w-2xl w-full max-h-[90vh] modal-content ${
+                  className={`rounded-lg shadow-xl max-w-4xl w-full max-h-[90vh] modal-content ${
                     isModalClosing ? 'modal-popup-exit' : 'modal-popup-enter'
                   } ${darkMode ? 'bg-gray-800' : 'bg-white'}`}
                   onClick={(e) => e.stopPropagation()}
@@ -3491,7 +3491,7 @@ const LandCruiserTracker = () => {
                 })}
               >
                 <div 
-                  className={`rounded-lg shadow-xl max-w-2xl w-full max-h-[90vh] modal-content ${
+                  className={`rounded-lg shadow-xl max-w-4xl w-full max-h-[90vh] modal-content ${
                     isModalClosing ? 'modal-popup-exit' : 'modal-popup-enter'
                   } ${darkMode ? 'bg-gray-800' : 'bg-white'}`}
                   onClick={(e) => e.stopPropagation()}
@@ -3805,7 +3805,7 @@ const LandCruiserTracker = () => {
                 })}
               >
                 <div 
-                  className={`rounded-lg shadow-xl max-w-3xl w-full max-h-[90vh] modal-content ${
+                  className={`rounded-lg shadow-xl max-w-5xl w-full max-h-[90vh] modal-content ${
                     isModalClosing ? 'modal-popup-exit' : 'modal-popup-enter'
                   } ${darkMode ? 'bg-gray-800' : 'bg-white'}`}
                   onClick={(e) => e.stopPropagation()}
@@ -4341,7 +4341,7 @@ const LandCruiserTracker = () => {
                 onClick={() => handleCloseModal(() => setShowAddVehicleModal(false))}
               >
                 <div 
-                  className={`rounded-lg shadow-xl max-w-2xl w-full max-h-[90vh] modal-content ${
+                  className={`rounded-lg shadow-xl max-w-4xl w-full max-h-[90vh] modal-content ${
                     isModalClosing ? 'modal-popup-exit' : 'modal-popup-enter'
                   } ${darkMode ? 'bg-gray-800' : 'bg-white'}`}
                   onClick={(e) => e.stopPropagation()}
@@ -4838,7 +4838,7 @@ const LandCruiserTracker = () => {
                 })}
               >
                 <div 
-                  className={`rounded-lg shadow-xl max-w-2xl w-full max-h-[90vh] modal-content ${
+                  className={`rounded-lg shadow-xl max-w-4xl w-full max-h-[90vh] modal-content ${
                     isModalClosing ? 'modal-popup-exit' : 'modal-popup-enter'
                   } ${darkMode ? 'bg-gray-800' : 'bg-white'}`}
                   onClick={(e) => e.stopPropagation()}
