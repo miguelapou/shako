@@ -1878,7 +1878,7 @@ const LandCruiserTracker = () => {
               
               <div className="p-6">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div>
+                  <div className="md:col-span-1">
                     <label className={`block text-sm font-medium mb-2 ${
                       darkMode ? 'text-gray-300' : 'text-gray-700'
                     }`}>
@@ -1897,6 +1897,8 @@ const LandCruiserTracker = () => {
                       required
                     />
                   </div>
+                  
+                  <div></div>
                   
                   <div>
                     <label className={`block text-sm font-medium mb-2 ${
@@ -2250,7 +2252,7 @@ const LandCruiserTracker = () => {
               
               <div className="p-6">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div>
+                  <div className="md:col-span-1">
                     <label className={`block text-sm font-medium mb-2 ${
                       darkMode ? 'text-gray-300' : 'text-gray-700'
                     }`}>
@@ -2269,6 +2271,8 @@ const LandCruiserTracker = () => {
                       required
                     />
                   </div>
+                  
+                  <div></div>
                   
                   <div>
                     <label className={`block text-sm font-medium mb-2 ${
@@ -4563,7 +4567,11 @@ const LandCruiserTracker = () => {
                           type="text"
                           value={newVehicle.nickname}
                           onChange={(e) => setNewVehicle({ ...newVehicle, nickname: e.target.value })}
-                          className={inputClasses(darkMode)}
+                          className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
+                            darkMode 
+                              ? 'bg-gray-700 border-gray-600 text-gray-100 placeholder-gray-400' 
+                              : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400'
+                          }`}
                           placeholder=""
                         />
                       </div>
@@ -4679,7 +4687,11 @@ const LandCruiserTracker = () => {
                           type="text"
                           value={newVehicle.insurance_policy}
                           onChange={(e) => setNewVehicle({ ...newVehicle, insurance_policy: e.target.value })}
-                          className={inputClasses(darkMode)}
+                          className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
+                            darkMode 
+                              ? 'bg-gray-700 border-gray-600 text-gray-100 placeholder-gray-400' 
+                              : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400'
+                          }`}
                           placeholder=""
                         />
                       </div>
@@ -4751,7 +4763,11 @@ const LandCruiserTracker = () => {
                             type="text"
                             value={newVehicle.battery}
                             onChange={(e) => setNewVehicle({ ...newVehicle, battery: e.target.value })}
-                            className={inputClasses(darkMode)}
+                            className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
+                              darkMode 
+                                ? 'bg-gray-700 border-gray-600 text-gray-100 placeholder-gray-400' 
+                                : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400'
+                            }`}
                             placeholder=""
                           />
                         </div>
@@ -4776,7 +4792,11 @@ const LandCruiserTracker = () => {
                               type="text"
                               value={newVehicle.oil_filter}
                               onChange={(e) => setNewVehicle({ ...newVehicle, oil_filter: e.target.value })}
-                              className={inputClasses(darkMode)}
+                              className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
+                                darkMode 
+                                  ? 'bg-gray-700 border-gray-600 text-gray-100 placeholder-gray-400' 
+                                  : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400'
+                              }`}
                               placeholder=""
                             />
                           </div>
@@ -5053,7 +5073,11 @@ const LandCruiserTracker = () => {
                           type="text"
                           value={editingVehicle.nickname || ''}
                           onChange={(e) => setEditingVehicle({ ...editingVehicle, nickname: e.target.value })}
-                          className={inputClasses(darkMode)}
+                          className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
+                            darkMode 
+                              ? 'bg-gray-700 border-gray-600 text-gray-100 placeholder-gray-400' 
+                              : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400'
+                          }`}
                           placeholder=""
                         />
                       </div>
@@ -5169,7 +5193,11 @@ const LandCruiserTracker = () => {
                           type="text"
                           value={editingVehicle.insurance_policy || ''}
                           onChange={(e) => setEditingVehicle({ ...editingVehicle, insurance_policy: e.target.value })}
-                          className={inputClasses(darkMode)}
+                          className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
+                            darkMode 
+                              ? 'bg-gray-700 border-gray-600 text-gray-100 placeholder-gray-400' 
+                              : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400'
+                          }`}
                           placeholder=""
                         />
                       </div>
@@ -5241,7 +5269,11 @@ const LandCruiserTracker = () => {
                             type="text"
                             value={editingVehicle.battery || ''}
                             onChange={(e) => setEditingVehicle({ ...editingVehicle, battery: e.target.value })}
-                            className={inputClasses(darkMode)}
+                            className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
+                              darkMode 
+                                ? 'bg-gray-700 border-gray-600 text-gray-100 placeholder-gray-400' 
+                                : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400'
+                            }`}
                             placeholder=""
                           />
                         </div>
@@ -5266,7 +5298,11 @@ const LandCruiserTracker = () => {
                               type="text"
                               value={editingVehicle.oil_filter || ''}
                               onChange={(e) => setEditingVehicle({ ...editingVehicle, oil_filter: e.target.value })}
-                              className={inputClasses(darkMode)}
+                              className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
+                                darkMode 
+                                  ? 'bg-gray-700 border-gray-600 text-gray-100 placeholder-gray-400' 
+                                  : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400'
+                              }`}
                               placeholder=""
                             />
                           </div>
