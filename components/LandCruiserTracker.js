@@ -56,6 +56,21 @@ const calculateVehicleTotalSpent = (vehicleId, projects, parts) => {
   }, 0);
 };
 
+// Convert hex color to muted version (reduces opacity)
+const getMutedColor = (hexColor, darkMode) => {
+  if (!hexColor) return darkMode ? 'rgba(59, 130, 246, 0.3)' : 'rgba(59, 130, 246, 0.4)';
+  
+  // Parse hex color
+  const hex = hexColor.replace('#', '');
+  const r = parseInt(hex.substr(0, 2), 16);
+  const g = parseInt(hex.substr(2, 2), 16);
+  const b = parseInt(hex.substr(4, 2), 16);
+  
+  // Return as rgba with reduced opacity (30% for dark mode, 40% for light mode)
+  const opacity = darkMode ? 0.3 : 0.4;
+  return `rgba(${r}, ${g}, ${b}, ${opacity})`;
+};
+
 // Calculate project totals
 const calculateProjectTotal = (projectId, parts) => {
   return parts
@@ -2230,7 +2245,7 @@ const LandCruiserTracker = () => {
                         <span className={`inline-flex items-center px-2 py-1 rounded text-xs font-medium ${
                           darkMode ? 'bg-gray-700 text-gray-300' : 'bg-gray-100 text-gray-700'
                         }`}>
-                          <Car className="w-3 h-3 mr-1" style={{ color: vehicle.color || '#3B82F6' }} />
+                          <Car className="w-3 h-3 mr-1" style={{ color: getMutedColor(vehicle.color, darkMode) }} />
                           {vehicle.nickname || vehicle.name}
                         </span>
                       );
@@ -2875,7 +2890,7 @@ const LandCruiserTracker = () => {
                           <span className={`inline-flex items-center px-2 py-1 rounded text-xs font-medium border ${
                             darkMode ? 'bg-gray-700 text-gray-300 border-gray-600' : 'bg-gray-100 text-gray-700 border-gray-300'
                           }`}>
-                            <Car className="w-3 h-3 mr-1" style={{ color: vehicle.color || '#3B82F6' }} />
+                            <Car className="w-3 h-3 mr-1" style={{ color: getMutedColor(vehicle.color, darkMode) }} />
                             {vehicle.nickname || vehicle.name}
                           </span>
                         ) : (
@@ -2997,7 +3012,7 @@ const LandCruiserTracker = () => {
                         <span className={`inline-flex items-center px-2 py-0.5 rounded text-xs font-medium border ${
                           darkMode ? 'bg-gray-700 text-gray-300 border-gray-600' : 'bg-gray-100 text-gray-700 border-gray-300'
                         }`}>
-                          <Car className="w-3 h-3 mr-1" style={{ color: vehicle.color || '#3B82F6' }} />
+                          <Car className="w-3 h-3 mr-1" style={{ color: getMutedColor(vehicle.color, darkMode) }} />
                           {vehicle.nickname || vehicle.name}
                         </span>
                       </div>
@@ -3186,7 +3201,7 @@ const LandCruiserTracker = () => {
                               <span className={`inline-flex items-center px-2 py-1 rounded text-xs font-medium border ${
                                 darkMode ? 'bg-gray-700 text-gray-300 border-gray-600' : 'bg-gray-100 text-gray-700 border-gray-300'
                               }`}>
-                                <Car className="w-3 h-3 mr-1" style={{ color: vehicle.color || '#3B82F6' }} />
+                                <Car className="w-3 h-3 mr-1" style={{ color: getMutedColor(vehicle.color, darkMode) }} />
                                 {vehicle.nickname || vehicle.name}
                               </span>
                             );
@@ -3983,7 +3998,7 @@ const LandCruiserTracker = () => {
                             <span className={`inline-flex items-center px-2 py-1 rounded text-xs font-medium ${
                               darkMode ? 'bg-gray-700 text-gray-300' : 'bg-gray-100 text-gray-700'
                             }`}>
-                              <Car className="w-3 h-3 mr-1" style={{ color: vehicle.color || '#3B82F6' }} />
+                              <Car className="w-3 h-3 mr-1" style={{ color: getMutedColor(vehicle.color, darkMode) }} />
                               {vehicle.nickname || vehicle.name}
                             </span>
                           );
@@ -4285,7 +4300,7 @@ const LandCruiserTracker = () => {
                         ? (darkMode ? 'ring-2 ring-blue-500' : 'ring-2 ring-blue-400')
                         : ''
                   } ${darkMode ? 'bg-gray-800' : 'bg-white'}`}
-                  style={{ borderTopColor: vehicle.color || '#3B82F6' }}
+                  style={{ borderTopColor: getMutedColor(vehicle.color, darkMode) }}
                 >
                   {/* Drag Handle - Hidden on mobile */}
                   <div 
