@@ -182,11 +182,11 @@ const LandCruiserTracker = () => {
       const activeTabElement = tabRefs.current[activeTab];
       if (activeTabElement) {
         const { offsetLeft, offsetWidth } = activeTabElement;
-        // For vehicles tab: no left padding (butts against Parts), but right padding to prevent overflow
+        // For parts tab (rightmost): add right padding to prevent overflow on mobile
         let leftOffset = offsetLeft;
         let width = offsetWidth;
         
-        if (activeTab === 'vehicles') {
+        if (activeTab === 'parts') {
           const rightPadding = 12;
           width = offsetWidth - rightPadding;
         }
@@ -2255,6 +2255,25 @@ const LandCruiserTracker = () => {
                         </option>
                       ))}
                     </select>
+                    
+                    {/* Show linked vehicle if project has one */}
+                    {(() => {
+                      const partProject = editingPart.projectId ? projects.find(p => p.id === editingPart.projectId) : null;
+                      const vehicle = partProject?.vehicle_id ? vehicles.find(v => v.id === partProject.vehicle_id) : null;
+                      return vehicle && (
+                        <div className="flex items-center gap-2 mt-3">
+                          <p className={`text-xs ${
+                            darkMode ? 'text-gray-400' : 'text-gray-600'
+                          }`}>Linked Vehicle:</p>
+                          <span className={`inline-flex items-center px-2 py-1 rounded text-xs font-medium border ${
+                            darkMode ? 'bg-gray-700 text-gray-300 border-gray-600' : 'bg-gray-100 text-gray-700 border-gray-300'
+                          }`}>
+                            <Car className="w-3 h-3 mr-1" style={{ color: vehicle.color || '#3B82F6' }} />
+                            {vehicle.nickname || vehicle.name}
+                          </span>
+                        </div>
+                      );
+                    })()}
                   </div>
                   
                   <div className={`md:col-span-2 border rounded-lg p-4 ${
@@ -2697,8 +2716,8 @@ const LandCruiserTracker = () => {
                         const partProject = part.projectId ? projects.find(p => p.id === part.projectId) : null;
                         const vehicle = partProject?.vehicle_id ? vehicles.find(v => v.id === partProject.vehicle_id) : null;
                         return vehicle ? (
-                          <span className={`inline-flex items-center px-2 py-1 rounded text-xs font-medium ${
-                            darkMode ? 'bg-gray-700 text-gray-300' : 'bg-gray-100 text-gray-700'
+                          <span className={`inline-flex items-center px-2 py-1 rounded text-xs font-medium border ${
+                            darkMode ? 'bg-gray-700 text-gray-300 border-gray-600' : 'bg-gray-100 text-gray-700 border-gray-300'
                           }`}>
                             <Car className="w-3 h-3 mr-1" style={{ color: vehicle.color || '#3B82F6' }} />
                             {vehicle.nickname || vehicle.name}
@@ -2819,8 +2838,8 @@ const LandCruiserTracker = () => {
                         <p className={`text-xs ${
                           darkMode ? 'text-gray-400' : 'text-gray-600'
                         }`}>Vehicle:</p>
-                        <span className={`inline-flex items-center px-2 py-0.5 rounded text-xs font-medium ${
-                          darkMode ? 'bg-gray-700 text-gray-300' : 'bg-gray-100 text-gray-700'
+                        <span className={`inline-flex items-center px-2 py-0.5 rounded text-xs font-medium border ${
+                          darkMode ? 'bg-gray-700 text-gray-300 border-gray-600' : 'bg-gray-100 text-gray-700 border-gray-300'
                         }`}>
                           <Car className="w-3 h-3 mr-1" style={{ color: vehicle.color || '#3B82F6' }} />
                           {vehicle.nickname || vehicle.name}
