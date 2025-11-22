@@ -2998,11 +2998,12 @@ const LandCruiserTracker = () => {
                 </div>
                 </div>
 
-                {/* Price Breakdown - More compact grid */}
-                <div className={`p-3 rounded-lg ${
+                {/* Price Breakdown - flex container with Total at bottom */}
+                <div className={`p-3 rounded-lg flex flex-col min-h-[120px] ${
                   darkMode ? 'bg-gray-700' : 'bg-gray-50'
                 }`}>
-                  <div className="space-y-2">
+                  {/* Top section - Part Price, Shipping, Duties */}
+                  <div className="space-y-2 mb-2">
                     {/* Part Price - always shown */}
                     <div className="flex justify-between items-center">
                       <p className={`text-xs ${
@@ -3013,37 +3014,41 @@ const LandCruiserTracker = () => {
                       }`}>${part.price.toFixed(2)}</p>
                     </div>
                     
-                    {/* Shipping - always shown, even if $0 */}
-                    <div className="flex justify-between items-center">
-                      <p className={`text-xs ${
-                        darkMode ? 'text-gray-400' : 'text-gray-600'
-                      }`}>Shipping:</p>
-                      <p className={`text-sm font-semibold ${
-                        darkMode ? 'text-gray-100' : 'text-gray-900'
-                      }`}>${part.shipping.toFixed(2)}</p>
-                    </div>
+                    {/* Shipping - only if > 0 */}
+                    {part.shipping > 0 && (
+                      <div className="flex justify-between items-center">
+                        <p className={`text-xs ${
+                          darkMode ? 'text-gray-400' : 'text-gray-600'
+                        }`}>Shipping:</p>
+                        <p className={`text-sm font-semibold ${
+                          darkMode ? 'text-gray-100' : 'text-gray-900'
+                        }`}>${part.shipping.toFixed(2)}</p>
+                      </div>
+                    )}
                     
-                    {/* Duties - always shown, even if $0 */}
-                    <div className="flex justify-between items-center">
-                      <p className={`text-xs ${
-                        darkMode ? 'text-gray-400' : 'text-gray-600'
-                      }`}>Duties:</p>
-                      <p className={`text-sm font-semibold ${
-                        darkMode ? 'text-gray-100' : 'text-gray-900'
-                      }`}>${part.duties.toFixed(2)}</p>
-                    </div>
-                    
-                    {/* Total - always shown with divider */}
-                    <div className={`flex justify-between items-center pt-2 border-t ${
-                      darkMode ? 'border-gray-600' : 'border-gray-300'
-                    }`}>
-                      <p className={`text-sm font-semibold ${
-                        darkMode ? 'text-gray-300' : 'text-gray-700'
-                      }`}>Total:</p>
-                      <p className={`text-base font-bold ${
-                        darkMode ? 'text-gray-100' : 'text-gray-900'
-                      }`}>${part.total.toFixed(2)}</p>
-                    </div>
+                    {/* Duties - only if > 0 */}
+                    {part.duties > 0 && (
+                      <div className="flex justify-between items-center">
+                        <p className={`text-xs ${
+                          darkMode ? 'text-gray-400' : 'text-gray-600'
+                        }`}>Duties:</p>
+                        <p className={`text-sm font-semibold ${
+                          darkMode ? 'text-gray-100' : 'text-gray-900'
+                        }`}>${part.duties.toFixed(2)}</p>
+                      </div>
+                    )}
+                  </div>
+                  
+                  {/* Total - always at bottom with divider */}
+                  <div className={`flex justify-between items-center pt-2 mt-auto border-t ${
+                    darkMode ? 'border-gray-600' : 'border-gray-300'
+                  }`}>
+                    <p className={`text-sm font-semibold ${
+                      darkMode ? 'text-gray-300' : 'text-gray-700'
+                    }`}>Total:</p>
+                    <p className={`text-base font-bold ${
+                      darkMode ? 'text-gray-100' : 'text-gray-900'
+                    }`}>${part.total.toFixed(2)}</p>
                   </div>
                 </div>
 
