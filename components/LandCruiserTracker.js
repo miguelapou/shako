@@ -3001,6 +3001,7 @@ const LandCruiserTracker = () => {
 
         {/* Parts Table */}
         {/* Desktop Table View - Hidden on mobile */}
+        {filteredParts.length > 0 ? (
         <div className={`hidden md:block rounded-lg shadow-md overflow-hidden ${
           darkMode ? 'bg-gray-800' : 'bg-white'
         }`}>
@@ -3188,8 +3189,39 @@ const LandCruiserTracker = () => {
             </p>
           </div>
         </div>
+        ) : (
+          <div className={`hidden md:block text-center py-16 rounded-lg ${
+            darkMode ? 'bg-gray-800' : 'bg-white'
+          }`}>
+            <Package className={`w-20 h-20 mx-auto mb-4 ${
+              darkMode ? 'text-gray-600' : 'text-gray-400'
+            }`} />
+            <h3 className={`text-xl font-semibold mb-2 ${
+              darkMode ? 'text-gray-300' : 'text-gray-700'
+            }`}>
+              No Parts Found
+            </h3>
+            <p className={`mb-4 ${
+              darkMode ? 'text-gray-400' : 'text-gray-600'
+            }`}>
+              {searchTerm || statusFilter !== 'all' || vendorFilter !== 'all' 
+                ? 'Try adjusting your filters or search term'
+                : 'Start tracking your parts by adding your first one'}
+            </p>
+            {!searchTerm && statusFilter === 'all' && vendorFilter === 'all' && (
+              <button
+                onClick={() => setShowAddModal(true)}
+                className="inline-flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg shadow-md transition-colors font-medium"
+              >
+                <Plus className="w-5 h-5" />
+                Add First Part
+              </button>
+            )}
+          </div>
+        )}
 
         {/* Mobile Card View - Visible only on mobile */}
+        {filteredParts.length > 0 ? (
         <div className="md:hidden grid grid-cols-1 gap-4">
             {filteredParts.map((part) => (
               <div 
@@ -3338,6 +3370,36 @@ const LandCruiserTracker = () => {
               </div>
             ))}
           </div>
+        ) : (
+          <div className={`md:hidden text-center py-16 rounded-lg ${
+            darkMode ? 'bg-gray-800' : 'bg-white'
+          }`}>
+            <Package className={`w-20 h-20 mx-auto mb-4 ${
+              darkMode ? 'text-gray-600' : 'text-gray-400'
+            }`} />
+            <h3 className={`text-xl font-semibold mb-2 ${
+              darkMode ? 'text-gray-300' : 'text-gray-700'
+            }`}>
+              No Parts Found
+            </h3>
+            <p className={`mb-4 ${
+              darkMode ? 'text-gray-400' : 'text-gray-600'
+            }`}>
+              {searchTerm || statusFilter !== 'all' || vendorFilter !== 'all' 
+                ? 'Try adjusting your filters or search term'
+                : 'Start tracking your parts by adding your first one'}
+            </p>
+            {!searchTerm && statusFilter === 'all' && vendorFilter === 'all' && (
+              <button
+                onClick={() => setShowAddModal(true)}
+                className="inline-flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg shadow-md transition-colors font-medium"
+              >
+                <Plus className="w-5 h-5" />
+                Add First Part
+              </button>
+            )}
+          </div>
+        )}
         </>
           </div>
         )}
