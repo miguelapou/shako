@@ -2999,7 +2999,7 @@ const LandCruiserTracker = () => {
                 </div>
 
                 {/* Price Breakdown - flex container with Total at bottom */}
-                <div className={`p-4 rounded-b-lg flex flex-col min-h-[120px] ${
+                <div className={`p-4 rounded-b-lg flex flex-col h-[140px] ${
                   darkMode ? 'bg-gray-700' : 'bg-gray-50'
                 }`}>
                   {/* Top section - Part Price, Shipping, Duties */}
