@@ -3504,7 +3504,9 @@ const LandCruiserTracker = () => {
                           Spent
                         </p>
                         <p className={`text-lg font-bold ${
-                          darkMode ? 'text-gray-100' : 'text-gray-900'
+                          linkedPartsTotal > project.budget
+                            ? (darkMode ? 'text-red-400' : 'text-red-600')
+                            : (darkMode ? 'text-green-400' : 'text-green-600')
                         }`}>
                           ${linkedPartsTotal.toFixed(2)}
                         </p>
