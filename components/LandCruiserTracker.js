@@ -4557,7 +4557,7 @@ const LandCruiserTracker = () => {
                         
                         {/* Image Preview */}
                         {vehicleImagePreview && (
-                          <div className="relative h-[240px]">
+                          <div className="relative h-[340px]">
                             <img 
                               src={vehicleImagePreview} 
                               alt="Preview"
@@ -4576,7 +4576,7 @@ const LandCruiserTracker = () => {
                         
                         {/* File Upload Button */}
                         {!vehicleImagePreview && (
-                          <label className={`flex flex-col items-center justify-center w-full h-[240px] border-2 border-dashed rounded-lg cursor-pointer transition-colors ${
+                          <label className={`flex flex-col items-center justify-center w-full h-[340px] border-2 border-dashed rounded-lg cursor-pointer transition-colors ${
                             darkMode 
                               ? 'border-gray-600 hover:border-gray-500 bg-gray-700/50 hover:bg-gray-700' 
                               : 'border-gray-300 hover:border-gray-400 bg-gray-50 hover:bg-gray-100'
@@ -5054,7 +5054,7 @@ const LandCruiserTracker = () => {
                         
                         {/* Current Image or Preview */}
                         {(vehicleImagePreview || editingVehicle.image_url) && (
-                          <div className="relative h-[240px]">
+                          <div className="relative h-[340px]">
                             <img 
                               src={vehicleImagePreview || editingVehicle.image_url} 
                               alt="Vehicle"
@@ -5079,7 +5079,7 @@ const LandCruiserTracker = () => {
                         
                         {/* File Upload Button */}
                         {!vehicleImagePreview && !editingVehicle.image_url && (
-                          <label className={`flex flex-col items-center justify-center w-full h-[240px] border-2 border-dashed rounded-lg cursor-pointer transition-colors ${
+                          <label className={`flex flex-col items-center justify-center w-full h-[340px] border-2 border-dashed rounded-lg cursor-pointer transition-colors ${
                             darkMode 
                               ? 'border-gray-600 hover:border-gray-500 bg-gray-700/50 hover:bg-gray-700' 
                               : 'border-gray-300 hover:border-gray-400 bg-gray-50 hover:bg-gray-100'
