@@ -131,13 +131,6 @@ const fontStyles = `
     overflow-y: scroll;
   }
 
-  /* Prevent background scroll when modal is open */
-  body.modal-open {
-    overflow: hidden;
-    position: fixed;
-    width: 100%;
-  }
-
   /* Prevent touch scrolling on modal backdrop */
   .modal-backdrop {
     touch-action: none;
@@ -959,14 +952,27 @@ const LandCruiserTracker = () => {
                           showPartDetailModal;
     
     if (isAnyModalOpen) {
-      document.body.classList.add('modal-open');
+      // Store current scroll position
+      const scrollY = window.scrollY;
+      document.body.style.position = 'fixed';
+      document.body.style.top = `-${scrollY}px`;
+      document.body.style.width = '100%';
     } else {
-      document.body.classList.remove('modal-open');
+      // Restore scroll position
+      const scrollY = document.body.style.top;
+      document.body.style.position = '';
+      document.body.style.top = '';
+      document.body.style.width = '';
+      if (scrollY) {
+        window.scrollTo(0, parseInt(scrollY || '0') * -1);
+      }
     }
     
     // Cleanup on unmount
     return () => {
-      document.body.classList.remove('modal-open');
+      document.body.style.position = '';
+      document.body.style.top = '';
+      document.body.style.width = '';
     };
   }, [showAddModal, showEditModal, showTrackingModal, showAddProjectModal, 
       showEditProjectModal, showProjectDetailModal, showAddVehicleModal, showEditVehicleModal, showVehicleDetailModal, showPartDetailModal]);
@@ -1104,19 +1110,11 @@ const LandCruiserTracker = () => {
   };
 
   const openEditModal = (part) => {
-    // Store current scroll position before opening modal
-    const scrollPosition = window.scrollY || window.pageYOffset;
-    
     setEditingPart({
       ...part,
       status: part.delivered ? 'delivered' : (part.shipped ? 'shipped' : (part.purchased ? 'purchased' : 'pending'))
     });
     setShowEditModal(true);
-    
-    // Restore scroll position after modal opens
-    requestAnimationFrame(() => {
-      window.scrollTo(0, scrollPosition);
-    });
   };
 
   const saveEditedPart = async () => {
