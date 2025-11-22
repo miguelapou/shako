@@ -3002,39 +3002,48 @@ const LandCruiserTracker = () => {
                 <div className={`p-3 rounded-lg ${
                   darkMode ? 'bg-gray-700' : 'bg-gray-50'
                 }`}>
-                  <div className="grid grid-cols-3 gap-2">
-                    <div>
-                      <p className={`text-xs mb-0.5 ${
+                  <div className="space-y-2">
+                    {/* Part Price - always shown */}
+                    <div className="flex justify-between items-center">
+                      <p className={`text-xs ${
                         darkMode ? 'text-gray-400' : 'text-gray-600'
-                      }`}>Price</p>
+                      }`}>Part Price:</p>
                       <p className={`text-sm font-semibold ${
                         darkMode ? 'text-gray-100' : 'text-gray-900'
                       }`}>${part.price.toFixed(2)}</p>
                     </div>
+                    
+                    {/* Shipping - always shown, even if $0 */}
                     {part.shipping > 0 && (
-                      <div>
-                        <p className={`text-xs mb-0.5 ${
+                      <div className="flex justify-between items-center">
+                        <p className={`text-xs ${
                           darkMode ? 'text-gray-400' : 'text-gray-600'
-                        }`}>Ship</p>
+                        }`}>Shipping:</p>
                         <p className={`text-sm font-semibold ${
                           darkMode ? 'text-gray-100' : 'text-gray-900'
                         }`}>${part.shipping.toFixed(2)}</p>
                       </div>
                     )}
+                    
+                    {/* Duties - always shown, even if $0 */}
                     {part.duties > 0 && (
-                      <div>
-                        <p className={`text-xs mb-0.5 ${
+                      <div className="flex justify-between items-center">
+                        <p className={`text-xs ${
                           darkMode ? 'text-gray-400' : 'text-gray-600'
-                        }`}>Duties</p>
+                        }`}>Duties:</p>
                         <p className={`text-sm font-semibold ${
                           darkMode ? 'text-gray-100' : 'text-gray-900'
                         }`}>${part.duties.toFixed(2)}</p>
                       </div>
                     )}
-                    <div className={part.shipping > 0 || part.duties > 0 ? '' : 'col-span-2'}>
-                      <p className={`text-xs mb-0.5 ${
-                        darkMode ? 'text-gray-400' : 'text-gray-600'
-                      }`}>Total</p>
+                    
+                    {/* Total - always shown with divider */}
+                    <div className={`flex justify-between items-center pt-2 border-t ${
+                      darkMode ? 'border-gray-600' : 'border-gray-300'
+                    }`}>
+                      <p className={`text-sm font-semibold ${
+                        darkMode ? 'text-gray-300' : 'text-gray-700'
+                      }`}>Total:</p>
                       <p className={`text-base font-bold ${
                         darkMode ? 'text-gray-100' : 'text-gray-900'
                       }`}>${part.total.toFixed(2)}</p>
