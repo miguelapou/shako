@@ -53,20 +53,6 @@ const fontStyles = `
     }
   }
 
-  @keyframes popDownCenter {
-    0% {
-      opacity: 1;
-      transform: scale(1);
-    }
-    50% {
-      transform: scale(1.02);
-    }
-    100% {
-      opacity: 0;
-      transform: scale(0.7);
-    }
-  }
-
   @keyframes fadeIn {
     from {
       opacity: 0;
@@ -112,7 +98,7 @@ const fontStyles = `
   }
 
   .modal-popup-exit {
-    animation: popDownCenter 0.2s cubic-bezier(0.4, 0, 1, 1);
+    animation: fadeOut 0.2s ease-out;
   }
 
   .modal-backdrop-enter {
@@ -120,7 +106,7 @@ const fontStyles = `
   }
 
   .modal-backdrop-exit {
-    animation: fadeOut 0.2s ease-in;
+    animation: fadeOut 0.2s ease-out;
   }
 
   .slide-in-right {
@@ -1708,13 +1694,15 @@ const LandCruiserTracker = () => {
         {/* Add New Part Modal */}
         {showAddModal && (
           <div 
-            className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4 modal-backdrop-enter modal-backdrop"
-            onClick={() => setShowAddModal(false)}
+            className={`fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4 modal-backdrop ${
+              isModalClosing ? 'modal-backdrop-exit' : 'modal-backdrop-enter'
+            }`}
+            onClick={() => handleCloseModal(() => setShowAddModal(false))}
           >
             <div 
-              className={`rounded-lg shadow-xl max-w-2xl w-full max-h-[90vh] modal-popup-enter modal-content ${
-                darkMode ? 'bg-gray-800' : 'bg-white'
-              }`}
+              className={`rounded-lg shadow-xl max-w-2xl w-full max-h-[90vh] modal-content ${
+                isModalClosing ? 'modal-popup-exit' : 'modal-popup-enter'
+              } ${darkMode ? 'bg-gray-800' : 'bg-white'}`}
               onClick={(e) => e.stopPropagation()}
             >
               <div className={`sticky top-0 border-b px-6 py-4 flex items-center justify-between ${
@@ -1724,7 +1712,7 @@ const LandCruiserTracker = () => {
                   darkMode ? 'text-gray-100' : 'text-gray-800'
                 }`} style={{ fontFamily: "'FoundationOne', 'Courier New', monospace" }}>Add Part</h2>
                 <button
-                  onClick={() => setShowAddModal(false)}
+                  onClick={() => handleCloseModal(() => setShowAddModal(false))}
                   className={`transition-colors ${
                     darkMode ? 'text-gray-400 hover:text-gray-300' : 'text-gray-400 hover:text-gray-600'
                   }`}
@@ -2056,16 +2044,18 @@ const LandCruiserTracker = () => {
         {/* Edit Part Modal */}
         {showEditModal && editingPart && (
           <div 
-            className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4 modal-backdrop-enter modal-backdrop"
-            onClick={() => {
+            className={`fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4 modal-backdrop ${
+              isModalClosing ? 'modal-backdrop-exit' : 'modal-backdrop-enter'
+            }`}
+            onClick={() => handleCloseModal(() => {
               setShowEditModal(false);
               setEditingPart(null);
-            }}
+            })}
           >
             <div 
-              className={`rounded-lg shadow-xl max-w-2xl w-full max-h-[90vh] modal-popup-enter modal-content ${
-                darkMode ? 'bg-gray-800' : 'bg-white'
-              }`}
+              className={`rounded-lg shadow-xl max-w-2xl w-full max-h-[90vh] modal-content ${
+                isModalClosing ? 'modal-popup-exit' : 'modal-popup-enter'
+              } ${darkMode ? 'bg-gray-800' : 'bg-white'}`}
               onClick={(e) => e.stopPropagation()}
             >
               <div className={`sticky top-0 border-b px-6 py-4 flex items-center justify-between ${
@@ -2075,10 +2065,10 @@ const LandCruiserTracker = () => {
                   darkMode ? 'text-gray-100' : 'text-gray-800'
                 }`} style={{ fontFamily: "'FoundationOne', 'Courier New', monospace" }}>Edit Part</h2>
                 <button
-                  onClick={() => {
+                  onClick={() => handleCloseModal(() => {
                     setShowEditModal(false);
                     setEditingPart(null);
-                  }}
+                  })}
                   className={`transition-colors ${
                     darkMode ? 'text-gray-400 hover:text-gray-300' : 'text-gray-400 hover:text-gray-600'
                   }`}
@@ -3221,13 +3211,15 @@ const LandCruiserTracker = () => {
             {/* Add Project Modal */}
             {showAddProjectModal && (
               <div 
-                className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4 modal-backdrop-enter modal-backdrop"
-                onClick={() => setShowAddProjectModal(false)}
+                className={`fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4 modal-backdrop ${
+                  isModalClosing ? 'modal-backdrop-exit' : 'modal-backdrop-enter'
+                }`}
+                onClick={() => handleCloseModal(() => setShowAddProjectModal(false))}
               >
                 <div 
-                  className={`rounded-lg shadow-xl max-w-2xl w-full max-h-[90vh] modal-popup-enter modal-content ${
-                    darkMode ? 'bg-gray-800' : 'bg-white'
-                  }`}
+                  className={`rounded-lg shadow-xl max-w-2xl w-full max-h-[90vh] modal-content ${
+                    isModalClosing ? 'modal-popup-exit' : 'modal-popup-enter'
+                  } ${darkMode ? 'bg-gray-800' : 'bg-white'}`}
                   onClick={(e) => e.stopPropagation()}
                 >
                   <div className={`sticky top-0 border-b px-6 py-4 flex items-center justify-between ${
@@ -3239,7 +3231,7 @@ const LandCruiserTracker = () => {
                       Add Project
                     </h2>
                     <button
-                      onClick={() => setShowAddProjectModal(false)}
+                      onClick={() => handleCloseModal(() => setShowAddProjectModal(false))}
                       className={`transition-colors ${
                         darkMode ? 'text-gray-400 hover:text-gray-300' : 'text-gray-400 hover:text-gray-600'
                       }`}
@@ -3471,16 +3463,18 @@ const LandCruiserTracker = () => {
             {/* Edit Project Modal */}
             {showEditProjectModal && editingProject && (
               <div 
-                className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4 modal-backdrop-enter modal-backdrop"
-                onClick={() => {
+                className={`fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4 modal-backdrop ${
+                  isModalClosing ? 'modal-backdrop-exit' : 'modal-backdrop-enter'
+                }`}
+                onClick={() => handleCloseModal(() => {
                   setShowEditProjectModal(false);
                   setEditingProject(null);
-                }}
+                })}
               >
                 <div 
-                  className={`rounded-lg shadow-xl max-w-2xl w-full max-h-[90vh] modal-popup-enter modal-content ${
-                    darkMode ? 'bg-gray-800' : 'bg-white'
-                  }`}
+                  className={`rounded-lg shadow-xl max-w-2xl w-full max-h-[90vh] modal-content ${
+                    isModalClosing ? 'modal-popup-exit' : 'modal-popup-enter'
+                  } ${darkMode ? 'bg-gray-800' : 'bg-white'}`}
                   onClick={(e) => e.stopPropagation()}
                 >
                   <div className={`sticky top-0 border-b px-6 py-4 flex items-center justify-between ${
@@ -3492,10 +3486,10 @@ const LandCruiserTracker = () => {
                       Edit Project
                     </h2>
                     <button
-                      onClick={() => {
+                      onClick={() => handleCloseModal(() => {
                         setShowEditProjectModal(false);
                         setEditingProject(null);
-                      }}
+                      })}
                       className={`transition-colors ${
                         darkMode ? 'text-gray-400 hover:text-gray-300' : 'text-gray-400 hover:text-gray-600'
                       }`}
@@ -3783,16 +3777,18 @@ const LandCruiserTracker = () => {
             {/* Project Detail Modal */}
             {showProjectDetailModal && viewingProject && (
               <div 
-                className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4 modal-backdrop-enter modal-backdrop"
-                onClick={() => {
+                className={`fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4 modal-backdrop ${
+                  isModalClosing ? 'modal-backdrop-exit' : 'modal-backdrop-enter'
+                }`}
+                onClick={() => handleCloseModal(() => {
                   setShowProjectDetailModal(false);
                   setViewingProject(null);
-                }}
+                })}
               >
                 <div 
-                  className={`rounded-lg shadow-xl max-w-3xl w-full max-h-[90vh] modal-popup-enter modal-content ${
-                    darkMode ? 'bg-gray-800' : 'bg-white'
-                  }`}
+                  className={`rounded-lg shadow-xl max-w-3xl w-full max-h-[90vh] modal-content ${
+                    isModalClosing ? 'modal-popup-exit' : 'modal-popup-enter'
+                  } ${darkMode ? 'bg-gray-800' : 'bg-white'}`}
                   onClick={(e) => e.stopPropagation()}
                 >
                   <div className={`sticky top-0 border-b px-6 py-4 rounded-t-lg ${
@@ -3818,10 +3814,10 @@ const LandCruiserTracker = () => {
                         })()}
                       </div>
                       <button
-                        onClick={() => {
+                        onClick={() => handleCloseModal(() => {
                           setShowProjectDetailModal(false);
                           setViewingProject(null);
-                        }}
+                        })}
                         className={`p-2 rounded-lg transition-colors ${
                           darkMode 
                             ? 'hover:bg-gray-700 text-gray-400 hover:text-gray-200' 
@@ -4814,16 +4810,18 @@ const LandCruiserTracker = () => {
             {/* Edit Vehicle Modal */}
             {showEditVehicleModal && editingVehicle && (
               <div 
-                className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4 modal-backdrop-enter modal-backdrop"
-                onClick={() => {
+                className={`fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4 modal-backdrop ${
+                  isModalClosing ? 'modal-backdrop-exit' : 'modal-backdrop-enter'
+                }`}
+                onClick={() => handleCloseModal(() => {
                   setShowEditVehicleModal(false);
                   setEditingVehicle(null);
-                }}
+                })}
               >
                 <div 
-                  className={`rounded-lg shadow-xl max-w-2xl w-full max-h-[90vh] modal-popup-enter modal-content ${
-                    darkMode ? 'bg-gray-800' : 'bg-white'
-                  }`}
+                  className={`rounded-lg shadow-xl max-w-2xl w-full max-h-[90vh] modal-content ${
+                    isModalClosing ? 'modal-popup-exit' : 'modal-popup-enter'
+                  } ${darkMode ? 'bg-gray-800' : 'bg-white'}`}
                   onClick={(e) => e.stopPropagation()}
                 >
                   <div className={`sticky top-0 border-b px-6 py-4 flex items-center justify-between ${
@@ -4835,10 +4833,10 @@ const LandCruiserTracker = () => {
                       Edit Vehicle
                     </h2>
                     <button
-                      onClick={() => {
+                      onClick={() => handleCloseModal(() => {
                         setShowEditVehicleModal(false);
                         setEditingVehicle(null);
-                      }}
+                      })}
                       className={`transition-colors ${
                         darkMode ? 'text-gray-400 hover:text-gray-300' : 'text-gray-400 hover:text-gray-600'
                       }`}
@@ -5303,16 +5301,18 @@ const LandCruiserTracker = () => {
             {/* Vehicle Detail Modal */}
             {showVehicleDetailModal && viewingVehicle && (
               <div 
-                className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50 modal-backdrop modal-backdrop-enter"
-                onClick={() => {
+                className={`fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50 modal-backdrop ${
+                  isModalClosing ? 'modal-backdrop-exit' : 'modal-backdrop-enter'
+                }`}
+                onClick={() => handleCloseModal(() => {
                   setShowVehicleDetailModal(false);
                   setViewingVehicle(null);
-                }}
+                })}
               >
                 <div 
-                  className={`rounded-lg shadow-xl max-w-3xl w-full max-h-[90vh] overflow-y-auto modal-content modal-popup-enter ${
-                    darkMode ? 'bg-gray-800' : 'bg-white'
-                  }`}
+                  className={`rounded-lg shadow-xl max-w-3xl w-full max-h-[90vh] overflow-y-auto modal-content ${
+                    isModalClosing ? 'modal-popup-exit' : 'modal-popup-enter'
+                  } ${darkMode ? 'bg-gray-800' : 'bg-white'}`}
                   onClick={(e) => e.stopPropagation()}
                 >
                   {/* Header */}
@@ -5325,10 +5325,10 @@ const LandCruiserTracker = () => {
                       {viewingVehicle.nickname || viewingVehicle.name || 'Vehicle Details'}
                     </h2>
                     <button
-                      onClick={() => {
+                      onClick={() => handleCloseModal(() => {
                         setShowVehicleDetailModal(false);
                         setViewingVehicle(null);
-                      }}
+                      })}
                       className={`p-2 rounded-md transition-colors ${
                         darkMode ? 'hover:bg-gray-700 text-gray-400' : 'hover:bg-gray-100 text-gray-600'
                       }`}
