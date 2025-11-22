@@ -235,6 +235,44 @@ const fontStyles = `
   .slide-in-left {
     animation: slideInFromLeft 0.4s cubic-bezier(0.16, 1, 0.3, 1);
   }
+
+  /* Garage Door Loading Spinner */
+  .garage-spinner {
+    width: 100px;
+    height: 120px;
+    position: relative;
+    overflow: hidden;
+    border: 2px solid #555;
+  }
+
+  .door-segment {
+    height: 30px;
+    background-color: #ccc;
+    border-bottom: 1px solid #555;
+    position: absolute;
+    width: 100%;
+  }
+
+  .door-segment:nth-child(1) { bottom: 0px; }
+  .door-segment:nth-child(2) { bottom: 30px; }
+  .door-segment:nth-child(3) { bottom: 60px; }
+  .door-segment:nth-child(4) { bottom: 90px; }
+
+  @keyframes openGarage {
+    0% { transform: translateY(0) scaleY(1); opacity: 1; }
+    50% { opacity: 1; }
+    100% { transform: translateY(-150px) scaleY(0.5); opacity: 0; }
+  }
+
+  .door-segment {
+    animation: openGarage 2s infinite cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    animation-fill-mode: forwards;
+  }
+
+  .door-segment:nth-child(1) { animation-delay: 0s; }
+  .door-segment:nth-child(2) { animation-delay: 0.1s; }
+  .door-segment:nth-child(3) { animation-delay: 0.2s; }
+  .door-segment:nth-child(4) { animation-delay: 0.3s; }
 `;
 
 const LandCruiserTracker = () => {
@@ -1693,7 +1731,7 @@ const LandCruiserTracker = () => {
             <div>
               <h1 className={`text-2xl sm:text-3xl lg:text-4xl font-bold mb-2 ${
                 darkMode ? 'text-gray-100' : 'text-slate-800'
-              }`} style={{ fontFamily: "'FoundationOne', 'Courier New', monospace" }}>🗻 TAKUMI GARAGE</h1>
+              }`} style={{ fontFamily: "'FoundationOne', 'Courier New', monospace" }}>ðŸ—» TAKUMI GARAGE</h1>
             </div>
             <div className="flex items-center gap-2 sm:gap-3">
               <button
@@ -1794,8 +1832,13 @@ const LandCruiserTracker = () => {
         {loading && (
           <div className="flex items-center justify-center py-20">
             <div className="text-center">
-              <div className="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mb-4"></div>
-              <p className="text-slate-600">Opening your garage...</p>
+              <div className="garage-spinner mx-auto mb-4">
+                <div className="door-segment"></div>
+                <div className="door-segment"></div>
+                <div className="door-segment"></div>
+                <div className="door-segment"></div>
+              </div>
+              <p className={`text-lg font-medium ${darkMode ? 'text-gray-300' : 'text-slate-600'}`}>Opening your garage...</p>
             </div>
           </div>
         )}
@@ -2803,7 +2846,7 @@ const LandCruiserTracker = () => {
                       ) : (
                         <div className={`text-sm text-center ${
                           darkMode ? 'text-gray-600' : 'text-slate-400'
-                        }`}>—</div>
+                        }`}>â€”</div>
                       )}
                     </td>
                     <td className="px-6 py-4">
@@ -2814,7 +2857,7 @@ const LandCruiserTracker = () => {
                       ) : (
                         <div className={`text-sm text-center ${
                           darkMode ? 'text-gray-600' : 'text-slate-400'
-                        }`}>—</div>
+                        }`}>â€”</div>
                       )}
                     </td>
                     <td className="px-6 py-4 text-center">
@@ -2834,7 +2877,7 @@ const LandCruiserTracker = () => {
                         ) : (
                           <div className={`text-sm text-center ${
                             darkMode ? 'text-gray-600' : 'text-slate-400'
-                          }`}>—</div>
+                          }`}>â€”</div>
                         );
                       })()}
                     </td>
@@ -2871,7 +2914,7 @@ const LandCruiserTracker = () => {
                       ) : (
                         <div className={`text-sm text-center ${
                           darkMode ? 'text-gray-600' : 'text-slate-400'
-                        }`}>—</div>
+                        }`}>â€”</div>
                       )}
                     </td>
                   </tr>
