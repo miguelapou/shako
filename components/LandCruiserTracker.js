@@ -151,10 +151,9 @@ const fontStyles = `
     -webkit-overflow-scrolling: touch;
   }
   
-  /* Ensure headers/footers don't shrink */
-  .modal-content > div:first-child,
-  .modal-content > div:last-child {
-    flex-shrink: 0;
+  /* For iOS smooth scrolling */
+  .overflow-y-auto {
+    -webkit-overflow-scrolling: touch;
   }
 
   /* Constrain date inputs to prevent full-width on Safari/mobile */
@@ -4502,13 +4501,13 @@ const LandCruiserTracker = () => {
                   <div className="relative flex-1 min-h-0 overflow-hidden">
                     {/* Project Details View */}
                     <div 
-                      className={`w-full h-full flex flex-col transition-all duration-500 ease-in-out ${
+                      className={`absolute inset-0 transition-all duration-500 ease-in-out ${
                         projectModalEditMode
-                          ? 'absolute opacity-0 pointer-events-none -translate-x-full' 
-                          : 'relative opacity-100'
+                          ? 'opacity-0 pointer-events-none -translate-x-full' 
+                          : 'opacity-100'
                       }`}
                     >
-                      <div className="p-6 modal-scrollable">
+                      <div className="h-full p-6 overflow-y-auto">
                     {(() => {
                       const linkedParts = parts.filter(part => part.projectId === viewingProject.id);
                       const linkedPartsTotal = calculateProjectTotal(viewingProject.id, parts);
@@ -4742,13 +4741,13 @@ const LandCruiserTracker = () => {
 
                     {/* Edit Project View - Slides in for editing */}
                     <div 
-                      className={`w-full h-full flex flex-col transition-all duration-500 ease-in-out ${
+                      className={`absolute inset-0 transition-all duration-500 ease-in-out ${
                         projectModalEditMode
-                          ? 'relative opacity-100 translate-x-0' 
-                          : 'absolute opacity-0 translate-x-full pointer-events-none'
+                          ? 'opacity-100 translate-x-0' 
+                          : 'opacity-0 translate-x-full pointer-events-none'
                       }`}
                     >
-                      <div className="p-6 space-y-6 modal-scrollable">
+                      <div className="h-full p-6 space-y-6 overflow-y-auto">
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                           <div>
                             <label className={`block text-sm font-medium mb-2 ${
