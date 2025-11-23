@@ -4502,13 +4502,13 @@ const LandCruiserTracker = () => {
                   <div className="relative flex-1 min-h-0 overflow-hidden">
                     {/* Project Details View */}
                     <div 
-                      className={`w-full h-full transition-all duration-500 ease-in-out ${
+                      className={`w-full h-full flex flex-col transition-all duration-500 ease-in-out ${
                         projectModalEditMode
                           ? 'absolute opacity-0 pointer-events-none -translate-x-full' 
                           : 'relative opacity-100'
                       }`}
                     >
-                      <div className="p-6 modal-scrollable h-full">
+                      <div className="p-6 modal-scrollable">
                     {(() => {
                       const linkedParts = parts.filter(part => part.projectId === viewingProject.id);
                       const linkedPartsTotal = calculateProjectTotal(viewingProject.id, parts);
@@ -4742,13 +4742,13 @@ const LandCruiserTracker = () => {
 
                     {/* Edit Project View - Slides in for editing */}
                     <div 
-                      className={`w-full h-full transition-all duration-500 ease-in-out ${
+                      className={`w-full h-full flex flex-col transition-all duration-500 ease-in-out ${
                         projectModalEditMode
                           ? 'relative opacity-100 translate-x-0' 
                           : 'absolute opacity-0 translate-x-full pointer-events-none'
                       }`}
                     >
-                      <div className="p-6 space-y-6 modal-scrollable h-full">
+                      <div className="p-6 space-y-6 modal-scrollable">
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                           <div>
                             <label className={`block text-sm font-medium mb-2 ${
@@ -6304,7 +6304,7 @@ const LandCruiserTracker = () => {
                           : 'relative opacity-100'
                       }`}
                     >
-                      <div className="p-6 space-y-6 modal-scrollable h-full">
+                      <div className="p-6 space-y-6 modal-scrollable">
                     {/* Top Section: Image first on mobile, then Basic Info */}
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                       {/* Vehicle Image - Full width on mobile (order-first), 2 columns on desktop */}
