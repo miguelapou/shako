@@ -4320,7 +4320,7 @@ const LandCruiserTracker = () => {
                 })}
               >
                 <div 
-                  className={`rounded-lg shadow-xl max-w-5xl w-full max-h-[90vh] modal-content ${
+                  className={`rounded-lg shadow-xl max-w-5xl w-full max-h-[90vh] overflow-hidden modal-content ${
                     isModalClosing ? 'modal-popup-exit' : 'modal-popup-enter'
                   } ${darkMode ? 'bg-gray-800' : 'bg-white'}`}
                   onClick={(e) => e.stopPropagation()}
@@ -4364,7 +4364,7 @@ const LandCruiserTracker = () => {
                     </div>
                   </div>
                   
-                  <div className="p-6">
+                  <div className="p-6 max-h-[calc(90vh-180px)] overflow-y-auto">
                     {(() => {
                       const linkedParts = parts.filter(part => part.projectId === viewingProject.id);
                       const linkedPartsTotal = calculateProjectTotal(viewingProject.id, parts);
@@ -4375,32 +4375,13 @@ const LandCruiserTracker = () => {
 
                       return (
                         <>
-                          {/* Status Badge and Edit Button */}
-                          <div className="flex items-center justify-between mb-6">
+                          {/* Status Badge */}
+                          <div className="mb-6">
                             <span className={`inline-block px-4 py-2 rounded-full text-sm font-medium ${
                               statusColors[viewingProject.status]
                             }`}>
                               {viewingProject.status.replace('_', ' ').toUpperCase()}
                             </span>
-                            <button
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                isTransitioningModals.current = true;
-                                setEditingProject({
-                                  ...viewingProject,
-                                  start_date: viewingProject.start_date ? viewingProject.start_date.split('T')[0] : '',
-                                  target_date: viewingProject.target_date ? viewingProject.target_date.split('T')[0] : ''
-                                });
-                                setShowProjectDetailModal(false);
-                                setShowEditProjectModal(true);
-                                setViewingProject(null);
-                              }}
-                              className="flex items-center gap-2 px-3 py-2 rounded-lg transition-colors bg-blue-600 hover:bg-blue-700 text-white font-medium"
-                              title="Edit project"
-                            >
-                              <Edit2 className="w-4 h-4" />
-                              Edit
-                            </button>
                           </div>
 
                           {/* Description */}
@@ -4612,6 +4593,28 @@ const LandCruiserTracker = () => {
                         </>
                       );
                     })()}
+                  </div>
+
+                  {/* Footer with Edit Button */}
+                  <div className={`border-t p-6 flex justify-end ${
+                    darkMode ? 'border-gray-700' : 'border-gray-200'
+                  }`}>
+                    <button
+                      onClick={() => {
+                        setEditingProject({
+                          ...viewingProject,
+                          start_date: viewingProject.start_date ? viewingProject.start_date.split('T')[0] : '',
+                          target_date: viewingProject.target_date ? viewingProject.target_date.split('T')[0] : ''
+                        });
+                        setShowProjectDetailModal(false);
+                        setShowEditProjectModal(true);
+                        setViewingProject(null);
+                      }}
+                      className="px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium transition-colors flex items-center gap-2"
+                    >
+                      <Edit2 className="w-4 h-4" />
+                      Edit
+                    </button>
                   </div>
                 </div>
               </div>
@@ -6092,7 +6095,7 @@ const LandCruiserTracker = () => {
                               <span>Projects ({vehicleProjects.length})</span>
                             </div>
                           </h3>
-                          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                             {vehicleProjects.map((project) => {
                               const projectParts = parts.filter(p => p.projectId === project.id);
                               const projectTotal = projectParts.reduce((sum, part) => sum + part.total, 0);
@@ -6286,7 +6289,7 @@ const LandCruiserTracker = () => {
                                   }`}>
                                     Linked Parts ({linkedParts.length})
                                   </h3>
-                                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                                     {linkedParts.map((part) => (
                                       <div 
                                         key={part.id}
