@@ -4695,10 +4695,7 @@ const LandCruiserTracker = () => {
                                     </button>
                                     
                                     {/* Todo Text - Click to edit inline */}
-                                    {(() => {
-                                      const isEditing = editingTodoId === todo.id;
-                                      console.log('Rendering todo:', todo.id, 'isEditing:', isEditing, 'editingTodoId:', editingTodoId);
-                                      return isEditing ? (
+                                    {editingTodoId === todo.id ? (
                                       <input
                                         type="text"
                                         value={editingTodoText}
@@ -4726,22 +4723,25 @@ const LandCruiserTracker = () => {
                                             setEditingTodoText('');
                                           }
                                         }}
-                                        onBlur={() => {
-                                          if (editingTodoText.trim() && editingTodoText !== todo.text) {
-                                            const updatedTodos = viewingProject.todos.map(t => 
-                                              t.id === todo.id ? { ...t, text: editingTodoText.trim() } : t
-                                            );
-                                            updateProject(viewingProject.id, {
-                                              todos: updatedTodos
-                                            }).then(() => {
-                                              setViewingProject({
-                                                ...viewingProject,
+                                        onBlur={(e) => {
+                                          // Small delay to prevent immediate blur when input appears
+                                          setTimeout(() => {
+                                            if (editingTodoText.trim() && editingTodoText !== todo.text) {
+                                              const updatedTodos = viewingProject.todos.map(t => 
+                                                t.id === todo.id ? { ...t, text: editingTodoText.trim() } : t
+                                              );
+                                              updateProject(viewingProject.id, {
                                                 todos: updatedTodos
+                                              }).then(() => {
+                                                setViewingProject({
+                                                  ...viewingProject,
+                                                  todos: updatedTodos
+                                                });
                                               });
-                                            });
-                                          }
-                                          setEditingTodoId(null);
-                                          setEditingTodoText('');
+                                            }
+                                            setEditingTodoId(null);
+                                            setEditingTodoText('');
+                                          }, 100);
                                         }}
                                         ref={(input) => {
                                           if (input) {
@@ -4761,11 +4761,8 @@ const LandCruiserTracker = () => {
                                       <span 
                                         onClick={(e) => {
                                           e.stopPropagation();
-                                          console.log('Clicked todo:', todo.id, todo.text);
-                                          console.log('Before state:', editingTodoId, editingTodoText);
                                           setEditingTodoId(todo.id);
                                           setEditingTodoText(todo.text);
-                                          console.log('After setters called');
                                         }}
                                         className={`flex-1 text-sm cursor-pointer hover:opacity-70 transition-opacity ${
                                           todo.completed
@@ -4780,8 +4777,7 @@ const LandCruiserTracker = () => {
                                       >
                                         {todo.text}
                                       </span>
-                                      );
-                                    })()}
+                                    )}
                                     
                                     {/* Delete Button */}
                                     <button
@@ -5225,17 +5221,20 @@ const LandCruiserTracker = () => {
                                         }
                                       }}
                                       onBlur={() => {
-                                        if (editingTodoText.trim() && editingTodoText !== todo.text) {
-                                          const updatedTodos = viewingProject.todos.map(t => 
-                                            t.id === todo.id ? { ...t, text: editingTodoText.trim() } : t
-                                          );
-                                          setViewingProject({
-                                            ...viewingProject,
-                                            todos: updatedTodos
-                                          });
-                                        }
-                                        setEditingTodoId(null);
-                                        setEditingTodoText('');
+                                        // Small delay to prevent immediate blur when input appears
+                                        setTimeout(() => {
+                                          if (editingTodoText.trim() && editingTodoText !== todo.text) {
+                                            const updatedTodos = viewingProject.todos.map(t => 
+                                              t.id === todo.id ? { ...t, text: editingTodoText.trim() } : t
+                                            );
+                                            setViewingProject({
+                                              ...viewingProject,
+                                              todos: updatedTodos
+                                            });
+                                          }
+                                          setEditingTodoId(null);
+                                          setEditingTodoText('');
+                                        }, 100);
                                       }}
                                       ref={(input) => {
                                         if (input) {
@@ -5255,7 +5254,6 @@ const LandCruiserTracker = () => {
                                     <span 
                                       onClick={(e) => {
                                         e.stopPropagation();
-                                        console.log('[EDIT MODE] Clicked todo:', todo.id, todo.text);
                                         setEditingTodoId(todo.id);
                                         setEditingTodoText(todo.text);
                                       }}
