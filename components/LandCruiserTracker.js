@@ -6064,10 +6064,13 @@ const LandCruiserTracker = () => {
                                   key={project.id}
                                   onClick={(e) => {
                                     e.stopPropagation();
-                                    setViewingVehicle(null);
                                     setShowVehicleDetailModal(false);
-                                    setViewingProject(project);
-                                    setShowProjectDetailModal(true);
+                                    setViewingVehicle(null);
+                                    // Small delay to ensure smooth transition
+                                    setTimeout(() => {
+                                      setViewingProject(project);
+                                      setShowProjectDetailModal(true);
+                                    }, 50);
                                   }}
                                   className={`rounded-lg p-4 border-l-4 text-left transition-all hover:shadow-md cursor-pointer ${
                                     darkMode ? 'bg-gray-700 hover:bg-gray-650' : 'bg-gray-50 hover:bg-gray-100'
