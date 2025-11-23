@@ -952,11 +952,14 @@ const LandCruiserTracker = () => {
   // Scroll to top when switching between vehicle and project view in modal
   useEffect(() => {
     if (showVehicleDetailModal) {
-      // Find the modal content container and scroll it to top
-      const modalContent = document.querySelector('.modal-content');
-      if (modalContent) {
-        modalContent.scrollTop = 0;
-      }
+      // Small delay to ensure DOM has updated
+      setTimeout(() => {
+        // Find all scrollable containers in the modal and scroll to top
+        const scrollContainers = document.querySelectorAll('.max-h-\\[calc\\(90vh-180px\\)\\]');
+        scrollContainers.forEach(container => {
+          container.scrollTop = 0;
+        });
+      }, 50);
     }
   }, [vehicleModalProjectView, showVehicleDetailModal]);
 
@@ -5845,14 +5848,16 @@ const LandCruiserTracker = () => {
                   </div>
 
                   {/* Content - with slide animation */}
-                  <div className="relative overflow-hidden min-h-[400px]">
+                  <div className="relative" style={{ minHeight: '500px' }}>
                     {/* Vehicle Details View */}
                     <div 
-                      className={`absolute inset-0 transition-transform duration-500 ease-in-out ${
-                        vehicleModalProjectView ? '-translate-x-full opacity-0' : 'translate-x-0 opacity-100'
+                      className={`w-full transition-all duration-500 ease-in-out ${
+                        vehicleModalProjectView 
+                          ? 'absolute opacity-0 pointer-events-none -translate-x-full' 
+                          : 'relative opacity-100'
                       }`}
                     >
-                      <div className="p-6 space-y-6 overflow-y-auto" style={{ maxHeight: 'calc(90vh - 180px)' }}>
+                      <div className="p-6 space-y-6 max-h-[calc(90vh-180px)] overflow-y-auto">
                     {/* Top Section: Image first on mobile, then Basic Info */}
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                       {/* Vehicle Image - Full width on mobile (order-first), 2 columns on desktop */}
@@ -6156,11 +6161,13 @@ const LandCruiserTracker = () => {
                     {/* Project Details View - Slides in from right */}
                     {vehicleModalProjectView && (
                       <div 
-                        className={`absolute inset-0 transition-transform duration-500 ease-in-out ${
-                          vehicleModalProjectView ? 'translate-x-0 opacity-100' : 'translate-x-full opacity-0'
+                        className={`w-full transition-all duration-500 ease-in-out ${
+                          vehicleModalProjectView 
+                            ? 'relative opacity-100 translate-x-0' 
+                            : 'absolute opacity-0 translate-x-full pointer-events-none'
                         }`}
                       >
-                        <div className="p-6 space-y-6 overflow-y-auto" style={{ maxHeight: 'calc(90vh - 180px)' }}>
+                        <div className="p-6 space-y-6 max-h-[calc(90vh-180px)] overflow-y-auto">
                         {(() => {
                           const linkedParts = parts.filter(part => part.projectId === vehicleModalProjectView.id);
                           const linkedPartsTotal = calculateProjectTotal(vehicleModalProjectView.id, parts);
