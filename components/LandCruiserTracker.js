@@ -5027,8 +5027,6 @@ const LandCruiserTracker = () => {
                     </div>
 
                     {/* Full Width Sections Below */}
-                    <div className="mt-6 space-y-4">
-
                     {/* Half Width Sections Below */}
                     <div className="mt-6 grid grid-cols-1 md:grid-cols-2 gap-6">
                       <div className={`pt-4 border-t ${
