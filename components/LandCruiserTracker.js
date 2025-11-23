@@ -139,13 +139,22 @@ const fontStyles = `
     display: flex;
     flex-direction: column;
     overflow: hidden;
+    max-height: 90vh;
   }
   
   /* Scrollable area for modal body - use this class on the middle content div */
   .modal-scrollable {
     overflow-y: auto;
+    overflow-x: hidden;
     flex: 1 1 auto;
     min-height: 0;
+    -webkit-overflow-scrolling: touch;
+  }
+  
+  /* Ensure headers/footers don't shrink */
+  .modal-content > div:first-child,
+  .modal-content > div:last-child {
+    flex-shrink: 0;
   }
 
   /* Constrain date inputs to prevent full-width on Safari/mobile */
@@ -4490,16 +4499,16 @@ const LandCruiserTracker = () => {
                   </div>
                   
                   {/* Content - with slide animation */}
-                  <div className="relative" style={{ minHeight: '500px' }}>
+                  <div className="relative flex-1 min-h-0 overflow-hidden">
                     {/* Project Details View */}
                     <div 
-                      className={`w-full transition-all duration-500 ease-in-out ${
+                      className={`w-full h-full transition-all duration-500 ease-in-out ${
                         projectModalEditMode
                           ? 'absolute opacity-0 pointer-events-none -translate-x-full' 
                           : 'relative opacity-100'
                       }`}
                     >
-                      <div className="p-6 max-h-[calc(90vh-164px)] overflow-y-auto">
+                      <div className="p-6 modal-scrollable h-full">
                     {(() => {
                       const linkedParts = parts.filter(part => part.projectId === viewingProject.id);
                       const linkedPartsTotal = calculateProjectTotal(viewingProject.id, parts);
@@ -4733,13 +4742,13 @@ const LandCruiserTracker = () => {
 
                     {/* Edit Project View - Slides in for editing */}
                     <div 
-                      className={`w-full transition-all duration-500 ease-in-out ${
+                      className={`w-full h-full transition-all duration-500 ease-in-out ${
                         projectModalEditMode
                           ? 'relative opacity-100 translate-x-0' 
                           : 'absolute opacity-0 translate-x-full pointer-events-none'
                       }`}
                     >
-                      <div className="p-6 space-y-6 max-h-[calc(90vh-164px)] overflow-y-auto">
+                      <div className="p-6 space-y-6 modal-scrollable h-full">
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                           <div>
                             <label className={`block text-sm font-medium mb-2 ${
@@ -6286,7 +6295,7 @@ const LandCruiserTracker = () => {
                   </div>
 
                   {/* Content - with slide animation */}
-                  <div className="relative" style={{ minHeight: '500px' }}>
+                  <div className="relative flex-1 min-h-0 overflow-hidden">
                     {/* Vehicle Details View */}
                     <div 
                       className={`w-full transition-all duration-500 ease-in-out ${
@@ -6295,7 +6304,7 @@ const LandCruiserTracker = () => {
                           : 'relative opacity-100'
                       }`}
                     >
-                      <div className="p-6 space-y-6 max-h-[calc(90vh-164px)] overflow-y-auto">
+                      <div className="p-6 space-y-6 modal-scrollable h-full">
                     {/* Top Section: Image first on mobile, then Basic Info */}
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                       {/* Vehicle Image - Full width on mobile (order-first), 2 columns on desktop */}
@@ -6605,7 +6614,7 @@ const LandCruiserTracker = () => {
                             : 'absolute opacity-0 translate-x-full pointer-events-none'
                         }`}
                       >
-                        <div className="p-6 space-y-6 max-h-[calc(90vh-164px)] overflow-y-auto">
+                        <div className="p-6 space-y-6 modal-scrollable">
                         {(() => {
                           const linkedParts = parts.filter(part => part.projectId === vehicleModalProjectView.id);
                           const linkedPartsTotal = calculateProjectTotal(vehicleModalProjectView.id, parts);
@@ -6847,7 +6856,7 @@ const LandCruiserTracker = () => {
                       }`}
                     >
                       {vehicleModalProjectView && (
-                        <div className="p-6 space-y-6 max-h-[calc(90vh-164px)] overflow-y-auto">
+                        <div className="p-6 space-y-6 modal-scrollable">
                           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <div>
                               <label className={`block text-sm font-medium mb-2 ${
@@ -7089,7 +7098,7 @@ const LandCruiserTracker = () => {
                       }`}
                     >
                       {viewingVehicle && (
-                        <div className="p-6 space-y-6 max-h-[calc(90vh-164px)] overflow-y-auto">
+                        <div className="p-6 space-y-6 modal-scrollable">
                           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                             {/* Left Column - Basic Information */}
                             <div className="space-y-4">
