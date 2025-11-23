@@ -332,6 +332,7 @@ const LandCruiserTracker = () => {
   const [vehicleImageFile, setVehicleImageFile] = useState(null);
   const [vehicleImagePreview, setVehicleImagePreview] = useState(null);
   const [uploadingImage, setUploadingImage] = useState(false);
+  const [isDraggingImage, setIsDraggingImage] = useState(false);
 
   // Load parts and projects from Supabase on mount
   useEffect(() => {
@@ -762,6 +763,54 @@ const LandCruiserTracker = () => {
     setVehicleImagePreview(null);
   };
 
+  // Image drag and drop handlers
+  const handleImageDragEnter = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDraggingImage(true);
+  };
+
+  const handleImageDragLeave = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDraggingImage(false);
+  };
+
+  const handleImageDragOver = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+  };
+
+  const handleImageDrop = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDraggingImage(false);
+
+    const file = e.dataTransfer.files[0];
+    if (file) {
+      // Validate file type
+      if (!file.type.startsWith('image/')) {
+        alert('Please select an image file');
+        return;
+      }
+      
+      // Validate file size (max 5MB)
+      if (file.size > 5 * 1024 * 1024) {
+        alert('Image size must be less than 5MB');
+        return;
+      }
+
+      setVehicleImageFile(file);
+      
+      // Create preview
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setVehicleImagePreview(reader.result);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
   // Drag and drop handlers for projects
   const handleDragStart = (e, project) => {
     setDraggedProject(project);
@@ -922,6 +971,7 @@ const LandCruiserTracker = () => {
   const [showProjectDetailModal, setShowProjectDetailModal] = useState(false);
   const [viewingProject, setViewingProject] = useState(null);
   const [editingProject, setEditingProject] = useState(null);
+  const [projectModalEditMode, setProjectModalEditMode] = useState(false); // Track if editing within project detail modal
   const [newProject, setNewProject] = useState({
     name: '',
     description: '',
@@ -4308,7 +4358,6 @@ const LandCruiserTracker = () => {
                 </div>
               </div>
             )}
-
             {/* Project Detail Modal */}
             {showProjectDetailModal && viewingProject && (
               <div 
@@ -4318,6 +4367,7 @@ const LandCruiserTracker = () => {
                 onClick={() => handleCloseModal(() => {
                   setShowProjectDetailModal(false);
                   setViewingProject(null);
+                  setProjectModalEditMode(false);
                 })}
               >
                 <div 
@@ -4330,8 +4380,8 @@ const LandCruiserTracker = () => {
                     darkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-200'
                   }`} style={{ zIndex: 10 }}>
                     <div className="flex items-start justify-between gap-3">
-                      <div className="flex-1 min-w-0">
-                        <h2 className={`text-2xl font-bold mb-2 ${
+                      <div className="flex items-center gap-3 flex-wrap flex-1 min-w-0">
+                        <h2 className={`text-2xl font-bold ${
                           darkMode ? 'text-gray-100' : 'text-gray-800'
                         }`} style={{ fontFamily: "'FoundationOne', 'Courier New', monospace" }}>
                           {viewingProject.name}
@@ -4352,6 +4402,7 @@ const LandCruiserTracker = () => {
                         onClick={() => handleCloseModal(() => {
                           setShowProjectDetailModal(false);
                           setViewingProject(null);
+                          setProjectModalEditMode(false);
                         })}
                         className={`p-2 rounded-lg transition-colors flex-shrink-0 ${
                           darkMode 
@@ -4365,7 +4416,17 @@ const LandCruiserTracker = () => {
                     </div>
                   </div>
                   
-                  <div className="p-6 max-h-[calc(90vh-164px)] overflow-y-auto">
+                  {/* Content - with slide animation */}
+                  <div className="relative" style={{ minHeight: '500px' }}>
+                    {/* Project Details View */}
+                    <div 
+                      className={`w-full transition-all duration-500 ease-in-out ${
+                        projectModalEditMode
+                          ? 'absolute opacity-0 pointer-events-none -translate-x-full' 
+                          : 'relative opacity-100'
+                      }`}
+                    >
+                      <div className="p-6 max-h-[calc(90vh-164px)] overflow-y-auto">
                     {(() => {
                       const linkedParts = parts.filter(part => part.projectId === viewingProject.id);
                       const linkedPartsTotal = calculateProjectTotal(viewingProject.id, parts);
@@ -4594,28 +4655,297 @@ const LandCruiserTracker = () => {
                         </>
                       );
                     })()}
+                    </div>
+                    </div>
+
+                    {/* Edit Project View - Slides in for editing */}
+                    <div 
+                      className={`w-full transition-all duration-500 ease-in-out ${
+                        projectModalEditMode
+                          ? 'relative opacity-100 translate-x-0' 
+                          : 'absolute opacity-0 translate-x-full pointer-events-none'
+                      }`}
+                    >
+                      <div className="p-6 space-y-6 max-h-[calc(90vh-164px)] overflow-y-auto">
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                          <div>
+                            <label className={`block text-sm font-medium mb-2 ${
+                              darkMode ? 'text-gray-300' : 'text-gray-700'
+                            }`}>
+                              Project Name
+                            </label>
+                            <input
+                              type="text"
+                              value={viewingProject.name}
+                              onChange={(e) => setViewingProject({ ...viewingProject, name: e.target.value })}
+                              className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
+                                darkMode 
+                                  ? 'bg-gray-700 border-gray-600 text-gray-100' 
+                                  : 'bg-white border-gray-300 text-gray-900'
+                              }`}
+                            />
+                          </div>
+
+                          <div></div>
+
+                          <div className="md:col-span-2">
+                            <label className={`block text-sm font-medium mb-2 ${
+                              darkMode ? 'text-gray-300' : 'text-gray-700'
+                            }`}>
+                              Description
+                            </label>
+                            <textarea
+                              value={viewingProject.description}
+                              onChange={(e) => setViewingProject({ ...viewingProject, description: e.target.value })}
+                              className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
+                                darkMode 
+                                  ? 'bg-gray-700 border-gray-600 text-gray-100' 
+                                  : 'bg-white border-gray-300 text-gray-900'
+                              }`}
+                              rows="3"
+                            />
+                          </div>
+
+                          <div>
+                            <label className={`block text-sm font-medium mb-2 ${
+                              darkMode ? 'text-gray-300' : 'text-gray-700'
+                            }`}>
+                              Budget ($)
+                            </label>
+                            <input
+                              type="number"
+                              step="0.01"
+                              value={viewingProject.budget}
+                              onChange={(e) => setViewingProject({ ...viewingProject, budget: e.target.value })}
+                              className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none ${
+                                darkMode 
+                                  ? 'bg-gray-700 border-gray-600 text-gray-100' 
+                                  : 'bg-white border-gray-300 text-gray-900'
+                              }`}
+                            />
+                          </div>
+
+                          <div>
+                            <label className={`block text-sm font-medium mb-2 ${
+                              darkMode ? 'text-gray-300' : 'text-gray-700'
+                            }`}>
+                              Priority
+                            </label>
+                            <select
+                              value={viewingProject.priority}
+                              onChange={(e) => setViewingProject({ ...viewingProject, priority: e.target.value })}
+                              className={`w-full px-4 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent appearance-none ${
+                                darkMode 
+                                  ? 'bg-gray-700 border-gray-600 text-gray-100' 
+                                  : 'bg-white border-gray-300 text-gray-900'
+                              }`}
+                            >
+                              <option value="low">Low</option>
+                              <option value="medium">Medium</option>
+                              <option value="high">High</option>
+                            </select>
+                          </div>
+
+                          <div>
+                            <label className={`block text-sm font-medium mb-2 ${
+                              darkMode ? 'text-gray-300' : 'text-gray-700'
+                            }`}>
+                              Start Date
+                            </label>
+                            <input
+                              type="date"
+                              value={viewingProject.start_date ? viewingProject.start_date.split('T')[0] : ''}
+                              onChange={(e) => setViewingProject({ ...viewingProject, start_date: e.target.value })}
+                              className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
+                                darkMode 
+                                  ? 'bg-gray-700 border-gray-600 text-gray-100' 
+                                  : 'bg-white border-gray-300 text-gray-900'
+                              }`}
+                            />
+                          </div>
+
+                          <div>
+                            <label className={`block text-sm font-medium mb-2 ${
+                              darkMode ? 'text-gray-300' : 'text-gray-700'
+                            }`}>
+                              Target Date
+                            </label>
+                            <input
+                              type="date"
+                              value={viewingProject.target_date ? viewingProject.target_date.split('T')[0] : ''}
+                              onChange={(e) => setViewingProject({ ...viewingProject, target_date: e.target.value })}
+                              className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
+                                darkMode 
+                                  ? 'bg-gray-700 border-gray-600 text-gray-100' 
+                                  : 'bg-white border-gray-300 text-gray-900'
+                              }`}
+                            />
+                          </div>
+
+                          <div>
+                            <label className={`block text-sm font-medium mb-2 ${
+                              darkMode ? 'text-gray-300' : 'text-gray-700'
+                            }`}>
+                              Status
+                            </label>
+                            <select
+                              value={viewingProject.status}
+                              onChange={(e) => setViewingProject({ ...viewingProject, status: e.target.value })}
+                              className={`w-full px-4 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent appearance-none ${
+                                darkMode 
+                                  ? 'bg-gray-700 border-gray-600 text-gray-100' 
+                                  : 'bg-white border-gray-300 text-gray-900'
+                              }`}
+                            >
+                              <option value="planning">Planning</option>
+                              <option value="in_progress">In Progress</option>
+                              <option value="on_hold">On Hold</option>
+                              <option value="completed">Completed</option>
+                            </select>
+                          </div>
+
+                          <div>
+                            <label className={`block text-sm font-medium mb-2 ${
+                              darkMode ? 'text-gray-300' : 'text-gray-700'
+                            }`}>
+                              <div className="flex items-center gap-2">
+                                <Car className="w-4 h-4" />
+                                <span>Linked Vehicle</span>
+                              </div>
+                            </label>
+                            <select
+                              value={viewingProject.vehicle_id || ''}
+                              onChange={(e) => setViewingProject({ ...viewingProject, vehicle_id: e.target.value ? parseInt(e.target.value) : null })}
+                              className={`w-full px-4 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent appearance-none ${
+                                darkMode 
+                                  ? 'bg-gray-700 border-gray-600 text-gray-100' 
+                                  : 'bg-white border-gray-300 text-gray-900'
+                              }`}
+                            >
+                              <option value="">No vehicle</option>
+                              {vehicles.map(vehicle => (
+                                <option key={vehicle.id} value={vehicle.id}>
+                                  {vehicle.nickname || vehicle.name}
+                                </option>
+                              ))}
+                            </select>
+                          </div>
+                        </div>
+
+                        {/* Linked Parts Section */}
+                        {(() => {
+                          const linkedParts = parts.filter(part => part.projectId === viewingProject.id);
+                          if (linkedParts.length > 0) {
+                            return (
+                              <div className={`mt-6 pt-6 border-t ${
+                                darkMode ? 'border-gray-600' : 'border-gray-200'
+                              }`}>
+                                <h3 className={`text-lg font-semibold mb-3 ${
+                                  darkMode ? 'text-gray-200' : 'text-gray-800'
+                                }`}>
+                                  Linked Parts ({linkedParts.length})
+                                </h3>
+                                <div className="space-y-2 max-h-60 overflow-y-auto pr-2">
+                                  {linkedParts.map((part) => (
+                                    <div 
+                                      key={part.id}
+                                      className={`p-3 rounded-lg border flex items-center justify-between ${
+                                        darkMode ? 'bg-gray-700 border-gray-600' : 'bg-gray-50 border-gray-200'
+                                      }`}
+                                    >
+                                      <div className="flex-1 min-w-0">
+                                        <h4 className={`font-medium truncate ${
+                                          darkMode ? 'text-gray-100' : 'text-gray-900'
+                                        }`}>
+                                          {part.part}
+                                        </h4>
+                                        <div className="flex items-center gap-2 mt-1">
+                                          {part.vendor && (
+                                            <span className={`inline-block px-2 py-0.5 rounded-full text-xs font-medium ${getVendorColor(part.vendor)}`}>
+                                              {part.vendor}
+                                            </span>
+                                          )}
+                                          <span className={`text-sm font-bold ${
+                                            darkMode ? 'text-gray-200' : 'text-gray-900'
+                                          }`}>
+                                            ${part.total.toFixed(2)}
+                                          </span>
+                                        </div>
+                                      </div>
+                                      <button
+                                        onClick={() => unlinkPartFromProject(part.id)}
+                                        className={`ml-3 px-3 py-1.5 rounded-lg text-sm font-medium transition-colors border ${
+                                          darkMode 
+                                            ? 'text-gray-400 hover:text-red-400 hover:bg-gray-600 border-gray-600 hover:border-red-500' 
+                                            : 'text-gray-600 hover:text-red-600 hover:bg-red-50 border-gray-300 hover:border-red-300'
+                                        }`}
+                                        title="Unlink from project"
+                                      >
+                                        Unlink
+                                      </button>
+                                    </div>
+                                  ))}
+                                </div>
+                              </div>
+                            );
+                          }
+                          return null;
+                        })()}
+                      </div>
+                    </div>
                   </div>
 
-                  {/* Footer with Edit Button */}
-                  <div className={`border-t p-4 flex justify-end ${
+                  {/* Footer with conditional buttons */}
+                  <div className={`border-t p-4 flex items-center justify-between ${
                     darkMode ? 'border-gray-700' : 'border-gray-200'
                   }`}>
-                    <button
-                      onClick={() => {
-                        setEditingProject({
-                          ...viewingProject,
-                          start_date: viewingProject.start_date ? viewingProject.start_date.split('T')[0] : '',
-                          target_date: viewingProject.target_date ? viewingProject.target_date.split('T')[0] : ''
-                        });
-                        setShowProjectDetailModal(false);
-                        setShowEditProjectModal(true);
-                        setViewingProject(null);
-                      }}
-                      className="px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium transition-colors flex items-center gap-2"
-                    >
-                      <Edit2 className="w-4 h-4" />
-                      Edit
-                    </button>
+                    {projectModalEditMode ? (
+                      <button
+                        onClick={() => {
+                          setProjectModalEditMode(false);
+                        }}
+                        className={`flex items-center gap-2 p-2 rounded-lg font-medium transition-colors border ${
+                          darkMode 
+                            ? 'bg-gray-700 hover:bg-gray-600 text-gray-100 border-gray-600 hover:border-gray-500' 
+                            : 'bg-gray-200 hover:bg-gray-300 text-gray-800 border-gray-300 hover:border-gray-400'
+                        }`}
+                        title="Back"
+                      >
+                        <ChevronDown className="w-5 h-5 rotate-90" />
+                      </button>
+                    ) : (
+                      <div></div>
+                    )}
+                    {projectModalEditMode ? (
+                      <button
+                        onClick={async () => {
+                          await updateProject(viewingProject.id, {
+                            name: viewingProject.name,
+                            description: viewingProject.description,
+                            budget: parseFloat(viewingProject.budget),
+                            priority: viewingProject.priority,
+                            start_date: viewingProject.start_date && viewingProject.start_date.trim() !== '' ? viewingProject.start_date : null,
+                            target_date: viewingProject.target_date && viewingProject.target_date.trim() !== '' ? viewingProject.target_date : null,
+                            status: viewingProject.status,
+                            vehicle_id: viewingProject.vehicle_id || null
+                          });
+                          setProjectModalEditMode(false);
+                        }}
+                        className="px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium transition-colors flex items-center gap-2"
+                      >
+                        Save Changes
+                      </button>
+                    ) : (
+                      <button
+                        onClick={() => {
+                          setProjectModalEditMode(true);
+                        }}
+                        className="px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium transition-colors flex items-center gap-2"
+                      >
+                        <Edit2 className="w-4 h-4" />
+                        Edit
+                      </button>
+                    )}
                   </div>
                 </div>
               </div>
@@ -5013,19 +5343,38 @@ const LandCruiserTracker = () => {
                           
                           {/* File Upload Button */}
                           {!vehicleImagePreview && (
-                            <label className={`flex flex-col items-center justify-center w-full border-2 border-dashed rounded-lg cursor-pointer transition-colors ${
-                              darkMode 
-                                ? 'border-gray-600 hover:border-gray-500 bg-gray-700/50 hover:bg-gray-700' 
-                                : 'border-gray-300 hover:border-gray-400 bg-gray-50 hover:bg-gray-100'
+                            <label 
+                              onDragEnter={handleImageDragEnter}
+                              onDragLeave={handleImageDragLeave}
+                              onDragOver={handleImageDragOver}
+                              onDrop={handleImageDrop}
+                              className={`flex flex-col items-center justify-center w-full border-2 border-dashed rounded-lg cursor-pointer transition-all ${
+                              isDraggingImage
+                                ? darkMode
+                                  ? 'border-blue-500 bg-blue-900/20 scale-105'
+                                  : 'border-blue-500 bg-blue-50 scale-105'
+                                : darkMode 
+                                  ? 'border-gray-600 hover:border-gray-500 bg-gray-700/50 hover:bg-gray-700' 
+                                  : 'border-gray-300 hover:border-gray-400 bg-gray-50 hover:bg-gray-100'
                             }`} style={{ minHeight: '400px' }}>
                               <div className="flex flex-col items-center justify-center pt-5 pb-6">
                                 <Upload className={`w-12 h-12 mb-3 ${
-                                  darkMode ? 'text-gray-400' : 'text-gray-500'
+                                  isDraggingImage
+                                    ? 'text-blue-500'
+                                    : darkMode ? 'text-gray-400' : 'text-gray-500'
                                 }`} />
                                 <p className={`mb-2 text-sm ${
-                                  darkMode ? 'text-gray-400' : 'text-gray-600'
+                                  isDraggingImage
+                                    ? 'text-blue-600 font-semibold'
+                                    : darkMode ? 'text-gray-400' : 'text-gray-600'
                                 }`}>
-                                  <span className="font-semibold">Click to upload</span> or drag and drop
+                                  {isDraggingImage ? (
+                                    'Drop image here'
+                                  ) : (
+                                    <>
+                                      <span className="font-semibold">Click to upload</span> or drag and drop
+                                    </>
+                                  )}
                                 </p>
                                 <p className={`text-xs ${
                                   darkMode ? 'text-gray-500' : 'text-gray-500'
@@ -5513,19 +5862,38 @@ const LandCruiserTracker = () => {
                           
                           {/* File Upload Button */}
                           {!vehicleImagePreview && !editingVehicle.image_url && (
-                            <label className={`flex flex-col items-center justify-center w-full border-2 border-dashed rounded-lg cursor-pointer transition-colors ${
-                              darkMode 
-                                ? 'border-gray-600 hover:border-gray-500 bg-gray-700/50 hover:bg-gray-700' 
-                                : 'border-gray-300 hover:border-gray-400 bg-gray-50 hover:bg-gray-100'
+                            <label 
+                              onDragEnter={handleImageDragEnter}
+                              onDragLeave={handleImageDragLeave}
+                              onDragOver={handleImageDragOver}
+                              onDrop={handleImageDrop}
+                              className={`flex flex-col items-center justify-center w-full border-2 border-dashed rounded-lg cursor-pointer transition-all ${
+                              isDraggingImage
+                                ? darkMode
+                                  ? 'border-blue-500 bg-blue-900/20 scale-105'
+                                  : 'border-blue-500 bg-blue-50 scale-105'
+                                : darkMode 
+                                  ? 'border-gray-600 hover:border-gray-500 bg-gray-700/50 hover:bg-gray-700' 
+                                  : 'border-gray-300 hover:border-gray-400 bg-gray-50 hover:bg-gray-100'
                             }`} style={{ minHeight: '400px' }}>
                               <div className="flex flex-col items-center justify-center pt-5 pb-6">
                                 <Upload className={`w-12 h-12 mb-3 ${
-                                  darkMode ? 'text-gray-400' : 'text-gray-500'
+                                  isDraggingImage
+                                    ? 'text-blue-500'
+                                    : darkMode ? 'text-gray-400' : 'text-gray-500'
                                 }`} />
                                 <p className={`mb-2 text-sm ${
-                                  darkMode ? 'text-gray-400' : 'text-gray-600'
+                                  isDraggingImage
+                                    ? 'text-blue-600 font-semibold'
+                                    : darkMode ? 'text-gray-400' : 'text-gray-600'
                                 }`}>
-                                  <span className="font-semibold">Click to upload</span> or drag and drop
+                                  {isDraggingImage ? (
+                                    'Drop image here'
+                                  ) : (
+                                    <>
+                                      <span className="font-semibold">Click to upload</span> or drag and drop
+                                    </>
+                                  )}
                                 </p>
                                 <p className={`text-xs ${
                                   darkMode ? 'text-gray-500' : 'text-gray-500'
@@ -6811,19 +7179,38 @@ const LandCruiserTracker = () => {
                                 
                                 {/* File Upload Button */}
                                 {!vehicleImagePreview && !viewingVehicle.image_url && (
-                                  <label className={`flex flex-col items-center justify-center w-full border-2 border-dashed rounded-lg cursor-pointer transition-colors ${
-                                    darkMode 
-                                      ? 'border-gray-600 hover:border-gray-500 bg-gray-700/50 hover:bg-gray-700' 
-                                      : 'border-gray-300 hover:border-gray-400 bg-gray-50 hover:bg-gray-100'
+                                  <label 
+                                    onDragEnter={handleImageDragEnter}
+                                    onDragLeave={handleImageDragLeave}
+                                    onDragOver={handleImageDragOver}
+                                    onDrop={handleImageDrop}
+                                    className={`flex flex-col items-center justify-center w-full border-2 border-dashed rounded-lg cursor-pointer transition-all ${
+                                    isDraggingImage
+                                      ? darkMode
+                                        ? 'border-blue-500 bg-blue-900/20 scale-105'
+                                        : 'border-blue-500 bg-blue-50 scale-105'
+                                      : darkMode 
+                                        ? 'border-gray-600 hover:border-gray-500 bg-gray-700/50 hover:bg-gray-700' 
+                                        : 'border-gray-300 hover:border-gray-400 bg-gray-50 hover:bg-gray-100'
                                   }`} style={{ minHeight: '400px' }}>
                                     <div className="flex flex-col items-center justify-center pt-5 pb-6">
                                       <Upload className={`w-12 h-12 mb-3 ${
-                                        darkMode ? 'text-gray-400' : 'text-gray-500'
+                                        isDraggingImage
+                                          ? 'text-blue-500'
+                                          : darkMode ? 'text-gray-400' : 'text-gray-500'
                                       }`} />
                                       <p className={`mb-2 text-sm ${
-                                        darkMode ? 'text-gray-400' : 'text-gray-600'
+                                        isDraggingImage
+                                          ? 'text-blue-600 font-semibold'
+                                          : darkMode ? 'text-gray-400' : 'text-gray-600'
                                       }`}>
-                                        <span className="font-semibold">Click to upload</span> or drag and drop
+                                        {isDraggingImage ? (
+                                          'Drop image here'
+                                        ) : (
+                                          <>
+                                            <span className="font-semibold">Click to upload</span> or drag and drop
+                                          </>
+                                        )}
                                       </p>
                                       <p className={`text-xs ${
                                         darkMode ? 'text-gray-500' : 'text-gray-500'
