@@ -6175,6 +6175,7 @@ const LandCruiserTracker = () => {
                   setShowVehicleDetailModal(false);
                   setViewingVehicle(null);
                   setVehicleModalProjectView(null);
+                  setVehicleModalEditMode(null);
                 })}
               >
                 <div 
@@ -6197,6 +6198,7 @@ const LandCruiserTracker = () => {
                         setShowVehicleDetailModal(false);
                         setViewingVehicle(null);
                         setVehicleModalProjectView(null);
+                        setVehicleModalEditMode(null);
                       })}
                       className={`p-2 rounded-md transition-colors ${
                         darkMode ? 'hover:bg-gray-700 text-gray-400' : 'hover:bg-gray-100 text-gray-600'
