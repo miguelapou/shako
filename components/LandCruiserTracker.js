@@ -4434,7 +4434,7 @@ const LandCruiserTracker = () => {
             {/* Project Detail Modal */}
             {showProjectDetailModal && viewingProject && (
               <div 
-                className={`fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4 modal-backdrop ${
+                className={`fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50 modal-backdrop ${
                   isModalClosing ? 'modal-backdrop-exit' : 'modal-backdrop-enter'
                 }`}
                 onClick={() => handleCloseModal(() => {
@@ -4444,53 +4444,49 @@ const LandCruiserTracker = () => {
                 })}
               >
                 <div 
-                  className={`rounded-lg shadow-xl max-w-5xl w-full max-h-[90vh] flex flex-col modal-content ${
+                  className={`rounded-lg shadow-xl max-w-5xl w-full max-h-[90vh] overflow-hidden modal-content ${
                     isModalClosing ? 'modal-popup-exit' : 'modal-popup-enter'
                   } ${darkMode ? 'bg-gray-800' : 'bg-white'}`}
                   onClick={(e) => e.stopPropagation()}
                 >
-                  <div className={`flex-shrink-0 border-b px-6 py-4 rounded-t-lg ${
+                  {/* Header */}
+                  <div className={`sticky top-0 z-10 px-6 py-4 border-b flex items-center justify-between ${
                     darkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-200'
                   }`}>
-                    <div className="flex items-start justify-between gap-3">
-                      <div className="flex items-center gap-3 flex-wrap flex-1 min-w-0">
-                        <h2 className={`text-2xl font-bold ${
-                          darkMode ? 'text-gray-100' : 'text-gray-800'
-                        }`} style={{ fontFamily: "'FoundationOne', 'Courier New', monospace" }}>
-                          {viewingProject.name}
-                        </h2>
-                        {(() => {
-                          const vehicle = viewingProject.vehicle_id ? vehicles.find(v => v.id === viewingProject.vehicle_id) : null;
-                          return vehicle && (
-                            <span className={`inline-flex items-center px-2 py-1 rounded text-xs font-medium ${
-                              darkMode ? 'bg-gray-700 text-gray-300' : 'bg-gray-100 text-gray-700'
-                            }`}>
-                              <Car className="w-3 h-3 mr-1" style={{ color: vehicle.color || '#3B82F6' }} />
-                              {vehicle.nickname || vehicle.name}
-                            </span>
-                          );
-                        })()}
-                      </div>
-                      <button
-                        onClick={() => handleCloseModal(() => {
-                          setShowProjectDetailModal(false);
-                          setViewingProject(null);
-                          setProjectModalEditMode(false);
-                        })}
-                        className={`p-2 rounded-lg transition-colors flex-shrink-0 ${
-                          darkMode 
-                            ? 'hover:bg-gray-700 text-gray-400 hover:text-gray-200' 
-                            : 'hover:bg-gray-100 text-gray-500 hover:text-gray-700'
-                        }`}
-                        title="Close"
-                      >
-                        <X className="w-5 h-5" />
-                      </button>
+                    <div className="flex items-center gap-3 flex-1 min-w-0">
+                      <h2 className={`text-2xl font-bold truncate ${
+                        darkMode ? 'text-gray-100' : 'text-gray-800'
+                      }`} style={{ fontFamily: "'FoundationOne', 'Courier New', monospace" }}>
+                        {viewingProject.name}
+                      </h2>
+                      {(() => {
+                        const vehicle = viewingProject.vehicle_id ? vehicles.find(v => v.id === viewingProject.vehicle_id) : null;
+                        return vehicle && (
+                          <span className={`inline-flex items-center px-2 py-1 rounded text-xs font-medium flex-shrink-0 ${
+                            darkMode ? 'bg-gray-700 text-gray-300' : 'bg-gray-100 text-gray-700'
+                          }`}>
+                            <Car className="w-3 h-3 mr-1" style={{ color: vehicle.color || '#3B82F6' }} />
+                            <span className="truncate">{vehicle.nickname || vehicle.name}</span>
+                          </span>
+                        );
+                      })()}
                     </div>
+                    <button
+                      onClick={() => handleCloseModal(() => {
+                        setShowProjectDetailModal(false);
+                        setViewingProject(null);
+                        setProjectModalEditMode(false);
+                      })}
+                      className={`p-2 rounded-md transition-colors flex-shrink-0 ${
+                        darkMode ? 'hover:bg-gray-700 text-gray-400' : 'hover:bg-gray-100 text-gray-600'
+                      }`}
+                    >
+                      <X className="w-5 h-5" />
+                    </button>
                   </div>
-                  
+
                   {/* Content - with slide animation */}
-                  <div className="flex-1 overflow-y-auto relative">
+                  <div className="relative" style={{ minHeight: '500px' }}>
                     {/* Project Details View */}
                     <div 
                       className={`w-full transition-all duration-500 ease-in-out ${
@@ -4499,7 +4495,7 @@ const LandCruiserTracker = () => {
                           : 'relative opacity-100'
                       }`}
                     >
-                      <div className="p-6">
+                      <div className="p-6 space-y-6 max-h-[calc(90vh-164px)] overflow-y-auto">
                     {(() => {
                       const linkedParts = parts.filter(part => part.projectId === viewingProject.id);
                       const linkedPartsTotal = calculateProjectTotal(viewingProject.id, parts);
@@ -4973,7 +4969,7 @@ const LandCruiserTracker = () => {
                   </div>
 
                   {/* Footer with conditional buttons */}
-                  <div className={`flex-shrink-0 border-t p-4 flex items-center justify-between ${
+                  <div className={`border-t p-4 flex items-center justify-between ${
                     darkMode ? 'border-gray-700' : 'border-gray-200'
                   }`}>
                     {projectModalEditMode ? (
