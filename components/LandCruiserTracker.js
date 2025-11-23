@@ -1638,9 +1638,26 @@ const LandCruiserTracker = () => {
 
   const StatusDropdown = ({ part }) => {
     const isOpen = openDropdown === part.id;
+    const dropdownRef = useRef(null);
+    const [dropdownPosition, setDropdownPosition] = useState('bottom');
+    
+    useEffect(() => {
+      if (isOpen && dropdownRef.current) {
+        const rect = dropdownRef.current.getBoundingClientRect();
+        const spaceBelow = window.innerHeight - rect.bottom;
+        const spaceAbove = rect.top;
+        
+        // If not enough space below (need ~180px for dropdown) and more space above, show above
+        if (spaceBelow < 180 && spaceAbove > spaceBelow) {
+          setDropdownPosition('top');
+        } else {
+          setDropdownPosition('bottom');
+        }
+      }
+    }, [isOpen]);
     
     return (
-      <div className="relative">
+      <div className="relative" ref={dropdownRef}>
         <button
           onClick={(e) => {
             e.stopPropagation();
@@ -1663,9 +1680,11 @@ const LandCruiserTracker = () => {
                 setOpenDropdown(null);
               }}
             />
-            <div className={`absolute left-0 top-full mt-1 rounded-lg shadow-lg border py-1 z-20 min-w-[140px] ${
-              darkMode ? 'bg-gray-800 border-gray-600' : 'bg-white border-gray-200'
-            }`}>
+            <div 
+              className={`absolute left-0 ${dropdownPosition === 'top' ? 'bottom-full mb-1' : 'top-full mt-1'} rounded-lg shadow-lg border py-1 z-20 min-w-[140px] ${
+                darkMode ? 'bg-gray-800 border-gray-600' : 'bg-white border-gray-200'
+              }`}
+            >
               <button
                 onClick={(e) => {
                   e.stopPropagation();
@@ -1732,9 +1751,26 @@ const LandCruiserTracker = () => {
   const ProjectDropdown = ({ part }) => {
     const isOpen = openDropdown === `project-${part.id}`;
     const selectedProject = part.projectId ? projects.find(p => p.id === part.projectId) : null;
+    const dropdownRef = useRef(null);
+    const [dropdownPosition, setDropdownPosition] = useState('bottom');
+    
+    useEffect(() => {
+      if (isOpen && dropdownRef.current) {
+        const rect = dropdownRef.current.getBoundingClientRect();
+        const spaceBelow = window.innerHeight - rect.bottom;
+        const spaceAbove = rect.top;
+        
+        // If not enough space below (need ~240px for dropdown with projects) and more space above, show above
+        if (spaceBelow < 240 && spaceAbove > spaceBelow) {
+          setDropdownPosition('top');
+        } else {
+          setDropdownPosition('bottom');
+        }
+      }
+    }, [isOpen]);
     
     return (
-      <div className="relative">
+      <div className="relative" ref={dropdownRef}>
         <button
           onClick={(e) => {
             e.stopPropagation();
@@ -1760,9 +1796,11 @@ const LandCruiserTracker = () => {
                 setOpenDropdown(null);
               }}
             />
-            <div className={`absolute left-0 top-full mt-1 rounded-lg shadow-lg border py-1 z-20 min-w-[180px] max-h-60 overflow-y-auto ${
-              darkMode ? 'bg-gray-800 border-gray-600' : 'bg-white border-gray-200'
-            }`}>
+            <div 
+              className={`absolute left-0 ${dropdownPosition === 'top' ? 'bottom-full mb-1' : 'top-full mt-1'} rounded-lg shadow-lg border py-1 z-20 min-w-[180px] max-h-60 overflow-y-auto ${
+                darkMode ? 'bg-gray-800 border-gray-600' : 'bg-white border-gray-200'
+              }`}
+            >
               <button
                 onClick={(e) => {
                   e.stopPropagation();
@@ -4278,7 +4316,11 @@ const LandCruiserTracker = () => {
                                     </div>
                                   </div>
                                   <button
-                                    onClick={() => unlinkPartFromProject(part.id)}
+                                    onClick={() => {
+                                      if (window.confirm(`Are you sure you want to unlink "${part.part}" from this project?`)) {
+                                        unlinkPartFromProject(part.id);
+                                      }
+                                    }}
                                     className={`ml-3 px-3 py-1.5 rounded-lg text-sm font-medium transition-colors border ${
                                       darkMode 
                                         ? 'text-gray-400 hover:text-red-400 hover:bg-gray-600 border-gray-600 hover:border-red-500' 
