@@ -949,6 +949,17 @@ const LandCruiserTracker = () => {
     }
   }, [darkMode]);
 
+  // Scroll to top when switching between vehicle and project view in modal
+  useEffect(() => {
+    if (showVehicleDetailModal) {
+      // Find the modal content container and scroll it to top
+      const modalContent = document.querySelector('.modal-content');
+      if (modalContent) {
+        modalContent.scrollTop = 0;
+      }
+    }
+  }, [vehicleModalProjectView, showVehicleDetailModal]);
+
   // Lock body scroll when any modal is open
   useEffect(() => {
     const isAnyModalOpen = showAddModal || showEditModal || showTrackingModal || 
@@ -5788,10 +5799,11 @@ const LandCruiserTracker = () => {
                 onClick={() => handleCloseModal(() => {
                   setShowVehicleDetailModal(false);
                   setViewingVehicle(null);
+                  setVehicleModalProjectView(null);
                 })}
               >
                 <div 
-                  className={`rounded-lg shadow-xl max-w-5xl w-full max-h-[90vh] overflow-y-auto modal-content ${
+                  className={`rounded-lg shadow-xl max-w-5xl w-full max-h-[90vh] overflow-hidden modal-content ${
                     isModalClosing ? 'modal-popup-exit' : 'modal-popup-enter'
                   } ${darkMode ? 'bg-gray-800' : 'bg-white'}`}
                   onClick={(e) => e.stopPropagation()}
@@ -5833,15 +5845,14 @@ const LandCruiserTracker = () => {
                   </div>
 
                   {/* Content - with slide animation */}
-                  <div className="relative overflow-hidden">
+                  <div className="relative overflow-hidden min-h-[400px]">
                     {/* Vehicle Details View */}
                     <div 
-                      className={`transition-transform duration-300 ease-in-out ${
-                        vehicleModalProjectView ? '-translate-x-full' : 'translate-x-0'
+                      className={`absolute inset-0 transition-transform duration-500 ease-in-out ${
+                        vehicleModalProjectView ? '-translate-x-full opacity-0' : 'translate-x-0 opacity-100'
                       }`}
-                      style={{ display: vehicleModalProjectView ? 'none' : 'block' }}
                     >
-                      <div className="p-6 space-y-6">
+                      <div className="p-6 space-y-6 overflow-y-auto" style={{ maxHeight: 'calc(90vh - 180px)' }}>
                     {/* Top Section: Image first on mobile, then Basic Info */}
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                       {/* Vehicle Image - Full width on mobile (order-first), 2 columns on desktop */}
@@ -6144,7 +6155,12 @@ const LandCruiserTracker = () => {
 
                     {/* Project Details View - Slides in from right */}
                     {vehicleModalProjectView && (
-                      <div className="p-6 space-y-6">
+                      <div 
+                        className={`absolute inset-0 transition-transform duration-500 ease-in-out ${
+                          vehicleModalProjectView ? 'translate-x-0 opacity-100' : 'translate-x-full opacity-0'
+                        }`}
+                      >
+                        <div className="p-6 space-y-6 overflow-y-auto" style={{ maxHeight: 'calc(90vh - 180px)' }}>
                         {(() => {
                           const linkedParts = parts.filter(part => part.projectId === vehicleModalProjectView.id);
                           const linkedPartsTotal = calculateProjectTotal(vehicleModalProjectView.id, parts);
@@ -6373,6 +6389,7 @@ const LandCruiserTracker = () => {
                             </>
                           );
                         })()}
+                        </div>
                       </div>
                     )}
                   </div>
