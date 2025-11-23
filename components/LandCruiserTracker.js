@@ -6000,7 +6000,7 @@ const LandCruiserTracker = () => {
                         <h3 className={`text-lg font-semibold mb-3 ${
                           darkMode ? 'text-gray-200' : 'text-gray-800'
                         }`}>
-                          Maintenance Information
+                          Maintenance
                         </h3>
                         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                           {viewingVehicle.oil_filter && (
@@ -6398,15 +6398,14 @@ const LandCruiserTracker = () => {
                     {vehicleModalProjectView ? (
                       <button
                         onClick={() => setVehicleModalProjectView(null)}
-                        className={`flex items-center gap-2 px-4 py-2 rounded-lg font-medium transition-colors border ${
+                        className={`flex items-center gap-2 p-2 rounded-lg font-medium transition-colors border ${
                           darkMode 
                             ? 'bg-gray-700 hover:bg-gray-600 text-gray-100 border-gray-600 hover:border-gray-500' 
                             : 'bg-gray-200 hover:bg-gray-300 text-gray-800 border-gray-300 hover:border-gray-400'
                         }`}
                         title="Back to vehicle"
                       >
-                        <ChevronDown className="w-4 h-4 rotate-90" />
-                        Back
+                        <ChevronDown className="w-5 h-5 rotate-90" />
                       </button>
                     ) : (
                       <div></div>
@@ -6427,15 +6426,22 @@ const LandCruiserTracker = () => {
                     ) : (
                       <button
                         onClick={() => {
-                          setVehicleModalProjectView(null);
-                          setEditingProject({
+                          const projectToEdit = {
                             ...vehicleModalProjectView,
                             start_date: vehicleModalProjectView.start_date ? vehicleModalProjectView.start_date.split('T')[0] : '',
                             target_date: vehicleModalProjectView.target_date ? vehicleModalProjectView.target_date.split('T')[0] : ''
-                          });
+                          };
+                          
+                          // Close vehicle modal first
                           setShowVehicleDetailModal(false);
+                          setVehicleModalProjectView(null);
                           setViewingVehicle(null);
-                          setShowEditProjectModal(true);
+                          
+                          // Open edit modal after a brief delay
+                          setTimeout(() => {
+                            setEditingProject(projectToEdit);
+                            setShowEditProjectModal(true);
+                          }, 100);
                         }}
                         className="px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium transition-colors flex items-center gap-2"
                       >
