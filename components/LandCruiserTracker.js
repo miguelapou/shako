@@ -6401,9 +6401,230 @@ const LandCruiserTracker = () => {
                     >
                       {vehicleModalProjectView && (
                         <div className="p-6 space-y-6 max-h-[calc(90vh-164px)] overflow-y-auto">
-                          <p className={darkMode ? 'text-gray-300' : 'text-gray-700'}>
-                            Edit project form - will add actual form fields here
-                          </p>
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div>
+                              <label className={`block text-sm font-medium mb-2 ${
+                                darkMode ? 'text-gray-300' : 'text-gray-700'
+                              }`}>
+                                Project Name
+                              </label>
+                              <input
+                                type="text"
+                                value={vehicleModalProjectView.name}
+                                onChange={(e) => setVehicleModalProjectView({ ...vehicleModalProjectView, name: e.target.value })}
+                                className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
+                                  darkMode 
+                                    ? 'bg-gray-700 border-gray-600 text-gray-100' 
+                                    : 'bg-white border-gray-300 text-gray-900'
+                                }`}
+                              />
+                            </div>
+
+                            <div></div>
+
+                            <div className="md:col-span-2">
+                              <label className={`block text-sm font-medium mb-2 ${
+                                darkMode ? 'text-gray-300' : 'text-gray-700'
+                              }`}>
+                                Description
+                              </label>
+                              <textarea
+                                value={vehicleModalProjectView.description}
+                                onChange={(e) => setVehicleModalProjectView({ ...vehicleModalProjectView, description: e.target.value })}
+                                className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
+                                  darkMode 
+                                    ? 'bg-gray-700 border-gray-600 text-gray-100' 
+                                    : 'bg-white border-gray-300 text-gray-900'
+                                }`}
+                                rows="3"
+                              />
+                            </div>
+
+                            <div>
+                              <label className={`block text-sm font-medium mb-2 ${
+                                darkMode ? 'text-gray-300' : 'text-gray-700'
+                              }`}>
+                                Budget ($)
+                              </label>
+                              <input
+                                type="number"
+                                step="0.01"
+                                value={vehicleModalProjectView.budget}
+                                onChange={(e) => setVehicleModalProjectView({ ...vehicleModalProjectView, budget: e.target.value })}
+                                className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none ${
+                                  darkMode 
+                                    ? 'bg-gray-700 border-gray-600 text-gray-100' 
+                                    : 'bg-white border-gray-300 text-gray-900'
+                                }`}
+                              />
+                            </div>
+
+                            <div>
+                              <label className={`block text-sm font-medium mb-2 ${
+                                darkMode ? 'text-gray-300' : 'text-gray-700'
+                              }`}>
+                                Priority
+                              </label>
+                              <select
+                                value={vehicleModalProjectView.priority}
+                                onChange={(e) => setVehicleModalProjectView({ ...vehicleModalProjectView, priority: e.target.value })}
+                                className={`w-full px-4 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent appearance-none ${
+                                  darkMode 
+                                    ? 'bg-gray-700 border-gray-600 text-gray-100' 
+                                    : 'bg-white border-gray-300 text-gray-900'
+                                }`}
+                              >
+                                <option value="low">Low</option>
+                                <option value="medium">Medium</option>
+                                <option value="high">High</option>
+                              </select>
+                            </div>
+
+                            <div>
+                              <label className={`block text-sm font-medium mb-2 ${
+                                darkMode ? 'text-gray-300' : 'text-gray-700'
+                              }`}>
+                                Start Date
+                              </label>
+                              <input
+                                type="date"
+                                value={vehicleModalProjectView.start_date ? vehicleModalProjectView.start_date.split('T')[0] : ''}
+                                onChange={(e) => setVehicleModalProjectView({ ...vehicleModalProjectView, start_date: e.target.value })}
+                                className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
+                                  darkMode 
+                                    ? 'bg-gray-700 border-gray-600 text-gray-100' 
+                                    : 'bg-white border-gray-300 text-gray-900'
+                                }`}
+                              />
+                            </div>
+
+                            <div>
+                              <label className={`block text-sm font-medium mb-2 ${
+                                darkMode ? 'text-gray-300' : 'text-gray-700'
+                              }`}>
+                                Target Date
+                              </label>
+                              <input
+                                type="date"
+                                value={vehicleModalProjectView.target_date ? vehicleModalProjectView.target_date.split('T')[0] : ''}
+                                onChange={(e) => setVehicleModalProjectView({ ...vehicleModalProjectView, target_date: e.target.value })}
+                                className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
+                                  darkMode 
+                                    ? 'bg-gray-700 border-gray-600 text-gray-100' 
+                                    : 'bg-white border-gray-300 text-gray-900'
+                                }`}
+                              />
+                            </div>
+
+                            <div>
+                              <label className={`block text-sm font-medium mb-2 ${
+                                darkMode ? 'text-gray-300' : 'text-gray-700'
+                              }`}>
+                                Status
+                              </label>
+                              <select
+                                value={vehicleModalProjectView.status}
+                                onChange={(e) => setVehicleModalProjectView({ ...vehicleModalProjectView, status: e.target.value })}
+                                className={`w-full px-4 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent appearance-none ${
+                                  darkMode 
+                                    ? 'bg-gray-700 border-gray-600 text-gray-100' 
+                                    : 'bg-white border-gray-300 text-gray-900'
+                                }`}
+                              >
+                                <option value="planning">Planning</option>
+                                <option value="in_progress">In Progress</option>
+                                <option value="on_hold">On Hold</option>
+                                <option value="completed">Completed</option>
+                              </select>
+                            </div>
+
+                            <div>
+                              <label className={`block text-sm font-medium mb-2 ${
+                                darkMode ? 'text-gray-300' : 'text-gray-700'
+                              }`}>
+                                <div className="flex items-center gap-2">
+                                  <Car className="w-4 h-4" />
+                                  <span>Linked Vehicle</span>
+                                </div>
+                              </label>
+                              <select
+                                value={vehicleModalProjectView.vehicle_id || ''}
+                                onChange={(e) => setVehicleModalProjectView({ ...vehicleModalProjectView, vehicle_id: e.target.value ? parseInt(e.target.value) : null })}
+                                className={`w-full px-4 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent appearance-none ${
+                                  darkMode 
+                                    ? 'bg-gray-700 border-gray-600 text-gray-100' 
+                                    : 'bg-white border-gray-300 text-gray-900'
+                                }`}
+                              >
+                                <option value="">No vehicle</option>
+                                {vehicles.map(vehicle => (
+                                  <option key={vehicle.id} value={vehicle.id}>
+                                    {vehicle.nickname || vehicle.name}
+                                  </option>
+                                ))}
+                              </select>
+                            </div>
+                          </div>
+
+                          {/* Linked Parts Section */}
+                          {(() => {
+                            const linkedParts = parts.filter(part => part.projectId === vehicleModalProjectView.id);
+                            if (linkedParts.length > 0) {
+                              return (
+                                <div className={`mt-6 pt-6 border-t ${
+                                  darkMode ? 'border-gray-600' : 'border-gray-200'
+                                }`}>
+                                  <h3 className={`text-lg font-semibold mb-3 ${
+                                    darkMode ? 'text-gray-200' : 'text-gray-800'
+                                  }`}>
+                                    Linked Parts ({linkedParts.length})
+                                  </h3>
+                                  <div className="space-y-2 max-h-60 overflow-y-auto pr-2">
+                                    {linkedParts.map((part) => (
+                                      <div 
+                                        key={part.id}
+                                        className={`p-3 rounded-lg border flex items-center justify-between ${
+                                          darkMode ? 'bg-gray-700 border-gray-600' : 'bg-gray-50 border-gray-200'
+                                        }`}
+                                      >
+                                        <div className="flex-1 min-w-0">
+                                          <h4 className={`font-medium truncate ${
+                                            darkMode ? 'text-gray-100' : 'text-gray-900'
+                                          }`}>
+                                            {part.part}
+                                          </h4>
+                                          <div className="flex items-center gap-2 mt-1">
+                                            {part.vendor && (
+                                              <span className={`inline-block px-2 py-0.5 rounded-full text-xs font-medium ${getVendorColor(part.vendor)}`}>
+                                                {part.vendor}
+                                              </span>
+                                            )}
+                                            <span className={`text-sm font-bold ${
+                                              darkMode ? 'text-gray-200' : 'text-gray-900'
+                                            }`}>
+                                              ${part.total.toFixed(2)}
+                                            </span>
+                                          </div>
+                                        </div>
+                                        <button
+                                          onClick={() => unlinkPartFromProject(part.id)}
+                                          className={`ml-3 px-3 py-1.5 rounded-lg text-sm font-medium transition-colors border ${
+                                            darkMode 
+                                              ? 'text-gray-400 hover:text-red-400 hover:bg-gray-600 border-gray-600 hover:border-red-500' 
+                                              : 'text-gray-600 hover:text-red-600 hover:bg-red-50 border-gray-300 hover:border-red-300'
+                                          }`}
+                                          title="Unlink from project"
+                                        >
+                                          Unlink
+                                        </button>
+                                      </div>
+                                    ))}
+                                  </div>
+                                </div>
+                              );
+                            }
+                            return null;
+                          })()}
                         </div>
                       )}
                     </div>
@@ -6418,9 +6639,390 @@ const LandCruiserTracker = () => {
                     >
                       {viewingVehicle && (
                         <div className="p-6 space-y-6 max-h-[calc(90vh-164px)] overflow-y-auto">
-                          <p className={darkMode ? 'text-gray-300' : 'text-gray-700'}>
-                            Edit vehicle form - will add actual form fields here
-                          </p>
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            {/* Left Column - Basic Information */}
+                            <div className="space-y-4">
+                              <div>
+                                <label className={`block text-sm font-medium mb-2 ${
+                                  darkMode ? 'text-gray-300' : 'text-gray-700'
+                                }`}>
+                                  Nickname *
+                                </label>
+                                <input
+                                  type="text"
+                                  value={viewingVehicle.nickname || ''}
+                                  onChange={(e) => setViewingVehicle({ ...viewingVehicle, nickname: e.target.value })}
+                                  className={inputClasses(darkMode)}
+                                  placeholder=""
+                                />
+                              </div>
+
+                              <div className="grid grid-cols-2 gap-4">
+                                <div>
+                                  <label className={`block text-sm font-medium mb-2 ${
+                                    darkMode ? 'text-gray-300' : 'text-gray-700'
+                                  }`}>
+                                    Vehicle Color
+                                  </label>
+                                  <div className="flex items-center gap-3">
+                                    <input
+                                      type="color"
+                                      value={viewingVehicle.color || '#3B82F6'}
+                                      onChange={(e) => setViewingVehicle({ ...viewingVehicle, color: e.target.value })}
+                                      className="h-10 w-20 rounded cursor-pointer border-2 border-gray-300"
+                                    />
+                                    <span className={`text-sm font-mono ${
+                                      darkMode ? 'text-gray-400' : 'text-gray-600'
+                                    }`}>{viewingVehicle.color || '#3B82F6'}</span>
+                                  </div>
+                                </div>
+
+                                <div>
+                                  <label className={`block text-sm font-medium mb-2 ${
+                                    darkMode ? 'text-gray-300' : 'text-gray-700'
+                                  }`}>
+                                    Year
+                                  </label>
+                                  <input
+                                    type="number"
+                                    value={viewingVehicle.year || ''}
+                                    onChange={(e) => setViewingVehicle({ ...viewingVehicle, year: e.target.value })}
+                                    className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
+                                      darkMode 
+                                        ? 'bg-gray-700 border-gray-600 text-gray-100 placeholder-gray-400' 
+                                        : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400'
+                                    }`}
+                                    placeholder=""
+                                    min="1900"
+                                    max="2100"
+                                  />
+                                </div>
+                              </div>
+
+                              <div>
+                                <label className={`block text-sm font-medium mb-2 ${
+                                  darkMode ? 'text-gray-300' : 'text-gray-700'
+                                }`}>
+                                  Vehicle Name
+                                </label>
+                                <input
+                                  type="text"
+                                  value={viewingVehicle.name}
+                                  onChange={(e) => setViewingVehicle({ ...viewingVehicle, name: e.target.value })}
+                                  className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
+                                    darkMode 
+                                      ? 'bg-gray-700 border-gray-600 text-gray-100 placeholder-gray-400' 
+                                      : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400'
+                                  }`}
+                                  placeholder=""
+                                />
+                              </div>
+
+                              <div className="grid grid-cols-2 gap-4">
+                                <div>
+                                  <label className={`block text-sm font-medium mb-2 ${
+                                    darkMode ? 'text-gray-300' : 'text-gray-700'
+                                  }`}>
+                                    License Plate
+                                  </label>
+                                  <input
+                                    type="text"
+                                    value={viewingVehicle.license_plate || ''}
+                                    onChange={(e) => setViewingVehicle({ ...viewingVehicle, license_plate: e.target.value })}
+                                    className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
+                                      darkMode 
+                                        ? 'bg-gray-700 border-gray-600 text-gray-100 placeholder-gray-400' 
+                                        : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400'
+                                    }`}
+                                    placeholder=""
+                                  />
+                                </div>
+
+                                <div>
+                                  <label className={`block text-sm font-medium mb-2 ${
+                                    darkMode ? 'text-gray-300' : 'text-gray-700'
+                                  }`}>
+                                    VIN
+                                  </label>
+                                  <input
+                                    type="text"
+                                    value={viewingVehicle.vin || ''}
+                                    onChange={(e) => setViewingVehicle({ ...viewingVehicle, vin: e.target.value })}
+                                    className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
+                                      darkMode 
+                                        ? 'bg-gray-700 border-gray-600 text-gray-100 placeholder-gray-400' 
+                                        : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400'
+                                    }`}
+                                    placeholder=""
+                                  />
+                                </div>
+                              </div>
+
+                              <div>
+                                <label className={`block text-sm font-medium mb-2 ${
+                                  darkMode ? 'text-gray-300' : 'text-gray-700'
+                                }`}>
+                                  Insurance Policy
+                                </label>
+                                <input
+                                  type="text"
+                                  value={viewingVehicle.insurance_policy || ''}
+                                  onChange={(e) => setViewingVehicle({ ...viewingVehicle, insurance_policy: e.target.value })}
+                                  className={inputClasses(darkMode)}
+                                  placeholder=""
+                                />
+                              </div>
+                            </div>
+
+                            {/* Right Column - Image Upload */}
+                            <div className="space-y-4">
+                              <div>
+                                <label className={`block text-sm font-medium mb-2 ${
+                                  darkMode ? 'text-gray-300' : 'text-gray-700'
+                                }`}>
+                                  Vehicle Image
+                                </label>
+                                
+                                {/* Current Image or Preview */}
+                                {(vehicleImagePreview || viewingVehicle.image_url) && (
+                                  <div className="mb-3 relative">
+                                    <img 
+                                      src={vehicleImagePreview || viewingVehicle.image_url} 
+                                      alt="Vehicle"
+                                      className={`w-full h-full object-cover rounded-lg ${
+                                        darkMode ? 'bg-gray-700' : 'bg-gray-200'
+                                      }`}
+                                      style={{ minHeight: '400px' }}
+                                    />
+                                    <button
+                                      onClick={() => {
+                                        if (vehicleImagePreview) {
+                                          clearImageSelection();
+                                        } else {
+                                          setViewingVehicle({ ...viewingVehicle, image_url: '' });
+                                        }
+                                      }}
+                                      className="absolute top-2 right-2 p-1 rounded-full bg-red-600 hover:bg-red-700 text-white transition-colors"
+                                    >
+                                      <X className="w-4 h-4" />
+                                    </button>
+                                  </div>
+                                )}
+                                
+                                {/* File Upload Button */}
+                                {!vehicleImagePreview && !viewingVehicle.image_url && (
+                                  <label className={`flex flex-col items-center justify-center w-full border-2 border-dashed rounded-lg cursor-pointer transition-colors ${
+                                    darkMode 
+                                      ? 'border-gray-600 hover:border-gray-500 bg-gray-700/50 hover:bg-gray-700' 
+                                      : 'border-gray-300 hover:border-gray-400 bg-gray-50 hover:bg-gray-100'
+                                  }`} style={{ minHeight: '400px' }}>
+                                    <div className="flex flex-col items-center justify-center pt-5 pb-6">
+                                      <Upload className={`w-12 h-12 mb-3 ${
+                                        darkMode ? 'text-gray-400' : 'text-gray-500'
+                                      }`} />
+                                      <p className={`mb-2 text-sm ${
+                                        darkMode ? 'text-gray-400' : 'text-gray-600'
+                                      }`}>
+                                        <span className="font-semibold">Click to upload</span> or drag and drop
+                                      </p>
+                                      <p className={`text-xs ${
+                                        darkMode ? 'text-gray-500' : 'text-gray-500'
+                                      }`}>
+                                        PNG, JPG, WEBP (MAX. 5MB)
+                                      </p>
+                                    </div>
+                                    <input 
+                                      type="file" 
+                                      className="hidden" 
+                                      accept="image/*"
+                                      onChange={handleImageFileChange}
+                                    />
+                                  </label>
+                                )}
+                              </div>
+                            </div>
+                          </div>
+
+                          {/* Half Width Sections Below */}
+                          <div className="mt-6 grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div className={`pt-4 border-t ${
+                              darkMode ? 'border-gray-700' : 'border-gray-200'
+                            }`}>
+                              <h3 className={`text-lg font-semibold mb-3 ${
+                                darkMode ? 'text-gray-200' : 'text-gray-800'
+                              }`}>
+                                Filters
+                              </h3>
+                              <div className="space-y-4">
+                                <div>
+                                  <label className={`block text-sm font-medium mb-2 ${
+                                    darkMode ? 'text-gray-300' : 'text-gray-700'
+                                  }`}>
+                                    Fuel Filter
+                                  </label>
+                                  <input
+                                    type="text"
+                                    value={viewingVehicle.fuel_filter || ''}
+                                    onChange={(e) => setViewingVehicle({ ...viewingVehicle, fuel_filter: e.target.value })}
+                                    className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
+                                      darkMode 
+                                        ? 'bg-gray-700 border-gray-600 text-gray-100 placeholder-gray-400' 
+                                        : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400'
+                                    }`}
+                                    placeholder=""
+                                  />
+                                </div>
+
+                                <div>
+                                  <label className={`block text-sm font-medium mb-2 ${
+                                    darkMode ? 'text-gray-300' : 'text-gray-700'
+                                  }`}>
+                                    Air Filter
+                                  </label>
+                                  <input
+                                    type="text"
+                                    value={viewingVehicle.air_filter || ''}
+                                    onChange={(e) => setViewingVehicle({ ...viewingVehicle, air_filter: e.target.value })}
+                                    className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
+                                      darkMode 
+                                        ? 'bg-gray-700 border-gray-600 text-gray-100 placeholder-gray-400' 
+                                        : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400'
+                                    }`}
+                                    placeholder=""
+                                  />
+                                </div>
+                              </div>
+                            </div>
+
+                            <div className={`pt-4 border-t ${
+                              darkMode ? 'border-gray-700' : 'border-gray-200'
+                            }`}>
+                              <h3 className={`text-lg font-semibold mb-3 ${
+                                darkMode ? 'text-gray-200' : 'text-gray-800'
+                              }`}>
+                                Battery
+                              </h3>
+                              <div>
+                                <label className={`block text-sm font-medium mb-2 ${
+                                  darkMode ? 'text-gray-300' : 'text-gray-700'
+                                }`}>
+                                  Battery Type
+                                </label>
+                                <input
+                                  type="text"
+                                  value={viewingVehicle.battery || ''}
+                                  onChange={(e) => setViewingVehicle({ ...viewingVehicle, battery: e.target.value })}
+                                  className={inputClasses(darkMode)}
+                                  placeholder=""
+                                />
+                              </div>
+                            </div>
+                          </div>
+
+                          {/* Oil Info Section - Full Width */}
+                          <div className="mt-6">
+                            <div className={`pt-4 border-t ${
+                              darkMode ? 'border-gray-700' : 'border-gray-200'
+                            }`}>
+                              <h3 className={`text-lg font-semibold mb-3 ${
+                                darkMode ? 'text-gray-200' : 'text-gray-800'
+                              }`}>
+                                Oil Info
+                              </h3>
+                              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div>
+                                  <label className={`block text-sm font-medium mb-2 ${
+                                    darkMode ? 'text-gray-300' : 'text-gray-700'
+                                  }`}>
+                                    Oil Filter
+                                  </label>
+                                  <input
+                                    type="text"
+                                    value={viewingVehicle.oil_filter || ''}
+                                    onChange={(e) => setViewingVehicle({ ...viewingVehicle, oil_filter: e.target.value })}
+                                    className={inputClasses(darkMode)}
+                                    placeholder=""
+                                  />
+                                </div>
+
+                                <div>
+                                  <label className={`block text-sm font-medium mb-2 ${
+                                    darkMode ? 'text-gray-300' : 'text-gray-700'
+                                  }`}>
+                                    Oil Type
+                                  </label>
+                                  <input
+                                    type="text"
+                                    value={viewingVehicle.oil_type || ''}
+                                    onChange={(e) => setViewingVehicle({ ...viewingVehicle, oil_type: e.target.value })}
+                                    className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
+                                      darkMode 
+                                        ? 'bg-gray-700 border-gray-600 text-gray-100 placeholder-gray-400' 
+                                        : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400'
+                                    }`}
+                                    placeholder=""
+                                  />
+                                </div>
+
+                                <div>
+                                  <label className={`block text-sm font-medium mb-2 ${
+                                    darkMode ? 'text-gray-300' : 'text-gray-700'
+                                  }`}>
+                                    Oil Capacity
+                                  </label>
+                                  <input
+                                    type="text"
+                                    value={viewingVehicle.oil_capacity || ''}
+                                    onChange={(e) => setViewingVehicle({ ...viewingVehicle, oil_capacity: e.target.value })}
+                                    className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
+                                      darkMode 
+                                        ? 'bg-gray-700 border-gray-600 text-gray-100 placeholder-gray-400' 
+                                        : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400'
+                                    }`}
+                                    placeholder=""
+                                  />
+                                </div>
+
+                                <div>
+                                  <label className={`block text-sm font-medium mb-2 ${
+                                    darkMode ? 'text-gray-300' : 'text-gray-700'
+                                  }`}>
+                                    Oil Brand
+                                  </label>
+                                  <input
+                                    type="text"
+                                    value={viewingVehicle.oil_brand || ''}
+                                    onChange={(e) => setViewingVehicle({ ...viewingVehicle, oil_brand: e.target.value })}
+                                    className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
+                                      darkMode 
+                                        ? 'bg-gray-700 border-gray-600 text-gray-100 placeholder-gray-400' 
+                                        : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400'
+                                    }`}
+                                    placeholder=""
+                                  />
+                                </div>
+
+                                <div>
+                                  <label className={`block text-sm font-medium mb-2 ${
+                                    darkMode ? 'text-gray-300' : 'text-gray-700'
+                                  }`}>
+                                    Drain Plug
+                                  </label>
+                                  <input
+                                    type="text"
+                                    value={viewingVehicle.drain_plug || ''}
+                                    onChange={(e) => setViewingVehicle({ ...viewingVehicle, drain_plug: e.target.value })}
+                                    className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
+                                      darkMode 
+                                        ? 'bg-gray-700 border-gray-600 text-gray-100 placeholder-gray-400' 
+                                        : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400'
+                                    }`}
+                                    placeholder=""
+                                  />
+                                </div>
+                              </div>
+                            </div>
+                          </div>
                         </div>
                       )}
                     </div>
@@ -6453,13 +7055,41 @@ const LandCruiserTracker = () => {
                     )}
                     {vehicleModalEditMode ? (
                       <button
-                        onClick={() => {
-                          // Save logic would go here
+                        onClick={async () => {
+                          // Save logic based on what's being edited
+                          if (vehicleModalEditMode === 'vehicle') {
+                            // Upload new image if one is selected
+                            let updatedVehicle = { ...viewingVehicle };
+                            if (vehicleImageFile) {
+                              const imageUrl = await uploadVehicleImage(vehicleImageFile);
+                              if (imageUrl) {
+                                updatedVehicle.image_url = imageUrl;
+                              }
+                            }
+                            await updateVehicle(viewingVehicle.id, updatedVehicle);
+                            clearImageSelection();
+                          } else if (vehicleModalEditMode === 'project') {
+                            await updateProject(vehicleModalProjectView.id, {
+                              name: vehicleModalProjectView.name,
+                              description: vehicleModalProjectView.description,
+                              budget: parseFloat(vehicleModalProjectView.budget),
+                              priority: vehicleModalProjectView.priority,
+                              start_date: vehicleModalProjectView.start_date && vehicleModalProjectView.start_date.trim() !== '' ? vehicleModalProjectView.start_date : null,
+                              target_date: vehicleModalProjectView.target_date && vehicleModalProjectView.target_date.trim() !== '' ? vehicleModalProjectView.target_date : null,
+                              status: vehicleModalProjectView.status,
+                              vehicle_id: vehicleModalProjectView.vehicle_id || null
+                            });
+                          }
                           setVehicleModalEditMode(null);
                         }}
-                        className="px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium transition-colors flex items-center gap-2"
+                        disabled={uploadingImage}
+                        className={`px-6 py-3 rounded-lg font-medium transition-colors flex items-center gap-2 ${
+                          uploadingImage
+                            ? 'bg-gray-600 cursor-not-allowed text-gray-300'
+                            : 'bg-blue-600 hover:bg-blue-700 text-white'
+                        }`}
                       >
-                        Save Changes
+                        {uploadingImage ? 'Saving...' : 'Save Changes'}
                       </button>
                     ) : !vehicleModalProjectView ? (
                       <button
