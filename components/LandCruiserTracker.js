@@ -566,7 +566,8 @@ const LandCruiserTracker = () => {
           start_date: projectData.start_date && projectData.start_date.trim() !== '' ? projectData.start_date : null,
           target_date: projectData.target_date && projectData.target_date.trim() !== '' ? projectData.target_date : null,
           priority: projectData.priority || 'medium',
-          vehicle_id: projectData.vehicle_id || null
+          vehicle_id: projectData.vehicle_id || null,
+          todos: []
         }])
         .select();
 
@@ -4606,9 +4607,147 @@ const LandCruiserTracker = () => {
                             </div>
                           </div>
 
+                          {/* To-Do List Section */}
+                          <div className={`pt-6 border-t ${
+                            darkMode ? 'border-gray-700' : 'border-gray-200'
+                          }`}>
+                            <div className="flex items-center justify-between mb-3">
+                              <h3 className={`text-lg font-semibold ${
+                                darkMode ? 'text-gray-200' : 'text-gray-800'
+                              }`}>
+                                To-Do List
+                              </h3>
+                              <button
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  const todoText = prompt('Enter a new to-do item:');
+                                  if (todoText && todoText.trim()) {
+                                    const currentTodos = viewingProject.todos || [];
+                                    const newTodo = {
+                                      id: Date.now(),
+                                      text: todoText.trim(),
+                                      completed: false,
+                                      created_at: new Date().toISOString()
+                                    };
+                                    updateProject(viewingProject.id, {
+                                      todos: [...currentTodos, newTodo]
+                                    }).then(() => {
+                                      // Update the viewing project state
+                                      setViewingProject({
+                                        ...viewingProject,
+                                        todos: [...currentTodos, newTodo]
+                                      });
+                                    });
+                                  }
+                                }}
+                                className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors flex items-center gap-1 ${
+                                  darkMode 
+                                    ? 'bg-blue-600 hover:bg-blue-700 text-white' 
+                                    : 'bg-blue-600 hover:bg-blue-700 text-white'
+                                }`}
+                              >
+                                <Plus className="w-4 h-4" />
+                                Add
+                              </button>
+                            </div>
+                            
+                            {/* To-Do Items */}
+                            {viewingProject.todos && viewingProject.todos.length > 0 ? (
+                              <div className="space-y-2">
+                                {viewingProject.todos.map((todo) => (
+                                  <div 
+                                    key={todo.id}
+                                    className={`flex items-center gap-3 p-3 rounded-lg border ${
+                                      darkMode ? 'bg-gray-700 border-gray-600' : 'bg-gray-50 border-gray-200'
+                                    }`}
+                                  >
+                                    <button
+                                      onClick={(e) => {
+                                        e.stopPropagation();
+                                        const updatedTodos = viewingProject.todos.map(t => 
+                                          t.id === todo.id ? { ...t, completed: !t.completed } : t
+                                        );
+                                        updateProject(viewingProject.id, {
+                                          todos: updatedTodos
+                                        }).then(() => {
+                                          setViewingProject({
+                                            ...viewingProject,
+                                            todos: updatedTodos
+                                          });
+                                        });
+                                      }}
+                                      className={`flex-shrink-0 w-5 h-5 rounded border-2 flex items-center justify-center transition-colors ${
+                                        todo.completed
+                                          ? darkMode
+                                            ? 'bg-green-600 border-green-600'
+                                            : 'bg-green-500 border-green-500'
+                                          : darkMode
+                                            ? 'border-gray-500 hover:border-gray-400'
+                                            : 'border-gray-400 hover:border-gray-500'
+                                      }`}
+                                    >
+                                      {todo.completed && (
+                                        <CheckCircle className="w-4 h-4 text-white" />
+                                      )}
+                                    </button>
+                                    <span className={`flex-1 text-sm ${
+                                      todo.completed
+                                        ? darkMode
+                                          ? 'text-gray-500 line-through'
+                                          : 'text-gray-400 line-through'
+                                        : darkMode
+                                          ? 'text-gray-200'
+                                          : 'text-gray-800'
+                                    }`}>
+                                      {todo.text}
+                                    </span>
+                                    <button
+                                      onClick={(e) => {
+                                        e.stopPropagation();
+                                        if (confirm('Delete this to-do item?')) {
+                                          const updatedTodos = viewingProject.todos.filter(t => t.id !== todo.id);
+                                          updateProject(viewingProject.id, {
+                                            todos: updatedTodos
+                                          }).then(() => {
+                                            setViewingProject({
+                                              ...viewingProject,
+                                              todos: updatedTodos
+                                            });
+                                          });
+                                        }
+                                      }}
+                                      className={`flex-shrink-0 p-1 rounded transition-colors ${
+                                        darkMode 
+                                          ? 'text-gray-500 hover:text-red-400 hover:bg-gray-600' 
+                                          : 'text-gray-400 hover:text-red-600 hover:bg-gray-200'
+                                      }`}
+                                    >
+                                      <X className="w-4 h-4" />
+                                    </button>
+                                  </div>
+                                ))}
+                              </div>
+                            ) : (
+                              <div className={`text-center py-6 rounded-lg ${
+                                darkMode ? 'bg-gray-700' : 'bg-gray-50'
+                              }`}>
+                                <List className={`w-10 h-10 mx-auto mb-2 ${
+                                  darkMode ? 'text-gray-600' : 'text-gray-400'
+                                }`} />
+                                <p className={`text-sm ${
+                                  darkMode ? 'text-gray-400' : 'text-gray-600'
+                                }`}>
+                                  No to-do items yet. Click "Add" to create one.
+                                </p>
+                              </div>
+                            )}
+                          </div>
+
                           {/* Linked Parts List */}
                           {linkedParts.length > 0 && (
-                            <div>
+                            <div className={`pt-6 border-t ${
+                              darkMode ? 'border-gray-700' : 'border-gray-200'
+                            }`}>
                               <h3 className={`text-lg font-semibold mb-3 ${
                                 darkMode ? 'text-gray-200' : 'text-gray-800'
                               }`}>
@@ -4901,6 +5040,129 @@ const LandCruiserTracker = () => {
                           </div>
                         </div>
 
+                        {/* To-Do List Management */}
+                        <div className={`pt-6 border-t ${
+                          darkMode ? 'border-gray-600' : 'border-gray-200'
+                        }`}>
+                          <div className="flex items-center justify-between mb-3">
+                            <h3 className={`text-lg font-semibold ${
+                              darkMode ? 'text-gray-200' : 'text-gray-800'
+                            }`}>
+                              To-Do List
+                            </h3>
+                            <button
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                const todoText = prompt('Enter a new to-do item:');
+                                if (todoText && todoText.trim()) {
+                                  const currentTodos = viewingProject.todos || [];
+                                  const newTodo = {
+                                    id: Date.now(),
+                                    text: todoText.trim(),
+                                    completed: false,
+                                    created_at: new Date().toISOString()
+                                  };
+                                  setViewingProject({
+                                    ...viewingProject,
+                                    todos: [...currentTodos, newTodo]
+                                  });
+                                }
+                              }}
+                              className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors flex items-center gap-1 ${
+                                darkMode 
+                                  ? 'bg-blue-600 hover:bg-blue-700 text-white' 
+                                  : 'bg-blue-600 hover:bg-blue-700 text-white'
+                              }`}
+                            >
+                              <Plus className="w-4 h-4" />
+                              Add
+                            </button>
+                          </div>
+                          
+                          {/* To-Do Items */}
+                          {viewingProject.todos && viewingProject.todos.length > 0 ? (
+                            <div className="space-y-2 max-h-60 overflow-y-auto pr-2">
+                              {viewingProject.todos.map((todo) => (
+                                <div 
+                                  key={todo.id}
+                                  className={`flex items-center gap-3 p-3 rounded-lg border ${
+                                    darkMode ? 'bg-gray-700 border-gray-600' : 'bg-gray-50 border-gray-200'
+                                  }`}
+                                >
+                                  <button
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      const updatedTodos = viewingProject.todos.map(t => 
+                                        t.id === todo.id ? { ...t, completed: !t.completed } : t
+                                      );
+                                      setViewingProject({
+                                        ...viewingProject,
+                                        todos: updatedTodos
+                                      });
+                                    }}
+                                    className={`flex-shrink-0 w-5 h-5 rounded border-2 flex items-center justify-center transition-colors ${
+                                      todo.completed
+                                        ? darkMode
+                                          ? 'bg-green-600 border-green-600'
+                                          : 'bg-green-500 border-green-500'
+                                        : darkMode
+                                          ? 'border-gray-500 hover:border-gray-400'
+                                          : 'border-gray-400 hover:border-gray-500'
+                                    }`}
+                                  >
+                                    {todo.completed && (
+                                      <CheckCircle className="w-4 h-4 text-white" />
+                                    )}
+                                  </button>
+                                  <span className={`flex-1 text-sm ${
+                                    todo.completed
+                                      ? darkMode
+                                        ? 'text-gray-500 line-through'
+                                        : 'text-gray-400 line-through'
+                                      : darkMode
+                                        ? 'text-gray-200'
+                                        : 'text-gray-800'
+                                  }`}>
+                                    {todo.text}
+                                  </span>
+                                  <button
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      if (confirm('Delete this to-do item?')) {
+                                        const updatedTodos = viewingProject.todos.filter(t => t.id !== todo.id);
+                                        setViewingProject({
+                                          ...viewingProject,
+                                          todos: updatedTodos
+                                        });
+                                      }
+                                    }}
+                                    className={`flex-shrink-0 p-1 rounded transition-colors ${
+                                      darkMode 
+                                        ? 'text-gray-500 hover:text-red-400 hover:bg-gray-600' 
+                                        : 'text-gray-400 hover:text-red-600 hover:bg-gray-200'
+                                    }`}
+                                  >
+                                    <X className="w-4 h-4" />
+                                  </button>
+                                </div>
+                              ))}
+                            </div>
+                          ) : (
+                            <div className={`text-center py-6 rounded-lg ${
+                              darkMode ? 'bg-gray-700' : 'bg-gray-50'
+                            }`}>
+                              <List className={`w-10 h-10 mx-auto mb-2 ${
+                                darkMode ? 'text-gray-600' : 'text-gray-400'
+                              }`} />
+                              <p className={`text-sm ${
+                                darkMode ? 'text-gray-400' : 'text-gray-600'
+                              }`}>
+                                No to-do items yet. Click "Add" to create one.
+                              </p>
+                            </div>
+                          )}
+                        </div>
+
                         {/* Linked Parts Section */}
                         {(() => {
                           const linkedParts = parts.filter(part => part.projectId === viewingProject.id);
@@ -5000,7 +5262,8 @@ const LandCruiserTracker = () => {
                             start_date: viewingProject.start_date && viewingProject.start_date.trim() !== '' ? viewingProject.start_date : null,
                             target_date: viewingProject.target_date && viewingProject.target_date.trim() !== '' ? viewingProject.target_date : null,
                             status: viewingProject.status,
-                            vehicle_id: viewingProject.vehicle_id || null
+                            vehicle_id: viewingProject.vehicle_id || null,
+                            todos: viewingProject.todos || []
                           });
                           setProjectModalEditMode(false);
                         }}
