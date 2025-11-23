@@ -308,6 +308,7 @@ const LandCruiserTracker = () => {
   const [showEditVehicleModal, setShowEditVehicleModal] = useState(false);
   const [showVehicleDetailModal, setShowVehicleDetailModal] = useState(false);
   const [viewingVehicle, setViewingVehicle] = useState(null);
+  const [vehicleModalProjectView, setVehicleModalProjectView] = useState(null); // Track if viewing project within vehicle modal
   const [editingVehicle, setEditingVehicle] = useState(null);
   const [newVehicle, setNewVehicle] = useState({
     nickname: '',
@@ -5799,15 +5800,29 @@ const LandCruiserTracker = () => {
                   <div className={`sticky top-0 z-10 px-6 py-4 border-b flex items-center justify-between ${
                     darkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-200'
                   }`}>
-                    <h2 className={`text-2xl font-bold ${
-                      darkMode ? 'text-gray-100' : 'text-gray-900'
-                    }`} style={{ fontFamily: "'FoundationOne', 'Courier New', monospace" }}>
-                      {viewingVehicle.nickname || viewingVehicle.name || 'Vehicle Details'}
-                    </h2>
+                    <div className="flex items-center gap-3">
+                      {vehicleModalProjectView && (
+                        <button
+                          onClick={() => setVehicleModalProjectView(null)}
+                          className={`p-2 rounded-md transition-colors ${
+                            darkMode ? 'hover:bg-gray-700 text-gray-400' : 'hover:bg-gray-100 text-gray-600'
+                          }`}
+                          title="Back to vehicle"
+                        >
+                          <ChevronDown className="w-5 h-5 rotate-90" />
+                        </button>
+                      )}
+                      <h2 className={`text-2xl font-bold ${
+                        darkMode ? 'text-gray-100' : 'text-gray-900'
+                      }`} style={{ fontFamily: "'FoundationOne', 'Courier New', monospace" }}>
+                        {vehicleModalProjectView ? vehicleModalProjectView.name : (viewingVehicle.nickname || viewingVehicle.name || 'Vehicle Details')}
+                      </h2>
+                    </div>
                     <button
                       onClick={() => handleCloseModal(() => {
                         setShowVehicleDetailModal(false);
                         setViewingVehicle(null);
+                        setVehicleModalProjectView(null);
                       })}
                       className={`p-2 rounded-md transition-colors ${
                         darkMode ? 'hover:bg-gray-700 text-gray-400' : 'hover:bg-gray-100 text-gray-600'
@@ -5817,8 +5832,16 @@ const LandCruiserTracker = () => {
                     </button>
                   </div>
 
-                  {/* Content */}
-                  <div className="p-6 space-y-6">
+                  {/* Content - with slide animation */}
+                  <div className="relative overflow-hidden">
+                    {/* Vehicle Details View */}
+                    <div 
+                      className={`transition-transform duration-300 ease-in-out ${
+                        vehicleModalProjectView ? '-translate-x-full' : 'translate-x-0'
+                      }`}
+                      style={{ display: vehicleModalProjectView ? 'none' : 'block' }}
+                    >
+                      <div className="p-6 space-y-6">
                     {/* Top Section: Image first on mobile, then Basic Info */}
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                       {/* Vehicle Image - Full width on mobile (order-first), 2 columns on desktop */}
@@ -6064,13 +6087,7 @@ const LandCruiserTracker = () => {
                                   key={project.id}
                                   onClick={(e) => {
                                     e.stopPropagation();
-                                    setShowVehicleDetailModal(false);
-                                    setViewingVehicle(null);
-                                    // Small delay to ensure smooth transition
-                                    setTimeout(() => {
-                                      setViewingProject(project);
-                                      setShowProjectDetailModal(true);
-                                    }, 50);
+                                    setVehicleModalProjectView(project);
                                   }}
                                   className={`rounded-lg p-4 border-l-4 text-left transition-all hover:shadow-md cursor-pointer ${
                                     darkMode ? 'bg-gray-700 hover:bg-gray-650' : 'bg-gray-50 hover:bg-gray-100'
@@ -6122,25 +6139,280 @@ const LandCruiserTracker = () => {
                         </div>
                       );
                     })()}
+                      </div>
+                    </div>
+
+                    {/* Project Details View - Slides in from right */}
+                    {vehicleModalProjectView && (
+                      <div className="p-6 space-y-6">
+                        {(() => {
+                          const linkedParts = parts.filter(part => part.projectId === vehicleModalProjectView.id);
+                          const linkedPartsTotal = calculateProjectTotal(vehicleModalProjectView.id, parts);
+                          const progress = vehicleModalProjectView.budget > 0 ? (linkedPartsTotal / vehicleModalProjectView.budget) * 100 : 0;
+                          
+                          const statusColors = getStatusColors(darkMode);
+                          const priorityColors = getPriorityColors(darkMode);
+
+                          return (
+                            <>
+                              {/* Status Badge */}
+                              <div className="flex items-center justify-between">
+                                <span className={`inline-block px-4 py-2 rounded-full text-sm font-medium ${
+                                  statusColors[vehicleModalProjectView.status]
+                                }`}>
+                                  {vehicleModalProjectView.status.replace('_', ' ').toUpperCase()}
+                                </span>
+                              </div>
+
+                              {/* Description */}
+                              {vehicleModalProjectView.description && (
+                                <div>
+                                  <h3 className={`text-lg font-semibold mb-2 ${
+                                    darkMode ? 'text-gray-200' : 'text-gray-800'
+                                  }`}>Description</h3>
+                                  <p className={`text-base ${
+                                    darkMode ? 'text-gray-400' : 'text-gray-600'
+                                  }`}>
+                                    {vehicleModalProjectView.description}
+                                  </p>
+                                </div>
+                              )}
+
+                              {/* Budget Progress */}
+                              <div>
+                                <h3 className={`text-lg font-semibold mb-3 ${
+                                  darkMode ? 'text-gray-200' : 'text-gray-800'
+                                }`}>Budget Used</h3>
+                                <div className="flex justify-between items-center mb-2">
+                                  <span className={`text-sm font-medium ${
+                                    darkMode ? 'text-gray-300' : 'text-gray-700'
+                                  }`}>
+                                    ${linkedPartsTotal.toFixed(2)} / ${vehicleModalProjectView.budget?.toFixed(2) || '0.00'}
+                                  </span>
+                                  <span className={`text-sm font-bold ${
+                                    darkMode ? 'text-gray-200' : 'text-gray-900'
+                                  }`}>
+                                    {progress.toFixed(0)}%
+                                  </span>
+                                </div>
+                                <div className={`w-full rounded-full h-4 ${
+                                  darkMode ? 'bg-gray-700' : 'bg-gray-200'
+                                }`}>
+                                  <div
+                                    className={`h-4 rounded-full transition-all ${
+                                      progress > 90
+                                        ? 'bg-red-500'
+                                        : progress > 70
+                                        ? 'bg-yellow-500'
+                                        : 'bg-green-500'
+                                    }`}
+                                    style={{ width: `${Math.min(progress, 100)}%` }}
+                                  />
+                                </div>
+                              </div>
+
+                              {/* Project Details Grid */}
+                              <div className={`grid grid-cols-2 gap-4 p-4 rounded-lg ${
+                                darkMode ? 'bg-gray-700' : 'bg-gray-50'
+                              }`}>
+                                <div>
+                                  <p className={`text-xs mb-1 ${
+                                    darkMode ? 'text-gray-400' : 'text-gray-600'
+                                  }`}>Priority</p>
+                                  <p className={`text-lg font-bold ${priorityColors[vehicleModalProjectView.priority]}`}>
+                                    {vehicleModalProjectView.priority?.toUpperCase()}
+                                  </p>
+                                </div>
+                                <div>
+                                  <p className={`text-xs mb-1 ${
+                                    darkMode ? 'text-gray-400' : 'text-gray-600'
+                                  }`}>Parts Linked</p>
+                                  <p className={`text-lg font-bold ${
+                                    darkMode ? 'text-gray-100' : 'text-gray-900'
+                                  }`}>
+                                    {linkedParts.length}
+                                  </p>
+                                </div>
+                                <div>
+                                  <p className={`text-xs mb-1 ${
+                                    darkMode ? 'text-gray-400' : 'text-gray-600'
+                                  }`}>Start Date</p>
+                                  <p className={`text-sm font-medium ${
+                                    darkMode ? 'text-gray-300' : 'text-gray-700'
+                                  }`}>
+                                    {vehicleModalProjectView.start_date ? new Date(vehicleModalProjectView.start_date + 'T00:00:00').toLocaleDateString() : 'TBD'}
+                                  </p>
+                                </div>
+                                <div>
+                                  <p className={`text-xs mb-1 ${
+                                    darkMode ? 'text-gray-400' : 'text-gray-600'
+                                  }`}>Target Date</p>
+                                  <p className={`text-sm font-medium ${
+                                    darkMode ? 'text-gray-300' : 'text-gray-700'
+                                  }`}>
+                                    {vehicleModalProjectView.target_date ? new Date(vehicleModalProjectView.target_date + 'T00:00:00').toLocaleDateString() : 'Not set'}
+                                  </p>
+                                </div>
+                              </div>
+
+                              {/* Linked Parts List */}
+                              {linkedParts.length > 0 && (
+                                <div>
+                                  <h3 className={`text-lg font-semibold mb-3 ${
+                                    darkMode ? 'text-gray-200' : 'text-gray-800'
+                                  }`}>
+                                    Linked Parts ({linkedParts.length})
+                                  </h3>
+                                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                    {linkedParts.map((part) => (
+                                      <div 
+                                        key={part.id}
+                                        className={`p-4 rounded-lg border ${
+                                          darkMode ? 'bg-gray-700 border-gray-600' : 'bg-gray-50 border-gray-200'
+                                        }`}
+                                      >
+                                        <div className="flex justify-between items-start mb-3">
+                                          <div className="flex-1">
+                                            <h4 className={`font-medium ${
+                                              darkMode ? 'text-gray-100' : 'text-gray-900'
+                                            }`}>
+                                              {part.part}
+                                            </h4>
+                                            {part.vendor && (
+                                              <span className={`inline-block mt-1 px-2 py-0.5 rounded-full text-xs font-medium ${getVendorColor(part.vendor)}`}>
+                                                {part.vendor}
+                                              </span>
+                                            )}
+                                          </div>
+                                          <div className={`text-xs ${
+                                            darkMode ? 'text-gray-400' : 'text-gray-600'
+                                          }`}>
+                                            {getStatusText(part)}
+                                          </div>
+                                        </div>
+                                        
+                                        {part.partNumber && part.partNumber !== '-' && (
+                                          <p className={`text-xs font-mono mb-3 ${
+                                            darkMode ? 'text-gray-400' : 'text-gray-600'
+                                          }`}>
+                                            Part #: {part.partNumber}
+                                          </p>
+                                        )}
+                                        
+                                        <div className={`pt-3 border-t space-y-2 ${
+                                          darkMode ? 'border-gray-600' : 'border-gray-200'
+                                        }`}>
+                                          <div className="flex justify-between text-sm">
+                                            <span className={darkMode ? 'text-gray-400' : 'text-gray-600'}>
+                                              Part Price:
+                                            </span>
+                                            <span className={`font-medium ${
+                                              darkMode ? 'text-gray-200' : 'text-gray-800'
+                                            }`}>
+                                              ${part.price.toFixed(2)}
+                                            </span>
+                                          </div>
+                                          
+                                          {part.shipping > 0 && (
+                                            <div className="flex justify-between text-sm">
+                                              <span className={darkMode ? 'text-gray-400' : 'text-gray-600'}>
+                                                Shipping:
+                                              </span>
+                                              <span className={`font-medium ${
+                                                darkMode ? 'text-gray-200' : 'text-gray-800'
+                                              }`}>
+                                                ${part.shipping.toFixed(2)}
+                                              </span>
+                                            </div>
+                                          )}
+                                          
+                                          {part.duties > 0 && (
+                                            <div className="flex justify-between text-sm">
+                                              <span className={darkMode ? 'text-gray-400' : 'text-gray-600'}>
+                                                Duties:
+                                              </span>
+                                              <span className={`font-medium ${
+                                                darkMode ? 'text-gray-200' : 'text-gray-800'
+                                              }`}>
+                                                ${part.duties.toFixed(2)}
+                                              </span>
+                                            </div>
+                                          )}
+                                          
+                                          <div className={`flex justify-between text-base font-bold pt-2 border-t ${
+                                            darkMode ? 'border-gray-600' : 'border-gray-200'
+                                          }`}>
+                                            <span className={darkMode ? 'text-gray-100' : 'text-gray-900'}>
+                                              Total:
+                                            </span>
+                                            <span className={darkMode ? 'text-gray-100' : 'text-gray-900'}>
+                                              ${part.total.toFixed(2)}
+                                            </span>
+                                          </div>
+                                        </div>
+                                      </div>
+                                    ))}
+                                  </div>
+                                </div>
+                              )}
+
+                              {linkedParts.length === 0 && (
+                                <div className={`text-center py-8 rounded-lg ${
+                                  darkMode ? 'bg-gray-700' : 'bg-gray-50'
+                                }`}>
+                                  <Package className={`w-12 h-12 mx-auto mb-3 ${
+                                    darkMode ? 'text-gray-600' : 'text-gray-400'
+                                  }`} />
+                                  <p className={`text-sm ${
+                                    darkMode ? 'text-gray-400' : 'text-gray-600'
+                                  }`}>
+                                    No parts linked to this project yet
+                                  </p>
+                                </div>
+                              )}
+                            </>
+                          );
+                        })()}
+                      </div>
+                    )}
                   </div>
 
                   {/* Footer with Edit Button */}
                   <div className={`border-t p-6 flex justify-end ${
                     darkMode ? 'border-gray-700' : 'border-gray-200'
                   }`}>
-                    <button
-                      onClick={() => {
-                        isTransitioningModals.current = true;
-                        setShowVehicleDetailModal(false);
-                        setEditingVehicle(viewingVehicle);
-                        setViewingVehicle(null);
-                        setShowEditVehicleModal(true);
-                      }}
-                      className="px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium transition-colors flex items-center gap-2"
-                    >
-                      <Edit2 className="w-4 h-4" />
-                      Edit
-                    </button>
+                    {!vehicleModalProjectView ? (
+                      <button
+                        onClick={() => {
+                          setShowVehicleDetailModal(false);
+                          setEditingVehicle(viewingVehicle);
+                          setViewingVehicle(null);
+                          setShowEditVehicleModal(true);
+                        }}
+                        className="px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium transition-colors flex items-center gap-2"
+                      >
+                        <Edit2 className="w-4 h-4" />
+                        Edit Vehicle
+                      </button>
+                    ) : (
+                      <button
+                        onClick={() => {
+                          setVehicleModalProjectView(null);
+                          setEditingProject({
+                            ...vehicleModalProjectView,
+                            start_date: vehicleModalProjectView.start_date ? vehicleModalProjectView.start_date.split('T')[0] : '',
+                            target_date: vehicleModalProjectView.target_date ? vehicleModalProjectView.target_date.split('T')[0] : ''
+                          });
+                          setShowVehicleDetailModal(false);
+                          setViewingVehicle(null);
+                          setShowEditProjectModal(true);
+                        }}
+                        className="px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium transition-colors flex items-center gap-2"
+                      >
+                        <Edit2 className="w-4 h-4" />
+                        Edit Project
+                      </button>
+                    )}
                   </div>
                 </div>
               </div>
