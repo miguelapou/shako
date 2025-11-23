@@ -4447,14 +4447,13 @@ const LandCruiserTracker = () => {
                 })}
               >
                 <div 
-                  className={`rounded-lg shadow-xl max-w-5xl w-full modal-content ${
+                  className={`rounded-lg shadow-xl max-w-5xl w-full max-h-[90vh] modal-content ${
                     isModalClosing ? 'modal-popup-exit' : 'modal-popup-enter'
                   } ${darkMode ? 'bg-gray-800' : 'bg-white'}`}
-                  style={{ maxHeight: '90vh', display: 'flex', flexDirection: 'column' }}
                   onClick={(e) => e.stopPropagation()}
                 >
                   {/* Header */}
-                  <div className={`flex-shrink-0 px-6 py-4 border-b flex items-center justify-between ${
+                  <div className={`sticky top-0 z-10 px-6 py-4 border-b flex items-center justify-between ${
                     darkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-200'
                   }`}>
                     <div className="flex items-center gap-3 flex-1 min-w-0">
@@ -4490,16 +4489,16 @@ const LandCruiserTracker = () => {
                   </div>
 
                   {/* Content - with slide animation */}
-                  <div className="relative flex-1 overflow-hidden">
+                  <div className="relative overflow-y-auto" style={{ maxHeight: 'calc(90vh - 180px)' }}>
                     {/* Project Details View */}
                     <div 
-                      className={`h-full w-full transition-all duration-500 ease-in-out ${
+                      className={`w-full transition-all duration-500 ease-in-out ${
                         projectModalEditMode
                           ? 'absolute opacity-0 pointer-events-none -translate-x-full' 
                           : 'relative opacity-100'
                       }`}
                     >
-                      <div className="p-6 space-y-6 h-full overflow-y-auto">
+                      <div className="p-6 space-y-6">
                     {(() => {
                       const linkedParts = parts.filter(part => part.projectId === viewingProject.id);
                       const linkedPartsTotal = calculateProjectTotal(viewingProject.id, parts);
@@ -4741,7 +4740,14 @@ const LandCruiserTracker = () => {
                                           setEditingTodoId(null);
                                           setEditingTodoText('');
                                         }}
-                                        autoFocus
+                                        ref={(input) => {
+                                          if (input) {
+                                            // Focus without scrolling
+                                            setTimeout(() => {
+                                              input.focus({ preventScroll: true });
+                                            }, 0);
+                                          }
+                                        }}
                                         className={`flex-1 text-sm px-2 py-1 rounded border-2 focus:outline-none ${
                                           darkMode
                                             ? 'bg-gray-600 border-blue-500 text-gray-100'
@@ -4938,13 +4944,13 @@ const LandCruiserTracker = () => {
 
                     {/* Edit Project View - Slides in for editing */}
                     <div 
-                      className={`h-full w-full transition-all duration-500 ease-in-out ${
+                      className={`w-full transition-all duration-500 ease-in-out ${
                         projectModalEditMode
                           ? 'relative opacity-100 translate-x-0' 
                           : 'absolute opacity-0 translate-x-full pointer-events-none'
                       }`}
                     >
-                      <div className="p-6 space-y-6 h-full overflow-y-auto">
+                      <div className="p-6 space-y-6">
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                           <div>
                             <label className={`block text-sm font-medium mb-2 ${
@@ -5224,7 +5230,14 @@ const LandCruiserTracker = () => {
                                         setEditingTodoId(null);
                                         setEditingTodoText('');
                                       }}
-                                      autoFocus
+                                      ref={(input) => {
+                                        if (input) {
+                                          // Focus without scrolling
+                                          setTimeout(() => {
+                                            input.focus({ preventScroll: true });
+                                          }, 0);
+                                        }
+                                      }}
                                       className={`flex-1 text-sm px-2 py-1 rounded border-2 focus:outline-none ${
                                         darkMode
                                           ? 'bg-gray-600 border-blue-500 text-gray-100'
@@ -5360,7 +5373,7 @@ const LandCruiserTracker = () => {
                   </div>
 
                   {/* Footer with conditional buttons */}
-                  <div className={`flex-shrink-0 border-t p-4 flex items-center justify-between ${
+                  <div className={`sticky bottom-0 border-t p-4 flex items-center justify-between ${
                     darkMode ? 'border-gray-700 bg-gray-800' : 'border-gray-200 bg-white'
                   }`}>
                     {projectModalEditMode ? (
