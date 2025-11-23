@@ -6060,10 +6060,15 @@ const LandCruiserTracker = () => {
                               const deliveredCount = projectParts.filter(p => p.delivered).length;
 
                               return (
-                                <div
+                                <button
                                   key={project.id}
-                                  className={`rounded-lg p-4 border-l-4 ${
-                                    darkMode ? 'bg-gray-700' : 'bg-gray-50'
+                                  onClick={() => {
+                                    setShowVehicleDetailModal(false);
+                                    setViewingProject(project);
+                                    setShowProjectDetailModal(true);
+                                  }}
+                                  className={`rounded-lg p-4 border-l-4 text-left transition-all hover:shadow-md cursor-pointer ${
+                                    darkMode ? 'bg-gray-700 hover:bg-gray-650' : 'bg-gray-50 hover:bg-gray-100'
                                   }`}
                                   style={{ borderLeftColor: getPriorityBorderColor(project.priority) }}
                                 >
@@ -6105,7 +6110,7 @@ const LandCruiserTracker = () => {
                                       </span>
                                     </div>
                                   </div>
-                                </div>
+                                </button>
                               );
                             })}
                           </div>
