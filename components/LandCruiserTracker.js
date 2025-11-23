@@ -126,11 +126,6 @@ const fontStyles = `
     font-display: swap;
   }
 
-  /* Force scrollbar to always be visible to prevent layout shift */
-  html {
-    overflow-y: scroll;
-  }
-
   /* Prevent touch scrolling on modal backdrop */
   .modal-backdrop {
     touch-action: none;
@@ -1644,11 +1639,12 @@ const LandCruiserTracker = () => {
     useEffect(() => {
       if (isOpen && dropdownRef.current) {
         const rect = dropdownRef.current.getBoundingClientRect();
+        const dropdownHeight = 180; // Approximate height of the status dropdown with 4 items
         const spaceBelow = window.innerHeight - rect.bottom;
         const spaceAbove = rect.top;
         
-        // If not enough space below (need ~180px for dropdown) and more space above, show above
-        if (spaceBelow < 180 && spaceAbove > spaceBelow) {
+        // Show above if there's not enough space below AND there's more space above
+        if (spaceBelow < dropdownHeight && spaceAbove > dropdownHeight) {
           setDropdownPosition('top');
         } else {
           setDropdownPosition('bottom');
@@ -1757,17 +1753,23 @@ const LandCruiserTracker = () => {
     useEffect(() => {
       if (isOpen && dropdownRef.current) {
         const rect = dropdownRef.current.getBoundingClientRect();
+        // Calculate actual dropdown height based on number of projects (each item is ~40px + padding)
+        const itemHeight = 40;
+        const maxVisibleItems = 6; // max-h-60 = 240px / 40px per item
+        const actualItems = Math.min(projects.length + 1, maxVisibleItems); // +1 for "None" option
+        const dropdownHeight = actualItems * itemHeight;
+        
         const spaceBelow = window.innerHeight - rect.bottom;
         const spaceAbove = rect.top;
         
-        // If not enough space below (need ~240px for dropdown with projects) and more space above, show above
-        if (spaceBelow < 240 && spaceAbove > spaceBelow) {
+        // Show above if there's not enough space below AND there's enough space above
+        if (spaceBelow < dropdownHeight && spaceAbove > dropdownHeight) {
           setDropdownPosition('top');
         } else {
           setDropdownPosition('bottom');
         }
       }
-    }, [isOpen]);
+    }, [isOpen, projects.length]);
     
     return (
       <div className="relative" ref={dropdownRef}>
@@ -4915,7 +4917,11 @@ const LandCruiserTracker = () => {
                                         </div>
                                       </div>
                                       <button
-                                        onClick={() => unlinkPartFromProject(part.id)}
+                                        onClick={() => {
+                                          if (window.confirm(`Are you sure you want to unlink "${part.part}" from this project?`)) {
+                                            unlinkPartFromProject(part.id);
+                                          }
+                                        }}
                                         className={`ml-3 px-3 py-1.5 rounded-lg text-sm font-medium transition-colors border ${
                                           darkMode 
                                             ? 'text-gray-400 hover:text-red-400 hover:bg-gray-600 border-gray-600 hover:border-red-500' 
@@ -7019,7 +7025,11 @@ const LandCruiserTracker = () => {
                                           </div>
                                         </div>
                                         <button
-                                          onClick={() => unlinkPartFromProject(part.id)}
+                                          onClick={() => {
+                                            if (window.confirm(`Are you sure you want to unlink "${part.part}" from this project?`)) {
+                                              unlinkPartFromProject(part.id);
+                                            }
+                                          }}
                                           className={`ml-3 px-3 py-1.5 rounded-lg text-sm font-medium transition-colors border ${
                                             darkMode 
                                               ? 'text-gray-400 hover:text-red-400 hover:bg-gray-600 border-gray-600 hover:border-red-500' 
