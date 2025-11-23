@@ -977,12 +977,6 @@ const LandCruiserTracker = () => {
   const [viewingProject, setViewingProject] = useState(null);
   const [editingProject, setEditingProject] = useState(null);
   const [projectModalEditMode, setProjectModalEditMode] = useState(false); // Track if editing within project detail modal
-  
-  // Todo management state
-  const [showTodoInput, setShowTodoInput] = useState(false);
-  const [todoInputText, setTodoInputText] = useState('');
-  const [editingTodoId, setEditingTodoId] = useState(null);
-  
   const [newProject, setNewProject] = useState({
     name: '',
     description: '',
@@ -3593,10 +3587,6 @@ const LandCruiserTracker = () => {
                     onClick={() => {
                       setViewingProject(project);
                       setShowProjectDetailModal(true);
-                      // Reset todo input state
-                      setShowTodoInput(false);
-                      setTodoInputText('');
-                      setEditingTodoId(null);
                     }}
                     className={`relative rounded-lg shadow-lg pt-3 pb-6 px-6 transition-all hover:shadow-xl cursor-pointer ${
                       draggedProject?.id === project.id 
@@ -4452,10 +4442,6 @@ const LandCruiserTracker = () => {
                   setShowProjectDetailModal(false);
                   setViewingProject(null);
                   setProjectModalEditMode(false);
-                  // Reset todo input state
-                  setShowTodoInput(false);
-                  setTodoInputText('');
-                  setEditingTodoId(null);
                 })}
               >
                 <div 
@@ -4491,10 +4477,6 @@ const LandCruiserTracker = () => {
                         setShowProjectDetailModal(false);
                         setViewingProject(null);
                         setProjectModalEditMode(false);
-                        // Reset todo input state
-                        setShowTodoInput(false);
-                        setTodoInputText('');
-                        setEditingTodoId(null);
                       })}
                       className={`p-2 rounded-md transition-colors flex-shrink-0 ${
                         darkMode ? 'hover:bg-gray-700 text-gray-400' : 'hover:bg-gray-100 text-gray-600'
@@ -4635,119 +4617,39 @@ const LandCruiserTracker = () => {
                               }`}>
                                 To-Do List
                               </h3>
-                              {!showTodoInput && (
-                                <button
-                                  onClick={(e) => {
-                                    e.stopPropagation();
-                                    setShowTodoInput(true);
-                                    setTodoInputText('');
-                                    setEditingTodoId(null);
-                                  }}
-                                  className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors flex items-center gap-1 ${
-                                    darkMode 
-                                      ? 'bg-blue-600 hover:bg-blue-700 text-white' 
-                                      : 'bg-blue-600 hover:bg-blue-700 text-white'
-                                  }`}
-                                >
-                                  <Plus className="w-4 h-4" />
-                                  Add
-                                </button>
-                              )}
-                            </div>
-                            
-                            {/* Todo Input Form */}
-                            {showTodoInput && (
-                              <div className={`mb-3 p-3 rounded-lg border ${
-                                darkMode ? 'bg-gray-700 border-gray-600' : 'bg-gray-50 border-gray-200'
-                              }`}>
-                                <input
-                                  type="text"
-                                  value={todoInputText}
-                                  onChange={(e) => setTodoInputText(e.target.value)}
-                                  onKeyDown={(e) => {
-                                    if (e.key === 'Enter' && todoInputText.trim()) {
-                                      const currentTodos = viewingProject.todos || [];
-                                      const newTodo = {
-                                        id: Date.now(),
-                                        text: todoInputText.trim(),
-                                        completed: false,
-                                        created_at: new Date().toISOString()
-                                      };
-                                      updateProject(viewingProject.id, {
+                              <button
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  const todoText = prompt('Enter a new to-do item:');
+                                  if (todoText && todoText.trim()) {
+                                    const currentTodos = viewingProject.todos || [];
+                                    const newTodo = {
+                                      id: Date.now(),
+                                      text: todoText.trim(),
+                                      completed: false,
+                                      created_at: new Date().toISOString()
+                                    };
+                                    updateProject(viewingProject.id, {
+                                      todos: [...currentTodos, newTodo]
+                                    }).then(() => {
+                                      // Update the viewing project state
+                                      setViewingProject({
+                                        ...viewingProject,
                                         todos: [...currentTodos, newTodo]
-                                      }).then(() => {
-                                        setViewingProject({
-                                          ...viewingProject,
-                                          todos: [...currentTodos, newTodo]
-                                        });
-                                        setTodoInputText('');
-                                        setShowTodoInput(false);
                                       });
-                                    } else if (e.key === 'Escape') {
-                                      setShowTodoInput(false);
-                                      setTodoInputText('');
-                                    }
-                                  }}
-                                  placeholder="Enter a new to-do item..."
-                                  autoFocus
-                                  className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent mb-2 ${
-                                    darkMode 
-                                      ? 'bg-gray-600 border-gray-500 text-gray-100 placeholder-gray-400' 
-                                      : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400'
-                                  }`}
-                                />
-                                <div className="flex gap-2">
-                                  <button
-                                    onClick={(e) => {
-                                      e.stopPropagation();
-                                      if (todoInputText.trim()) {
-                                        const currentTodos = viewingProject.todos || [];
-                                        const newTodo = {
-                                          id: Date.now(),
-                                          text: todoInputText.trim(),
-                                          completed: false,
-                                          created_at: new Date().toISOString()
-                                        };
-                                        updateProject(viewingProject.id, {
-                                          todos: [...currentTodos, newTodo]
-                                        }).then(() => {
-                                          setViewingProject({
-                                            ...viewingProject,
-                                            todos: [...currentTodos, newTodo]
-                                          });
-                                          setTodoInputText('');
-                                          setShowTodoInput(false);
-                                        });
-                                      }
-                                    }}
-                                    disabled={!todoInputText.trim()}
-                                    className={`flex-1 px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
-                                      todoInputText.trim()
-                                        ? 'bg-blue-600 hover:bg-blue-700 text-white'
-                                        : darkMode
-                                          ? 'bg-gray-600 text-gray-400 cursor-not-allowed'
-                                          : 'bg-gray-200 text-gray-400 cursor-not-allowed'
-                                    }`}
-                                  >
-                                    Add To-Do
-                                  </button>
-                                  <button
-                                    onClick={(e) => {
-                                      e.stopPropagation();
-                                      setShowTodoInput(false);
-                                      setTodoInputText('');
-                                    }}
-                                    className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
-                                      darkMode 
-                                        ? 'bg-gray-600 hover:bg-gray-500 text-gray-200' 
-                                        : 'bg-gray-200 hover:bg-gray-300 text-gray-700'
-                                    }`}
-                                  >
-                                    Cancel
-                                  </button>
-                                </div>
-                              </div>
-                            )}
+                                    });
+                                  }
+                                }}
+                                className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors flex items-center gap-1 ${
+                                  darkMode 
+                                    ? 'bg-blue-600 hover:bg-blue-700 text-white' 
+                                    : 'bg-blue-600 hover:bg-blue-700 text-white'
+                                }`}
+                              >
+                                <Plus className="w-4 h-4" />
+                                Add
+                              </button>
+                            </div>
                             
                             {/* To-Do Items */}
                             {viewingProject.todos && viewingProject.todos.length > 0 ? (
@@ -4759,168 +4661,69 @@ const LandCruiserTracker = () => {
                                       darkMode ? 'bg-gray-700 border-gray-600' : 'bg-gray-50 border-gray-200'
                                     }`}
                                   >
-                                    {editingTodoId === todo.id ? (
-                                      // Edit mode
-                                      <>
-                                        <input
-                                          type="text"
-                                          value={todoInputText}
-                                          onChange={(e) => setTodoInputText(e.target.value)}
-                                          onKeyDown={(e) => {
-                                            if (e.key === 'Enter' && todoInputText.trim()) {
-                                              const updatedTodos = viewingProject.todos.map(t => 
-                                                t.id === todo.id ? { ...t, text: todoInputText.trim() } : t
-                                              );
-                                              updateProject(viewingProject.id, {
-                                                todos: updatedTodos
-                                              }).then(() => {
-                                                setViewingProject({
-                                                  ...viewingProject,
-                                                  todos: updatedTodos
-                                                });
-                                                setEditingTodoId(null);
-                                                setTodoInputText('');
-                                              });
-                                            } else if (e.key === 'Escape') {
-                                              setEditingTodoId(null);
-                                              setTodoInputText('');
-                                            }
-                                          }}
-                                          autoFocus
-                                          className={`flex-1 px-3 py-1.5 border rounded focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm ${
-                                            darkMode 
-                                              ? 'bg-gray-600 border-gray-500 text-gray-100' 
-                                              : 'bg-white border-gray-300 text-gray-900'
-                                          }`}
-                                        />
-                                        <button
-                                          onClick={(e) => {
-                                            e.stopPropagation();
-                                            if (todoInputText.trim()) {
-                                              const updatedTodos = viewingProject.todos.map(t => 
-                                                t.id === todo.id ? { ...t, text: todoInputText.trim() } : t
-                                              );
-                                              updateProject(viewingProject.id, {
-                                                todos: updatedTodos
-                                              }).then(() => {
-                                                setViewingProject({
-                                                  ...viewingProject,
-                                                  todos: updatedTodos
-                                                });
-                                                setEditingTodoId(null);
-                                                setTodoInputText('');
-                                              });
-                                            }
-                                          }}
-                                          className={`flex-shrink-0 p-1.5 rounded transition-colors ${
-                                            darkMode 
-                                              ? 'text-green-400 hover:bg-gray-600' 
-                                              : 'text-green-600 hover:bg-gray-200'
-                                          }`}
-                                          title="Save"
-                                        >
-                                          <CheckCircle className="w-4 h-4" />
-                                        </button>
-                                        <button
-                                          onClick={(e) => {
-                                            e.stopPropagation();
-                                            setEditingTodoId(null);
-                                            setTodoInputText('');
-                                          }}
-                                          className={`flex-shrink-0 p-1.5 rounded transition-colors ${
-                                            darkMode 
-                                              ? 'text-gray-400 hover:bg-gray-600' 
-                                              : 'text-gray-600 hover:bg-gray-200'
-                                          }`}
-                                          title="Cancel"
-                                        >
-                                          <X className="w-4 h-4" />
-                                        </button>
-                                      </>
-                                    ) : (
-                                      // View mode
-                                      <>
-                                        <button
-                                          onClick={(e) => {
-                                            e.stopPropagation();
-                                            const updatedTodos = viewingProject.todos.map(t => 
-                                              t.id === todo.id ? { ...t, completed: !t.completed } : t
-                                            );
-                                            updateProject(viewingProject.id, {
+                                    <button
+                                      onClick={(e) => {
+                                        e.stopPropagation();
+                                        const updatedTodos = viewingProject.todos.map(t => 
+                                          t.id === todo.id ? { ...t, completed: !t.completed } : t
+                                        );
+                                        updateProject(viewingProject.id, {
+                                          todos: updatedTodos
+                                        }).then(() => {
+                                          setViewingProject({
+                                            ...viewingProject,
+                                            todos: updatedTodos
+                                          });
+                                        });
+                                      }}
+                                      className={`flex-shrink-0 w-5 h-5 rounded border-2 flex items-center justify-center transition-colors ${
+                                        todo.completed
+                                          ? darkMode
+                                            ? 'bg-green-600 border-green-600'
+                                            : 'bg-green-500 border-green-500'
+                                          : darkMode
+                                            ? 'border-gray-500 hover:border-gray-400'
+                                            : 'border-gray-400 hover:border-gray-500'
+                                      }`}
+                                    >
+                                      {todo.completed && (
+                                        <CheckCircle className="w-4 h-4 text-white" />
+                                      )}
+                                    </button>
+                                    <span className={`flex-1 text-sm ${
+                                      todo.completed
+                                        ? darkMode
+                                          ? 'text-gray-500 line-through'
+                                          : 'text-gray-400 line-through'
+                                        : darkMode
+                                          ? 'text-gray-200'
+                                          : 'text-gray-800'
+                                    }`}>
+                                      {todo.text}
+                                    </span>
+                                    <button
+                                      onClick={(e) => {
+                                        e.stopPropagation();
+                                        if (confirm('Delete this to-do item?')) {
+                                          const updatedTodos = viewingProject.todos.filter(t => t.id !== todo.id);
+                                          updateProject(viewingProject.id, {
+                                            todos: updatedTodos
+                                          }).then(() => {
+                                            setViewingProject({
+                                              ...viewingProject,
                                               todos: updatedTodos
-                                            }).then(() => {
-                                              setViewingProject({
-                                                ...viewingProject,
-                                                todos: updatedTodos
-                                              });
                                             });
-                                          }}
-                                          className={`flex-shrink-0 w-5 h-5 rounded border-2 flex items-center justify-center transition-colors ${
-                                            todo.completed
-                                              ? darkMode
-                                                ? 'bg-green-600 border-green-600'
-                                                : 'bg-green-500 border-green-500'
-                                              : darkMode
-                                                ? 'border-gray-500 hover:border-gray-400'
-                                                : 'border-gray-400 hover:border-gray-500'
-                                          }`}
-                                        >
-                                          {todo.completed && (
-                                            <CheckCircle className="w-4 h-4 text-white" />
-                                          )}
-                                        </button>
-                                        <span className={`flex-1 text-sm ${
-                                          todo.completed
-                                            ? darkMode
-                                              ? 'text-gray-500 line-through'
-                                              : 'text-gray-400 line-through'
-                                            : darkMode
-                                              ? 'text-gray-200'
-                                              : 'text-gray-800'
-                                        }`}>
-                                          {todo.text}
-                                        </span>
-                                        <button
-                                          onClick={(e) => {
-                                            e.stopPropagation();
-                                            setEditingTodoId(todo.id);
-                                            setTodoInputText(todo.text);
-                                          }}
-                                          className={`flex-shrink-0 p-1 rounded transition-colors ${
-                                            darkMode 
-                                              ? 'text-gray-500 hover:text-blue-400 hover:bg-gray-600' 
-                                              : 'text-gray-400 hover:text-blue-600 hover:bg-gray-200'
-                                          }`}
-                                          title="Edit"
-                                        >
-                                          <Edit2 className="w-4 h-4" />
-                                        </button>
-                                        <button
-                                          onClick={(e) => {
-                                            e.stopPropagation();
-                                            if (confirm('Delete this to-do item?')) {
-                                              const updatedTodos = viewingProject.todos.filter(t => t.id !== todo.id);
-                                              updateProject(viewingProject.id, {
-                                                todos: updatedTodos
-                                              }).then(() => {
-                                                setViewingProject({
-                                                  ...viewingProject,
-                                                  todos: updatedTodos
-                                                });
-                                              });
-                                            }
-                                          }}
-                                          className={`flex-shrink-0 p-1 rounded transition-colors ${
-                                            darkMode 
-                                              ? 'text-gray-500 hover:text-red-400 hover:bg-gray-600' 
-                                              : 'text-gray-400 hover:text-red-600 hover:bg-gray-200'
-                                          }`}
-                                          title="Delete"
-                                        >
-                                          <Trash2 className="w-4 h-4" />
-                                        </button>
-                                      </>
-                                    )}
+                                          });
+                                        }
+                                      }}
+                                      className={`flex-shrink-0 p-1 rounded transition-colors ${
+                                        darkMode 
+                                          ? 'text-gray-500 hover:text-red-400 hover:bg-gray-600' 
+                                          : 'text-gray-400 hover:text-red-600 hover:bg-gray-200'
+                                      }`}
+                                    >
+                                      <X className="w-4 h-4" />
+                                    </button>
                                   </div>
                                 ))}
                               </div>
@@ -5247,111 +5050,34 @@ const LandCruiserTracker = () => {
                             }`}>
                               To-Do List
                             </h3>
-                            {!showTodoInput && (
-                              <button
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                  setShowTodoInput(true);
-                                  setTodoInputText('');
-                                  setEditingTodoId(null);
-                                }}
-                                className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors flex items-center gap-1 ${
-                                  darkMode 
-                                    ? 'bg-blue-600 hover:bg-blue-700 text-white' 
-                                    : 'bg-blue-600 hover:bg-blue-700 text-white'
-                                }`}
-                              >
-                                <Plus className="w-4 h-4" />
-                                Add
-                              </button>
-                            )}
+                            <button
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                const todoText = prompt('Enter a new to-do item:');
+                                if (todoText && todoText.trim()) {
+                                  const currentTodos = viewingProject.todos || [];
+                                  const newTodo = {
+                                    id: Date.now(),
+                                    text: todoText.trim(),
+                                    completed: false,
+                                    created_at: new Date().toISOString()
+                                  };
+                                  setViewingProject({
+                                    ...viewingProject,
+                                    todos: [...currentTodos, newTodo]
+                                  });
+                                }
+                              }}
+                              className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors flex items-center gap-1 ${
+                                darkMode 
+                                  ? 'bg-blue-600 hover:bg-blue-700 text-white' 
+                                  : 'bg-blue-600 hover:bg-blue-700 text-white'
+                              }`}
+                            >
+                              <Plus className="w-4 h-4" />
+                              Add
+                            </button>
                           </div>
-                          
-                          {/* Todo Input Form */}
-                          {showTodoInput && (
-                            <div className={`mb-3 p-3 rounded-lg border ${
-                              darkMode ? 'bg-gray-700 border-gray-600' : 'bg-gray-50 border-gray-200'
-                            }`}>
-                              <input
-                                type="text"
-                                value={todoInputText}
-                                onChange={(e) => setTodoInputText(e.target.value)}
-                                onKeyDown={(e) => {
-                                  if (e.key === 'Enter' && todoInputText.trim()) {
-                                    const currentTodos = viewingProject.todos || [];
-                                    const newTodo = {
-                                      id: Date.now(),
-                                      text: todoInputText.trim(),
-                                      completed: false,
-                                      created_at: new Date().toISOString()
-                                    };
-                                    setViewingProject({
-                                      ...viewingProject,
-                                      todos: [...currentTodos, newTodo]
-                                    });
-                                    setTodoInputText('');
-                                    setShowTodoInput(false);
-                                  } else if (e.key === 'Escape') {
-                                    setShowTodoInput(false);
-                                    setTodoInputText('');
-                                  }
-                                }}
-                                placeholder="Enter a new to-do item..."
-                                autoFocus
-                                className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent mb-2 ${
-                                  darkMode 
-                                    ? 'bg-gray-600 border-gray-500 text-gray-100 placeholder-gray-400' 
-                                    : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400'
-                                }`}
-                              />
-                              <div className="flex gap-2">
-                                <button
-                                  onClick={(e) => {
-                                    e.stopPropagation();
-                                    if (todoInputText.trim()) {
-                                      const currentTodos = viewingProject.todos || [];
-                                      const newTodo = {
-                                        id: Date.now(),
-                                        text: todoInputText.trim(),
-                                        completed: false,
-                                        created_at: new Date().toISOString()
-                                      };
-                                      setViewingProject({
-                                        ...viewingProject,
-                                        todos: [...currentTodos, newTodo]
-                                      });
-                                      setTodoInputText('');
-                                      setShowTodoInput(false);
-                                    }
-                                  }}
-                                  disabled={!todoInputText.trim()}
-                                  className={`flex-1 px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
-                                    todoInputText.trim()
-                                      ? 'bg-blue-600 hover:bg-blue-700 text-white'
-                                      : darkMode
-                                        ? 'bg-gray-600 text-gray-400 cursor-not-allowed'
-                                        : 'bg-gray-200 text-gray-400 cursor-not-allowed'
-                                  }`}
-                                >
-                                  Add To-Do
-                                </button>
-                                <button
-                                  onClick={(e) => {
-                                    e.stopPropagation();
-                                    setShowTodoInput(false);
-                                    setTodoInputText('');
-                                  }}
-                                  className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
-                                    darkMode 
-                                      ? 'bg-gray-600 hover:bg-gray-500 text-gray-200' 
-                                      : 'bg-gray-200 hover:bg-gray-300 text-gray-700'
-                                  }`}
-                                >
-                                  Cancel
-                                </button>
-                              </div>
-                            </div>
-                          )}
                           
                           {/* To-Do Items */}
                           {viewingProject.todos && viewingProject.todos.length > 0 ? (
@@ -5363,152 +5089,61 @@ const LandCruiserTracker = () => {
                                     darkMode ? 'bg-gray-700 border-gray-600' : 'bg-gray-50 border-gray-200'
                                   }`}
                                 >
-                                  {editingTodoId === todo.id ? (
-                                    // Edit mode
-                                    <>
-                                      <input
-                                        type="text"
-                                        value={todoInputText}
-                                        onChange={(e) => setTodoInputText(e.target.value)}
-                                        onKeyDown={(e) => {
-                                          if (e.key === 'Enter' && todoInputText.trim()) {
-                                            const updatedTodos = viewingProject.todos.map(t => 
-                                              t.id === todo.id ? { ...t, text: todoInputText.trim() } : t
-                                            );
-                                            setViewingProject({
-                                              ...viewingProject,
-                                              todos: updatedTodos
-                                            });
-                                            setEditingTodoId(null);
-                                            setTodoInputText('');
-                                          } else if (e.key === 'Escape') {
-                                            setEditingTodoId(null);
-                                            setTodoInputText('');
-                                          }
-                                        }}
-                                        autoFocus
-                                        className={`flex-1 px-3 py-1.5 border rounded focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm ${
-                                          darkMode 
-                                            ? 'bg-gray-600 border-gray-500 text-gray-100' 
-                                            : 'bg-white border-gray-300 text-gray-900'
-                                        }`}
-                                      />
-                                      <button
-                                        onClick={(e) => {
-                                          e.stopPropagation();
-                                          if (todoInputText.trim()) {
-                                            const updatedTodos = viewingProject.todos.map(t => 
-                                              t.id === todo.id ? { ...t, text: todoInputText.trim() } : t
-                                            );
-                                            setViewingProject({
-                                              ...viewingProject,
-                                              todos: updatedTodos
-                                            });
-                                            setEditingTodoId(null);
-                                            setTodoInputText('');
-                                          }
-                                        }}
-                                        className={`flex-shrink-0 p-1.5 rounded transition-colors ${
-                                          darkMode 
-                                            ? 'text-green-400 hover:bg-gray-600' 
-                                            : 'text-green-600 hover:bg-gray-200'
-                                        }`}
-                                        title="Save"
-                                      >
-                                        <CheckCircle className="w-4 h-4" />
-                                      </button>
-                                      <button
-                                        onClick={(e) => {
-                                          e.stopPropagation();
-                                          setEditingTodoId(null);
-                                          setTodoInputText('');
-                                        }}
-                                        className={`flex-shrink-0 p-1.5 rounded transition-colors ${
-                                          darkMode 
-                                            ? 'text-gray-400 hover:bg-gray-600' 
-                                            : 'text-gray-600 hover:bg-gray-200'
-                                        }`}
-                                        title="Cancel"
-                                      >
-                                        <X className="w-4 h-4" />
-                                      </button>
-                                    </>
-                                  ) : (
-                                    // View mode
-                                    <>
-                                      <button
-                                        onClick={(e) => {
-                                          e.stopPropagation();
-                                          const updatedTodos = viewingProject.todos.map(t => 
-                                            t.id === todo.id ? { ...t, completed: !t.completed } : t
-                                          );
-                                          setViewingProject({
-                                            ...viewingProject,
-                                            todos: updatedTodos
-                                          });
-                                        }}
-                                        className={`flex-shrink-0 w-5 h-5 rounded border-2 flex items-center justify-center transition-colors ${
-                                          todo.completed
-                                            ? darkMode
-                                              ? 'bg-green-600 border-green-600'
-                                              : 'bg-green-500 border-green-500'
-                                            : darkMode
-                                              ? 'border-gray-500 hover:border-gray-400'
-                                              : 'border-gray-400 hover:border-gray-500'
-                                        }`}
-                                      >
-                                        {todo.completed && (
-                                          <CheckCircle className="w-4 h-4 text-white" />
-                                        )}
-                                      </button>
-                                      <span className={`flex-1 text-sm ${
-                                        todo.completed
-                                          ? darkMode
-                                            ? 'text-gray-500 line-through'
-                                            : 'text-gray-400 line-through'
-                                          : darkMode
-                                            ? 'text-gray-200'
-                                            : 'text-gray-800'
-                                      }`}>
-                                        {todo.text}
-                                      </span>
-                                      <button
-                                        onClick={(e) => {
-                                          e.stopPropagation();
-                                          setEditingTodoId(todo.id);
-                                          setTodoInputText(todo.text);
-                                        }}
-                                        className={`flex-shrink-0 p-1 rounded transition-colors ${
-                                          darkMode 
-                                            ? 'text-gray-500 hover:text-blue-400 hover:bg-gray-600' 
-                                            : 'text-gray-400 hover:text-blue-600 hover:bg-gray-200'
-                                        }`}
-                                        title="Edit"
-                                      >
-                                        <Edit2 className="w-4 h-4" />
-                                      </button>
-                                      <button
-                                        onClick={(e) => {
-                                          e.stopPropagation();
-                                          if (confirm('Delete this to-do item?')) {
-                                            const updatedTodos = viewingProject.todos.filter(t => t.id !== todo.id);
-                                            setViewingProject({
-                                              ...viewingProject,
-                                              todos: updatedTodos
-                                            });
-                                          }
-                                        }}
-                                        className={`flex-shrink-0 p-1 rounded transition-colors ${
-                                          darkMode 
-                                            ? 'text-gray-500 hover:text-red-400 hover:bg-gray-600' 
-                                            : 'text-gray-400 hover:text-red-600 hover:bg-gray-200'
-                                        }`}
-                                        title="Delete"
-                                      >
-                                        <Trash2 className="w-4 h-4" />
-                                      </button>
-                                    </>
-                                  )}
+                                  <button
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      const updatedTodos = viewingProject.todos.map(t => 
+                                        t.id === todo.id ? { ...t, completed: !t.completed } : t
+                                      );
+                                      setViewingProject({
+                                        ...viewingProject,
+                                        todos: updatedTodos
+                                      });
+                                    }}
+                                    className={`flex-shrink-0 w-5 h-5 rounded border-2 flex items-center justify-center transition-colors ${
+                                      todo.completed
+                                        ? darkMode
+                                          ? 'bg-green-600 border-green-600'
+                                          : 'bg-green-500 border-green-500'
+                                        : darkMode
+                                          ? 'border-gray-500 hover:border-gray-400'
+                                          : 'border-gray-400 hover:border-gray-500'
+                                    }`}
+                                  >
+                                    {todo.completed && (
+                                      <CheckCircle className="w-4 h-4 text-white" />
+                                    )}
+                                  </button>
+                                  <span className={`flex-1 text-sm ${
+                                    todo.completed
+                                      ? darkMode
+                                        ? 'text-gray-500 line-through'
+                                        : 'text-gray-400 line-through'
+                                      : darkMode
+                                        ? 'text-gray-200'
+                                        : 'text-gray-800'
+                                  }`}>
+                                    {todo.text}
+                                  </span>
+                                  <button
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      if (confirm('Delete this to-do item?')) {
+                                        const updatedTodos = viewingProject.todos.filter(t => t.id !== todo.id);
+                                        setViewingProject({
+                                          ...viewingProject,
+                                          todos: updatedTodos
+                                        });
+                                      }
+                                    }}
+                                    className={`flex-shrink-0 p-1 rounded transition-colors ${
+                                      darkMode 
+                                        ? 'text-gray-500 hover:text-red-400 hover:bg-gray-600' 
+                                        : 'text-gray-400 hover:text-red-600 hover:bg-gray-200'
+                                    }`}
+                                  >
+                                    <X className="w-4 h-4" />
+                                  </button>
                                 </div>
                               ))}
                             </div>
@@ -5603,10 +5238,6 @@ const LandCruiserTracker = () => {
                       <button
                         onClick={() => {
                           setProjectModalEditMode(false);
-                          // Reset todo input state
-                          setShowTodoInput(false);
-                          setTodoInputText('');
-                          setEditingTodoId(null);
                         }}
                         className={`flex items-center gap-2 p-2 rounded-lg font-medium transition-colors border ${
                           darkMode 
@@ -5635,10 +5266,6 @@ const LandCruiserTracker = () => {
                             todos: viewingProject.todos || []
                           });
                           setProjectModalEditMode(false);
-                          // Reset todo input state
-                          setShowTodoInput(false);
-                          setTodoInputText('');
-                          setEditingTodoId(null);
                         }}
                         className="px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium transition-colors flex items-center gap-2"
                       >
@@ -5648,10 +5275,6 @@ const LandCruiserTracker = () => {
                       <button
                         onClick={() => {
                           setProjectModalEditMode(true);
-                          // Reset todo input state
-                          setShowTodoInput(false);
-                          setTodoInputText('');
-                          setEditingTodoId(null);
                         }}
                         className="px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium transition-colors flex items-center gap-2"
                       >
