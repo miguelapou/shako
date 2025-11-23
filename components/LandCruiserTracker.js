@@ -977,6 +977,8 @@ const LandCruiserTracker = () => {
   const [viewingProject, setViewingProject] = useState(null);
   const [editingProject, setEditingProject] = useState(null);
   const [projectModalEditMode, setProjectModalEditMode] = useState(false); // Track if editing within project detail modal
+  const [editingTodoId, setEditingTodoId] = useState(null); // Track which todo is being edited
+  const [editingTodoText, setEditingTodoText] = useState(''); // Temp text while editing
   const [newProject, setNewProject] = useState({
     name: '',
     description: '',
@@ -4661,6 +4663,7 @@ const LandCruiserTracker = () => {
                                       darkMode ? 'bg-gray-700 border-gray-600' : 'bg-gray-50 border-gray-200'
                                     }`}
                                   >
+                                    {/* Checkbox */}
                                     <button
                                       onClick={(e) => {
                                         e.stopPropagation();
@@ -4690,17 +4693,82 @@ const LandCruiserTracker = () => {
                                         <CheckCircle className="w-4 h-4 text-white" />
                                       )}
                                     </button>
-                                    <span className={`flex-1 text-sm ${
-                                      todo.completed
-                                        ? darkMode
-                                          ? 'text-gray-500 line-through'
-                                          : 'text-gray-400 line-through'
-                                        : darkMode
-                                          ? 'text-gray-200'
-                                          : 'text-gray-800'
-                                    }`}>
-                                      {todo.text}
-                                    </span>
+                                    
+                                    {/* Todo Text - Click to edit inline */}
+                                    {editingTodoId === todo.id ? (
+                                      <input
+                                        type="text"
+                                        value={editingTodoText}
+                                        onChange={(e) => setEditingTodoText(e.target.value)}
+                                        onKeyDown={(e) => {
+                                          if (e.key === 'Enter') {
+                                            e.preventDefault();
+                                            if (editingTodoText.trim()) {
+                                              const updatedTodos = viewingProject.todos.map(t => 
+                                                t.id === todo.id ? { ...t, text: editingTodoText.trim() } : t
+                                              );
+                                              updateProject(viewingProject.id, {
+                                                todos: updatedTodos
+                                              }).then(() => {
+                                                setViewingProject({
+                                                  ...viewingProject,
+                                                  todos: updatedTodos
+                                                });
+                                                setEditingTodoId(null);
+                                                setEditingTodoText('');
+                                              });
+                                            }
+                                          } else if (e.key === 'Escape') {
+                                            setEditingTodoId(null);
+                                            setEditingTodoText('');
+                                          }
+                                        }}
+                                        onBlur={() => {
+                                          if (editingTodoText.trim() && editingTodoText !== todo.text) {
+                                            const updatedTodos = viewingProject.todos.map(t => 
+                                              t.id === todo.id ? { ...t, text: editingTodoText.trim() } : t
+                                            );
+                                            updateProject(viewingProject.id, {
+                                              todos: updatedTodos
+                                            }).then(() => {
+                                              setViewingProject({
+                                                ...viewingProject,
+                                                todos: updatedTodos
+                                              });
+                                            });
+                                          }
+                                          setEditingTodoId(null);
+                                          setEditingTodoText('');
+                                        }}
+                                        autoFocus
+                                        className={`flex-1 text-sm px-2 py-1 rounded border-2 focus:outline-none ${
+                                          darkMode
+                                            ? 'bg-gray-600 border-blue-500 text-gray-100'
+                                            : 'bg-white border-blue-500 text-gray-800'
+                                        }`}
+                                      />
+                                    ) : (
+                                      <span 
+                                        onClick={() => {
+                                          setEditingTodoId(todo.id);
+                                          setEditingTodoText(todo.text);
+                                        }}
+                                        className={`flex-1 text-sm cursor-pointer hover:opacity-70 transition-opacity ${
+                                          todo.completed
+                                            ? darkMode
+                                              ? 'text-gray-500 line-through'
+                                              : 'text-gray-400 line-through'
+                                            : darkMode
+                                              ? 'text-gray-200'
+                                              : 'text-gray-800'
+                                        }`}
+                                        title="Click to edit"
+                                      >
+                                        {todo.text}
+                                      </span>
+                                    )}
+                                    
+                                    {/* Delete Button */}
                                     <button
                                       onClick={(e) => {
                                         e.stopPropagation();
@@ -5089,6 +5157,7 @@ const LandCruiserTracker = () => {
                                     darkMode ? 'bg-gray-700 border-gray-600' : 'bg-gray-50 border-gray-200'
                                   }`}
                                 >
+                                  {/* Checkbox */}
                                   <button
                                     onClick={(e) => {
                                       e.stopPropagation();
@@ -5114,17 +5183,74 @@ const LandCruiserTracker = () => {
                                       <CheckCircle className="w-4 h-4 text-white" />
                                     )}
                                   </button>
-                                  <span className={`flex-1 text-sm ${
-                                    todo.completed
-                                      ? darkMode
-                                        ? 'text-gray-500 line-through'
-                                        : 'text-gray-400 line-through'
-                                      : darkMode
-                                        ? 'text-gray-200'
-                                        : 'text-gray-800'
-                                  }`}>
-                                    {todo.text}
-                                  </span>
+                                  
+                                  {/* Todo Text - Click to edit inline */}
+                                  {editingTodoId === todo.id ? (
+                                    <input
+                                      type="text"
+                                      value={editingTodoText}
+                                      onChange={(e) => setEditingTodoText(e.target.value)}
+                                      onKeyDown={(e) => {
+                                        if (e.key === 'Enter') {
+                                          e.preventDefault();
+                                          if (editingTodoText.trim()) {
+                                            const updatedTodos = viewingProject.todos.map(t => 
+                                              t.id === todo.id ? { ...t, text: editingTodoText.trim() } : t
+                                            );
+                                            setViewingProject({
+                                              ...viewingProject,
+                                              todos: updatedTodos
+                                            });
+                                            setEditingTodoId(null);
+                                            setEditingTodoText('');
+                                          }
+                                        } else if (e.key === 'Escape') {
+                                          setEditingTodoId(null);
+                                          setEditingTodoText('');
+                                        }
+                                      }}
+                                      onBlur={() => {
+                                        if (editingTodoText.trim() && editingTodoText !== todo.text) {
+                                          const updatedTodos = viewingProject.todos.map(t => 
+                                            t.id === todo.id ? { ...t, text: editingTodoText.trim() } : t
+                                          );
+                                          setViewingProject({
+                                            ...viewingProject,
+                                            todos: updatedTodos
+                                          });
+                                        }
+                                        setEditingTodoId(null);
+                                        setEditingTodoText('');
+                                      }}
+                                      autoFocus
+                                      className={`flex-1 text-sm px-2 py-1 rounded border-2 focus:outline-none ${
+                                        darkMode
+                                          ? 'bg-gray-600 border-blue-500 text-gray-100'
+                                          : 'bg-white border-blue-500 text-gray-800'
+                                      }`}
+                                    />
+                                  ) : (
+                                    <span 
+                                      onClick={() => {
+                                        setEditingTodoId(todo.id);
+                                        setEditingTodoText(todo.text);
+                                      }}
+                                      className={`flex-1 text-sm cursor-pointer hover:opacity-70 transition-opacity ${
+                                        todo.completed
+                                          ? darkMode
+                                            ? 'text-gray-500 line-through'
+                                            : 'text-gray-400 line-through'
+                                          : darkMode
+                                            ? 'text-gray-200'
+                                            : 'text-gray-800'
+                                      }`}
+                                      title="Click to edit"
+                                    >
+                                      {todo.text}
+                                    </span>
+                                  )}
+                                  
+                                  {/* Delete Button */}
                                   <button
                                     onClick={(e) => {
                                       e.stopPropagation();
