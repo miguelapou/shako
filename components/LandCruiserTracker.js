@@ -309,6 +309,7 @@ const LandCruiserTracker = () => {
   const [showVehicleDetailModal, setShowVehicleDetailModal] = useState(false);
   const [viewingVehicle, setViewingVehicle] = useState(null);
   const [vehicleModalProjectView, setVehicleModalProjectView] = useState(null); // Track if viewing project within vehicle modal
+  const [vehicleModalEditMode, setVehicleModalEditMode] = useState(null); // 'vehicle' or 'project' - track if editing within modal
   const [editingVehicle, setEditingVehicle] = useState(null);
   const [newVehicle, setNewVehicle] = useState({
     nickname: '',
@@ -6389,34 +6390,71 @@ const LandCruiserTracker = () => {
                         </div>
                       </div>
                     )}
+
+                    {/* Edit Project View - Slides in for editing */}
+                    {vehicleModalEditMode === 'project' && vehicleModalProjectView && (
+                      <div 
+                        className={`w-full transition-all duration-500 ease-in-out ${
+                          vehicleModalEditMode === 'project'
+                            ? 'relative opacity-100 translate-x-0' 
+                            : 'absolute opacity-0 translate-x-full pointer-events-none'
+                        }`}
+                      >
+                        <div className="p-6 space-y-6 max-h-[calc(90vh-164px)] overflow-y-auto">
+                          <div className={`text-sm mb-4 ${
+                            darkMode ? 'text-gray-400' : 'text-gray-600'
+                          }`}>
+                            Editing: {vehicleModalProjectView.name}
+                          </div>
+                          
+                          {/* Edit form will go here - for now just a placeholder */}
+                          <p className={darkMode ? 'text-gray-300' : 'text-gray-700'}>
+                            Edit form coming soon...
+                          </p>
+                        </div>
+                      </div>
+                    )}
                   </div>
 
                   {/* Footer with Edit Button */}
                   <div className={`border-t p-4 flex items-center justify-between ${
                     darkMode ? 'border-gray-700' : 'border-gray-200'
                   }`}>
-                    {vehicleModalProjectView ? (
+                    {(vehicleModalProjectView || vehicleModalEditMode) ? (
                       <button
-                        onClick={() => setVehicleModalProjectView(null)}
+                        onClick={() => {
+                          if (vehicleModalEditMode) {
+                            setVehicleModalEditMode(null);
+                          } else {
+                            setVehicleModalProjectView(null);
+                          }
+                        }}
                         className={`flex items-center gap-2 p-2 rounded-lg font-medium transition-colors border ${
                           darkMode 
                             ? 'bg-gray-700 hover:bg-gray-600 text-gray-100 border-gray-600 hover:border-gray-500' 
                             : 'bg-gray-200 hover:bg-gray-300 text-gray-800 border-gray-300 hover:border-gray-400'
                         }`}
-                        title="Back to vehicle"
+                        title={vehicleModalEditMode ? 'Back' : 'Back to vehicle'}
                       >
                         <ChevronDown className="w-5 h-5 rotate-90" />
                       </button>
                     ) : (
                       <div></div>
                     )}
-                    {!vehicleModalProjectView ? (
+                    {vehicleModalEditMode ? (
                       <button
                         onClick={() => {
-                          setShowVehicleDetailModal(false);
-                          setEditingVehicle(viewingVehicle);
-                          setViewingVehicle(null);
-                          setShowEditVehicleModal(true);
+                          // Save logic would go here
+                          setVehicleModalEditMode(null);
+                        }}
+                        className="px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium transition-colors flex items-center gap-2"
+                      >
+                        Save Changes
+                      </button>
+                    ) : !vehicleModalProjectView ? (
+                      <button
+                        onClick={() => {
+                          setVehicleModalEditMode('vehicle');
                         }}
                         className="px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium transition-colors flex items-center gap-2"
                       >
@@ -6426,15 +6464,7 @@ const LandCruiserTracker = () => {
                     ) : (
                       <button
                         onClick={() => {
-                          setEditingProject({
-                            ...vehicleModalProjectView,
-                            start_date: vehicleModalProjectView.start_date ? vehicleModalProjectView.start_date.split('T')[0] : '',
-                            target_date: vehicleModalProjectView.target_date ? vehicleModalProjectView.target_date.split('T')[0] : ''
-                          });
-                          setShowVehicleDetailModal(false);
-                          setShowEditProjectModal(true);
-                          setVehicleModalProjectView(null);
-                          setViewingVehicle(null);
+                          setVehicleModalEditMode('project');
                         }}
                         className="px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium transition-colors flex items-center gap-2"
                       >
