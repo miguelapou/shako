@@ -4828,123 +4828,64 @@ const LandCruiserTracker = () => {
                   </div>
                   
                   <div className="p-6">
-                    <div className="space-y-4">
-                      <div>
-                        <label className={`block text-sm font-medium mb-2 ${
-                          darkMode ? 'text-gray-300' : 'text-gray-700'
-                        }`}>
-                          Vehicle Image
-                        </label>
-                        
-                        {/* Image Preview */}
-                        {vehicleImagePreview && (
-                          <div className="mb-3 relative">
-                            <img 
-                              src={vehicleImagePreview} 
-                              alt="Preview"
-                              className={`w-full h-48 object-cover rounded-lg ${
-                                darkMode ? 'bg-gray-700' : 'bg-gray-200'
-                              }`}
-                            />
-                            <button
-                              onClick={clearImageSelection}
-                              className="absolute top-2 right-2 p-1 rounded-full bg-red-600 hover:bg-red-700 text-white transition-colors"
-                            >
-                              <X className="w-4 h-4" />
-                            </button>
-                          </div>
-                        )}
-                        
-                        {/* File Upload Button */}
-                        {!vehicleImagePreview && (
-                          <label className={`flex flex-col items-center justify-center w-full h-32 border-2 border-dashed rounded-lg cursor-pointer transition-colors ${
-                            darkMode 
-                              ? 'border-gray-600 hover:border-gray-500 bg-gray-700/50 hover:bg-gray-700' 
-                              : 'border-gray-300 hover:border-gray-400 bg-gray-50 hover:bg-gray-100'
-                          }`}>
-                            <div className="flex flex-col items-center justify-center pt-5 pb-6">
-                              <Upload className={`w-8 h-8 mb-2 ${
-                                darkMode ? 'text-gray-400' : 'text-gray-500'
-                              }`} />
-                              <p className={`mb-1 text-sm ${
-                                darkMode ? 'text-gray-400' : 'text-gray-600'
-                              }`}>
-                                <span className="font-semibold">Click to upload</span> or drag and drop
-                              </p>
-                              <p className={`text-xs ${
-                                darkMode ? 'text-gray-500' : 'text-gray-500'
-                              }`}>
-                                PNG, JPG, WEBP (MAX. 5MB)
-                              </p>
-                            </div>
-                            <input 
-                              type="file" 
-                              className="hidden" 
-                              accept="image/*"
-                              onChange={handleImageFileChange}
-                            />
-                          </label>
-                        )}
-                      </div>
-
-                      <div>
-                        <label className={`block text-sm font-medium mb-2 ${
-                          darkMode ? 'text-gray-300' : 'text-gray-700'
-                        }`}>
-                          Nickname *
-                        </label>
-                        <input
-                          type="text"
-                          value={newVehicle.nickname}
-                          onChange={(e) => setNewVehicle({ ...newVehicle, nickname: e.target.value })}
-                          className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
-                            darkMode 
-                              ? 'bg-gray-700 border-gray-600 text-gray-100 placeholder-gray-400' 
-                              : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400'
-                          }`}
-                          placeholder=""
-                        />
-                      </div>
-
-                      <div>
-                        <label className={`block text-sm font-medium mb-2 ${
-                          darkMode ? 'text-gray-300' : 'text-gray-700'
-                        }`}>
-                          Vehicle Color
-                        </label>
-                        <div className="flex items-center gap-3">
-                          <input
-                            type="color"
-                            value={newVehicle.color || '#3B82F6'}
-                            onChange={(e) => setNewVehicle({ ...newVehicle, color: e.target.value })}
-                            className="h-10 w-20 rounded cursor-pointer border-2 border-gray-300"
-                          />
-                          <span className={`text-sm font-mono ${
-                            darkMode ? 'text-gray-400' : 'text-gray-600'
-                          }`}>{newVehicle.color || '#3B82F6'}</span>
-                        </div>
-                      </div>
-
-                      <div className="grid grid-cols-2 gap-4">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                      {/* Left Column - Basic Information */}
+                      <div className="space-y-4">
                         <div>
                           <label className={`block text-sm font-medium mb-2 ${
                             darkMode ? 'text-gray-300' : 'text-gray-700'
                           }`}>
-                            Year
+                            Nickname *
                           </label>
                           <input
-                            type="number"
-                            value={newVehicle.year}
-                            onChange={(e) => setNewVehicle({ ...newVehicle, year: e.target.value })}
-                            className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
-                              darkMode 
-                                ? 'bg-gray-700 border-gray-600 text-gray-100 placeholder-gray-400' 
-                                : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400'
-                            }`}
+                            type="text"
+                            value={newVehicle.nickname}
+                            onChange={(e) => setNewVehicle({ ...newVehicle, nickname: e.target.value })}
+                            className={inputClasses(darkMode)}
                             placeholder=""
-                            min="1900"
-                            max="2100"
                           />
+                        </div>
+
+                        <div className="grid grid-cols-2 gap-4">
+                          <div>
+                            <label className={`block text-sm font-medium mb-2 ${
+                              darkMode ? 'text-gray-300' : 'text-gray-700'
+                            }`}>
+                              Vehicle Color
+                            </label>
+                            <div className="flex items-center gap-3">
+                              <input
+                                type="color"
+                                value={newVehicle.color || '#3B82F6'}
+                                onChange={(e) => setNewVehicle({ ...newVehicle, color: e.target.value })}
+                                className="h-10 w-20 rounded cursor-pointer border-2 border-gray-300"
+                              />
+                              <span className={`text-sm font-mono ${
+                                darkMode ? 'text-gray-400' : 'text-gray-600'
+                              }`}>{newVehicle.color || '#3B82F6'}</span>
+                            </div>
+                          </div>
+
+                          <div>
+                            <label className={`block text-sm font-medium mb-2 ${
+                              darkMode ? 'text-gray-300' : 'text-gray-700'
+                            }`}>
+                              Year
+                            </label>
+                            <input
+                              type="number"
+                              value={newVehicle.year}
+                              onChange={(e) => setNewVehicle({ ...newVehicle, year: e.target.value })}
+                              className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
+                                darkMode 
+                                  ? 'bg-gray-700 border-gray-600 text-gray-100 placeholder-gray-400' 
+                                  : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400'
+                              }`}
+                              placeholder=""
+                              min="1900"
+                              max="2100"
+                            />
+                          </div>
                         </div>
 
                         <div>
@@ -4965,67 +4906,131 @@ const LandCruiserTracker = () => {
                             placeholder=""
                           />
                         </div>
-                      </div>
 
-                      <div className="grid grid-cols-2 gap-4">
-                        <div>
-                          <label className={`block text-sm font-medium mb-2 ${
-                            darkMode ? 'text-gray-300' : 'text-gray-700'
-                          }`}>
-                            License Plate
-                          </label>
-                          <input
-                            type="text"
-                            value={newVehicle.license_plate}
-                            onChange={(e) => setNewVehicle({ ...newVehicle, license_plate: e.target.value })}
-                            className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
-                              darkMode 
-                                ? 'bg-gray-700 border-gray-600 text-gray-100 placeholder-gray-400' 
-                                : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400'
-                            }`}
-                            placeholder=""
-                          />
+                        <div className="grid grid-cols-2 gap-4">
+                          <div>
+                            <label className={`block text-sm font-medium mb-2 ${
+                              darkMode ? 'text-gray-300' : 'text-gray-700'
+                            }`}>
+                              License Plate
+                            </label>
+                            <input
+                              type="text"
+                              value={newVehicle.license_plate}
+                              onChange={(e) => setNewVehicle({ ...newVehicle, license_plate: e.target.value })}
+                              className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
+                                darkMode 
+                                  ? 'bg-gray-700 border-gray-600 text-gray-100 placeholder-gray-400' 
+                                  : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400'
+                              }`}
+                              placeholder=""
+                            />
+                          </div>
+
+                          <div>
+                            <label className={`block text-sm font-medium mb-2 ${
+                              darkMode ? 'text-gray-300' : 'text-gray-700'
+                            }`}>
+                              VIN
+                            </label>
+                            <input
+                              type="text"
+                              value={newVehicle.vin}
+                              onChange={(e) => setNewVehicle({ ...newVehicle, vin: e.target.value })}
+                              className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
+                                darkMode 
+                                  ? 'bg-gray-700 border-gray-600 text-gray-100 placeholder-gray-400' 
+                                  : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400'
+                              }`}
+                              placeholder=""
+                            />
+                          </div>
                         </div>
 
                         <div>
                           <label className={`block text-sm font-medium mb-2 ${
                             darkMode ? 'text-gray-300' : 'text-gray-700'
                           }`}>
-                            VIN
+                            Insurance Policy
                           </label>
                           <input
                             type="text"
-                            value={newVehicle.vin}
-                            onChange={(e) => setNewVehicle({ ...newVehicle, vin: e.target.value })}
-                            className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
-                              darkMode 
-                                ? 'bg-gray-700 border-gray-600 text-gray-100 placeholder-gray-400' 
-                                : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400'
-                            }`}
+                            value={newVehicle.insurance_policy}
+                            onChange={(e) => setNewVehicle({ ...newVehicle, insurance_policy: e.target.value })}
+                            className={inputClasses(darkMode)}
                             placeholder=""
                           />
                         </div>
                       </div>
 
-                      <div>
-                        <label className={`block text-sm font-medium mb-2 ${
-                          darkMode ? 'text-gray-300' : 'text-gray-700'
-                        }`}>
-                          Insurance Policy
-                        </label>
-                        <input
-                          type="text"
-                          value={newVehicle.insurance_policy}
-                          onChange={(e) => setNewVehicle({ ...newVehicle, insurance_policy: e.target.value })}
-                          className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
-                            darkMode 
-                              ? 'bg-gray-700 border-gray-600 text-gray-100 placeholder-gray-400' 
-                              : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400'
-                          }`}
-                          placeholder=""
-                        />
+                      {/* Right Column - Image Upload */}
+                      <div className="space-y-4">
+                        <div>
+                          <label className={`block text-sm font-medium mb-2 ${
+                            darkMode ? 'text-gray-300' : 'text-gray-700'
+                          }`}>
+                            Vehicle Image
+                          </label>
+                          
+                          {/* Image Preview */}
+                          {vehicleImagePreview && (
+                            <div className="mb-3 relative">
+                              <img 
+                                src={vehicleImagePreview} 
+                                alt="Preview"
+                                className={`w-full h-full object-cover rounded-lg ${
+                                  darkMode ? 'bg-gray-700' : 'bg-gray-200'
+                                }`}
+                                style={{ minHeight: '400px' }}
+                              />
+                              <button
+                                onClick={clearImageSelection}
+                                className="absolute top-2 right-2 p-1 rounded-full bg-red-600 hover:bg-red-700 text-white transition-colors"
+                              >
+                                <X className="w-4 h-4" />
+                              </button>
+                            </div>
+                          )}
+                          
+                          {/* File Upload Button */}
+                          {!vehicleImagePreview && (
+                            <label className={`flex flex-col items-center justify-center w-full border-2 border-dashed rounded-lg cursor-pointer transition-colors ${
+                              darkMode 
+                                ? 'border-gray-600 hover:border-gray-500 bg-gray-700/50 hover:bg-gray-700' 
+                                : 'border-gray-300 hover:border-gray-400 bg-gray-50 hover:bg-gray-100'
+                            }`} style={{ minHeight: '400px' }}>
+                              <div className="flex flex-col items-center justify-center pt-5 pb-6">
+                                <Upload className={`w-12 h-12 mb-3 ${
+                                  darkMode ? 'text-gray-400' : 'text-gray-500'
+                                }`} />
+                                <p className={`mb-2 text-sm ${
+                                  darkMode ? 'text-gray-400' : 'text-gray-600'
+                                }`}>
+                                  <span className="font-semibold">Click to upload</span> or drag and drop
+                                </p>
+                                <p className={`text-xs ${
+                                  darkMode ? 'text-gray-500' : 'text-gray-500'
+                                }`}>
+                                  PNG, JPG, WEBP (MAX. 5MB)
+                                </p>
+                              </div>
+                              <input 
+                                type="file" 
+                                className="hidden" 
+                                accept="image/*"
+                                onChange={handleImageFileChange}
+                              />
+                            </label>
+                          )}
+                        </div>
                       </div>
+                    </div>
 
+                    {/* Full Width Sections Below */}
+                    <div className="mt-6 space-y-4">
+
+                    {/* Half Width Sections Below */}
+                    <div className="mt-6 grid grid-cols-1 md:grid-cols-2 gap-6">
                       <div className={`pt-4 border-t ${
                         darkMode ? 'border-gray-700' : 'border-gray-200'
                       }`}>
@@ -5034,7 +5039,7 @@ const LandCruiserTracker = () => {
                         }`}>
                           Filters
                         </h3>
-                        <div className="grid grid-cols-2 gap-4">
+                        <div className="space-y-4">
                           <div>
                             <label className={`block text-sm font-medium mb-2 ${
                               darkMode ? 'text-gray-300' : 'text-gray-700'
@@ -5093,16 +5098,15 @@ const LandCruiserTracker = () => {
                             type="text"
                             value={newVehicle.battery}
                             onChange={(e) => setNewVehicle({ ...newVehicle, battery: e.target.value })}
-                            className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
-                              darkMode 
-                                ? 'bg-gray-700 border-gray-600 text-gray-100 placeholder-gray-400' 
-                                : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400'
-                            }`}
+                            className={inputClasses(darkMode)}
                             placeholder=""
                           />
                         </div>
                       </div>
+                    </div>
 
+                    {/* Oil Info Section - Full Width */}
+                    <div className="mt-6">
                       <div className={`pt-4 border-t ${
                         darkMode ? 'border-gray-700' : 'border-gray-200'
                       }`}>
@@ -5111,7 +5115,7 @@ const LandCruiserTracker = () => {
                         }`}>
                           Oil Info
                         </h3>
-                        <div className="space-y-4">
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                           <div>
                             <label className={`block text-sm font-medium mb-2 ${
                               darkMode ? 'text-gray-300' : 'text-gray-700'
@@ -5122,6 +5126,21 @@ const LandCruiserTracker = () => {
                               type="text"
                               value={newVehicle.oil_filter}
                               onChange={(e) => setNewVehicle({ ...newVehicle, oil_filter: e.target.value })}
+                              className={inputClasses(darkMode)}
+                              placeholder=""
+                            />
+                          </div>
+
+                          <div>
+                            <label className={`block text-sm font-medium mb-2 ${
+                              darkMode ? 'text-gray-300' : 'text-gray-700'
+                            }`}>
+                              Oil Type
+                            </label>
+                            <input
+                              type="text"
+                              value={newVehicle.oil_type}
+                              onChange={(e) => setNewVehicle({ ...newVehicle, oil_type: e.target.value })}
                               className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
                                 darkMode 
                                   ? 'bg-gray-700 border-gray-600 text-gray-100 placeholder-gray-400' 
@@ -5131,84 +5150,61 @@ const LandCruiserTracker = () => {
                             />
                           </div>
 
-                          <div className="grid grid-cols-2 gap-4">
-                            <div>
-                              <label className={`block text-sm font-medium mb-2 ${
-                                darkMode ? 'text-gray-300' : 'text-gray-700'
-                              }`}>
-                                Oil Type
-                              </label>
-                              <input
-                                type="text"
-                                value={newVehicle.oil_type}
-                                onChange={(e) => setNewVehicle({ ...newVehicle, oil_type: e.target.value })}
-                                className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
-                                  darkMode 
-                                    ? 'bg-gray-700 border-gray-600 text-gray-100 placeholder-gray-400' 
-                                    : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400'
-                                }`}
-                                placeholder=""
-                              />
-                            </div>
-
-                            <div>
-                              <label className={`block text-sm font-medium mb-2 ${
-                                darkMode ? 'text-gray-300' : 'text-gray-700'
-                              }`}>
-                                Oil Capacity
-                              </label>
-                              <input
-                                type="text"
-                                value={newVehicle.oil_capacity}
-                                onChange={(e) => setNewVehicle({ ...newVehicle, oil_capacity: e.target.value })}
-                                className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
-                                  darkMode 
-                                    ? 'bg-gray-700 border-gray-600 text-gray-100 placeholder-gray-400' 
-                                    : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400'
-                                }`}
-                                placeholder=""
-                              />
-                            </div>
+                          <div>
+                            <label className={`block text-sm font-medium mb-2 ${
+                              darkMode ? 'text-gray-300' : 'text-gray-700'
+                            }`}>
+                              Oil Capacity
+                            </label>
+                            <input
+                              type="text"
+                              value={newVehicle.oil_capacity}
+                              onChange={(e) => setNewVehicle({ ...newVehicle, oil_capacity: e.target.value })}
+                              className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
+                                darkMode 
+                                  ? 'bg-gray-700 border-gray-600 text-gray-100 placeholder-gray-400' 
+                                  : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400'
+                              }`}
+                              placeholder=""
+                            />
                           </div>
 
-                          <div className="grid grid-cols-2 gap-4">
-                            <div>
-                              <label className={`block text-sm font-medium mb-2 ${
-                                darkMode ? 'text-gray-300' : 'text-gray-700'
-                              }`}>
-                                Oil Brand
-                              </label>
-                              <input
-                                type="text"
-                                value={newVehicle.oil_brand}
-                                onChange={(e) => setNewVehicle({ ...newVehicle, oil_brand: e.target.value })}
-                                className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
-                                  darkMode 
-                                    ? 'bg-gray-700 border-gray-600 text-gray-100 placeholder-gray-400' 
-                                    : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400'
-                                }`}
-                                placeholder=""
-                              />
-                            </div>
+                          <div>
+                            <label className={`block text-sm font-medium mb-2 ${
+                              darkMode ? 'text-gray-300' : 'text-gray-700'
+                            }`}>
+                              Oil Brand
+                            </label>
+                            <input
+                              type="text"
+                              value={newVehicle.oil_brand}
+                              onChange={(e) => setNewVehicle({ ...newVehicle, oil_brand: e.target.value })}
+                              className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
+                                darkMode 
+                                  ? 'bg-gray-700 border-gray-600 text-gray-100 placeholder-gray-400' 
+                                  : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400'
+                              }`}
+                              placeholder=""
+                            />
+                          </div>
 
-                            <div>
-                              <label className={`block text-sm font-medium mb-2 ${
-                                darkMode ? 'text-gray-300' : 'text-gray-700'
-                              }`}>
-                                Drain Plug
-                              </label>
-                              <input
-                                type="text"
-                                value={newVehicle.drain_plug}
-                                onChange={(e) => setNewVehicle({ ...newVehicle, drain_plug: e.target.value })}
-                                className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
-                                  darkMode 
-                                    ? 'bg-gray-700 border-gray-600 text-gray-100 placeholder-gray-400' 
-                                    : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400'
-                                }`}
-                                placeholder=""
-                              />
-                            </div>
+                          <div>
+                            <label className={`block text-sm font-medium mb-2 ${
+                              darkMode ? 'text-gray-300' : 'text-gray-700'
+                            }`}>
+                              Drain Plug
+                            </label>
+                            <input
+                              type="text"
+                              value={newVehicle.drain_plug}
+                              onChange={(e) => setNewVehicle({ ...newVehicle, drain_plug: e.target.value })}
+                              className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
+                                darkMode 
+                                  ? 'bg-gray-700 border-gray-600 text-gray-100 placeholder-gray-400' 
+                                  : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400'
+                              }`}
+                              placeholder=""
+                            />
                           </div>
                         </div>
                       </div>
@@ -5328,129 +5324,64 @@ const LandCruiserTracker = () => {
                   </div>
                   
                   <div className="p-6">
-                    <div className="space-y-4">
-                      <div>
-                        <label className={`block text-sm font-medium mb-2 ${
-                          darkMode ? 'text-gray-300' : 'text-gray-700'
-                        }`}>
-                          Vehicle Image
-                        </label>
-                        
-                        {/* Current Image or Preview */}
-                        {(vehicleImagePreview || editingVehicle.image_url) && (
-                          <div className="mb-3 relative">
-                            <img 
-                              src={vehicleImagePreview || editingVehicle.image_url} 
-                              alt="Vehicle"
-                              className={`w-full h-48 object-cover rounded-lg ${
-                                darkMode ? 'bg-gray-700' : 'bg-gray-200'
-                              }`}
-                            />
-                            <button
-                              onClick={() => {
-                                if (vehicleImagePreview) {
-                                  clearImageSelection();
-                                } else {
-                                  setEditingVehicle({ ...editingVehicle, image_url: '' });
-                                }
-                              }}
-                              className="absolute top-2 right-2 p-1 rounded-full bg-red-600 hover:bg-red-700 text-white transition-colors"
-                            >
-                              <X className="w-4 h-4" />
-                            </button>
-                          </div>
-                        )}
-                        
-                        {/* File Upload Button */}
-                        {!vehicleImagePreview && !editingVehicle.image_url && (
-                          <label className={`flex flex-col items-center justify-center w-full h-32 border-2 border-dashed rounded-lg cursor-pointer transition-colors ${
-                            darkMode 
-                              ? 'border-gray-600 hover:border-gray-500 bg-gray-700/50 hover:bg-gray-700' 
-                              : 'border-gray-300 hover:border-gray-400 bg-gray-50 hover:bg-gray-100'
-                          }`}>
-                            <div className="flex flex-col items-center justify-center pt-5 pb-6">
-                              <Upload className={`w-8 h-8 mb-2 ${
-                                darkMode ? 'text-gray-400' : 'text-gray-500'
-                              }`} />
-                              <p className={`mb-1 text-sm ${
-                                darkMode ? 'text-gray-400' : 'text-gray-600'
-                              }`}>
-                                <span className="font-semibold">Click to upload</span> or drag and drop
-                              </p>
-                              <p className={`text-xs ${
-                                darkMode ? 'text-gray-500' : 'text-gray-500'
-                              }`}>
-                                PNG, JPG, WEBP (MAX. 5MB)
-                              </p>
-                            </div>
-                            <input 
-                              type="file" 
-                              className="hidden" 
-                              accept="image/*"
-                              onChange={handleImageFileChange}
-                            />
-                          </label>
-                        )}
-                      </div>
-
-                      <div>
-                        <label className={`block text-sm font-medium mb-2 ${
-                          darkMode ? 'text-gray-300' : 'text-gray-700'
-                        }`}>
-                          Nickname *
-                        </label>
-                        <input
-                          type="text"
-                          value={editingVehicle.nickname || ''}
-                          onChange={(e) => setEditingVehicle({ ...editingVehicle, nickname: e.target.value })}
-                          className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
-                            darkMode 
-                              ? 'bg-gray-700 border-gray-600 text-gray-100 placeholder-gray-400' 
-                              : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400'
-                          }`}
-                          placeholder=""
-                        />
-                      </div>
-
-                      <div>
-                        <label className={`block text-sm font-medium mb-2 ${
-                          darkMode ? 'text-gray-300' : 'text-gray-700'
-                        }`}>
-                          Vehicle Color
-                        </label>
-                        <div className="flex items-center gap-3">
-                          <input
-                            type="color"
-                            value={editingVehicle.color || '#3B82F6'}
-                            onChange={(e) => setEditingVehicle({ ...editingVehicle, color: e.target.value })}
-                            className="h-10 w-20 rounded cursor-pointer border-2 border-gray-300"
-                          />
-                          <span className={`text-sm font-mono ${
-                            darkMode ? 'text-gray-400' : 'text-gray-600'
-                          }`}>{editingVehicle.color || '#3B82F6'}</span>
-                        </div>
-                      </div>
-
-                      <div className="grid grid-cols-2 gap-4">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                      {/* Left Column - Basic Information */}
+                      <div className="space-y-4">
                         <div>
                           <label className={`block text-sm font-medium mb-2 ${
                             darkMode ? 'text-gray-300' : 'text-gray-700'
                           }`}>
-                            Year
+                            Nickname *
                           </label>
                           <input
-                            type="number"
-                            value={editingVehicle.year || ''}
-                            onChange={(e) => setEditingVehicle({ ...editingVehicle, year: e.target.value })}
-                            className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
-                              darkMode 
-                                ? 'bg-gray-700 border-gray-600 text-gray-100 placeholder-gray-400' 
-                                : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400'
-                            }`}
+                            type="text"
+                            value={editingVehicle.nickname || ''}
+                            onChange={(e) => setEditingVehicle({ ...editingVehicle, nickname: e.target.value })}
+                            className={inputClasses(darkMode)}
                             placeholder=""
-                            min="1900"
-                            max="2100"
                           />
+                        </div>
+
+                        <div className="grid grid-cols-2 gap-4">
+                          <div>
+                            <label className={`block text-sm font-medium mb-2 ${
+                              darkMode ? 'text-gray-300' : 'text-gray-700'
+                            }`}>
+                              Vehicle Color
+                            </label>
+                            <div className="flex items-center gap-3">
+                              <input
+                                type="color"
+                                value={editingVehicle.color || '#3B82F6'}
+                                onChange={(e) => setEditingVehicle({ ...editingVehicle, color: e.target.value })}
+                                className="h-10 w-20 rounded cursor-pointer border-2 border-gray-300"
+                              />
+                              <span className={`text-sm font-mono ${
+                                darkMode ? 'text-gray-400' : 'text-gray-600'
+                              }`}>{editingVehicle.color || '#3B82F6'}</span>
+                            </div>
+                          </div>
+
+                          <div>
+                            <label className={`block text-sm font-medium mb-2 ${
+                              darkMode ? 'text-gray-300' : 'text-gray-700'
+                            }`}>
+                              Year
+                            </label>
+                            <input
+                              type="number"
+                              value={editingVehicle.year || ''}
+                              onChange={(e) => setEditingVehicle({ ...editingVehicle, year: e.target.value })}
+                              className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
+                                darkMode 
+                                  ? 'bg-gray-700 border-gray-600 text-gray-100 placeholder-gray-400' 
+                                  : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400'
+                              }`}
+                              placeholder=""
+                              min="1900"
+                              max="2100"
+                            />
+                          </div>
                         </div>
 
                         <div>
@@ -5471,66 +5402,134 @@ const LandCruiserTracker = () => {
                             placeholder=""
                           />
                         </div>
-                      </div>
 
-                      <div className="grid grid-cols-2 gap-4">
-                        <div>
-                          <label className={`block text-sm font-medium mb-2 ${
-                            darkMode ? 'text-gray-300' : 'text-gray-700'
-                          }`}>
-                            License Plate
-                          </label>
-                          <input
-                            type="text"
-                            value={editingVehicle.license_plate || ''}
-                            onChange={(e) => setEditingVehicle({ ...editingVehicle, license_plate: e.target.value })}
-                            className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
-                              darkMode 
-                                ? 'bg-gray-700 border-gray-600 text-gray-100 placeholder-gray-400' 
-                                : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400'
-                            }`}
-                            placeholder=""
-                          />
+                        <div className="grid grid-cols-2 gap-4">
+                          <div>
+                            <label className={`block text-sm font-medium mb-2 ${
+                              darkMode ? 'text-gray-300' : 'text-gray-700'
+                            }`}>
+                              License Plate
+                            </label>
+                            <input
+                              type="text"
+                              value={editingVehicle.license_plate || ''}
+                              onChange={(e) => setEditingVehicle({ ...editingVehicle, license_plate: e.target.value })}
+                              className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
+                                darkMode 
+                                  ? 'bg-gray-700 border-gray-600 text-gray-100 placeholder-gray-400' 
+                                  : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400'
+                              }`}
+                              placeholder=""
+                            />
+                          </div>
+
+                          <div>
+                            <label className={`block text-sm font-medium mb-2 ${
+                              darkMode ? 'text-gray-300' : 'text-gray-700'
+                            }`}>
+                              VIN
+                            </label>
+                            <input
+                              type="text"
+                              value={editingVehicle.vin || ''}
+                              onChange={(e) => setEditingVehicle({ ...editingVehicle, vin: e.target.value })}
+                              className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
+                                darkMode 
+                                  ? 'bg-gray-700 border-gray-600 text-gray-100 placeholder-gray-400' 
+                                  : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400'
+                              }`}
+                              placeholder=""
+                            />
+                          </div>
                         </div>
 
                         <div>
                           <label className={`block text-sm font-medium mb-2 ${
                             darkMode ? 'text-gray-300' : 'text-gray-700'
                           }`}>
-                            VIN
+                            Insurance Policy
                           </label>
                           <input
                             type="text"
-                            value={editingVehicle.vin || ''}
-                            onChange={(e) => setEditingVehicle({ ...editingVehicle, vin: e.target.value })}
-                            className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
-                              darkMode 
-                                ? 'bg-gray-700 border-gray-600 text-gray-100 placeholder-gray-400' 
-                                : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400'
-                            }`}
+                            value={editingVehicle.insurance_policy || ''}
+                            onChange={(e) => setEditingVehicle({ ...editingVehicle, insurance_policy: e.target.value })}
+                            className={inputClasses(darkMode)}
                             placeholder=""
                           />
                         </div>
                       </div>
 
-                      <div>
-                        <label className={`block text-sm font-medium mb-2 ${
-                          darkMode ? 'text-gray-300' : 'text-gray-700'
-                        }`}>
-                          Insurance Policy
-                        </label>
-                        <input
-                          type="text"
-                          value={editingVehicle.insurance_policy || ''}
-                          onChange={(e) => setEditingVehicle({ ...editingVehicle, insurance_policy: e.target.value })}
-                          className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
-                            darkMode 
-                              ? 'bg-gray-700 border-gray-600 text-gray-100 placeholder-gray-400' 
-                              : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400'
-                          }`}
-                          placeholder=""
-                        />
+                      {/* Right Column - Image Upload */}
+                      <div className="space-y-4">
+                        <div>
+                          <label className={`block text-sm font-medium mb-2 ${
+                            darkMode ? 'text-gray-300' : 'text-gray-700'
+                          }`}>
+                            Vehicle Image
+                          </label>
+                          
+                          {/* Current Image or Preview */}
+                          {(vehicleImagePreview || editingVehicle.image_url) && (
+                            <div className="mb-3 relative">
+                              <img 
+                                src={vehicleImagePreview || editingVehicle.image_url} 
+                                alt="Vehicle"
+                                className={`w-full h-full object-cover rounded-lg ${
+                                  darkMode ? 'bg-gray-700' : 'bg-gray-200'
+                                }`}
+                                style={{ minHeight: '400px' }}
+                              />
+                              <button
+                                onClick={() => {
+                                  if (vehicleImagePreview) {
+                                    clearImageSelection();
+                                  } else {
+                                    setEditingVehicle({ ...editingVehicle, image_url: '' });
+                                  }
+                                }}
+                                className="absolute top-2 right-2 p-1 rounded-full bg-red-600 hover:bg-red-700 text-white transition-colors"
+                              >
+                                <X className="w-4 h-4" />
+                              </button>
+                            </div>
+                          )}
+                          
+                          {/* File Upload Button */}
+                          {!vehicleImagePreview && !editingVehicle.image_url && (
+                            <label className={`flex flex-col items-center justify-center w-full border-2 border-dashed rounded-lg cursor-pointer transition-colors ${
+                              darkMode 
+                                ? 'border-gray-600 hover:border-gray-500 bg-gray-700/50 hover:bg-gray-700' 
+                                : 'border-gray-300 hover:border-gray-400 bg-gray-50 hover:bg-gray-100'
+                            }`} style={{ minHeight: '400px' }}>
+                              <div className="flex flex-col items-center justify-center pt-5 pb-6">
+                                <Upload className={`w-12 h-12 mb-3 ${
+                                  darkMode ? 'text-gray-400' : 'text-gray-500'
+                                }`} />
+                                <p className={`mb-2 text-sm ${
+                                  darkMode ? 'text-gray-400' : 'text-gray-600'
+                                }`}>
+                                  <span className="font-semibold">Click to upload</span> or drag and drop
+                                </p>
+                                <p className={`text-xs ${
+                                  darkMode ? 'text-gray-500' : 'text-gray-500'
+                                }`}>
+                                  PNG, JPG, WEBP (MAX. 5MB)
+                                </p>
+                              </div>
+                              <input 
+                                type="file" 
+                                className="hidden" 
+                                accept="image/*"
+                                onChange={handleImageFileChange}
+                              />
+                            </label>
+                          )}
+                        </div>
                       </div>
+                    </div>
+
+                    {/* Half Width Sections Below */}
+                    <div className="mt-6 grid grid-cols-1 md:grid-cols-2 gap-6">
 
                       <div className={`pt-4 border-t ${
                         darkMode ? 'border-gray-700' : 'border-gray-200'
@@ -5540,7 +5539,7 @@ const LandCruiserTracker = () => {
                         }`}>
                           Filters
                         </h3>
-                        <div className="grid grid-cols-2 gap-4">
+                        <div className="space-y-4">
                           <div>
                             <label className={`block text-sm font-medium mb-2 ${
                               darkMode ? 'text-gray-300' : 'text-gray-700'
@@ -5599,16 +5598,15 @@ const LandCruiserTracker = () => {
                             type="text"
                             value={editingVehicle.battery || ''}
                             onChange={(e) => setEditingVehicle({ ...editingVehicle, battery: e.target.value })}
-                            className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
-                              darkMode 
-                                ? 'bg-gray-700 border-gray-600 text-gray-100 placeholder-gray-400' 
-                                : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400'
-                            }`}
+                            className={inputClasses(darkMode)}
                             placeholder=""
                           />
                         </div>
                       </div>
+                    </div>
 
+                    {/* Oil Info Section - Full Width */}
+                    <div className="mt-6">
                       <div className={`pt-4 border-t ${
                         darkMode ? 'border-gray-700' : 'border-gray-200'
                       }`}>
@@ -5617,7 +5615,7 @@ const LandCruiserTracker = () => {
                         }`}>
                           Oil Info
                         </h3>
-                        <div className="space-y-4">
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                           <div>
                             <label className={`block text-sm font-medium mb-2 ${
                               darkMode ? 'text-gray-300' : 'text-gray-700'
@@ -5628,6 +5626,21 @@ const LandCruiserTracker = () => {
                               type="text"
                               value={editingVehicle.oil_filter || ''}
                               onChange={(e) => setEditingVehicle({ ...editingVehicle, oil_filter: e.target.value })}
+                              className={inputClasses(darkMode)}
+                              placeholder=""
+                            />
+                          </div>
+
+                          <div>
+                            <label className={`block text-sm font-medium mb-2 ${
+                              darkMode ? 'text-gray-300' : 'text-gray-700'
+                            }`}>
+                              Oil Type
+                            </label>
+                            <input
+                              type="text"
+                              value={editingVehicle.oil_type || ''}
+                              onChange={(e) => setEditingVehicle({ ...editingVehicle, oil_type: e.target.value })}
                               className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
                                 darkMode 
                                   ? 'bg-gray-700 border-gray-600 text-gray-100 placeholder-gray-400' 
@@ -5637,84 +5650,61 @@ const LandCruiserTracker = () => {
                             />
                           </div>
 
-                          <div className="grid grid-cols-2 gap-4">
-                            <div>
-                              <label className={`block text-sm font-medium mb-2 ${
-                                darkMode ? 'text-gray-300' : 'text-gray-700'
-                              }`}>
-                                Oil Type
-                              </label>
-                              <input
-                                type="text"
-                                value={editingVehicle.oil_type || ''}
-                                onChange={(e) => setEditingVehicle({ ...editingVehicle, oil_type: e.target.value })}
-                                className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
-                                  darkMode 
-                                    ? 'bg-gray-700 border-gray-600 text-gray-100 placeholder-gray-400' 
-                                    : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400'
-                                }`}
-                                placeholder=""
-                              />
-                            </div>
-
-                            <div>
-                              <label className={`block text-sm font-medium mb-2 ${
-                                darkMode ? 'text-gray-300' : 'text-gray-700'
-                              }`}>
-                                Oil Capacity
-                              </label>
-                              <input
-                                type="text"
-                                value={editingVehicle.oil_capacity || ''}
-                                onChange={(e) => setEditingVehicle({ ...editingVehicle, oil_capacity: e.target.value })}
-                                className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
-                                  darkMode 
-                                    ? 'bg-gray-700 border-gray-600 text-gray-100 placeholder-gray-400' 
-                                    : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400'
-                                }`}
-                                placeholder=""
-                              />
-                            </div>
+                          <div>
+                            <label className={`block text-sm font-medium mb-2 ${
+                              darkMode ? 'text-gray-300' : 'text-gray-700'
+                            }`}>
+                              Oil Capacity
+                            </label>
+                            <input
+                              type="text"
+                              value={editingVehicle.oil_capacity || ''}
+                              onChange={(e) => setEditingVehicle({ ...editingVehicle, oil_capacity: e.target.value })}
+                              className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
+                                darkMode 
+                                  ? 'bg-gray-700 border-gray-600 text-gray-100 placeholder-gray-400' 
+                                  : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400'
+                              }`}
+                              placeholder=""
+                            />
                           </div>
 
-                          <div className="grid grid-cols-2 gap-4">
-                            <div>
-                              <label className={`block text-sm font-medium mb-2 ${
-                                darkMode ? 'text-gray-300' : 'text-gray-700'
-                              }`}>
-                                Oil Brand
-                              </label>
-                              <input
-                                type="text"
-                                value={editingVehicle.oil_brand || ''}
-                                onChange={(e) => setEditingVehicle({ ...editingVehicle, oil_brand: e.target.value })}
-                                className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
-                                  darkMode 
-                                    ? 'bg-gray-700 border-gray-600 text-gray-100 placeholder-gray-400' 
-                                    : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400'
-                                }`}
-                                placeholder=""
-                              />
-                            </div>
+                          <div>
+                            <label className={`block text-sm font-medium mb-2 ${
+                              darkMode ? 'text-gray-300' : 'text-gray-700'
+                            }`}>
+                              Oil Brand
+                            </label>
+                            <input
+                              type="text"
+                              value={editingVehicle.oil_brand || ''}
+                              onChange={(e) => setEditingVehicle({ ...editingVehicle, oil_brand: e.target.value })}
+                              className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
+                                darkMode 
+                                  ? 'bg-gray-700 border-gray-600 text-gray-100 placeholder-gray-400' 
+                                  : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400'
+                              }`}
+                              placeholder=""
+                            />
+                          </div>
 
-                            <div>
-                              <label className={`block text-sm font-medium mb-2 ${
-                                darkMode ? 'text-gray-300' : 'text-gray-700'
-                              }`}>
-                                Drain Plug
-                              </label>
-                              <input
-                                type="text"
-                                value={editingVehicle.drain_plug || ''}
-                                onChange={(e) => setEditingVehicle({ ...editingVehicle, drain_plug: e.target.value })}
-                                className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
-                                  darkMode 
-                                    ? 'bg-gray-700 border-gray-600 text-gray-100 placeholder-gray-400' 
-                                    : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400'
-                                }`}
-                                placeholder=""
-                              />
-                            </div>
+                          <div>
+                            <label className={`block text-sm font-medium mb-2 ${
+                              darkMode ? 'text-gray-300' : 'text-gray-700'
+                            }`}>
+                              Drain Plug
+                            </label>
+                            <input
+                              type="text"
+                              value={editingVehicle.drain_plug || ''}
+                              onChange={(e) => setEditingVehicle({ ...editingVehicle, drain_plug: e.target.value })}
+                              className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
+                                darkMode 
+                                  ? 'bg-gray-700 border-gray-600 text-gray-100 placeholder-gray-400' 
+                                  : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400'
+                              }`}
+                              placeholder=""
+                            />
                           </div>
                         </div>
                       </div>
