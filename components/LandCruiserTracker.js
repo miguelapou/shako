@@ -132,7 +132,9 @@ const ProjectDetailView = ({
   editingTodoId,
   setEditingTodoId,
   editingTodoText,
-  setEditingTodoText
+  setEditingTodoText,
+  newTodoText,
+  setNewTodoText
 }) => {
   const linkedParts = parts.filter(part => part.projectId === project.id);
   const linkedPartsTotal = calculateProjectTotal(project.id, parts);
@@ -246,177 +248,181 @@ const ProjectDetailView = ({
       <div className={`pt-6 border-t ${
         darkMode ? 'border-gray-700' : 'border-gray-200'
       }`}>
-        <div className="flex items-center justify-between mb-3">
+        <div className="mb-3">
           <h3 className={`text-lg font-semibold ${
             darkMode ? 'text-gray-200' : 'text-gray-800'
           }`}>
             To-Do List
           </h3>
-          <button
-            onClick={(e) => {
-              e.stopPropagation();
-              const todoText = prompt('Enter a new to-do item:');
-              if (todoText && todoText.trim()) {
-                const currentTodos = project.todos || [];
-                const newTodo = {
-                  id: Date.now(),
-                  text: todoText.trim(),
-                  completed: false,
-                  created_at: new Date().toISOString()
-                };
-                updateProject(project.id, {
-                  todos: [...currentTodos, newTodo]
-                });
-              }
-            }}
-            className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors flex items-center gap-1 ${
-              darkMode 
-                ? 'bg-blue-600 hover:bg-blue-700 text-white' 
-                : 'bg-blue-600 hover:bg-blue-700 text-white'
-            }`}
-          >
-            <Plus className="w-4 h-4" />
-            Add
-          </button>
         </div>
         
         {/* To-Do Items */}
-        {project.todos && project.todos.length > 0 ? (
-          <div className="space-y-2">
-            {project.todos.map((todo) => (
-              <div 
-                key={todo.id}
-                className={`flex items-center gap-3 p-3 rounded-lg border ${
-                  darkMode ? 'bg-gray-700 border-gray-600' : 'bg-gray-50 border-gray-200'
+        <div className="space-y-2">
+          {project.todos && project.todos.map((todo) => (
+            <div 
+              key={todo.id}
+              className={`flex items-center gap-3 p-3 rounded-lg border ${
+                darkMode ? 'bg-gray-700 border-gray-600' : 'bg-gray-50 border-gray-200'
+              }`}
+            >
+              {/* Checkbox */}
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  const updatedTodos = project.todos.map(t => 
+                    t.id === todo.id ? { ...t, completed: !t.completed } : t
+                  );
+                  updateProject(project.id, {
+                    todos: updatedTodos
+                  });
+                }}
+                className={`flex-shrink-0 w-5 h-5 rounded border-2 flex items-center justify-center transition-colors ${
+                  todo.completed
+                    ? darkMode
+                      ? 'bg-green-600 border-green-600'
+                      : 'bg-green-500 border-green-500'
+                    : darkMode
+                      ? 'border-gray-500 hover:border-gray-400'
+                      : 'border-gray-400 hover:border-gray-500'
                 }`}
               >
-                {/* Checkbox */}
-                <button
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    const updatedTodos = project.todos.map(t => 
-                      t.id === todo.id ? { ...t, completed: !t.completed } : t
-                    );
-                    updateProject(project.id, {
-                      todos: updatedTodos
-                    });
-                  }}
-                  className={`flex-shrink-0 w-5 h-5 rounded border-2 flex items-center justify-center transition-colors ${
-                    todo.completed
-                      ? darkMode
-                        ? 'bg-green-600 border-green-600'
-                        : 'bg-green-500 border-green-500'
-                      : darkMode
-                        ? 'border-gray-500 hover:border-gray-400'
-                        : 'border-gray-400 hover:border-gray-500'
-                  }`}
-                >
-                  {todo.completed && (
-                    <CheckCircle className="w-4 h-4 text-white" />
-                  )}
-                </button>
-                
-                {/* Todo Text - Click to edit inline */}
-                {editingTodoId === todo.id ? (
-                  <input
-                    type="text"
-                    value={editingTodoText}
-                    onChange={(e) => setEditingTodoText(e.target.value)}
-                    onKeyDown={(e) => {
-                      if (e.key === 'Enter') {
-                        e.preventDefault();
-                        if (editingTodoText.trim()) {
-                          const updatedTodos = project.todos.map(t => 
-                            t.id === todo.id ? { ...t, text: editingTodoText.trim() } : t
-                          );
-                          updateProject(project.id, {
-                            todos: updatedTodos
-                          });
-                          setEditingTodoId(null);
-                          setEditingTodoText('');
-                        }
-                      } else if (e.key === 'Escape') {
-                        setEditingTodoId(null);
-                        setEditingTodoText('');
-                      }
-                    }}
-                    onBlur={() => {
-                      if (editingTodoText.trim() && editingTodoText !== todo.text) {
+                {todo.completed && (
+                  <CheckCircle className="w-4 h-4 text-white" />
+                )}
+              </button>
+              
+              {/* Todo Text - Click to edit inline */}
+              {editingTodoId === todo.id ? (
+                <input
+                  type="text"
+                  value={editingTodoText}
+                  onChange={(e) => setEditingTodoText(e.target.value)}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter') {
+                      e.preventDefault();
+                      if (editingTodoText.trim()) {
                         const updatedTodos = project.todos.map(t => 
                           t.id === todo.id ? { ...t, text: editingTodoText.trim() } : t
                         );
                         updateProject(project.id, {
                           todos: updatedTodos
                         });
+                        setEditingTodoId(null);
+                        setEditingTodoText('');
                       }
+                    } else if (e.key === 'Escape') {
                       setEditingTodoId(null);
                       setEditingTodoText('');
-                    }}
-                    autoFocus
-                    className={`flex-1 text-sm px-2 py-1 rounded border-2 focus:outline-none ${
-                      darkMode
-                        ? 'bg-gray-600 border-blue-500 text-gray-100'
-                        : 'bg-white border-blue-500 text-gray-800'
-                    }`}
-                  />
-                ) : (
-                  <span 
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      setEditingTodoId(todo.id);
-                      setEditingTodoText(todo.text);
-                    }}
-                    className={`flex-1 text-sm cursor-pointer hover:opacity-70 transition-opacity ${
-                      todo.completed
-                        ? darkMode
-                          ? 'text-gray-500 line-through'
-                          : 'text-gray-400 line-through'
-                        : darkMode
-                          ? 'text-gray-200'
-                          : 'text-gray-800'
-                    }`}
-                    title="Click to edit"
-                  >
-                    {todo.text}
-                  </span>
-                )}
-                
-                {/* Delete Button */}
-                <button
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    if (confirm('Delete this to-do item?')) {
-                      const updatedTodos = project.todos.filter(t => t.id !== todo.id);
+                    }
+                  }}
+                  onBlur={() => {
+                    if (editingTodoText.trim() && editingTodoText !== todo.text) {
+                      const updatedTodos = project.todos.map(t => 
+                        t.id === todo.id ? { ...t, text: editingTodoText.trim() } : t
+                      );
                       updateProject(project.id, {
                         todos: updatedTodos
                       });
                     }
+                    setEditingTodoId(null);
+                    setEditingTodoText('');
                   }}
-                  className={`flex-shrink-0 p-1 rounded transition-colors ${
-                    darkMode 
-                      ? 'text-gray-500 hover:text-red-400 hover:bg-gray-600' 
-                      : 'text-gray-400 hover:text-red-600 hover:bg-gray-200'
+                  autoFocus
+                  className={`flex-1 text-sm px-2 py-1 rounded border-2 focus:outline-none ${
+                    darkMode
+                      ? 'bg-gray-600 border-blue-500 text-gray-100'
+                      : 'bg-white border-blue-500 text-gray-800'
                   }`}
+                />
+              ) : (
+                <span 
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setEditingTodoId(todo.id);
+                    setEditingTodoText(todo.text);
+                  }}
+                  className={`flex-1 text-sm cursor-pointer hover:opacity-70 transition-opacity ${
+                    todo.completed
+                      ? darkMode
+                        ? 'text-gray-500 line-through'
+                        : 'text-gray-400 line-through'
+                      : darkMode
+                        ? 'text-gray-200'
+                        : 'text-gray-800'
+                  }`}
+                  title="Click to edit"
                 >
-                  <X className="w-4 h-4" />
-                </button>
-              </div>
-            ))}
-          </div>
-        ) : (
-          <div className={`text-center py-6 rounded-lg ${
-            darkMode ? 'bg-gray-700' : 'bg-gray-50'
-          }`}>
-            <List className={`w-10 h-10 mx-auto mb-2 ${
-              darkMode ? 'text-gray-600' : 'text-gray-400'
+                  {todo.text}
+                </span>
+              )}
+              
+              {/* Delete Button */}
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  if (confirm('Delete this to-do item?')) {
+                    const updatedTodos = project.todos.filter(t => t.id !== todo.id);
+                    updateProject(project.id, {
+                      todos: updatedTodos
+                    });
+                  }
+                }}
+                className={`flex-shrink-0 p-1 rounded transition-colors ${
+                  darkMode 
+                    ? 'text-gray-500 hover:text-red-400 hover:bg-gray-600' 
+                    : 'text-gray-400 hover:text-red-600 hover:bg-gray-200'
+                }`}
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+          ))}
+          
+          {/* Always-visible input for new todos */}
+          <div 
+            className={`flex items-center gap-3 p-3 rounded-lg border-2 border-dashed transition-colors ${
+              darkMode 
+                ? 'bg-gray-700/50 border-gray-600 hover:border-gray-500 focus-within:border-blue-500 focus-within:bg-gray-700' 
+                : 'bg-gray-50/50 border-gray-300 hover:border-gray-400 focus-within:border-blue-500 focus-within:bg-white'
+            }`}
+          >
+            {/* Empty checkbox placeholder */}
+            <div className={`flex-shrink-0 w-5 h-5 rounded border-2 ${
+              darkMode ? 'border-gray-600' : 'border-gray-300'
             }`} />
-            <p className={`text-sm ${
-              darkMode ? 'text-gray-400' : 'text-gray-600'
-            }`}>
-              No to-do items yet. Click "Add" to create one.
-            </p>
+            
+            {/* Input field */}
+            <input
+              type="text"
+              value={newTodoText}
+              onChange={(e) => setNewTodoText(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter') {
+                  e.preventDefault();
+                  if (newTodoText.trim()) {
+                    const currentTodos = project.todos || [];
+                    const newTodo = {
+                      id: Date.now(),
+                      text: newTodoText.trim(),
+                      completed: false,
+                      created_at: new Date().toISOString()
+                    };
+                    updateProject(project.id, {
+                      todos: [...currentTodos, newTodo]
+                    });
+                    setNewTodoText('');
+                  }
+                }
+              }}
+              placeholder="Add a to-do item..."
+              className={`flex-1 text-sm px-2 py-1 bg-transparent border-0 focus:outline-none ${
+                darkMode
+                  ? 'text-gray-100 placeholder-gray-500'
+                  : 'text-gray-800 placeholder-gray-400'
+              }`}
+            />
           </div>
-        )}
+        </div>
       </div>
 
       {/* Linked Parts List */}
@@ -1405,6 +1411,7 @@ const LandCruiserTracker = () => {
   const [projectModalEditMode, setProjectModalEditMode] = useState(false); // Track if editing within project detail modal
   const [editingTodoId, setEditingTodoId] = useState(null); // Track which todo is being edited
   const [editingTodoText, setEditingTodoText] = useState(''); // Temp text while editing
+  const [newTodoText, setNewTodoText] = useState(''); // Text for new todo input
   const [newProject, setNewProject] = useState({
     name: '',
     description: '',
@@ -4951,6 +4958,8 @@ const LandCruiserTracker = () => {
                           setEditingTodoId={setEditingTodoId}
                           editingTodoText={editingTodoText}
                           setEditingTodoText={setEditingTodoText}
+                          newTodoText={newTodoText}
+                          setNewTodoText={setNewTodoText}
                         />
                       </div>
                     </div>
@@ -7074,6 +7083,8 @@ const LandCruiserTracker = () => {
                             setEditingTodoId={setEditingTodoId}
                             editingTodoText={editingTodoText}
                             setEditingTodoText={setEditingTodoText}
+                            newTodoText={newTodoText}
+                            setNewTodoText={setNewTodoText}
                           />
                         </div>
                       </div>
