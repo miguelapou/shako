@@ -4447,7 +4447,7 @@ const LandCruiserTracker = () => {
                 })}
               >
                 <div 
-                  className={`rounded-lg shadow-xl max-w-5xl w-full max-h-[90vh] overflow-x-hidden modal-content ${
+                  className={`rounded-lg shadow-xl max-w-5xl w-full max-h-[90vh] overflow-x-hidden overflow-y-hidden modal-content ${
                     isModalClosing ? 'modal-popup-exit' : 'modal-popup-enter'
                   } ${darkMode ? 'bg-gray-800' : 'bg-white'}`}
                   onClick={(e) => e.stopPropagation()}
