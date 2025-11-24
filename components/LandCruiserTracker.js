@@ -177,17 +177,17 @@ const ProjectDetailView = ({
 
   // Capture positions after modal is fully rendered and layout is stable
   React.useEffect(() => {
-    // Only run if we've already done the initial capture
+    // Only run once when project changes (modal opens)
     if (!hasInitialized.current) {
       console.log('>>> Recapture effect skipped - waiting for initial capture');
       return;
     }
     
-    console.log('>>> Recapture effect mounted, hasInitialized:', hasInitialized.current, 'sortedTodos.length:', sortedTodos.length);
+    console.log('>>> Recapture effect mounted for project:', project.id);
     
-    // Small delay to ensure modal animations are complete and layout is stable
+    // Single recapture after modal opens and stabilizes
     const timer = setTimeout(() => {
-      console.log('>>> Timer fired, hasInitialized:', hasInitialized.current, 'sortedTodos.length:', sortedTodos.length);
+      console.log('>>> Timer fired - recapturing positions');
       
       if (sortedTodos.length > 0) {
         console.log('>>> Recapturing positions after layout stabilization');
@@ -201,13 +201,13 @@ const ProjectDetailView = ({
           }
         });
       }
-    }, 150); // Slightly longer delay to let everything settle
+    }, 200); // Give time for modal animation and layout to stabilize
     
     return () => {
       console.log('>>> Clearing recapture timer');
       clearTimeout(timer);
     };
-  }, [sortedTodos]); // Re-run when sortedTodos changes (which happens after initial render)
+  }, [project.id]); // Only run when project changes (modal opens/switches)
 
 
   // FLIP animation with useLayoutEffect for synchronous execution
