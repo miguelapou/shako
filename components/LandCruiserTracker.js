@@ -2690,7 +2690,7 @@ const LandCruiserTracker = () => {
   };
 
   return (
-    <div className={`min-h-screen p-3 sm:p-6 transition-colors duration-200 ${
+    <div className={`min-h-screen p-3 sm:p-6 transition-colors duration-200 overflow-y-scroll ${
       darkMode 
         ? 'bg-gradient-to-br from-gray-900 to-gray-800' 
         : 'bg-gradient-to-br from-slate-50 to-slate-100'
@@ -5113,7 +5113,7 @@ const LandCruiserTracker = () => {
 
         {/* VEHICLES TAB CONTENT */}
         {activeTab === 'vehicles' && (
-          <div className="slide-in-right overflow-y-scroll">
+          <div className="slide-in-right">
           <>
             {/* Vehicles Grid */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -6549,7 +6549,11 @@ const LandCruiserTracker = () => {
                                     type="text"
                                     value={viewingVehicle.oil_filter || ''}
                                     onChange={(e) => setViewingVehicle({ ...viewingVehicle, oil_filter: e.target.value })}
-                                    className={inputClasses(darkMode)}
+                                    className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
+                                      darkMode 
+                                        ? 'bg-gray-700 border-gray-600 text-gray-100 placeholder-gray-400' 
+                                        : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400'
+                                    }`}
                                     placeholder=""
                                   />
                                 </div>
