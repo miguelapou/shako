@@ -841,6 +841,48 @@ const fontStyles = `
   .door-segment:nth-child(2) { animation-delay: 0.1s; }
   .door-segment:nth-child(3) { animation-delay: 0.2s; }
   .door-segment:nth-child(4) { animation-delay: 0.3s; }
+
+  /* Scrollbar styles for light mode */
+  :root {
+    scrollbar-color: #cbd5e1 #f1f5f9;
+  }
+
+  ::-webkit-scrollbar {
+    width: 12px;
+    height: 12px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: #f1f5f9;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: #cbd5e1;
+    border-radius: 6px;
+    border: 2px solid #f1f5f9;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background: #94a3b8;
+  }
+
+  /* Scrollbar styles for dark mode */
+  .dark-scrollbar {
+    scrollbar-color: #4b5563 #1f2937;
+  }
+
+  .dark-scrollbar ::-webkit-scrollbar-track {
+    background: #1f2937;
+  }
+
+  .dark-scrollbar ::-webkit-scrollbar-thumb {
+    background: #4b5563;
+    border-color: #1f2937;
+  }
+
+  .dark-scrollbar ::-webkit-scrollbar-thumb:hover {
+    background: #6b7280;
+  }
 `;
 
 // ========================================
@@ -2692,7 +2734,7 @@ const LandCruiserTracker = () => {
   return (
     <div className={`min-h-screen p-3 sm:p-6 transition-colors duration-200 ${
       darkMode 
-        ? 'bg-gradient-to-br from-gray-900 to-gray-800' 
+        ? 'bg-gradient-to-br from-gray-900 to-gray-800 dark-scrollbar' 
         : 'bg-gradient-to-br from-slate-50 to-slate-100'
     }`}>
       <style>{fontStyles}</style>
