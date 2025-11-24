@@ -5917,17 +5917,18 @@ const LandCruiserTracker = () => {
                       </div>
                     </div>
 
-                    {/* Full Width Sections Below */}
-                    {/* Half Width Sections Below */}
-                    <div className="mt-6 grid grid-cols-1 md:grid-cols-2 gap-6">
-                      <div className={`pt-4 border-t ${
-                        darkMode ? 'border-gray-700' : 'border-gray-200'
-                      }`}>
-                        <h3 className={`text-lg font-semibold mb-3 ${
-                          darkMode ? 'text-gray-200' : 'text-gray-800'
-                        }`}>
-                          Filters
-                        </h3>
+                    {/* Full-width separator before Filters and Battery sections */}
+                    <div className={`mt-6 pt-6 border-t ${
+                      darkMode ? 'border-gray-700' : 'border-gray-200'
+                    }`}>
+                      {/* Half Width Sections Below */}
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div>
+                          <h3 className={`text-lg font-semibold mb-3 ${
+                            darkMode ? 'text-gray-200' : 'text-gray-800'
+                          }`}>
+                            Filters
+                          </h3>
                         <div className="space-y-4">
                           <div>
                             <label className={`block text-sm font-medium mb-2 ${
@@ -5969,9 +5970,7 @@ const LandCruiserTracker = () => {
                         </div>
                       </div>
 
-                      <div className={`pt-4 border-t ${
-                        darkMode ? 'border-gray-700' : 'border-gray-200'
-                      }`}>
+                      <div>
                         <h3 className={`text-lg font-semibold mb-3 ${
                           darkMode ? 'text-gray-200' : 'text-gray-800'
                         }`}>
@@ -5993,18 +5992,18 @@ const LandCruiserTracker = () => {
                         </div>
                       </div>
                     </div>
+                    </div>
 
                     {/* Oil Info Section - Full Width */}
-                    <div className="mt-6">
-                      <div className={`pt-4 border-t ${
-                        darkMode ? 'border-gray-700' : 'border-gray-200'
+                    <div className={`mt-6 pt-6 border-t ${
+                      darkMode ? 'border-gray-700' : 'border-gray-200'
+                    }`}>
+                      <h3 className={`text-lg font-semibold mb-3 ${
+                        darkMode ? 'text-gray-200' : 'text-gray-800'
                       }`}>
-                        <h3 className={`text-lg font-semibold mb-3 ${
-                          darkMode ? 'text-gray-200' : 'text-gray-800'
-                        }`}>
-                          Oil Info
-                        </h3>
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        Oil Info
+                      </h3>
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                           <div>
                             <label className={`block text-sm font-medium mb-2 ${
                               darkMode ? 'text-gray-300' : 'text-gray-700'
@@ -6097,7 +6096,6 @@ const LandCruiserTracker = () => {
                           </div>
                         </div>
                       </div>
-                    </div>
                   </div>
                   
                   <div className={`border-t ${
@@ -6436,17 +6434,19 @@ const LandCruiserTracker = () => {
                       </div>
                     </div>
 
-                    {/* Half Width Sections Below */}
-                    <div className="mt-6 grid grid-cols-1 md:grid-cols-2 gap-6">
+                    {/* Full-width separator before Filters and Battery sections */}
+                    <div className={`mt-6 pt-6 border-t ${
+                      darkMode ? 'border-gray-700' : 'border-gray-200'
+                    }`}>
+                      {/* Half Width Sections Below */}
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
 
-                      <div className={`pt-4 border-t ${
-                        darkMode ? 'border-gray-700' : 'border-gray-200'
-                      }`}>
-                        <h3 className={`text-lg font-semibold mb-3 ${
-                          darkMode ? 'text-gray-200' : 'text-gray-800'
-                        }`}>
-                          Filters
-                        </h3>
+                        <div>
+                          <h3 className={`text-lg font-semibold mb-3 ${
+                            darkMode ? 'text-gray-200' : 'text-gray-800'
+                          }`}>
+                            Filters
+                          </h3>
                         <div className="space-y-4">
                           <div>
                             <label className={`block text-sm font-medium mb-2 ${
@@ -6488,9 +6488,7 @@ const LandCruiserTracker = () => {
                         </div>
                       </div>
 
-                      <div className={`pt-4 border-t ${
-                        darkMode ? 'border-gray-700' : 'border-gray-200'
-                      }`}>
+                      <div>
                         <h3 className={`text-lg font-semibold mb-3 ${
                           darkMode ? 'text-gray-200' : 'text-gray-800'
                         }`}>
@@ -6512,18 +6510,18 @@ const LandCruiserTracker = () => {
                         </div>
                       </div>
                     </div>
+                    </div>
 
                     {/* Oil Info Section - Full Width */}
-                    <div className="mt-6">
-                      <div className={`pt-4 border-t ${
-                        darkMode ? 'border-gray-700' : 'border-gray-200'
+                    <div className={`mt-6 pt-6 border-t ${
+                      darkMode ? 'border-gray-700' : 'border-gray-200'
+                    }`}>
+                      <h3 className={`text-lg font-semibold mb-3 ${
+                        darkMode ? 'text-gray-200' : 'text-gray-800'
                       }`}>
-                        <h3 className={`text-lg font-semibold mb-3 ${
-                          darkMode ? 'text-gray-200' : 'text-gray-800'
-                        }`}>
-                          Oil Info
-                        </h3>
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        Oil Info
+                      </h3>
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                           <div>
                             <label className={`block text-sm font-medium mb-2 ${
                               darkMode ? 'text-gray-300' : 'text-gray-700'
@@ -6616,7 +6614,6 @@ const LandCruiserTracker = () => {
                           </div>
                         </div>
                       </div>
-                    </div>
                   </div>
                   
                   <div className={`border-t ${
