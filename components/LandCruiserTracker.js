@@ -4862,70 +4862,6 @@ const LandCruiserTracker = () => {
                         </select>
                       </div>
                     </div>
-
-                    {/* Linked Parts Section */}
-                    {(() => {
-                      const linkedParts = parts.filter(part => part.projectId === editingProject.id);
-                      if (linkedParts.length > 0) {
-                        return (
-                          <div className={`mt-6 pt-6 border-t ${
-                            darkMode ? 'border-gray-600' : 'border-gray-200'
-                          }`}>
-                            <h3 className={`text-lg font-semibold mb-3 ${
-                              darkMode ? 'text-gray-200' : 'text-gray-800'
-                            }`}>
-                              Linked Parts ({linkedParts.length})
-                            </h3>
-                            <div className="space-y-2 max-h-60 overflow-y-auto pr-2">
-                              {linkedParts.map((part) => (
-                                <div 
-                                  key={part.id}
-                                  className={`p-3 rounded-lg border flex items-center justify-between ${
-                                    darkMode ? 'bg-gray-700 border-gray-600' : 'bg-gray-50 border-gray-200'
-                                  }`}
-                                >
-                                  <div className="flex-1 min-w-0">
-                                    <h4 className={`font-medium truncate ${
-                                      darkMode ? 'text-gray-100' : 'text-gray-900'
-                                    }`}>
-                                      {part.part}
-                                    </h4>
-                                    <div className="flex items-center gap-2 mt-1">
-                                      {part.vendor && (
-                                        <span className={`inline-block px-2 py-0.5 rounded-full text-xs font-medium ${getVendorColor(part.vendor)}`}>
-                                          {part.vendor}
-                                        </span>
-                                      )}
-                                      <span className={`text-sm font-bold ${
-                                        darkMode ? 'text-gray-200' : 'text-gray-900'
-                                      }`}>
-                                        ${part.total.toFixed(2)}
-                                      </span>
-                                    </div>
-                                  </div>
-                                  <button
-                                    onClick={() => {
-                                      if (window.confirm(`Are you sure you want to unlink "${part.part}" from this project?`)) {
-                                        unlinkPartFromProject(part.id);
-                                      }
-                                    }}
-                                    className={`ml-3 px-3 py-1.5 rounded-lg text-sm font-medium transition-colors border ${
-                                      darkMode 
-                                        ? 'text-gray-400 hover:text-red-400 hover:bg-gray-600 border-gray-600 hover:border-red-500' 
-                                        : 'text-gray-600 hover:text-red-600 hover:bg-red-50 border-gray-300 hover:border-red-300'
-                                    }`}
-                                    title="Unlink from project"
-                                  >
-                                    Unlink
-                                  </button>
-                                </div>
-                              ))}
-                            </div>
-                          </div>
-                        );
-                      }
-                      return null;
-                    })()}
                   </div>
                   
                   <div className={`border-t ${
@@ -7872,7 +7808,7 @@ const LandCruiserTracker = () => {
                   </div>
 
                   {/* Footer with Edit Button */}
-                  <div className={`border-t p-4 flex items-center justify-between ${
+                  <div className={`border-t p-6 flex items-center justify-between ${
                     darkMode ? 'border-gray-700' : 'border-gray-200'
                   }`}>
                     {(vehicleModalProjectView || vehicleModalEditMode) ? (
