@@ -177,22 +177,32 @@ const ProjectDetailView = ({
 
   // Capture positions after modal is fully rendered and layout is stable
   React.useEffect(() => {
+    console.log('>>> Recapture effect mounted, hasInitialized:', hasInitialized.current, 'sortedTodos.length:', sortedTodos.length);
+    
     // Small delay to ensure modal animations are complete and layout is stable
     const timer = setTimeout(() => {
+      console.log('>>> Timer fired, hasInitialized:', hasInitialized.current, 'sortedTodos.length:', sortedTodos.length);
+      
       if (hasInitialized.current && sortedTodos.length > 0) {
         console.log('>>> Recapturing positions after layout stabilization');
         sortedTodos.forEach(todo => {
           const element = todoRefs.current[todo.id];
           if (element) {
             const pos = element.getBoundingClientRect().top;
+            const oldPos = prevPositions.current[todo.id];
             prevPositions.current[todo.id] = pos;
-            console.log(`Recaptured position for todo ${todo.id}:`, pos);
+            console.log(`Recaptured position for todo ${todo.id}: old=${oldPos}, new=${pos}`);
           }
         });
+      } else {
+        console.log('>>> Skipping recapture - hasInitialized:', hasInitialized.current, 'sortedTodos.length:', sortedTodos.length);
       }
     }, 100); // Small delay to let modal animations complete
     
-    return () => clearTimeout(timer);
+    return () => {
+      console.log('>>> Clearing recapture timer');
+      clearTimeout(timer);
+    };
   }, [project.id, sortedTodos.length]); // Re-run when project changes or todo count changes
 
 
