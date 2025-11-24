@@ -2444,10 +2444,11 @@ const LandCruiserTracker = () => {
         {/* Header */}
         <div className="mb-6 sm:mb-8">
           <div className="flex items-start justify-between">
-            <div>
-              <h1 className={`text-2xl sm:text-3xl lg:text-4xl font-bold mb-2 ${
+            <div className="flex items-center gap-3">
+              <img src="/icon.png" alt="Takumi Garage" className="w-8 h-8 sm:w-10 sm:h-10 lg:w-12 lg:h-12" />
+              <h1 className={`text-2xl sm:text-3xl lg:text-4xl font-bold ${
                 darkMode ? 'text-gray-100' : 'text-slate-800'
-              }`} style={{ fontFamily: "'FoundationOne', 'Courier New', monospace" }}>{'\u{1F5FB}'} TAKUMI GARAGE</h1>
+              }`} style={{ fontFamily: "'FoundationOne', 'Courier New', monospace" }}>TAKUMI GARAGE</h1>
             </div>
             <div className="flex items-center gap-2 sm:gap-3">
               <button
