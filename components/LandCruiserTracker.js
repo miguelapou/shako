@@ -4701,21 +4701,17 @@ const LandCruiserTracker = () => {
                                     {/* Todo Text - Click to edit inline */}
                                     {(() => {
                                       const isEditing = editingTodoId === todo.id && !projectModalEditMode;
-                                      console.log('[VIEW MODE] Render check - Todo:', todo.id, 'isEditing:', isEditing, 'editingTodoId:', editingTodoId, 'projectModalEditMode:', projectModalEditMode);
                                       return isEditing ? (
                                       <input
                                         type="text"
                                         value={editingTodoText}
                                         onChange={(e) => {
-                                          console.log('[VIEW MODE] onChange:', e.target.value);
                                           setEditingTodoText(e.target.value);
                                         }}
                                         onKeyDown={(e) => {
-                                          console.log('[VIEW MODE] onKeyDown:', e.key);
                                           if (e.key === 'Enter') {
                                             e.preventDefault();
                                             if (editingTodoText.trim()) {
-                                              console.log('[VIEW MODE] Saving on Enter');
                                               const updatedTodos = viewingProject.todos.map(t => 
                                                 t.id === todo.id ? { ...t, text: editingTodoText.trim() } : t
                                               );
@@ -4731,23 +4727,18 @@ const LandCruiserTracker = () => {
                                               });
                                             }
                                           } else if (e.key === 'Escape') {
-                                            console.log('[VIEW MODE] Escape - canceling edit');
                                             setEditingTodoId(null);
                                             setEditingTodoText('');
                                           }
                                         }}
                                         onBlur={(e) => {
-                                          console.log('[VIEW MODE] onBlur triggered, activeElement:', document.activeElement);
                                           // Check if we're still in the process of focusing
                                           if (e.relatedTarget === null && document.activeElement === document.body) {
-                                            console.log('[VIEW MODE] Ignoring blur - focus is being set up');
                                             return;
                                           }
                                           // Small delay to prevent immediate blur when input appears
                                           setTimeout(() => {
-                                            console.log('[VIEW MODE] onBlur timeout executing');
                                             if (editingTodoText.trim() && editingTodoText !== todo.text) {
-                                              console.log('[VIEW MODE] Saving changes on blur');
                                               const updatedTodos = viewingProject.todos.map(t => 
                                                 t.id === todo.id ? { ...t, text: editingTodoText.trim() } : t
                                               );
@@ -4760,22 +4751,19 @@ const LandCruiserTracker = () => {
                                                 });
                                               });
                                             }
-                                            console.log('[VIEW MODE] Clearing editing state');
                                             setEditingTodoId(null);
                                             setEditingTodoText('');
                                           }, 100);
                                         }}
                                         onFocus={() => {
-                                          console.log('[VIEW MODE] onFocus triggered');
+                                          // Input is focused
                                         }}
                                         ref={(input) => {
                                           if (input) {
-                                            console.log('[VIEW MODE] Ref callback - focusing input');
                                             // Use requestAnimationFrame to ensure DOM is ready
                                             requestAnimationFrame(() => {
                                               setTimeout(() => {
                                                 input.focus({ preventScroll: true });
-                                                console.log('[VIEW MODE] Input focused, activeElement:', document.activeElement);
                                               }, 50);
                                             });
                                           }
@@ -4790,11 +4778,8 @@ const LandCruiserTracker = () => {
                                       <span 
                                         onClick={(e) => {
                                           e.stopPropagation();
-                                          console.log('[VIEW MODE] Clicked todo text:', todo.id, todo.text);
-                                          console.log('[VIEW MODE] Before setState - editingTodoId:', editingTodoId, 'editingTodoText:', editingTodoText);
                                           setEditingTodoId(todo.id);
                                           setEditingTodoText(todo.text);
-                                          console.log('[VIEW MODE] setState called');
                                         }}
                                         className={`flex-1 text-sm cursor-pointer hover:opacity-70 transition-opacity ${
                                           todo.completed
@@ -5231,21 +5216,17 @@ const LandCruiserTracker = () => {
                                   {/* Todo Text - Click to edit inline */}
                                   {(() => {
                                     const isEditing = editingTodoId === todo.id && projectModalEditMode;
-                                    console.log('[EDIT MODE] Render check - Todo:', todo.id, 'isEditing:', isEditing, 'editingTodoId:', editingTodoId, 'projectModalEditMode:', projectModalEditMode);
                                     return isEditing ? (
                                     <input
                                       type="text"
                                       value={editingTodoText}
                                       onChange={(e) => {
-                                        console.log('[EDIT MODE] onChange:', e.target.value);
                                         setEditingTodoText(e.target.value);
                                       }}
                                       onKeyDown={(e) => {
-                                        console.log('[EDIT MODE] onKeyDown:', e.key);
                                         if (e.key === 'Enter') {
                                           e.preventDefault();
                                           if (editingTodoText.trim()) {
-                                            console.log('[EDIT MODE] Saving on Enter');
                                             const updatedTodos = viewingProject.todos.map(t => 
                                               t.id === todo.id ? { ...t, text: editingTodoText.trim() } : t
                                             );
@@ -5257,23 +5238,18 @@ const LandCruiserTracker = () => {
                                             setEditingTodoText('');
                                           }
                                         } else if (e.key === 'Escape') {
-                                          console.log('[EDIT MODE] Escape - canceling edit');
                                           setEditingTodoId(null);
                                           setEditingTodoText('');
                                         }
                                       }}
                                       onBlur={(e) => {
-                                        console.log('[EDIT MODE] onBlur triggered, activeElement:', document.activeElement);
                                         // Check if we're still in the process of focusing
                                         if (e.relatedTarget === null && document.activeElement === document.body) {
-                                          console.log('[EDIT MODE] Ignoring blur - focus is being set up');
                                           return;
                                         }
                                         // Small delay to prevent immediate blur when input appears
                                         setTimeout(() => {
-                                          console.log('[EDIT MODE] onBlur timeout executing');
                                           if (editingTodoText.trim() && editingTodoText !== todo.text) {
-                                            console.log('[EDIT MODE] Saving changes on blur');
                                             const updatedTodos = viewingProject.todos.map(t => 
                                               t.id === todo.id ? { ...t, text: editingTodoText.trim() } : t
                                             );
@@ -5282,22 +5258,19 @@ const LandCruiserTracker = () => {
                                               todos: updatedTodos
                                             });
                                           }
-                                          console.log('[EDIT MODE] Clearing editing state');
                                           setEditingTodoId(null);
                                           setEditingTodoText('');
                                         }, 100);
                                       }}
                                       onFocus={() => {
-                                        console.log('[EDIT MODE] onFocus triggered');
+                                        // Input is focused
                                       }}
                                       ref={(input) => {
                                         if (input) {
-                                          console.log('[EDIT MODE] Ref callback - focusing input');
                                           // Use requestAnimationFrame to ensure DOM is ready
                                           requestAnimationFrame(() => {
                                             setTimeout(() => {
                                               input.focus({ preventScroll: true });
-                                              console.log('[EDIT MODE] Input focused, activeElement:', document.activeElement);
                                             }, 50);
                                           });
                                         }
@@ -5312,11 +5285,8 @@ const LandCruiserTracker = () => {
                                     <span 
                                       onClick={(e) => {
                                         e.stopPropagation();
-                                        console.log('[EDIT MODE] Clicked todo text:', todo.id, todo.text);
-                                        console.log('[EDIT MODE] Before setState - editingTodoId:', editingTodoId, 'editingTodoText:', editingTodoText);
                                         setEditingTodoId(todo.id);
                                         setEditingTodoText(todo.text);
-                                        console.log('[EDIT MODE] setState called');
                                       }}
                                       className={`flex-1 text-sm cursor-pointer hover:opacity-70 transition-opacity ${
                                         todo.completed
