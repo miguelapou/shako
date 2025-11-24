@@ -1859,6 +1859,17 @@ const LandCruiserTracker = () => {
     }
   }, [darkMode]);
 
+  // Apply dark scrollbar styles to body element for main page scrollbar
+  useEffect(() => {
+    if (typeof document !== 'undefined') {
+      if (darkMode) {
+        document.body.classList.add('dark-scrollbar');
+      } else {
+        document.body.classList.remove('dark-scrollbar');
+      }
+    }
+  }, [darkMode]);
+
   // Scroll to top when switching between vehicle and project view in modal
   useEffect(() => {
     if (showVehicleDetailModal) {
