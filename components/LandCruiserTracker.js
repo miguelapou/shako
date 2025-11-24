@@ -142,6 +142,62 @@ const ProjectDetailView = ({
   const statusColors = getStatusColors(darkMode);
   const priorityColors = getPriorityColors(darkMode);
 
+  // FLIP animation for todos
+  const todoRefs = React.useRef({});
+  const [prevTodoOrder, setPrevTodoOrder] = React.useState([]);
+
+  // Sort todos: completed first, then by creation date
+  const sortedTodos = React.useMemo(() => {
+    if (!project.todos) return [];
+    return [...project.todos].sort((a, b) => {
+      if (a.completed === b.completed) {
+        return new Date(b.created_at) - new Date(a.created_at);
+      }
+      return b.completed - a.completed;
+    });
+  }, [project.todos]);
+
+  // FLIP animation effect
+  React.useEffect(() => {
+    const currentOrder = sortedTodos.map(t => t.id);
+    
+    // Only animate if the order changed (not on first render)
+    if (prevTodoOrder.length > 0 && prevTodoOrder.length === currentOrder.length) {
+      // Check if order actually changed
+      const orderChanged = currentOrder.some((id, idx) => id !== prevTodoOrder[idx]);
+      
+      if (orderChanged) {
+        // Apply FLIP animation
+        Object.keys(todoRefs.current).forEach(todoId => {
+          const element = todoRefs.current[todoId];
+          if (!element) return;
+
+          const oldIndex = prevTodoOrder.indexOf(todoId);
+          const newIndex = currentOrder.indexOf(todoId);
+          
+          if (oldIndex !== -1 && newIndex !== -1 && oldIndex !== newIndex) {
+            // Calculate the distance to move
+            const deltaY = (oldIndex - newIndex) * (element.offsetHeight + 8); // 8px is gap
+            
+            // First: Get current position
+            // Last: Element is already in new position
+            // Invert: Apply negative transform to put it back to old position
+            element.style.transform = `translateY(${deltaY}px)`;
+            element.style.transition = 'none';
+            
+            // Play: Animate to new position
+            requestAnimationFrame(() => {
+              element.style.transform = '';
+              element.style.transition = 'transform 0.4s cubic-bezier(0.4, 0, 0.2, 1)';
+            });
+          }
+        });
+      }
+    }
+    
+    setPrevTodoOrder(currentOrder);
+  }, [sortedTodos]);
+
   return (
     <>
       {/* Status Badge */}
@@ -258,23 +314,13 @@ const ProjectDetailView = ({
         
         {/* To-Do Items */}
         <div className="space-y-2">
-          {project.todos && [...project.todos]
-            .sort((a, b) => {
-              // Sort: completed items first (true = 1, false = 0), then by creation date
-              if (a.completed === b.completed) {
-                return new Date(b.created_at) - new Date(a.created_at);
-              }
-              return b.completed - a.completed;
-            })
-            .map((todo) => (
+          {sortedTodos.map((todo) => (
             <div 
               key={todo.id}
-              className={`flex items-center gap-3 p-3 rounded-lg border transition-all duration-300 ease-in-out ${
+              ref={(el) => todoRefs.current[todo.id] = el}
+              className={`flex items-center gap-3 p-3 rounded-lg border ${
                 darkMode ? 'bg-gray-700 border-gray-600' : 'bg-gray-50 border-gray-200'
               }`}
-              style={{
-                animation: 'slideIn 0.3s ease-out'
-              }}
             >
               {/* Checkbox */}
               <button
