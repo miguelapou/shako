@@ -211,13 +211,20 @@ const ProjectDetailView = ({
     console.log('hasOldPositions:', hasOldPositions);
     console.log('oldPositions:', oldPositions);
     
-    let animationStarted = false;
-    
-    // Let React update the DOM, then capture new positions and set up animations
+    // Collect new positions first before any animations
+    const newPositions = {};
     sortedTodos.forEach(todo => {
       const element = todoRefs.current[todo.id];
       if (element) {
-        const newPos = element.getBoundingClientRect().top;
+        newPositions[todo.id] = element.getBoundingClientRect().top;
+      }
+    });
+    
+    // Now set up animations and update stored positions
+    sortedTodos.forEach(todo => {
+      const element = todoRefs.current[todo.id];
+      if (element) {
+        const newPos = newPositions[todo.id];
         const oldPos = oldPositions[todo.id];
         
         console.log(`Todo ${todo.id}: oldPos=${oldPos}, newPos=${newPos}`);
@@ -232,10 +239,7 @@ const ProjectDetailView = ({
           element.style.transform = `translateY(${deltaY}px)`;
           element.style.transition = 'none';
           
-          if (!animationStarted) {
-            setIsAnimating(true);
-            animationStarted = true;
-          }
+          setIsAnimating(true);
           
           // Then animate it to the new position
           requestAnimationFrame(() => {
@@ -250,14 +254,9 @@ const ProjectDetailView = ({
             }, 300);
           });
         }
-      }
-    });
-    
-    // Update ALL stored positions AFTER setting up animations
-    sortedTodos.forEach(todo => {
-      const element = todoRefs.current[todo.id];
-      if (element) {
-        prevPositions.current[todo.id] = element.getBoundingClientRect().top;
+        
+        // Store new position for next time
+        prevPositions.current[todo.id] = newPos;
       }
     });
   }, [sortedTodos]);
