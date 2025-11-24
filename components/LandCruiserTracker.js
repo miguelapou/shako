@@ -4738,6 +4738,11 @@ const LandCruiserTracker = () => {
                                         }}
                                         onBlur={(e) => {
                                           console.log('[VIEW MODE] onBlur triggered, activeElement:', document.activeElement);
+                                          // Check if we're still in the process of focusing
+                                          if (e.relatedTarget === null && document.activeElement === document.body) {
+                                            console.log('[VIEW MODE] Ignoring blur - focus is being set up');
+                                            return;
+                                          }
                                           // Small delay to prevent immediate blur when input appears
                                           setTimeout(() => {
                                             console.log('[VIEW MODE] onBlur timeout executing');
@@ -4766,11 +4771,13 @@ const LandCruiserTracker = () => {
                                         ref={(input) => {
                                           if (input) {
                                             console.log('[VIEW MODE] Ref callback - focusing input');
-                                            // Focus without scrolling
-                                            setTimeout(() => {
-                                              input.focus({ preventScroll: true });
-                                              console.log('[VIEW MODE] Input focused, activeElement:', document.activeElement);
-                                            }, 0);
+                                            // Use requestAnimationFrame to ensure DOM is ready
+                                            requestAnimationFrame(() => {
+                                              setTimeout(() => {
+                                                input.focus({ preventScroll: true });
+                                                console.log('[VIEW MODE] Input focused, activeElement:', document.activeElement);
+                                              }, 50);
+                                            });
                                           }
                                         }}
                                         className={`flex-1 text-sm px-2 py-1 rounded border-2 focus:outline-none ${
@@ -5255,8 +5262,13 @@ const LandCruiserTracker = () => {
                                           setEditingTodoText('');
                                         }
                                       }}
-                                      onBlur={() => {
+                                      onBlur={(e) => {
                                         console.log('[EDIT MODE] onBlur triggered, activeElement:', document.activeElement);
+                                        // Check if we're still in the process of focusing
+                                        if (e.relatedTarget === null && document.activeElement === document.body) {
+                                          console.log('[EDIT MODE] Ignoring blur - focus is being set up');
+                                          return;
+                                        }
                                         // Small delay to prevent immediate blur when input appears
                                         setTimeout(() => {
                                           console.log('[EDIT MODE] onBlur timeout executing');
@@ -5281,11 +5293,13 @@ const LandCruiserTracker = () => {
                                       ref={(input) => {
                                         if (input) {
                                           console.log('[EDIT MODE] Ref callback - focusing input');
-                                          // Focus without scrolling
-                                          setTimeout(() => {
-                                            input.focus({ preventScroll: true });
-                                            console.log('[EDIT MODE] Input focused, activeElement:', document.activeElement);
-                                          }, 0);
+                                          // Use requestAnimationFrame to ensure DOM is ready
+                                          requestAnimationFrame(() => {
+                                            setTimeout(() => {
+                                              input.focus({ preventScroll: true });
+                                              console.log('[EDIT MODE] Input focused, activeElement:', document.activeElement);
+                                            }, 50);
+                                          });
                                         }
                                       }}
                                       className={`flex-1 text-sm px-2 py-1 rounded border-2 focus:outline-none ${
