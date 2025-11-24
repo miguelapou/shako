@@ -167,25 +167,41 @@ const ProjectDetailView = ({
 
   // FLIP animation with useLayoutEffect for synchronous execution
   React.useLayoutEffect(() => {
+    console.log('=== useLayoutEffect triggered ===');
+    console.log('hasInitialized:', hasInitialized.current);
+    console.log('prevPositions:', prevPositions.current);
+    console.log('sortedTodos:', sortedTodos.map(t => ({ id: t.id, completed: t.completed })));
+    
     // On first render, capture positions after a small delay to ensure layout is complete
     if (!hasInitialized.current) {
+      console.log('>>> First render - capturing initial positions');
       setTimeout(() => {
         sortedTodos.forEach(todo => {
           const element = todoRefs.current[todo.id];
           if (element) {
-            prevPositions.current[todo.id] = element.getBoundingClientRect().top;
+            const pos = element.getBoundingClientRect().top;
+            prevPositions.current[todo.id] = pos;
+            console.log(`Initial position for todo ${todo.id}:`, pos);
           }
         });
         hasInitialized.current = true;
+        console.log('>>> Initial positions captured, hasInitialized set to true');
       }, 0);
       return;
     }
     
-    if (isAnimating) return; // Don't interrupt ongoing animations
+    if (isAnimating) {
+      console.log('>>> Currently animating, skipping');
+      return; // Don't interrupt ongoing animations
+    }
     
     // First, capture the old positions before React updates the DOM
     const oldPositions = { ...prevPositions.current };
     const hasOldPositions = Object.keys(oldPositions).length > 0;
+    
+    console.log('>>> Processing todos for animation');
+    console.log('hasOldPositions:', hasOldPositions);
+    console.log('oldPositions:', oldPositions);
     
     // Let React update the DOM, then capture new positions
     sortedTodos.forEach(todo => {
@@ -194,9 +210,13 @@ const ProjectDetailView = ({
         const newPos = element.getBoundingClientRect().top;
         const oldPos = oldPositions[todo.id];
         
+        console.log(`Todo ${todo.id}: oldPos=${oldPos}, newPos=${newPos}`);
+        
         if (hasOldPositions && oldPos !== undefined && newPos !== oldPos) {
           // Calculate how far the element has moved
           const deltaY = oldPos - newPos;
+          
+          console.log(`>>> ANIMATING todo ${todo.id}: deltaY=${deltaY}px`);
           
           // Immediately move it back to the old position
           element.style.transform = `translateY(${deltaY}px)`;
@@ -213,6 +233,7 @@ const ProjectDetailView = ({
             setTimeout(() => {
               setIsAnimating(false);
               element.style.transition = '';
+              console.log(`>>> Animation complete for todo ${todo.id}`);
             }, 300);
           });
         }
