@@ -146,6 +146,7 @@ const ProjectDetailView = ({
   const todoRefs = React.useRef({});
   const prevPositions = React.useRef({});
   const [isAnimating, setIsAnimating] = React.useState(false);
+  const isInitialMount = React.useRef(true);
 
   // Sort todos: completed first, then by creation date
   const sortedTodos = React.useMemo(() => {
@@ -160,6 +161,18 @@ const ProjectDetailView = ({
 
   // FLIP animation with useLayoutEffect for synchronous execution
   React.useLayoutEffect(() => {
+    // On initial mount, just capture positions without animating
+    if (isInitialMount.current) {
+      sortedTodos.forEach(todo => {
+        const element = todoRefs.current[todo.id];
+        if (element) {
+          prevPositions.current[todo.id] = element.getBoundingClientRect().top;
+        }
+      });
+      isInitialMount.current = false;
+      return;
+    }
+    
     if (isAnimating) return; // Don't interrupt ongoing animations
     
     // First, capture the old positions before React updates the DOM
