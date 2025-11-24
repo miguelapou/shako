@@ -164,7 +164,7 @@ const ProjectDetailView = ({
           // Both completed: sort by completed_at (oldest completed first, newest at bottom)
           const aCompletedAt = a.completed_at ? new Date(a.completed_at) : new Date(a.created_at);
           const bCompletedAt = b.completed_at ? new Date(b.completed_at) : new Date(b.created_at);
-          return aCompletedAt - bCompletedAt; // Reversed: a - b instead of b - a
+          return aCompletedAt - bCompletedAt;
         } else {
           // Both uncompleted: sort by created_at (most recently created first)
           return new Date(b.created_at) - new Date(a.created_at);
@@ -175,54 +175,28 @@ const ProjectDetailView = ({
     });
   }, [project.todos]);
 
-  // Delayed initialization - wait for layout to stabilize before enabling animations
-  React.useEffect(() => {
-    // Capture initial positions after a delay
-    const timer = setTimeout(() => {
-      if (!hasInitialized.current && sortedTodos.length > 0) {
-        console.log('>>> Delayed initialization - capturing stable positions');
-        sortedTodos.forEach(todo => {
-          const element = todoRefs.current[todo.id];
-          if (element) {
-            const pos = element.getBoundingClientRect().top;
-            prevPositions.current[todo.id] = pos;
-            console.log(`Stable position for todo ${todo.id}:`, pos);
-          }
-        });
-        hasInitialized.current = true;
-        console.log('>>> Initialization complete, animations ready');
-      }
-    }, 300); // Wait for modal animation to complete
-    
-    return () => clearTimeout(timer);
-  }, [project.id, sortedTodos.length]);
-
-
   // FLIP animation with useLayoutEffect for synchronous execution
   React.useLayoutEffect(() => {
-    console.log('=== useLayoutEffect triggered ===');
-    console.log('hasInitialized:', hasInitialized.current);
-    console.log('prevPositions:', prevPositions.current);
-    console.log('sortedTodos:', sortedTodos.map(t => ({ id: t.id, completed: t.completed })));
-    
-    // Skip if not initialized yet (waiting for delayed init)
+    // On first render, capture positions synchronously
     if (!hasInitialized.current) {
-      console.log('>>> Not initialized yet, skipping');
-      return;
+      sortedTodos.forEach(todo => {
+        const element = todoRefs.current[todo.id];
+        if (element) {
+          const pos = element.getBoundingClientRect().top;
+          prevPositions.current[todo.id] = pos;
+        }
+      });
+      hasInitialized.current = true;
+      return; // Don't animate on first render
     }
     
     if (isAnimating) {
-      console.log('>>> Currently animating, skipping');
       return; // Don't interrupt ongoing animations
     }
     
-    // First, capture the old positions before React updates the DOM
+    // Capture the old positions before React updates the DOM
     const oldPositions = { ...prevPositions.current };
     const hasOldPositions = Object.keys(oldPositions).length > 0;
-    
-    console.log('>>> Processing todos for animation');
-    console.log('hasOldPositions:', hasOldPositions);
-    console.log('oldPositions:', oldPositions);
     
     // Collect new positions first before any animations
     const newPositions = {};
@@ -240,13 +214,9 @@ const ProjectDetailView = ({
         const newPos = newPositions[todo.id];
         const oldPos = oldPositions[todo.id];
         
-        console.log(`Todo ${todo.id}: oldPos=${oldPos}, newPos=${newPos}`);
-        
         if (hasOldPositions && oldPos !== undefined && newPos !== oldPos) {
           // Calculate how far the element has moved
           const deltaY = oldPos - newPos;
-          
-          console.log(`>>> ANIMATING todo ${todo.id}: deltaY=${deltaY}px`);
           
           // Immediately move it back to the old position
           element.style.transform = `translateY(${deltaY}px)`;
@@ -263,7 +233,6 @@ const ProjectDetailView = ({
             setTimeout(() => {
               setIsAnimating(false);
               element.style.transition = '';
-              console.log(`>>> Animation complete for todo ${todo.id}`);
             }, 300);
           });
         }
