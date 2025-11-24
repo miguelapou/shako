@@ -154,13 +154,23 @@ const ProjectDetailView = ({
     prevPositions.current = {};
   }, [project.id]);
 
-  // Sort todos: completed first, then by creation date
+  // Sort todos: completed first (by completion time), then uncompleted (by creation time)
   const sortedTodos = React.useMemo(() => {
     if (!project.todos) return [];
     return [...project.todos].sort((a, b) => {
+      // If both have same completion status
       if (a.completed === b.completed) {
-        return new Date(b.created_at) - new Date(a.created_at);
+        if (a.completed) {
+          // Both completed: sort by completed_at (oldest completed first, newest at bottom)
+          const aCompletedAt = a.completed_at ? new Date(a.completed_at) : new Date(a.created_at);
+          const bCompletedAt = b.completed_at ? new Date(b.completed_at) : new Date(b.created_at);
+          return aCompletedAt - bCompletedAt; // Reversed: a - b instead of b - a
+        } else {
+          // Both uncompleted: sort by created_at (most recently created first)
+          return new Date(b.created_at) - new Date(a.created_at);
+        }
       }
+      // Different completion status: completed items first
       return b.completed - a.completed;
     });
   }, [project.todos]);
@@ -370,9 +380,17 @@ const ProjectDetailView = ({
               <button
                 onClick={(e) => {
                   e.stopPropagation();
-                  const updatedTodos = project.todos.map(t => 
-                    t.id === todo.id ? { ...t, completed: !t.completed } : t
-                  );
+                  const updatedTodos = project.todos.map(t => {
+                    if (t.id === todo.id) {
+                      const newCompleted = !t.completed;
+                      return { 
+                        ...t, 
+                        completed: newCompleted,
+                        completed_at: newCompleted ? new Date().toISOString() : null
+                      };
+                    }
+                    return t;
+                  });
                   updateProject(project.id, {
                     todos: updatedTodos
                   });
