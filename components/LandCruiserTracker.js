@@ -4700,8 +4700,8 @@ const LandCruiserTracker = () => {
                                     
                                     {/* Todo Text - Click to edit inline */}
                                     {(() => {
-                                      const isEditing = editingTodoId === todo.id;
-                                      console.log('[VIEW MODE] Render check - Todo:', todo.id, 'isEditing:', isEditing, 'editingTodoId:', editingTodoId);
+                                      const isEditing = editingTodoId === todo.id && !projectModalEditMode;
+                                      console.log('[VIEW MODE] Render check - Todo:', todo.id, 'isEditing:', isEditing, 'editingTodoId:', editingTodoId, 'projectModalEditMode:', projectModalEditMode);
                                       return isEditing ? (
                                       <input
                                         type="text"
@@ -5230,8 +5230,8 @@ const LandCruiserTracker = () => {
                                   
                                   {/* Todo Text - Click to edit inline */}
                                   {(() => {
-                                    const isEditing = editingTodoId === todo.id;
-                                    console.log('[EDIT MODE] Render check - Todo:', todo.id, 'isEditing:', isEditing, 'editingTodoId:', editingTodoId);
+                                    const isEditing = editingTodoId === todo.id && projectModalEditMode;
+                                    console.log('[EDIT MODE] Render check - Todo:', todo.id, 'isEditing:', isEditing, 'editingTodoId:', editingTodoId, 'projectModalEditMode:', projectModalEditMode);
                                     return isEditing ? (
                                     <input
                                       type="text"
