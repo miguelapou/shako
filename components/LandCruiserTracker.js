@@ -258,12 +258,23 @@ const ProjectDetailView = ({
         
         {/* To-Do Items */}
         <div className="space-y-2">
-          {project.todos && project.todos.map((todo) => (
+          {project.todos && [...project.todos]
+            .sort((a, b) => {
+              // Sort: completed items first (true = 1, false = 0), then by creation date
+              if (a.completed === b.completed) {
+                return new Date(b.created_at) - new Date(a.created_at);
+              }
+              return b.completed - a.completed;
+            })
+            .map((todo) => (
             <div 
               key={todo.id}
-              className={`flex items-center gap-3 p-3 rounded-lg border ${
+              className={`flex items-center gap-3 p-3 rounded-lg border transition-all duration-300 ease-in-out ${
                 darkMode ? 'bg-gray-700 border-gray-600' : 'bg-gray-50 border-gray-200'
               }`}
+              style={{
+                animation: 'slideIn 0.3s ease-out'
+              }}
             >
               {/* Checkbox */}
               <button
@@ -653,6 +664,17 @@ const fontStyles = `
     to {
       opacity: 1;
       transform: translateX(0);
+    }
+  }
+
+  @keyframes slideIn {
+    from {
+      opacity: 0;
+      transform: translateY(-10px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
     }
   }
 
