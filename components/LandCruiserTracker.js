@@ -175,6 +175,28 @@ const ProjectDetailView = ({
     });
   }, [project.todos]);
 
+  // Delayed initialization - wait for layout to stabilize before enabling animations
+  React.useEffect(() => {
+    // Capture initial positions after a delay
+    const timer = setTimeout(() => {
+      if (!hasInitialized.current && sortedTodos.length > 0) {
+        console.log('>>> Delayed initialization - capturing stable positions');
+        sortedTodos.forEach(todo => {
+          const element = todoRefs.current[todo.id];
+          if (element) {
+            const pos = element.getBoundingClientRect().top;
+            prevPositions.current[todo.id] = pos;
+            console.log(`Stable position for todo ${todo.id}:`, pos);
+          }
+        });
+        hasInitialized.current = true;
+        console.log('>>> Initialization complete, animations ready');
+      }
+    }, 300); // Wait for modal animation to complete
+    
+    return () => clearTimeout(timer);
+  }, [project.id, sortedTodos.length]);
+
 
   // FLIP animation with useLayoutEffect for synchronous execution
   React.useLayoutEffect(() => {
@@ -183,26 +205,10 @@ const ProjectDetailView = ({
     console.log('prevPositions:', prevPositions.current);
     console.log('sortedTodos:', sortedTodos.map(t => ({ id: t.id, completed: t.completed })));
     
-    // On first render, just capture positions - don't set hasInitialized yet
-    if (!hasInitialized.current && Object.keys(prevPositions.current).length === 0) {
-      console.log('>>> First render - capturing initial positions');
-      sortedTodos.forEach(todo => {
-        const element = todoRefs.current[todo.id];
-        if (element) {
-          const pos = element.getBoundingClientRect().top;
-          prevPositions.current[todo.id] = pos;
-          console.log(`Initial position for todo ${todo.id}:`, pos);
-        }
-      });
-      console.log('>>> Initial positions captured, but NOT setting hasInitialized yet');
-      return; // Don't animate on first render
-    }
-    
-    // On second render (first interaction), treat it as first animation
-    if (!hasInitialized.current && Object.keys(prevPositions.current).length > 0) {
-      console.log('>>> Second render (first interaction) - NOW setting hasInitialized and animating');
-      hasInitialized.current = true;
-      // Don't return - let it continue to animate
+    // Skip if not initialized yet (waiting for delayed init)
+    if (!hasInitialized.current) {
+      console.log('>>> Not initialized yet, skipping');
+      return;
     }
     
     if (isAnimating) {
