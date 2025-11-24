@@ -1779,10 +1779,8 @@ const LandCruiserTracker = () => {
   
   // Project-related state
   const [showAddProjectModal, setShowAddProjectModal] = useState(false);
-  const [showEditProjectModal, setShowEditProjectModal] = useState(false);
   const [showProjectDetailModal, setShowProjectDetailModal] = useState(false);
   const [viewingProject, setViewingProject] = useState(null);
-  const [editingProject, setEditingProject] = useState(null);
   const [projectModalEditMode, setProjectModalEditMode] = useState(false); // Track if editing within project detail modal
   const [editingTodoId, setEditingTodoId] = useState(null); // Track which todo is being edited
   const [editingTodoText, setEditingTodoText] = useState(''); // Temp text while editing
@@ -1832,7 +1830,7 @@ const LandCruiserTracker = () => {
   // Lock body scroll when any modal is open
   useEffect(() => {
     const isAnyModalOpen = showAddModal || showEditModal || showTrackingModal || 
-                          showAddProjectModal || showEditProjectModal || showProjectDetailModal ||
+                          showAddProjectModal || showProjectDetailModal ||
                           showAddVehicleModal || showEditVehicleModal || showVehicleDetailModal ||
                           showPartDetailModal;
     
@@ -1864,7 +1862,7 @@ const LandCruiserTracker = () => {
       document.body.style.width = '';
     };
   }, [showAddModal, showEditModal, showTrackingModal, showAddProjectModal, 
-      showEditProjectModal, showProjectDetailModal, showAddVehicleModal, showEditVehicleModal, showVehicleDetailModal, showPartDetailModal]);
+      showProjectDetailModal, showAddVehicleModal, showEditVehicleModal, showVehicleDetailModal, showPartDetailModal]);
 
   const [newPart, setNewPart] = useState({
     part: '',
@@ -4437,12 +4435,9 @@ const LandCruiserTracker = () => {
                     <div className="absolute top-2 right-2" onClick={(e) => e.stopPropagation()}>
                       <button
                         onClick={() => {
-                          setEditingProject({
-                            ...project,
-                            start_date: project.start_date ? project.start_date.split('T')[0] : '',
-                            target_date: project.target_date ? project.target_date.split('T')[0] : ''
-                          });
-                          setShowEditProjectModal(true);
+                          setViewingProject(project);
+                          setProjectModalEditMode(true);
+                          setShowProjectDetailModal(true);
                         }}
                         className={`p-2 rounded-md transition-colors ${
                           darkMode ? 'hover:bg-gray-700 text-gray-500 hover:text-blue-400' : 'hover:bg-gray-100 text-gray-500 hover:text-blue-600'
@@ -4918,271 +4913,6 @@ const LandCruiserTracker = () => {
               </div>
             )}
 
-            {/* Edit Project Modal */}
-            {showEditProjectModal && editingProject && (
-              <div 
-                className={`fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4 modal-backdrop ${
-                  isModalClosing ? 'modal-backdrop-exit' : 'modal-backdrop-enter'
-                }`}
-                onClick={() => handleCloseModal(() => {
-                  setShowEditProjectModal(false);
-                  setEditingProject(null);
-                })}
-              >
-                <div 
-                  className={`rounded-lg shadow-xl max-w-4xl w-full max-h-[90vh] modal-content ${
-                    isModalClosing ? 'modal-popup-exit' : 'modal-popup-enter'
-                  } ${darkMode ? 'bg-gray-800' : 'bg-white'}`}
-                  onClick={(e) => e.stopPropagation()}
-                >
-                  <div className={`sticky top-0 border-b px-6 py-4 flex items-center justify-between ${
-                    darkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-200'
-                  }`}>
-                    <h2 className={`text-2xl font-bold ${
-                      darkMode ? 'text-gray-100' : 'text-gray-800'
-                    }`} style={{ fontFamily: "'FoundationOne', 'Courier New', monospace" }}>
-                      Edit Project
-                    </h2>
-                    <button
-                      onClick={() => handleCloseModal(() => {
-                        setShowEditProjectModal(false);
-                        setEditingProject(null);
-                      })}
-                      className={`transition-colors ${
-                        darkMode ? 'text-gray-400 hover:text-gray-300' : 'text-gray-400 hover:text-gray-600'
-                      }`}
-                    >
-                      <X className="w-6 h-6" />
-                    </button>
-                  </div>
-
-                  <div className="p-6 modal-scrollable">
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      <div>
-                        <label className={`block text-sm font-medium mb-2 ${
-                          darkMode ? 'text-gray-300' : 'text-gray-700'
-                        }`}>
-                          Project Name
-                        </label>
-                        <input
-                          type="text"
-                          value={editingProject.name}
-                          onChange={(e) => setEditingProject({ ...editingProject, name: e.target.value })}
-                          className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
-                            darkMode 
-                              ? 'bg-gray-700 border-gray-600 text-gray-100' 
-                              : 'bg-white border-gray-300 text-gray-900'
-                          }`}
-                        />
-                      </div>
-
-                      <div></div>
-
-                      <div className="md:col-span-2">
-                        <label className={`block text-sm font-medium mb-2 ${
-                          darkMode ? 'text-gray-300' : 'text-gray-700'
-                        }`}>
-                          Description
-                        </label>
-                        <textarea
-                          value={editingProject.description}
-                          onChange={(e) => setEditingProject({ ...editingProject, description: e.target.value })}
-                          className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
-                            darkMode 
-                              ? 'bg-gray-700 border-gray-600 text-gray-100' 
-                              : 'bg-white border-gray-300 text-gray-900'
-                          }`}
-                          rows="3"
-                        />
-                      </div>
-
-                      <div>
-                        <label className={`block text-sm font-medium mb-2 ${
-                          darkMode ? 'text-gray-300' : 'text-gray-700'
-                        }`}>
-                          Budget ($)
-                        </label>
-                        <input
-                          type="number"
-                          step="0.01"
-                          value={editingProject.budget}
-                          onChange={(e) => setEditingProject({ ...editingProject, budget: e.target.value })}
-                          className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none ${
-                            darkMode 
-                              ? 'bg-gray-700 border-gray-600 text-gray-100' 
-                              : 'bg-white border-gray-300 text-gray-900'
-                          }`}
-                        />
-                      </div>
-
-                      <div>
-                        <label className={`block text-sm font-medium mb-2 ${
-                          darkMode ? 'text-gray-300' : 'text-gray-700'
-                        }`}>
-                          Priority
-                        </label>
-                        <select
-                          value={editingProject.priority}
-                          onChange={(e) => setEditingProject({ ...editingProject, priority: e.target.value })}
-                          className={`w-full px-4 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent appearance-none ${
-                            darkMode 
-                              ? 'bg-gray-700 border-gray-600 text-gray-100' 
-                              : 'bg-white border-gray-300 text-gray-900'
-                          }`}
-                        >
-                          <option value="low">Low</option>
-                          <option value="medium">Medium</option>
-                          <option value="high">High</option>
-                        </select>
-                      </div>
-
-                      <div>
-                        <label className={`block text-sm font-medium mb-2 ${
-                          darkMode ? 'text-gray-300' : 'text-gray-700'
-                        }`}>
-                          Start Date
-                        </label>
-                        <input
-                          type="date"
-                          value={editingProject.start_date || ''}
-                          onChange={(e) => setEditingProject({ ...editingProject, start_date: e.target.value })}
-                          className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
-                            darkMode 
-                              ? 'bg-gray-700 border-gray-600 text-gray-100' 
-                              : 'bg-white border-gray-300 text-gray-900'
-                          }`}
-                        />
-                      </div>
-
-                      <div>
-                        <label className={`block text-sm font-medium mb-2 ${
-                          darkMode ? 'text-gray-300' : 'text-gray-700'
-                        }`}>
-                          Target Date
-                        </label>
-                        <input
-                          type="date"
-                          value={editingProject.target_date || ''}
-                          onChange={(e) => setEditingProject({ ...editingProject, target_date: e.target.value })}
-                          className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
-                            darkMode 
-                              ? 'bg-gray-700 border-gray-600 text-gray-100' 
-                              : 'bg-white border-gray-300 text-gray-900'
-                          }`}
-                        />
-                      </div>
-
-                      <div>
-                        <label className={`block text-sm font-medium mb-2 ${
-                          darkMode ? 'text-gray-300' : 'text-gray-700'
-                        }`}>
-                          Status
-                        </label>
-                        <select
-                          value={editingProject.status}
-                          onChange={(e) => setEditingProject({ ...editingProject, status: e.target.value })}
-                          className={`w-full px-4 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent appearance-none ${
-                            darkMode 
-                              ? 'bg-gray-700 border-gray-600 text-gray-100' 
-                              : 'bg-white border-gray-300 text-gray-900'
-                          }`}
-                        >
-                          <option value="planning">Planning</option>
-                          <option value="in_progress">In Progress</option>
-                          <option value="on_hold">On Hold</option>
-                          <option value="completed">Completed</option>
-                        </select>
-                      </div>
-
-                      <div>
-                        <label className={`block text-sm font-medium mb-2 ${
-                          darkMode ? 'text-gray-300' : 'text-gray-700'
-                        }`}>
-                          <div className="flex items-center gap-2">
-                            <Car className="w-4 h-4" />
-                            <span>Linked Vehicle</span>
-                          </div>
-                        </label>
-                        <select
-                          value={editingProject.vehicle_id || ''}
-                          onChange={(e) => setEditingProject({ ...editingProject, vehicle_id: e.target.value ? parseInt(e.target.value) : null })}
-                          className={`w-full px-4 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent appearance-none ${
-                            darkMode 
-                              ? 'bg-gray-700 border-gray-600 text-gray-100' 
-                              : 'bg-white border-gray-300 text-gray-900'
-                          }`}
-                        >
-                          <option value="">No vehicle</option>
-                          {vehicles.map(vehicle => (
-                            <option key={vehicle.id} value={vehicle.id}>
-                              {vehicle.nickname || vehicle.name}
-                            </option>
-                          ))}
-                        </select>
-                      </div>
-                    </div>
-                  </div>
-                  
-                  <div className={`border-t ${
-                    darkMode ? 'border-gray-700' : 'border-gray-200'
-                  }`}></div>
-                  
-                  <div className="p-6">
-                    <div className="flex gap-3">
-                      <button
-                        onClick={() => deleteProject(editingProject.id)}
-                        className={`px-6 py-3 rounded-lg font-medium transition-colors ${
-                          darkMode 
-                            ? 'bg-red-600/20 text-red-400 hover:bg-red-600/30 hover:text-red-300' 
-                            : 'bg-red-50 text-red-600 hover:bg-red-100'
-                        }`}
-                      >
-                        Delete
-                      </button>
-                      <button
-                        onClick={() => {
-                          setShowEditProjectModal(false);
-                          setEditingProject(null);
-                        }}
-                        className={`flex-1 px-6 py-3 rounded-lg font-medium transition-colors ${
-                          darkMode 
-                            ? 'bg-gray-700 hover:bg-gray-600 text-gray-100' 
-                            : 'bg-gray-200 hover:bg-gray-300 text-gray-800'
-                        }`}
-                      >
-                        Cancel
-                      </button>
-                      <button
-                        onClick={async () => {
-                          await updateProject(editingProject.id, {
-                            name: editingProject.name,
-                            description: editingProject.description,
-                            budget: parseFloat(editingProject.budget),
-                            priority: editingProject.priority,
-                            start_date: editingProject.start_date && editingProject.start_date.trim() !== '' ? editingProject.start_date : null,
-                            target_date: editingProject.target_date && editingProject.target_date.trim() !== '' ? editingProject.target_date : null,
-                            status: editingProject.status,
-                            vehicle_id: editingProject.vehicle_id || null
-                          });
-                          setShowEditProjectModal(false);
-                          setEditingProject(null);
-                        }}
-                        disabled={!editingProject.name}
-                        className={`flex-1 px-6 py-3 rounded-lg font-medium transition-colors ${
-                          !editingProject.name
-                            ? darkMode 
-                              ? 'bg-gray-700 text-gray-500 cursor-not-allowed'
-                              : 'bg-gray-300 text-gray-500 cursor-not-allowed'
-                            : 'bg-blue-600 hover:bg-blue-700 text-white'
-                        }`}
-                      >
-                        Save Changes
-                      </button>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            )}
             {/* Project Detail Modal */}
             {showProjectDetailModal && viewingProject && (
               <div 
