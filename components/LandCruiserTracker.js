@@ -4493,7 +4493,7 @@ const LandCruiserTracker = () => {
                   </div>
 
                   {/* Content - with slide animation */}
-                  <div className="relative overflow-y-auto overflow-x-hidden" style={{ maxHeight: 'calc(90vh - 180px)' }}>
+                  <div className="relative overflow-x-hidden">
                     {/* Project Details View */}
                     <div 
                       className={`w-full transition-all duration-500 ease-in-out ${
@@ -4502,7 +4502,7 @@ const LandCruiserTracker = () => {
                           : 'relative opacity-100'
                       }`}
                     >
-                      <div className="p-6 space-y-6">
+                      <div className="p-6 space-y-6 max-h-[calc(90vh-180px)] overflow-y-auto">
                     {(() => {
                       const linkedParts = parts.filter(part => part.projectId === viewingProject.id);
                       const linkedPartsTotal = calculateProjectTotal(viewingProject.id, parts);
@@ -4957,7 +4957,7 @@ const LandCruiserTracker = () => {
                           : 'absolute opacity-0 translate-x-full pointer-events-none'
                       }`}
                     >
-                      <div className="p-6 space-y-6">
+                      <div className="p-6 space-y-6 max-h-[calc(90vh-180px)] overflow-y-auto">
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                           <div>
                             <label className={`block text-sm font-medium mb-2 ${
