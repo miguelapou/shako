@@ -5219,21 +5219,21 @@ const LandCruiserTracker = () => {
                                 }`}>
                                   Linked Parts ({linkedParts.length})
                                 </h3>
-                                <div className="space-y-2 max-h-60 overflow-y-auto pr-2">
+                                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 max-h-96 overflow-y-auto pr-2">
                                   {linkedParts.map((part) => (
                                     <div 
                                       key={part.id}
-                                      className={`p-3 rounded-lg border flex items-center justify-between ${
+                                      className={`p-3 rounded-lg border flex flex-col ${
                                         darkMode ? 'bg-gray-700 border-gray-600' : 'bg-gray-50 border-gray-200'
                                       }`}
                                     >
-                                      <div className="flex-1 min-w-0">
+                                      <div className="flex-1 min-w-0 mb-2">
                                         <h4 className={`font-medium truncate ${
                                           darkMode ? 'text-gray-100' : 'text-gray-900'
                                         }`}>
                                           {part.part}
                                         </h4>
-                                        <div className="flex items-center gap-2 mt-1">
+                                        <div className="flex items-center gap-2 mt-1 flex-wrap">
                                           {part.vendor && (
                                             <span className={`inline-block px-2 py-0.5 rounded-full text-xs font-medium ${getVendorColor(part.vendor)}`}>
                                               {part.vendor}
@@ -5252,7 +5252,7 @@ const LandCruiserTracker = () => {
                                             unlinkPartFromProject(part.id);
                                           }
                                         }}
-                                        className={`ml-3 px-3 py-1.5 rounded-lg text-sm font-medium transition-colors border ${
+                                        className={`w-full px-3 py-1.5 rounded-lg text-sm font-medium transition-colors border ${
                                           darkMode 
                                             ? 'text-gray-400 hover:text-red-400 hover:bg-gray-600 border-gray-600 hover:border-red-500' 
                                             : 'text-gray-600 hover:text-red-600 hover:bg-red-50 border-gray-300 hover:border-red-300'
@@ -6589,7 +6589,7 @@ const LandCruiserTracker = () => {
                   </div>
 
                   {/* Content - with slide animation */}
-                  <div className="relative" style={{ minHeight: '500px' }}>
+                  <div className="relative min-h-[calc(90vh-180px)]">
                     {/* Vehicle Details View */}
                     <div 
                       className={`w-full transition-all duration-500 ease-in-out ${
@@ -7126,21 +7126,21 @@ const LandCruiserTracker = () => {
                                   }`}>
                                     Linked Parts ({linkedParts.length})
                                   </h3>
-                                  <div className="space-y-2 max-h-60 overflow-y-auto pr-2">
+                                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 max-h-96 overflow-y-auto pr-2">
                                     {linkedParts.map((part) => (
                                       <div 
                                         key={part.id}
-                                        className={`p-3 rounded-lg border flex items-center justify-between ${
+                                        className={`p-3 rounded-lg border flex flex-col ${
                                           darkMode ? 'bg-gray-700 border-gray-600' : 'bg-gray-50 border-gray-200'
                                         }`}
                                       >
-                                        <div className="flex-1 min-w-0">
+                                        <div className="flex-1 min-w-0 mb-2">
                                           <h4 className={`font-medium truncate ${
                                             darkMode ? 'text-gray-100' : 'text-gray-900'
                                           }`}>
                                             {part.part}
                                           </h4>
-                                          <div className="flex items-center gap-2 mt-1">
+                                          <div className="flex items-center gap-2 mt-1 flex-wrap">
                                             {part.vendor && (
                                               <span className={`inline-block px-2 py-0.5 rounded-full text-xs font-medium ${getVendorColor(part.vendor)}`}>
                                                 {part.vendor}
@@ -7159,7 +7159,7 @@ const LandCruiserTracker = () => {
                                               unlinkPartFromProject(part.id);
                                             }
                                           }}
-                                          className={`ml-3 px-3 py-1.5 rounded-lg text-sm font-medium transition-colors border ${
+                                          className={`w-full px-3 py-1.5 rounded-lg text-sm font-medium transition-colors border ${
                                             darkMode 
                                               ? 'text-gray-400 hover:text-red-400 hover:bg-gray-600 border-gray-600 hover:border-red-500' 
                                               : 'text-gray-600 hover:text-red-600 hover:bg-red-50 border-gray-300 hover:border-red-300'
