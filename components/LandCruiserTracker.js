@@ -840,6 +840,260 @@ const fontStyles = `
   .door-segment:nth-child(4) { animation-delay: 0.3s; }
 `;
 
+// ========================================
+// PROJECT EDIT FORM COMPONENT (SHARED)
+// ========================================
+const ProjectEditForm = ({ 
+  project, 
+  onProjectChange, 
+  vehicles, 
+  parts, 
+  unlinkPartFromProject,
+  getVendorColor,
+  darkMode 
+}) => {
+  return (
+    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <div>
+        <label className={`block text-sm font-medium mb-2 ${
+          darkMode ? 'text-gray-300' : 'text-gray-700'
+        }`}>
+          Project Name
+        </label>
+        <input
+          type="text"
+          value={project.name}
+          onChange={(e) => onProjectChange({ ...project, name: e.target.value })}
+          className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
+            darkMode 
+              ? 'bg-gray-700 border-gray-600 text-gray-100' 
+              : 'bg-white border-gray-300 text-gray-900'
+          }`}
+        />
+      </div>
+
+      <div></div>
+
+      <div className="md:col-span-2">
+        <label className={`block text-sm font-medium mb-2 ${
+          darkMode ? 'text-gray-300' : 'text-gray-700'
+        }`}>
+          Description
+        </label>
+        <textarea
+          value={project.description}
+          onChange={(e) => onProjectChange({ ...project, description: e.target.value })}
+          className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
+            darkMode 
+              ? 'bg-gray-700 border-gray-600 text-gray-100' 
+              : 'bg-white border-gray-300 text-gray-900'
+          }`}
+          rows="3"
+        />
+      </div>
+
+      <div>
+        <label className={`block text-sm font-medium mb-2 ${
+          darkMode ? 'text-gray-300' : 'text-gray-700'
+        }`}>
+          Budget ($)
+        </label>
+        <input
+          type="number"
+          step="0.01"
+          value={project.budget}
+          onChange={(e) => onProjectChange({ ...project, budget: e.target.value })}
+          className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none ${
+            darkMode 
+              ? 'bg-gray-700 border-gray-600 text-gray-100' 
+              : 'bg-white border-gray-300 text-gray-900'
+          }`}
+        />
+      </div>
+
+      <div>
+        <label className={`block text-sm font-medium mb-2 ${
+          darkMode ? 'text-gray-300' : 'text-gray-700'
+        }`}>
+          Priority
+        </label>
+        <select
+          value={project.priority}
+          onChange={(e) => onProjectChange({ ...project, priority: e.target.value })}
+          className={`w-full px-4 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent appearance-none ${
+            darkMode 
+              ? 'bg-gray-700 border-gray-600 text-gray-100' 
+              : 'bg-white border-gray-300 text-gray-900'
+          }`}
+        >
+          <option value="low">Low</option>
+          <option value="medium">Medium</option>
+          <option value="high">High</option>
+        </select>
+      </div>
+
+      <div>
+        <label className={`block text-sm font-medium mb-2 ${
+          darkMode ? 'text-gray-300' : 'text-gray-700'
+        }`}>
+          Start Date
+        </label>
+        <input
+          type="date"
+          value={project.start_date ? project.start_date.split('T')[0] : ''}
+          onChange={(e) => onProjectChange({ ...project, start_date: e.target.value })}
+          className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
+            darkMode 
+              ? 'bg-gray-700 border-gray-600 text-gray-100' 
+              : 'bg-white border-gray-300 text-gray-900'
+          }`}
+        />
+      </div>
+
+      <div>
+        <label className={`block text-sm font-medium mb-2 ${
+          darkMode ? 'text-gray-300' : 'text-gray-700'
+        }`}>
+          Target Date
+        </label>
+        <input
+          type="date"
+          value={project.target_date ? project.target_date.split('T')[0] : ''}
+          onChange={(e) => onProjectChange({ ...project, target_date: e.target.value })}
+          className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
+            darkMode 
+              ? 'bg-gray-700 border-gray-600 text-gray-100' 
+              : 'bg-white border-gray-300 text-gray-900'
+          }`}
+        />
+      </div>
+
+      <div>
+        <label className={`block text-sm font-medium mb-2 ${
+          darkMode ? 'text-gray-300' : 'text-gray-700'
+        }`}>
+          Status
+        </label>
+        <select
+          value={project.status}
+          onChange={(e) => onProjectChange({ ...project, status: e.target.value })}
+          className={`w-full px-4 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent appearance-none ${
+            darkMode 
+              ? 'bg-gray-700 border-gray-600 text-gray-100' 
+              : 'bg-white border-gray-300 text-gray-900'
+          }`}
+        >
+          <option value="planning">Planning</option>
+          <option value="in_progress">In Progress</option>
+          <option value="on_hold">On Hold</option>
+          <option value="completed">Completed</option>
+        </select>
+      </div>
+
+      <div>
+        <label className={`block text-sm font-medium mb-2 ${
+          darkMode ? 'text-gray-300' : 'text-gray-700'
+        }`}>
+          <div className="flex items-center gap-2">
+            <Car className="w-4 h-4" />
+            <span>Linked Vehicle</span>
+          </div>
+        </label>
+        <select
+          value={project.vehicle_id || ''}
+          onChange={(e) => onProjectChange({ ...project, vehicle_id: e.target.value ? parseInt(e.target.value) : null })}
+          className={`w-full px-4 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent appearance-none ${
+            darkMode 
+              ? 'bg-gray-700 border-gray-600 text-gray-100' 
+              : 'bg-white border-gray-300 text-gray-900'
+          }`}
+        >
+          <option value="">No vehicle</option>
+          {vehicles.map(vehicle => (
+            <option key={vehicle.id} value={vehicle.id}>
+              {vehicle.nickname || vehicle.name}
+            </option>
+          ))}
+        </select>
+      </div>
+    </div>
+  );
+};
+
+// ========================================
+// LINKED PARTS SECTION COMPONENT (SHARED)
+// ========================================
+const LinkedPartsSection = ({
+  projectId,
+  parts,
+  unlinkPartFromProject,
+  getVendorColor,
+  darkMode
+}) => {
+  const linkedParts = parts.filter(part => part.projectId === projectId);
+  
+  if (linkedParts.length === 0) {
+    return null;
+  }
+
+  return (
+    <div className={`mt-6 pt-6 border-t ${
+      darkMode ? 'border-gray-600' : 'border-gray-200'
+    }`}>
+      <h3 className={`text-lg font-semibold mb-3 ${
+        darkMode ? 'text-gray-200' : 'text-gray-800'
+      }`}>
+        Linked Parts ({linkedParts.length})
+      </h3>
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 max-h-96 overflow-y-auto pr-2">
+        {linkedParts.map((part) => (
+          <div 
+            key={part.id}
+            className={`p-3 rounded-lg border flex flex-col ${
+              darkMode ? 'bg-gray-700 border-gray-600' : 'bg-gray-50 border-gray-200'
+            }`}
+          >
+            <div className="flex-1 min-w-0 mb-2">
+              <h4 className={`font-medium truncate ${
+                darkMode ? 'text-gray-100' : 'text-gray-900'
+              }`}>
+                {part.part}
+              </h4>
+              <div className="flex items-center gap-2 mt-1 flex-wrap">
+                {part.vendor && (
+                  <span className={`inline-block px-2 py-0.5 rounded-full text-xs font-medium ${getVendorColor(part.vendor)}`}>
+                    {part.vendor}
+                  </span>
+                )}
+                <span className={`text-sm font-bold ${
+                  darkMode ? 'text-gray-200' : 'text-gray-900'
+                }`}>
+                  ${part.total.toFixed(2)}
+                </span>
+              </div>
+            </div>
+            <button
+              onClick={() => {
+                if (window.confirm(`Are you sure you want to unlink "${part.part}" from this project?`)) {
+                  unlinkPartFromProject(part.id);
+                }
+              }}
+              className={`w-full px-3 py-1.5 rounded-lg text-sm font-medium transition-colors border ${
+                darkMode 
+                  ? 'text-gray-400 hover:text-red-400 hover:bg-gray-600 border-gray-600 hover:border-red-500' 
+                  : 'text-gray-600 hover:text-red-600 hover:bg-red-50 border-gray-300 hover:border-red-300'
+              }`}
+              title="Unlink from project"
+            >
+              Unlink
+            </button>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+};
+
 const LandCruiserTracker = () => {
   const [parts, setParts] = useState([]);
   const [projects, setProjects] = useState([]);
@@ -5040,235 +5294,23 @@ const LandCruiserTracker = () => {
                     >
                       {console.log('[MODAL ANIMATION] Edit View classes:', projectModalEditMode ? 'VISIBLE (relative, opacity-100)' : 'HIDDEN (absolute, opacity-0)')}
                       <div className="p-6 space-y-6 max-h-[calc(90vh-180px)] overflow-y-auto">
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                          <div>
-                            <label className={`block text-sm font-medium mb-2 ${
-                              darkMode ? 'text-gray-300' : 'text-gray-700'
-                            }`}>
-                              Project Name
-                            </label>
-                            <input
-                              type="text"
-                              value={viewingProject.name}
-                              onChange={(e) => setViewingProject({ ...viewingProject, name: e.target.value })}
-                              className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
-                                darkMode 
-                                  ? 'bg-gray-700 border-gray-600 text-gray-100' 
-                                  : 'bg-white border-gray-300 text-gray-900'
-                              }`}
-                            />
-                          </div>
+                        <ProjectEditForm
+                          project={viewingProject}
+                          onProjectChange={setViewingProject}
+                          vehicles={vehicles}
+                          parts={parts}
+                          unlinkPartFromProject={unlinkPartFromProject}
+                          getVendorColor={getVendorColor}
+                          darkMode={darkMode}
+                        />
 
-                          <div></div>
-
-                          <div className="md:col-span-2">
-                            <label className={`block text-sm font-medium mb-2 ${
-                              darkMode ? 'text-gray-300' : 'text-gray-700'
-                            }`}>
-                              Description
-                            </label>
-                            <textarea
-                              value={viewingProject.description}
-                              onChange={(e) => setViewingProject({ ...viewingProject, description: e.target.value })}
-                              className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
-                                darkMode 
-                                  ? 'bg-gray-700 border-gray-600 text-gray-100' 
-                                  : 'bg-white border-gray-300 text-gray-900'
-                              }`}
-                              rows="3"
-                            />
-                          </div>
-
-                          <div>
-                            <label className={`block text-sm font-medium mb-2 ${
-                              darkMode ? 'text-gray-300' : 'text-gray-700'
-                            }`}>
-                              Budget ($)
-                            </label>
-                            <input
-                              type="number"
-                              step="0.01"
-                              value={viewingProject.budget}
-                              onChange={(e) => setViewingProject({ ...viewingProject, budget: e.target.value })}
-                              className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none ${
-                                darkMode 
-                                  ? 'bg-gray-700 border-gray-600 text-gray-100' 
-                                  : 'bg-white border-gray-300 text-gray-900'
-                              }`}
-                            />
-                          </div>
-
-                          <div>
-                            <label className={`block text-sm font-medium mb-2 ${
-                              darkMode ? 'text-gray-300' : 'text-gray-700'
-                            }`}>
-                              Priority
-                            </label>
-                            <select
-                              value={viewingProject.priority}
-                              onChange={(e) => setViewingProject({ ...viewingProject, priority: e.target.value })}
-                              className={`w-full px-4 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent appearance-none ${
-                                darkMode 
-                                  ? 'bg-gray-700 border-gray-600 text-gray-100' 
-                                  : 'bg-white border-gray-300 text-gray-900'
-                              }`}
-                            >
-                              <option value="low">Low</option>
-                              <option value="medium">Medium</option>
-                              <option value="high">High</option>
-                            </select>
-                          </div>
-
-                          <div>
-                            <label className={`block text-sm font-medium mb-2 ${
-                              darkMode ? 'text-gray-300' : 'text-gray-700'
-                            }`}>
-                              Start Date
-                            </label>
-                            <input
-                              type="date"
-                              value={viewingProject.start_date ? viewingProject.start_date.split('T')[0] : ''}
-                              onChange={(e) => setViewingProject({ ...viewingProject, start_date: e.target.value })}
-                              className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
-                                darkMode 
-                                  ? 'bg-gray-700 border-gray-600 text-gray-100' 
-                                  : 'bg-white border-gray-300 text-gray-900'
-                              }`}
-                            />
-                          </div>
-
-                          <div>
-                            <label className={`block text-sm font-medium mb-2 ${
-                              darkMode ? 'text-gray-300' : 'text-gray-700'
-                            }`}>
-                              Target Date
-                            </label>
-                            <input
-                              type="date"
-                              value={viewingProject.target_date ? viewingProject.target_date.split('T')[0] : ''}
-                              onChange={(e) => setViewingProject({ ...viewingProject, target_date: e.target.value })}
-                              className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
-                                darkMode 
-                                  ? 'bg-gray-700 border-gray-600 text-gray-100' 
-                                  : 'bg-white border-gray-300 text-gray-900'
-                              }`}
-                            />
-                          </div>
-
-                          <div>
-                            <label className={`block text-sm font-medium mb-2 ${
-                              darkMode ? 'text-gray-300' : 'text-gray-700'
-                            }`}>
-                              Status
-                            </label>
-                            <select
-                              value={viewingProject.status}
-                              onChange={(e) => setViewingProject({ ...viewingProject, status: e.target.value })}
-                              className={`w-full px-4 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent appearance-none ${
-                                darkMode 
-                                  ? 'bg-gray-700 border-gray-600 text-gray-100' 
-                                  : 'bg-white border-gray-300 text-gray-900'
-                              }`}
-                            >
-                              <option value="planning">Planning</option>
-                              <option value="in_progress">In Progress</option>
-                              <option value="on_hold">On Hold</option>
-                              <option value="completed">Completed</option>
-                            </select>
-                          </div>
-
-                          <div>
-                            <label className={`block text-sm font-medium mb-2 ${
-                              darkMode ? 'text-gray-300' : 'text-gray-700'
-                            }`}>
-                              <div className="flex items-center gap-2">
-                                <Car className="w-4 h-4" />
-                                <span>Linked Vehicle</span>
-                              </div>
-                            </label>
-                            <select
-                              value={viewingProject.vehicle_id || ''}
-                              onChange={(e) => setViewingProject({ ...viewingProject, vehicle_id: e.target.value ? parseInt(e.target.value) : null })}
-                              className={`w-full px-4 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent appearance-none ${
-                                darkMode 
-                                  ? 'bg-gray-700 border-gray-600 text-gray-100' 
-                                  : 'bg-white border-gray-300 text-gray-900'
-                              }`}
-                            >
-                              <option value="">No vehicle</option>
-                              {vehicles.map(vehicle => (
-                                <option key={vehicle.id} value={vehicle.id}>
-                                  {vehicle.nickname || vehicle.name}
-                                </option>
-                              ))}
-                            </select>
-                          </div>
-                        </div>
-
-
-                        {/* Linked Parts Section */}
-                        {(() => {
-                          const linkedParts = parts.filter(part => part.projectId === viewingProject.id);
-                          if (linkedParts.length > 0) {
-                            return (
-                              <div className={`mt-6 pt-6 border-t ${
-                                darkMode ? 'border-gray-600' : 'border-gray-200'
-                              }`}>
-                                <h3 className={`text-lg font-semibold mb-3 ${
-                                  darkMode ? 'text-gray-200' : 'text-gray-800'
-                                }`}>
-                                  Linked Parts ({linkedParts.length})
-                                </h3>
-                                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 max-h-96 overflow-y-auto pr-2">
-                                  {linkedParts.map((part) => (
-                                    <div 
-                                      key={part.id}
-                                      className={`p-3 rounded-lg border flex flex-col ${
-                                        darkMode ? 'bg-gray-700 border-gray-600' : 'bg-gray-50 border-gray-200'
-                                      }`}
-                                    >
-                                      <div className="flex-1 min-w-0 mb-2">
-                                        <h4 className={`font-medium truncate ${
-                                          darkMode ? 'text-gray-100' : 'text-gray-900'
-                                        }`}>
-                                          {part.part}
-                                        </h4>
-                                        <div className="flex items-center gap-2 mt-1 flex-wrap">
-                                          {part.vendor && (
-                                            <span className={`inline-block px-2 py-0.5 rounded-full text-xs font-medium ${getVendorColor(part.vendor)}`}>
-                                              {part.vendor}
-                                            </span>
-                                          )}
-                                          <span className={`text-sm font-bold ${
-                                            darkMode ? 'text-gray-200' : 'text-gray-900'
-                                          }`}>
-                                            ${part.total.toFixed(2)}
-                                          </span>
-                                        </div>
-                                      </div>
-                                      <button
-                                        onClick={() => {
-                                          if (window.confirm(`Are you sure you want to unlink "${part.part}" from this project?`)) {
-                                            unlinkPartFromProject(part.id);
-                                          }
-                                        }}
-                                        className={`w-full px-3 py-1.5 rounded-lg text-sm font-medium transition-colors border ${
-                                          darkMode 
-                                            ? 'text-gray-400 hover:text-red-400 hover:bg-gray-600 border-gray-600 hover:border-red-500' 
-                                            : 'text-gray-600 hover:text-red-600 hover:bg-red-50 border-gray-300 hover:border-red-300'
-                                        }`}
-                                        title="Unlink from project"
-                                      >
-                                        Unlink
-                                      </button>
-                                    </div>
-                                  ))}
-                                </div>
-                              </div>
-                            );
-                          }
-                          return null;
-                        })()}
+                        <LinkedPartsSection
+                          projectId={viewingProject.id}
+                          parts={parts}
+                          unlinkPartFromProject={unlinkPartFromProject}
+                          getVendorColor={getVendorColor}
+                          darkMode={darkMode}
+                        />
                       </div>
                     </div>
                   </div>
@@ -6948,234 +6990,23 @@ const LandCruiserTracker = () => {
                     >
                       {vehicleModalProjectView && (
                         <div className="p-6 space-y-6 max-h-[calc(90vh-164px)] overflow-y-auto">
-                          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <div>
-                              <label className={`block text-sm font-medium mb-2 ${
-                                darkMode ? 'text-gray-300' : 'text-gray-700'
-                              }`}>
-                                Project Name
-                              </label>
-                              <input
-                                type="text"
-                                value={vehicleModalProjectView.name}
-                                onChange={(e) => setVehicleModalProjectView({ ...vehicleModalProjectView, name: e.target.value })}
-                                className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
-                                  darkMode 
-                                    ? 'bg-gray-700 border-gray-600 text-gray-100' 
-                                    : 'bg-white border-gray-300 text-gray-900'
-                                }`}
-                              />
-                            </div>
+                          <ProjectEditForm
+                            project={vehicleModalProjectView}
+                            onProjectChange={setVehicleModalProjectView}
+                            vehicles={vehicles}
+                            parts={parts}
+                            unlinkPartFromProject={unlinkPartFromProject}
+                            getVendorColor={getVendorColor}
+                            darkMode={darkMode}
+                          />
 
-                            <div></div>
-
-                            <div className="md:col-span-2">
-                              <label className={`block text-sm font-medium mb-2 ${
-                                darkMode ? 'text-gray-300' : 'text-gray-700'
-                              }`}>
-                                Description
-                              </label>
-                              <textarea
-                                value={vehicleModalProjectView.description}
-                                onChange={(e) => setVehicleModalProjectView({ ...vehicleModalProjectView, description: e.target.value })}
-                                className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
-                                  darkMode 
-                                    ? 'bg-gray-700 border-gray-600 text-gray-100' 
-                                    : 'bg-white border-gray-300 text-gray-900'
-                                }`}
-                                rows="3"
-                              />
-                            </div>
-
-                            <div>
-                              <label className={`block text-sm font-medium mb-2 ${
-                                darkMode ? 'text-gray-300' : 'text-gray-700'
-                              }`}>
-                                Budget ($)
-                              </label>
-                              <input
-                                type="number"
-                                step="0.01"
-                                value={vehicleModalProjectView.budget}
-                                onChange={(e) => setVehicleModalProjectView({ ...vehicleModalProjectView, budget: e.target.value })}
-                                className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none ${
-                                  darkMode 
-                                    ? 'bg-gray-700 border-gray-600 text-gray-100' 
-                                    : 'bg-white border-gray-300 text-gray-900'
-                                }`}
-                              />
-                            </div>
-
-                            <div>
-                              <label className={`block text-sm font-medium mb-2 ${
-                                darkMode ? 'text-gray-300' : 'text-gray-700'
-                              }`}>
-                                Priority
-                              </label>
-                              <select
-                                value={vehicleModalProjectView.priority}
-                                onChange={(e) => setVehicleModalProjectView({ ...vehicleModalProjectView, priority: e.target.value })}
-                                className={`w-full px-4 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent appearance-none ${
-                                  darkMode 
-                                    ? 'bg-gray-700 border-gray-600 text-gray-100' 
-                                    : 'bg-white border-gray-300 text-gray-900'
-                                }`}
-                              >
-                                <option value="low">Low</option>
-                                <option value="medium">Medium</option>
-                                <option value="high">High</option>
-                              </select>
-                            </div>
-
-                            <div>
-                              <label className={`block text-sm font-medium mb-2 ${
-                                darkMode ? 'text-gray-300' : 'text-gray-700'
-                              }`}>
-                                Start Date
-                              </label>
-                              <input
-                                type="date"
-                                value={vehicleModalProjectView.start_date ? vehicleModalProjectView.start_date.split('T')[0] : ''}
-                                onChange={(e) => setVehicleModalProjectView({ ...vehicleModalProjectView, start_date: e.target.value })}
-                                className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
-                                  darkMode 
-                                    ? 'bg-gray-700 border-gray-600 text-gray-100' 
-                                    : 'bg-white border-gray-300 text-gray-900'
-                                }`}
-                              />
-                            </div>
-
-                            <div>
-                              <label className={`block text-sm font-medium mb-2 ${
-                                darkMode ? 'text-gray-300' : 'text-gray-700'
-                              }`}>
-                                Target Date
-                              </label>
-                              <input
-                                type="date"
-                                value={vehicleModalProjectView.target_date ? vehicleModalProjectView.target_date.split('T')[0] : ''}
-                                onChange={(e) => setVehicleModalProjectView({ ...vehicleModalProjectView, target_date: e.target.value })}
-                                className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
-                                  darkMode 
-                                    ? 'bg-gray-700 border-gray-600 text-gray-100' 
-                                    : 'bg-white border-gray-300 text-gray-900'
-                                }`}
-                              />
-                            </div>
-
-                            <div>
-                              <label className={`block text-sm font-medium mb-2 ${
-                                darkMode ? 'text-gray-300' : 'text-gray-700'
-                              }`}>
-                                Status
-                              </label>
-                              <select
-                                value={vehicleModalProjectView.status}
-                                onChange={(e) => setVehicleModalProjectView({ ...vehicleModalProjectView, status: e.target.value })}
-                                className={`w-full px-4 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent appearance-none ${
-                                  darkMode 
-                                    ? 'bg-gray-700 border-gray-600 text-gray-100' 
-                                    : 'bg-white border-gray-300 text-gray-900'
-                                }`}
-                              >
-                                <option value="planning">Planning</option>
-                                <option value="in_progress">In Progress</option>
-                                <option value="on_hold">On Hold</option>
-                                <option value="completed">Completed</option>
-                              </select>
-                            </div>
-
-                            <div>
-                              <label className={`block text-sm font-medium mb-2 ${
-                                darkMode ? 'text-gray-300' : 'text-gray-700'
-                              }`}>
-                                <div className="flex items-center gap-2">
-                                  <Car className="w-4 h-4" />
-                                  <span>Linked Vehicle</span>
-                                </div>
-                              </label>
-                              <select
-                                value={vehicleModalProjectView.vehicle_id || ''}
-                                onChange={(e) => setVehicleModalProjectView({ ...vehicleModalProjectView, vehicle_id: e.target.value ? parseInt(e.target.value) : null })}
-                                className={`w-full px-4 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent appearance-none ${
-                                  darkMode 
-                                    ? 'bg-gray-700 border-gray-600 text-gray-100' 
-                                    : 'bg-white border-gray-300 text-gray-900'
-                                }`}
-                              >
-                                <option value="">No vehicle</option>
-                                {vehicles.map(vehicle => (
-                                  <option key={vehicle.id} value={vehicle.id}>
-                                    {vehicle.nickname || vehicle.name}
-                                  </option>
-                                ))}
-                              </select>
-                            </div>
-                          </div>
-
-                          {/* Linked Parts Section */}
-                          {(() => {
-                            const linkedParts = parts.filter(part => part.projectId === vehicleModalProjectView.id);
-                            if (linkedParts.length > 0) {
-                              return (
-                                <div className={`mt-6 pt-6 border-t ${
-                                  darkMode ? 'border-gray-600' : 'border-gray-200'
-                                }`}>
-                                  <h3 className={`text-lg font-semibold mb-3 ${
-                                    darkMode ? 'text-gray-200' : 'text-gray-800'
-                                  }`}>
-                                    Linked Parts ({linkedParts.length})
-                                  </h3>
-                                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 max-h-96 overflow-y-auto pr-2">
-                                    {linkedParts.map((part) => (
-                                      <div 
-                                        key={part.id}
-                                        className={`p-3 rounded-lg border flex flex-col ${
-                                          darkMode ? 'bg-gray-700 border-gray-600' : 'bg-gray-50 border-gray-200'
-                                        }`}
-                                      >
-                                        <div className="flex-1 min-w-0 mb-2">
-                                          <h4 className={`font-medium truncate ${
-                                            darkMode ? 'text-gray-100' : 'text-gray-900'
-                                          }`}>
-                                            {part.part}
-                                          </h4>
-                                          <div className="flex items-center gap-2 mt-1 flex-wrap">
-                                            {part.vendor && (
-                                              <span className={`inline-block px-2 py-0.5 rounded-full text-xs font-medium ${getVendorColor(part.vendor)}`}>
-                                                {part.vendor}
-                                              </span>
-                                            )}
-                                            <span className={`text-sm font-bold ${
-                                              darkMode ? 'text-gray-200' : 'text-gray-900'
-                                            }`}>
-                                              ${part.total.toFixed(2)}
-                                            </span>
-                                          </div>
-                                        </div>
-                                        <button
-                                          onClick={() => {
-                                            if (window.confirm(`Are you sure you want to unlink "${part.part}" from this project?`)) {
-                                              unlinkPartFromProject(part.id);
-                                            }
-                                          }}
-                                          className={`w-full px-3 py-1.5 rounded-lg text-sm font-medium transition-colors border ${
-                                            darkMode 
-                                              ? 'text-gray-400 hover:text-red-400 hover:bg-gray-600 border-gray-600 hover:border-red-500' 
-                                              : 'text-gray-600 hover:text-red-600 hover:bg-red-50 border-gray-300 hover:border-red-300'
-                                          }`}
-                                          title="Unlink from project"
-                                        >
-                                          Unlink
-                                        </button>
-                                      </div>
-                                    ))}
-                                  </div>
-                                </div>
-                              );
-                            }
-                            return null;
-                          })()}
+                          <LinkedPartsSection
+                            projectId={vehicleModalProjectView.id}
+                            parts={parts}
+                            unlinkPartFromProject={unlinkPartFromProject}
+                            getVendorColor={getVendorColor}
+                            darkMode={darkMode}
+                          />
                         </div>
                       )}
                     </div>
