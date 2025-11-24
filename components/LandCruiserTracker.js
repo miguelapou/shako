@@ -144,7 +144,8 @@ const ProjectDetailView = ({
 
   // FLIP animation for todos
   const todoRefs = React.useRef({});
-  const [prevTodoOrder, setPrevTodoOrder] = React.useState([]);
+  const prevPositions = React.useRef({});
+  const [isAnimating, setIsAnimating] = React.useState(false);
 
   // Sort todos: completed first, then by creation date
   const sortedTodos = React.useMemo(() => {
@@ -157,45 +158,48 @@ const ProjectDetailView = ({
     });
   }, [project.todos]);
 
-  // FLIP animation effect
-  React.useEffect(() => {
-    const currentOrder = sortedTodos.map(t => t.id);
+  // FLIP animation with useLayoutEffect for synchronous execution
+  React.useLayoutEffect(() => {
+    if (isAnimating) return; // Don't interrupt ongoing animations
     
-    // Only animate if the order changed (not on first render)
-    if (prevTodoOrder.length > 0 && prevTodoOrder.length === currentOrder.length) {
-      // Check if order actually changed
-      const orderChanged = currentOrder.some((id, idx) => id !== prevTodoOrder[idx]);
-      
-      if (orderChanged) {
-        // Apply FLIP animation
-        Object.keys(todoRefs.current).forEach(todoId => {
-          const element = todoRefs.current[todoId];
-          if (!element) return;
-
-          const oldIndex = prevTodoOrder.indexOf(todoId);
-          const newIndex = currentOrder.indexOf(todoId);
+    // First, capture the old positions before React updates the DOM
+    const oldPositions = { ...prevPositions.current };
+    const hasOldPositions = Object.keys(oldPositions).length > 0;
+    
+    // Let React update the DOM, then capture new positions
+    sortedTodos.forEach(todo => {
+      const element = todoRefs.current[todo.id];
+      if (element) {
+        const newPos = element.getBoundingClientRect().top;
+        const oldPos = oldPositions[todo.id];
+        
+        if (hasOldPositions && oldPos !== undefined && newPos !== oldPos) {
+          // Calculate how far the element has moved
+          const deltaY = oldPos - newPos;
           
-          if (oldIndex !== -1 && newIndex !== -1 && oldIndex !== newIndex) {
-            // Calculate the distance to move
-            const deltaY = (oldIndex - newIndex) * (element.offsetHeight + 8); // 8px is gap
+          // Immediately move it back to the old position
+          element.style.transform = `translateY(${deltaY}px)`;
+          element.style.transition = 'none';
+          
+          setIsAnimating(true);
+          
+          // Then animate it to the new position
+          requestAnimationFrame(() => {
+            element.style.transition = 'transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1)';
+            element.style.transform = 'translateY(0)';
             
-            // First: Get current position
-            // Last: Element is already in new position
-            // Invert: Apply negative transform to put it back to old position
-            element.style.transform = `translateY(${deltaY}px)`;
-            element.style.transition = 'none';
-            
-            // Play: Animate to new position
-            requestAnimationFrame(() => {
-              element.style.transform = '';
-              element.style.transition = 'transform 0.4s cubic-bezier(0.4, 0, 0.2, 1)';
-            });
-          }
-        });
+            // Clear animation state after animation completes
+            setTimeout(() => {
+              setIsAnimating(false);
+              element.style.transition = '';
+            }, 500);
+          });
+        }
+        
+        // Store new position for next time
+        prevPositions.current[todo.id] = newPos;
       }
-    }
-    
-    setPrevTodoOrder(currentOrder);
+    });
   }, [sortedTodos]);
 
   return (
