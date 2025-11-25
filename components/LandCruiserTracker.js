@@ -16,6 +16,7 @@ const getStatusColors = (darkMode) => ({
 
 // Priority color mappings
 const getPriorityColors = (darkMode) => ({
+  not_set: darkMode ? 'text-gray-400' : 'text-gray-500',
   low: darkMode ? 'text-green-400' : 'text-green-600',
   medium: darkMode ? 'text-yellow-400' : 'text-yellow-600',
   high: darkMode ? 'text-red-400' : 'text-red-600'
@@ -24,6 +25,7 @@ const getPriorityColors = (darkMode) => ({
 // Priority border colors
 const getPriorityBorderColor = (priority) => {
   const colors = {
+    not_set: '#6b7280',
     low: '#10b981',
     medium: '#f59e0b',
     high: '#ef4444',
@@ -255,18 +257,18 @@ const ProjectDetailView = ({
       </div>
 
       {/* Description */}
-      {project.description && (
-        <div className="mb-6">
-          <h3 className={`text-lg font-semibold mb-2 ${
-            darkMode ? 'text-gray-200' : 'text-gray-800'
-          }`}>Description</h3>
-          <p className={`text-base ${
-            darkMode ? 'text-gray-400' : 'text-gray-600'
-          }`}>
-            {project.description}
-          </p>
-        </div>
-      )}
+      <div className="mb-6">
+        <h3 className={`text-lg font-semibold mb-2 ${
+          darkMode ? 'text-gray-200' : 'text-gray-800'
+        }`}>Description</h3>
+        <p className={`text-base ${
+          project.description 
+            ? (darkMode ? 'text-gray-400' : 'text-gray-600')
+            : (darkMode ? 'text-gray-500 italic' : 'text-gray-500 italic')
+        }`}>
+          {project.description || 'No description added'}
+        </p>
+      </div>
 
       {/* Budget Progress */}
       <div className="mb-6">
@@ -967,6 +969,7 @@ const ProjectEditForm = ({
               : 'bg-white border-gray-300 text-gray-900'
           }`}
         >
+          <option value="not_set">Not Set</option>
           <option value="low">Low</option>
           <option value="medium">Medium</option>
           <option value="high">High</option>
@@ -1162,6 +1165,7 @@ const LandCruiserTracker = () => {
   const [showAddVehicleModal, setShowAddVehicleModal] = useState(false);
   const [showVehicleDetailModal, setShowVehicleDetailModal] = useState(false);
   const [viewingVehicle, setViewingVehicle] = useState(null);
+  const [originalVehicleData, setOriginalVehicleData] = useState(null); // Track original data for unsaved changes detection
   const [vehicleModalProjectView, setVehicleModalProjectView] = useState(null); // Track if viewing project within vehicle modal
   const [vehicleModalEditMode, setVehicleModalEditMode] = useState(null); // 'vehicle' or 'project' - track if editing within modal
   const [newVehicle, setNewVehicle] = useState({
@@ -1833,7 +1837,7 @@ const LandCruiserTracker = () => {
     budget: '',
     start_date: '',
     target_date: '',
-    priority: 'medium',
+    priority: 'not_set',
     status: 'planning',
     vehicle_id: null
   });
@@ -1941,6 +1945,33 @@ const LandCruiserTracker = () => {
     status: 'pending',
     projectId: null
   });
+
+  // Check if there are unsaved changes in vehicle edit mode
+  const hasUnsavedVehicleChanges = () => {
+    if (!vehicleModalEditMode || vehicleModalEditMode !== 'vehicle' || !originalVehicleData || !viewingVehicle) {
+      return false;
+    }
+    
+    // Check if any field has changed
+    const fieldsToCheck = [
+      'nickname', 'name', 'year', 'license_plate', 'vin', 'insurance_policy',
+      'fuel_filter', 'air_filter', 'oil_filter', 'oil_type', 'oil_capacity',
+      'oil_brand', 'drain_plug', 'battery', 'color'
+    ];
+    
+    for (const field of fieldsToCheck) {
+      if (viewingVehicle[field] !== originalVehicleData[field]) {
+        return true;
+      }
+    }
+    
+    // Check if a new image has been selected
+    if (vehicleImageFile !== null) {
+      return true;
+    }
+    
+    return false;
+  };
 
   const vendors = useMemo(() => {
     const vendorSet = new Set(parts.map(p => p.vendor).filter(v => v));
@@ -4544,13 +4575,13 @@ const LandCruiserTracker = () => {
                     </div>
 
                     {/* Description */}
-                    {project.description && (
-                      <p className={`text-sm mb-4 ${
-                        darkMode ? 'text-gray-400' : 'text-gray-600'
-                      }`}>
-                        {project.description}
-                      </p>
-                    )}
+                    <p className={`text-sm mb-4 ${
+                      project.description 
+                        ? (darkMode ? 'text-gray-400' : 'text-gray-600')
+                        : (darkMode ? 'text-gray-500 italic' : 'text-gray-500 italic')
+                    }`}>
+                      {project.description || 'No description added'}
+                    </p>
 
                     {/* Progress Bar */}
                     <div className="mb-4">
@@ -4638,15 +4669,41 @@ const LandCruiserTracker = () => {
                           </span>
                         </div>
                       </div>
-                      <div className="flex items-center gap-2">
-                        <span className={`text-sm font-medium ${
-                          darkMode ? 'text-gray-400' : 'text-gray-600'
-                        }`}>
-                          Priority:
-                        </span>
-                        <span className={`text-sm font-bold ${priorityColors[project.priority]}`}>
-                          {project.priority?.toUpperCase()}
-                        </span>
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-2">
+                          <span className={`text-sm font-medium ${
+                            darkMode ? 'text-gray-400' : 'text-gray-600'
+                          }`}>
+                            Priority:
+                          </span>
+                          <span className={`text-sm font-bold ${priorityColors[project.priority]}`}>
+                            {project.priority?.replace('_', ' ').toUpperCase()}
+                          </span>
+                        </div>
+                        {project.todos && project.todos.length > 0 && (
+                          <div className="flex items-center gap-3">
+                            <div className="flex items-center gap-1">
+                              <CheckCircle className={`w-3.5 h-3.5 ${
+                                darkMode ? 'text-green-400' : 'text-green-600'
+                              }`} />
+                              <span className={`text-xs font-medium ${
+                                darkMode ? 'text-gray-300' : 'text-gray-700'
+                              }`}>
+                                {project.todos.filter(t => t.completed).length}
+                              </span>
+                            </div>
+                            <div className="flex items-center gap-1">
+                              <Clock className={`w-3.5 h-3.5 ${
+                                darkMode ? 'text-gray-400' : 'text-gray-500'
+                              }`} />
+                              <span className={`text-xs font-medium ${
+                                darkMode ? 'text-gray-300' : 'text-gray-700'
+                              }`}>
+                                {project.todos.filter(t => !t.completed).length}
+                              </span>
+                            </div>
+                          </div>
+                        )}
                       </div>
                     </div>
 
@@ -4848,6 +4905,7 @@ const LandCruiserTracker = () => {
                               : 'bg-white border-gray-300 text-gray-900'
                           }`}
                         >
+                          <option value="not_set">Not Set</option>
                           <option value="low">Low</option>
                           <option value="medium">Medium</option>
                           <option value="high">High</option>
@@ -4970,7 +5028,7 @@ const LandCruiserTracker = () => {
                             budget: '',
                             start_date: '',
                             target_date: '',
-                            priority: 'medium',
+                            priority: 'not_set',
                             status: 'planning'
                           });
                           setShowAddProjectModal(false);
@@ -5200,6 +5258,7 @@ const LandCruiserTracker = () => {
                   onDrop={(e) => handleVehicleDrop(e, vehicle)}
                   onClick={() => {
                     setViewingVehicle(vehicle);
+                    setOriginalVehicleData({ ...vehicle }); // Save original data for unsaved changes check
                     setShowVehicleDetailModal(true);
                   }}
                   className={`relative rounded-lg shadow-lg pt-3 pb-6 px-6 transition-all hover:shadow-xl cursor-pointer border-t-4 ${
@@ -5238,6 +5297,7 @@ const LandCruiserTracker = () => {
                       onClick={(e) => {
                         e.stopPropagation();
                         setViewingVehicle(vehicle);
+                        setOriginalVehicleData({ ...vehicle }); // Save original data for unsaved changes check
                         setVehicleModalEditMode('vehicle');
                         setShowVehicleDetailModal(true);
                       }}
@@ -5906,10 +5966,22 @@ const LandCruiserTracker = () => {
                   isModalClosing ? 'modal-backdrop-exit' : 'modal-backdrop-enter'
                 }`}
                 onClick={() => handleCloseModal(() => {
+                  // Check for unsaved changes
+                  if (hasUnsavedVehicleChanges()) {
+                    const confirmClose = window.confirm(
+                      'You have unsaved changes. Are you sure you want to close without saving?'
+                    );
+                    if (!confirmClose) {
+                      return;
+                    }
+                  }
+                  
                   setShowVehicleDetailModal(false);
                   setViewingVehicle(null);
+                  setOriginalVehicleData(null);
                   setVehicleModalProjectView(null);
                   setVehicleModalEditMode(null);
+                  clearImageSelection();
                 })}
               >
                 <div 
@@ -5929,10 +6001,22 @@ const LandCruiserTracker = () => {
                     </h2>
                     <button
                       onClick={() => handleCloseModal(() => {
+                        // Check for unsaved changes
+                        if (hasUnsavedVehicleChanges()) {
+                          const confirmClose = window.confirm(
+                            'You have unsaved changes. Are you sure you want to close without saving?'
+                          );
+                          if (!confirmClose) {
+                            return;
+                          }
+                        }
+                        
                         setShowVehicleDetailModal(false);
                         setViewingVehicle(null);
+                        setOriginalVehicleData(null);
                         setVehicleModalProjectView(null);
                         setVehicleModalEditMode(null);
+                        clearImageSelection();
                       })}
                       className={`p-2 rounded-md transition-colors ${
                         darkMode ? 'hover:bg-gray-700 text-gray-400' : 'hover:bg-gray-100 text-gray-600'
@@ -6209,13 +6293,13 @@ const LandCruiserTracker = () => {
                                     }`}>
                                       {project.name}
                                     </h4>
-                                    {project.description && (
-                                      <p className={`text-sm mb-3 ${
-                                        darkMode ? 'text-gray-400' : 'text-gray-600'
-                                      }`}>
-                                        {project.description}
-                                      </p>
-                                    )}
+                                    <p className={`text-sm mb-3 ${
+                                      project.description 
+                                        ? (darkMode ? 'text-gray-400' : 'text-gray-600')
+                                        : (darkMode ? 'text-gray-500 italic' : 'text-gray-500 italic')
+                                    }`}>
+                                      {project.description || 'No description added'}
+                                    </p>
                                     <div className="flex flex-wrap gap-4 text-xs">
                                       <div className="flex items-center gap-1">
                                         <Package className={`w-3 h-3 ${
@@ -6743,6 +6827,20 @@ const LandCruiserTracker = () => {
                       <button
                         onClick={() => {
                           if (vehicleModalEditMode) {
+                            // Check for unsaved changes before going back
+                            if (hasUnsavedVehicleChanges()) {
+                              const confirmBack = window.confirm(
+                                'You have unsaved changes. Are you sure you want to go back without saving?'
+                              );
+                              if (!confirmBack) {
+                                return;
+                              }
+                              // Restore original data
+                              if (originalVehicleData) {
+                                setViewingVehicle({ ...originalVehicleData });
+                              }
+                              clearImageSelection();
+                            }
                             setVehicleModalEditMode(null);
                           } else {
                             setVehicleModalProjectView(null);
@@ -6775,6 +6873,8 @@ const LandCruiserTracker = () => {
                             }
                             await updateVehicle(viewingVehicle.id, updatedVehicle);
                             clearImageSelection();
+                            // Update original data after successful save
+                            setOriginalVehicleData({ ...updatedVehicle });
                           } else if (vehicleModalEditMode === 'project') {
                             await updateProject(vehicleModalProjectView.id, {
                               name: vehicleModalProjectView.name,
