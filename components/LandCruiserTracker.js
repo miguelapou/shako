@@ -5357,10 +5357,6 @@ const LandCruiserTracker = () => {
                         onError={(e) => {
                           e.target.style.display = 'none';
                         }}
-                        onLoad={(e) => {
-                          e.target.style.opacity = vehicle.archived ? '0.4' : '1';
-                        }}
-                        style={{ opacity: 0, transition: 'opacity 0.3s ease-in' }}
                       />
                       {vehicle.archived && (
                         <div className="absolute inset-0 flex items-center justify-center">
