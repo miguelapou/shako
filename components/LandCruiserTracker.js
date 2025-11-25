@@ -1778,18 +1778,6 @@ const LandCruiserTracker = () => {
     }
   }, [darkMode, darkModeInitialized]);
 
-  // Don't render main content until mounted on client to avoid hydration mismatch
-  if (!mounted) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-50 to-slate-100">
-        <div className="text-center">
-          <div className="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-gray-900 mb-4"></div>
-          <p className="text-gray-600">Loading...</p>
-        </div>
-      </div>
-    );
-  }
-
   // Apply dark scrollbar styles to both html and body for cross-browser compatibility
   useEffect(() => {
     if (typeof document !== 'undefined') {
@@ -2751,6 +2739,18 @@ const LandCruiserTracker = () => {
       </div>
     );
   };
+
+  // Don't render main content until mounted on client to avoid hydration mismatch
+  if (!mounted) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-50 to-slate-100">
+        <div className="text-center">
+          <div className="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-gray-900 mb-4"></div>
+          <p className="text-gray-600">Loading...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className={`min-h-screen p-3 sm:p-6 transition-colors duration-200 ${
