@@ -5280,7 +5280,16 @@ const LandCruiserTracker = () => {
           <>
             {/* Vehicles Grid */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {vehicles.map((vehicle) => (
+              {vehicles.map((vehicle) => {
+                // Log each time a vehicle card is rendered
+                console.log(`[VEHICLE CARD RENDER] ${vehicle.nickname || vehicle.name}`, {
+                  id: vehicle.id,
+                  hasImage: !!vehicle.image_url,
+                  imageUrl: vehicle.image_url,
+                  archived: vehicle.archived
+                });
+                
+                return (
                 <div
                   key={vehicle.id}
                   data-vehicle-id={vehicle.id}
@@ -5291,6 +5300,9 @@ const LandCruiserTracker = () => {
                     setViewingVehicle(vehicle);
                     setOriginalVehicleData({ ...vehicle }); // Save original data for unsaved changes check
                     setShowVehicleDetailModal(true);
+                  }}
+                  onMouseEnter={() => {
+                    console.log(`[VEHICLE CARD HOVER] ${vehicle.nickname || vehicle.name}`);
                   }}
                   className={`relative rounded-lg shadow-lg pt-3 pb-6 px-6 transition-all duration-200 hover:shadow-2xl hover:scale-[1.03] cursor-pointer border-t-4 ${
                     draggedVehicle?.id === vehicle.id 
@@ -5354,8 +5366,42 @@ const LandCruiserTracker = () => {
                             ? 'grayscale opacity-40' 
                             : ''
                         } ${darkMode ? 'bg-gray-700 border-gray-600' : 'bg-gray-200 border-gray-300'}`}
+                        onLoad={(e) => {
+                          console.log(`[IMAGE LOAD] Vehicle: ${vehicle.nickname || vehicle.name}`, {
+                            url: vehicle.image_url,
+                            naturalWidth: e.target.naturalWidth,
+                            naturalHeight: e.target.naturalHeight,
+                            complete: e.target.complete,
+                            currentSrc: e.target.currentSrc
+                          });
+                        }}
+                        onLoadStart={(e) => {
+                          console.log(`[IMAGE LOAD START] Vehicle: ${vehicle.nickname || vehicle.name}`, {
+                            url: vehicle.image_url
+                          });
+                        }}
                         onError={(e) => {
+                          console.error(`[IMAGE ERROR] Vehicle: ${vehicle.nickname || vehicle.name}`, {
+                            url: vehicle.image_url,
+                            error: e
+                          });
                           e.target.style.display = 'none';
+                        }}
+                        onAbort={(e) => {
+                          console.warn(`[IMAGE ABORT] Vehicle: ${vehicle.nickname || vehicle.name}`, {
+                            url: vehicle.image_url
+                          });
+                        }}
+                        ref={(el) => {
+                          if (el) {
+                            console.log(`[IMAGE REF] Vehicle: ${vehicle.nickname || vehicle.name}`, {
+                              url: vehicle.image_url,
+                              complete: el.complete,
+                              naturalWidth: el.naturalWidth,
+                              display: el.style.display,
+                              opacity: el.style.opacity
+                            });
+                          }
                         }}
                       />
                       {vehicle.archived && (
@@ -5473,7 +5519,8 @@ const LandCruiserTracker = () => {
                     )}
                   </div>
                 </div>
-              ))}
+                );
+              })}
             </div>
 
             {/* Empty State */}
