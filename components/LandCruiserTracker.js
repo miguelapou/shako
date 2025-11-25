@@ -1082,7 +1082,7 @@ const LinkedPartsSection = ({
           <span>Linked Parts ({linkedParts.length})</span>
         </div>
       </h3>
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 md:max-h-[450px] overflow-y-auto pr-2">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 md:max-h-[540px] overflow-y-auto pr-2">
         {linkedParts.map((part) => (
           <div 
             key={part.id}
