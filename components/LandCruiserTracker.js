@@ -6941,37 +6941,64 @@ const LandCruiserTracker = () => {
                     darkMode ? 'border-gray-700 bg-gray-800' : 'border-gray-200 bg-white'
                   }`}>
                     {(vehicleModalProjectView || vehicleModalEditMode) ? (
-                      <button
-                        onClick={() => {
-                          if (vehicleModalEditMode) {
-                            // Check for unsaved changes before going back
-                            if (hasUnsavedVehicleChanges()) {
-                              const confirmBack = window.confirm(
-                                'You have unsaved changes. Are you sure you want to go back without saving?'
-                              );
-                              if (!confirmBack) {
-                                return;
+                      <div className="flex items-center gap-2">
+                        <button
+                          onClick={() => {
+                            if (vehicleModalEditMode) {
+                              // Check for unsaved changes before going back
+                              if (hasUnsavedVehicleChanges()) {
+                                const confirmBack = window.confirm(
+                                  'You have unsaved changes. Are you sure you want to go back without saving?'
+                                );
+                                if (!confirmBack) {
+                                  return;
+                                }
+                                // Restore original data
+                                if (originalVehicleData) {
+                                  setViewingVehicle({ ...originalVehicleData });
+                                }
+                                clearImageSelection();
                               }
-                              // Restore original data
-                              if (originalVehicleData) {
-                                setViewingVehicle({ ...originalVehicleData });
-                              }
-                              clearImageSelection();
+                              setVehicleModalEditMode(null);
+                            } else {
+                              setVehicleModalProjectView(null);
                             }
-                            setVehicleModalEditMode(null);
-                          } else {
-                            setVehicleModalProjectView(null);
-                          }
-                        }}
-                        className={`flex items-center gap-2 px-4 py-2 rounded-lg font-medium transition-colors border ${
-                          darkMode 
-                            ? 'bg-gray-700 hover:bg-gray-600 text-gray-100 border-gray-600 hover:border-gray-500' 
-                            : 'bg-gray-200 hover:bg-gray-300 text-gray-800 border-gray-300 hover:border-gray-400'
-                        }`}
-                        title={vehicleModalEditMode ? 'Back' : 'Back to vehicle'}
-                      >
-                        <ChevronDown className="w-5 h-5 rotate-90" />
-                      </button>
+                          }}
+                          className={`flex items-center gap-2 px-4 py-2 rounded-lg font-medium transition-colors border ${
+                            darkMode 
+                              ? 'bg-gray-700 hover:bg-gray-600 text-gray-100 border-gray-600 hover:border-gray-500' 
+                              : 'bg-gray-200 hover:bg-gray-300 text-gray-800 border-gray-300 hover:border-gray-400'
+                          }`}
+                          title={vehicleModalEditMode ? 'Back' : 'Back to vehicle'}
+                        >
+                          <ChevronDown className="w-5 h-5 rotate-90" />
+                        </button>
+                        
+                        {vehicleModalEditMode === 'vehicle' && (
+                          <button
+                            onClick={async () => {
+                              const confirmDelete = window.confirm(
+                                'Are you sure you want to permanently delete this vehicle? This action cannot be undone.'
+                              );
+                              if (!confirmDelete) return;
+                              
+                              await deleteVehicle(viewingVehicle.id);
+                              setShowVehicleDetailModal(false);
+                              setViewingVehicle(null);
+                              setOriginalVehicleData(null);
+                              setVehicleModalEditMode(null);
+                            }}
+                            className={`px-4 py-2 rounded-lg font-medium transition-colors flex items-center gap-2 text-sm ${
+                              darkMode
+                                ? 'bg-red-900/30 hover:bg-red-900/50 text-red-400 border border-red-700'
+                                : 'bg-red-50 hover:bg-red-100 text-red-600 border border-red-300'
+                            }`}
+                          >
+                            <Trash2 className="w-4 h-4" />
+                            Delete
+                          </button>
+                        )}
+                      </div>
                     ) : (
                       <div></div>
                     )}
