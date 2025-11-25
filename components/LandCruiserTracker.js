@@ -842,12 +842,7 @@ const fontStyles = `
   .door-segment:nth-child(3) { animation-delay: 0.2s; }
   .door-segment:nth-child(4) { animation-delay: 0.3s; }
 
-  /* Scrollbar styles for light mode - apply to all elements including body */
-  * {
-    scrollbar-width: thin;
-    scrollbar-color: #cbd5e1 #f1f5f9;
-  }
-
+  /* Scrollbar styles - WebKit only for Chrome/Safari */
   *::-webkit-scrollbar {
     width: 12px;
     height: 12px;
@@ -867,13 +862,7 @@ const fontStyles = `
     background: #94a3b8;
   }
 
-  /* Scrollbar styles for dark mode - apply to body and all children */
-  body.dark-scrollbar,
-  body.dark-scrollbar * {
-    scrollbar-width: thin;
-    scrollbar-color: #4b5563 #1f2937;
-  }
-
+  /* Scrollbar styles for dark mode */
   body.dark-scrollbar::-webkit-scrollbar-track,
   body.dark-scrollbar *::-webkit-scrollbar-track {
     background: #1f2937;
@@ -882,7 +871,8 @@ const fontStyles = `
   body.dark-scrollbar::-webkit-scrollbar-thumb,
   body.dark-scrollbar *::-webkit-scrollbar-thumb {
     background: #4b5563;
-    border-color: #1f2937;
+    border-radius: 6px;
+    border: 2px solid #1f2937;
   }
 
   body.dark-scrollbar::-webkit-scrollbar-thumb:hover,
