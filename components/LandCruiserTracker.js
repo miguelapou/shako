@@ -6063,15 +6063,15 @@ const LandCruiserTracker = () => {
                     </div>
 
                     {/* Maintenance Section (includes filters, oil, battery) */}
-                    {(viewingVehicle.fuel_filter || viewingVehicle.air_filter || viewingVehicle.oil_filter || viewingVehicle.oil_type || viewingVehicle.oil_capacity || viewingVehicle.oil_brand || viewingVehicle.drain_plug || viewingVehicle.battery) && (
-                      <div className={`pt-6 border-t ${
-                        darkMode ? 'border-gray-700' : 'border-gray-200'
+                    <div className={`pt-6 border-t ${
+                      darkMode ? 'border-gray-700' : 'border-gray-200'
+                    }`}>
+                      <h3 className={`text-lg font-semibold mb-3 ${
+                        darkMode ? 'text-gray-200' : 'text-gray-800'
                       }`}>
-                        <h3 className={`text-lg font-semibold mb-3 ${
-                          darkMode ? 'text-gray-200' : 'text-gray-800'
-                        }`}>
-                          Maintenance
-                        </h3>
+                        Maintenance
+                      </h3>
+                      {(viewingVehicle.fuel_filter || viewingVehicle.air_filter || viewingVehicle.oil_filter || viewingVehicle.oil_type || viewingVehicle.oil_capacity || viewingVehicle.oil_brand || viewingVehicle.drain_plug || viewingVehicle.battery) ? (
                         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                           {viewingVehicle.fuel_filter && (
                             <div>
@@ -6154,8 +6154,21 @@ const LandCruiserTracker = () => {
                             </div>
                           )}
                         </div>
-                      </div>
-                    )}
+                      ) : (
+                        <div className={`text-center py-8 rounded-lg ${
+                          darkMode ? 'bg-gray-700' : 'bg-gray-50'
+                        }`}>
+                          <Wrench className={`w-12 h-12 mx-auto mb-3 ${
+                            darkMode ? 'text-gray-600' : 'text-gray-400'
+                          }`} />
+                          <p className={`text-sm ${
+                            darkMode ? 'text-gray-400' : 'text-gray-600'
+                          }`}>
+                            No maintenance information added yet
+                          </p>
+                        </div>
+                      )}
+                    </div>
 
                     {/* Projects Section */}
                     {(() => {
@@ -6556,17 +6569,17 @@ const LandCruiserTracker = () => {
                             </div>
                           </div>
 
-                          {/* Half Width Sections Below */}
-                          <div className="mt-6 grid grid-cols-1 md:grid-cols-2 gap-6">
+                          {/* Maintenance Section - Full Width */}
+                          <div className="mt-6">
                             <div className={`pt-4 border-t ${
                               darkMode ? 'border-gray-700' : 'border-gray-200'
                             }`}>
                               <h3 className={`text-lg font-semibold mb-3 ${
                                 darkMode ? 'text-gray-200' : 'text-gray-800'
                               }`}>
-                                Filters
+                                Maintenance
                               </h3>
-                              <div className="space-y-4">
+                              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                                 <div>
                                   <label className={`block text-sm font-medium mb-2 ${
                                     darkMode ? 'text-gray-300' : 'text-gray-700'
@@ -6604,45 +6617,7 @@ const LandCruiserTracker = () => {
                                     placeholder=""
                                   />
                                 </div>
-                              </div>
-                            </div>
 
-                            <div className={`pt-4 border-t ${
-                              darkMode ? 'border-gray-700' : 'border-gray-200'
-                            }`}>
-                              <h3 className={`text-lg font-semibold mb-3 ${
-                                darkMode ? 'text-gray-200' : 'text-gray-800'
-                              }`}>
-                                Battery
-                              </h3>
-                              <div>
-                                <label className={`block text-sm font-medium mb-2 ${
-                                  darkMode ? 'text-gray-300' : 'text-gray-700'
-                                }`}>
-                                  Battery Type
-                                </label>
-                                <input
-                                  type="text"
-                                  value={viewingVehicle.battery || ''}
-                                  onChange={(e) => setViewingVehicle({ ...viewingVehicle, battery: e.target.value })}
-                                  className={inputClasses(darkMode)}
-                                  placeholder=""
-                                />
-                              </div>
-                            </div>
-                          </div>
-
-                          {/* Oil Info Section - Full Width */}
-                          <div className="mt-6">
-                            <div className={`pt-4 border-t ${
-                              darkMode ? 'border-gray-700' : 'border-gray-200'
-                            }`}>
-                              <h3 className={`text-lg font-semibold mb-3 ${
-                                darkMode ? 'text-gray-200' : 'text-gray-800'
-                              }`}>
-                                Oil Info
-                              </h3>
-                              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                 <div>
                                   <label className={`block text-sm font-medium mb-2 ${
                                     darkMode ? 'text-gray-300' : 'text-gray-700'
@@ -6734,6 +6709,21 @@ const LandCruiserTracker = () => {
                                         ? 'bg-gray-700 border-gray-600 text-gray-100 placeholder-gray-400' 
                                         : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400'
                                     }`}
+                                    placeholder=""
+                                  />
+                                </div>
+
+                                <div>
+                                  <label className={`block text-sm font-medium mb-2 ${
+                                    darkMode ? 'text-gray-300' : 'text-gray-700'
+                                  }`}>
+                                    Battery Type
+                                  </label>
+                                  <input
+                                    type="text"
+                                    value={viewingVehicle.battery || ''}
+                                    onChange={(e) => setViewingVehicle({ ...viewingVehicle, battery: e.target.value })}
+                                    className={inputClasses(darkMode)}
                                     placeholder=""
                                   />
                                 </div>
