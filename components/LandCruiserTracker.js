@@ -4477,14 +4477,7 @@ const LandCruiserTracker = () => {
 
                     {/* Description */}
                     <div className="mb-4" style={{ minHeight: '3rem' }}>
-                      <p className={`text-sm ${
-                        project.description 
-                          ? (darkMode ? 'text-gray-400' : 'text-gray-600')
-                          : (darkMode ? 'text-gray-500 italic' : 'text-gray-500 italic')
-                      } ${!expandedDescriptions[project.id] ? 'line-clamp-2' : ''}`}>
-                        {project.description || 'No description added'}
-                      </p>
-                      {project.description && project.description.length > 100 && (
+                      {project.description && project.description.length > 100 ? (
                         <button
                           onClick={(e) => {
                             e.stopPropagation();
@@ -4493,12 +4486,25 @@ const LandCruiserTracker = () => {
                               [project.id]: !prev[project.id]
                             }));
                           }}
-                          className={`text-xs mt-1 font-medium ${
-                            darkMode ? 'text-blue-400 hover:text-blue-300' : 'text-blue-600 hover:text-blue-700'
-                          }`}
+                          className={`text-sm text-left w-full ${
+                            project.description 
+                              ? (darkMode ? 'text-gray-400 hover:text-gray-300' : 'text-gray-600 hover:text-gray-700')
+                              : (darkMode ? 'text-gray-500 italic' : 'text-gray-500 italic')
+                          } ${!expandedDescriptions[project.id] ? 'line-clamp-2' : ''}`}
                         >
-                          {expandedDescriptions[project.id] ? 'Show less' : 'Show more'}
+                          {project.description}
+                          <ChevronDown className={`inline-block w-3 h-3 ml-1 transition-transform ${
+                            expandedDescriptions[project.id] ? 'rotate-180' : ''
+                          } ${darkMode ? 'text-blue-400' : 'text-blue-600'}`} />
                         </button>
+                      ) : (
+                        <p className={`text-sm ${
+                          project.description 
+                            ? (darkMode ? 'text-gray-400' : 'text-gray-600')
+                            : (darkMode ? 'text-gray-500 italic' : 'text-gray-500 italic')
+                        }`}>
+                          {project.description || 'No description added'}
+                        </p>
                       )}
                     </div>
 
