@@ -571,9 +571,7 @@ const ProjectDetailView = ({
                       </span>
                     )}
                   </div>
-                  <div className={`text-xs ${
-                    darkMode ? 'text-gray-400' : 'text-gray-600'
-                  }`}>
+                  <div className={`text-xs font-medium ${getStatusTextColor(part)}`}>
                     {getStatusText(part)}
                   </div>
                 </div>
@@ -586,10 +584,10 @@ const ProjectDetailView = ({
                   </p>
                 )}
                 
-                <div className="mt-auto">
-                  <div className={`pt-3 border-t space-y-2 ${
-                    darkMode ? 'border-gray-600' : 'border-gray-200'
-                  }`}>
+                <div className={`border-t ${
+                  darkMode ? 'border-gray-600' : 'border-gray-200'
+                }`}>
+                  <div className="pt-3 space-y-2 mt-auto">
                   <div className="flex justify-between text-sm">
                     <span className={darkMode ? 'text-gray-400' : 'text-gray-600'}>
                       Part Price:
@@ -637,7 +635,7 @@ const ProjectDetailView = ({
                       ${part.total.toFixed(2)}
                     </span>
                   </div>
-                </div>
+                  </div>
                 </div>
               </div>
             ))}
@@ -2350,6 +2348,19 @@ const LandCruiserTracker = () => {
     return darkMode 
       ? 'bg-gray-700 text-gray-400 border-gray-600' 
       : 'bg-gray-100 text-gray-700 border-gray-200';
+  };
+
+  const getStatusTextColor = (part) => {
+    if (part.delivered) {
+      return darkMode ? 'text-green-400' : 'text-green-700';
+    }
+    if (part.shipped) {
+      return darkMode ? 'text-blue-400' : 'text-blue-700';
+    }
+    if (part.purchased) {
+      return darkMode ? 'text-yellow-400' : 'text-yellow-700';
+    }
+    return darkMode ? 'text-gray-400' : 'text-gray-700';
   };
 
   const getTrackingUrl = (tracking) => {
