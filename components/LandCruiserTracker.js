@@ -4396,7 +4396,7 @@ const LandCruiserTracker = () => {
                       setShowProjectDetailModal(true);
                       console.log('[MODAL ANIMATION] States set - viewingProject:', project.name, 'editMode: false, showModal: true');
                     }}
-                    className={`relative rounded-lg shadow-lg pt-3 pb-6 px-10 transition-all hover:shadow-xl cursor-pointer ${
+                    className={`relative rounded-lg shadow-lg pt-3 pb-6 px-6 transition-all hover:shadow-xl cursor-pointer ${
                       draggedProject?.id === project.id 
                         ? 'ring-2 ring-blue-500 ring-offset-2' 
                         : dragOverProject?.id === project.id
