@@ -5227,23 +5227,36 @@ const LandCruiserTracker = () => {
 
                   {/* Vehicle Image */}
                   {vehicle.image_url && (
-                    <div className="mb-4 mt-10">
+                    <div className="mb-4 mt-10 relative">
                       <img 
                         src={vehicle.image_url} 
                         alt={vehicle.nickname || vehicle.name}
                         loading="lazy"
                         decoding="async"
                         className={`w-full h-48 object-cover rounded-lg border ${
-                          darkMode ? 'bg-gray-700 border-gray-600' : 'bg-gray-200 border-gray-300'
-                        }`}
+                          vehicle.archived 
+                            ? 'grayscale opacity-40' 
+                            : ''
+                        } ${darkMode ? 'bg-gray-700 border-gray-600' : 'bg-gray-200 border-gray-300'}`}
                         onError={(e) => {
                           e.target.style.display = 'none';
                         }}
                         onLoad={(e) => {
-                          e.target.style.opacity = '1';
+                          e.target.style.opacity = vehicle.archived ? '0.4' : '1';
                         }}
                         style={{ opacity: 0, transition: 'opacity 0.3s ease-in' }}
                       />
+                      {vehicle.archived && (
+                        <div className="absolute inset-0 flex items-center justify-center">
+                          <span className={`text-2xl font-bold px-6 py-2 rounded-lg ${
+                            darkMode 
+                              ? 'bg-gray-900/80 text-gray-300 border-2 border-gray-600' 
+                              : 'bg-white/80 text-gray-700 border-2 border-gray-400'
+                          }`}>
+                            ARCHIVED
+                          </span>
+                        </div>
+                      )}
                     </div>
                   )}
 
@@ -5261,78 +5274,91 @@ const LandCruiserTracker = () => {
                         {vehicle.year ? `${vehicle.year} ` : ''}{vehicle.name}
                       </p>
                     )}
-                    <div className="flex items-center justify-between gap-2 flex-wrap">
-                      {vehicle.vin && (
+                    {!vehicle.archived && (
+                      <>
+                        <div className="flex items-center justify-between gap-2 flex-wrap">
+                          {vehicle.vin && (
+                            <span className={`inline-block px-3 py-1 rounded-full text-xs font-mono ${
+                              darkMode ? 'bg-gray-700 text-gray-300' : 'bg-gray-100 text-gray-700'
+                            }`}>
+                              VIN: {vehicle.vin}
+                            </span>
+                          )}
+                          {vehicle.license_plate && (
+                            <span className={`inline-block px-3 py-1 rounded text-sm font-medium ${
+                              darkMode ? 'bg-blue-600 text-blue-100' : 'bg-blue-100 text-blue-800'
+                            }`}>
+                              {vehicle.license_plate}
+                            </span>
+                          )}
+                        </div>
+
+                        {/* Project Badges */}
+                        {(() => {
+                          const vehicleProjects = getVehicleProjects(vehicle.id);
+                          return (
+                            <div className={`mt-4 pt-4 border-t ${
+                              darkMode ? 'border-gray-700' : 'border-gray-200'
+                            }`}>
+                              <h4 className={`text-xs font-semibold mb-2 uppercase tracking-wider ${
+                                darkMode ? 'text-gray-400' : 'text-gray-600'
+                              }`}>
+                                Projects ({vehicleProjects.length})
+                              </h4>
+                              {vehicleProjects.length > 0 ? (
+                                <div className="flex flex-wrap gap-2">
+                                  {vehicleProjects.slice(0, 4).map((project) => (
+                                    <span
+                                      key={project.id}
+                                      className={`inline-flex items-center px-2 py-1 rounded text-xs font-medium border ${
+                                        darkMode ? 'bg-gray-700 text-gray-300 border-gray-600' : 'bg-gray-100 text-gray-700 border-gray-300'
+                                      }`}
+                                      style={{ 
+                                        borderLeftWidth: '3px', 
+                                        borderLeftColor: getPriorityBorderColor(project.priority),
+                                        width: 'calc(50% - 4px)'
+                                      }}
+                                    >
+                                      <Wrench className="w-3 h-3 mr-1 flex-shrink-0" />
+                                      <span className="truncate">{project.name}</span>
+                                    </span>
+                                  ))}
+                                  {vehicleProjects.length > 4 && (
+                                    <span className={`inline-flex items-center px-2 py-1 rounded text-xs ${
+                                      darkMode ? 'text-gray-500' : 'text-gray-600'
+                                    }`}>
+                                      +{vehicleProjects.length - 4} more
+                                    </span>
+                                  )}
+                                </div>
+                              ) : (
+                                <div className={`text-center py-4 rounded-lg ${
+                                  darkMode ? 'bg-gray-750' : 'bg-gray-50'
+                                }`}>
+                                  <Wrench className={`w-8 h-8 mx-auto mb-2 ${
+                                    darkMode ? 'text-gray-600' : 'text-gray-400'
+                                  }`} />
+                                  <p className={`text-xs ${
+                                    darkMode ? 'text-gray-500' : 'text-gray-500'
+                                  }`}>
+                                    No current projects
+                                  </p>
+                                </div>
+                              )}
+                            </div>
+                          );
+                        })()}
+                      </>
+                    )}
+                    {vehicle.archived && vehicle.vin && (
+                      <div className="mt-2">
                         <span className={`inline-block px-3 py-1 rounded-full text-xs font-mono ${
                           darkMode ? 'bg-gray-700 text-gray-300' : 'bg-gray-100 text-gray-700'
                         }`}>
                           VIN: {vehicle.vin}
                         </span>
-                      )}
-                      {vehicle.license_plate && (
-                        <span className={`inline-block px-3 py-1 rounded text-sm font-medium ${
-                          darkMode ? 'bg-blue-600 text-blue-100' : 'bg-blue-100 text-blue-800'
-                        }`}>
-                          {vehicle.license_plate}
-                        </span>
-                      )}
-                    </div>
-
-                    {/* Project Badges */}
-                    {(() => {
-                      const vehicleProjects = getVehicleProjects(vehicle.id);
-                      return (
-                        <div className={`mt-4 pt-4 border-t ${
-                          darkMode ? 'border-gray-700' : 'border-gray-200'
-                        }`}>
-                          <h4 className={`text-xs font-semibold mb-2 uppercase tracking-wider ${
-                            darkMode ? 'text-gray-400' : 'text-gray-600'
-                          }`}>
-                            Projects ({vehicleProjects.length})
-                          </h4>
-                          {vehicleProjects.length > 0 ? (
-                            <div className="flex flex-wrap gap-2">
-                              {vehicleProjects.slice(0, 4).map((project) => (
-                                <span
-                                  key={project.id}
-                                  className={`inline-flex items-center px-2 py-1 rounded text-xs font-medium border ${
-                                    darkMode ? 'bg-gray-700 text-gray-300 border-gray-600' : 'bg-gray-100 text-gray-700 border-gray-300'
-                                  }`}
-                                  style={{ 
-                                    borderLeftWidth: '3px', 
-                                    borderLeftColor: getPriorityBorderColor(project.priority),
-                                    width: 'calc(50% - 4px)'
-                                  }}
-                                >
-                                  <Wrench className="w-3 h-3 mr-1 flex-shrink-0" />
-                                  <span className="truncate">{project.name}</span>
-                                </span>
-                              ))}
-                              {vehicleProjects.length > 4 && (
-                                <span className={`inline-flex items-center px-2 py-1 rounded text-xs ${
-                                  darkMode ? 'text-gray-500' : 'text-gray-600'
-                                }`}>
-                                  +{vehicleProjects.length - 4} more
-                                </span>
-                              )}
-                            </div>
-                          ) : (
-                            <div className={`text-center py-4 rounded-lg ${
-                              darkMode ? 'bg-gray-750' : 'bg-gray-50'
-                            }`}>
-                              <Wrench className={`w-8 h-8 mx-auto mb-2 ${
-                                darkMode ? 'text-gray-600' : 'text-gray-400'
-                              }`} />
-                              <p className={`text-xs ${
-                                darkMode ? 'text-gray-500' : 'text-gray-500'
-                              }`}>
-                                No current projects
-                              </p>
-                            </div>
-                          )}
-                        </div>
-                      );
-                    })()}
+                      </div>
+                    )}
                   </div>
                 </div>
               ))}
@@ -6795,45 +6821,76 @@ const LandCruiserTracker = () => {
                       <div></div>
                     )}
                     {vehicleModalEditMode ? (
-                      <button
-                        onClick={async () => {
-                          // Save logic based on what's being edited
-                          if (vehicleModalEditMode === 'vehicle') {
-                            // Upload new image if one is selected
-                            let updatedVehicle = { ...viewingVehicle };
-                            if (vehicleImageFile) {
-                              const imageUrl = await uploadVehicleImage(vehicleImageFile);
-                              if (imageUrl) {
-                                updatedVehicle.image_url = imageUrl;
+                      <div className="flex items-center gap-2">
+                        {vehicleModalEditMode === 'vehicle' && (
+                          <button
+                            onClick={async () => {
+                              const confirmArchive = window.confirm(
+                                viewingVehicle.archived 
+                                  ? 'Are you sure you want to unarchive this vehicle?' 
+                                  : 'Are you sure you want to archive this vehicle? It will still be visible but with limited information.'
+                              );
+                              if (!confirmArchive) return;
+                              
+                              const updatedVehicle = { 
+                                ...viewingVehicle, 
+                                archived: !viewingVehicle.archived 
+                              };
+                              await updateVehicle(viewingVehicle.id, updatedVehicle);
+                              setViewingVehicle(updatedVehicle);
+                              setOriginalVehicleData({ ...updatedVehicle });
+                            }}
+                            className={`px-4 py-2 rounded-lg font-medium transition-colors flex items-center gap-2 text-sm ${
+                              viewingVehicle.archived
+                                ? 'bg-green-600 hover:bg-green-700 text-white'
+                                : darkMode
+                                  ? 'bg-gray-700 hover:bg-gray-600 text-gray-100 border border-gray-600'
+                                  : 'bg-gray-200 hover:bg-gray-300 text-gray-800 border border-gray-300'
+                            }`}
+                          >
+                            {viewingVehicle.archived ? 'Unarchive' : 'Archive'}
+                          </button>
+                        )}
+                        <button
+                          onClick={async () => {
+                            // Save logic based on what's being edited
+                            if (vehicleModalEditMode === 'vehicle') {
+                              // Upload new image if one is selected
+                              let updatedVehicle = { ...viewingVehicle };
+                              if (vehicleImageFile) {
+                                const imageUrl = await uploadVehicleImage(vehicleImageFile);
+                                if (imageUrl) {
+                                  updatedVehicle.image_url = imageUrl;
+                                }
                               }
+                              await updateVehicle(viewingVehicle.id, updatedVehicle);
+                              clearImageSelection();
+                              // Update original data after successful save
+                              setOriginalVehicleData({ ...updatedVehicle });
+                            } else if (vehicleModalEditMode === 'project') {
+                              await updateProject(vehicleModalProjectView.id, {
+                                name: vehicleModalProjectView.name,
+                                description: vehicleModalProjectView.description,
+                                budget: parseFloat(vehicleModalProjectView.budget),
+                                priority: vehicleModalProjectView.priority,
+                                start_date: vehicleModalProjectView.start_date && vehicleModalProjectView.start_date.trim() !== '' ? vehicleModalProjectView.start_date : null,
+                                target_date: vehicleModalProjectView.target_date && vehicleModalProjectView.target_date.trim() !== '' ? vehicleModalProjectView.target_date : null,
+                                status: vehicleModalProjectView.status,
+                                vehicle_id: vehicleModalProjectView.vehicle_id || null
+                              });
                             }
-                            await updateVehicle(viewingVehicle.id, updatedVehicle);
-                            clearImageSelection();
-                            // Update original data after successful save
-                            setOriginalVehicleData({ ...updatedVehicle });
-                          } else if (vehicleModalEditMode === 'project') {
-                            await updateProject(vehicleModalProjectView.id, {
-                              name: vehicleModalProjectView.name,
-                              description: vehicleModalProjectView.description,
-                              budget: parseFloat(vehicleModalProjectView.budget),
-                              priority: vehicleModalProjectView.priority,
-                              start_date: vehicleModalProjectView.start_date && vehicleModalProjectView.start_date.trim() !== '' ? vehicleModalProjectView.start_date : null,
-                              target_date: vehicleModalProjectView.target_date && vehicleModalProjectView.target_date.trim() !== '' ? vehicleModalProjectView.target_date : null,
-                              status: vehicleModalProjectView.status,
-                              vehicle_id: vehicleModalProjectView.vehicle_id || null
-                            });
-                          }
-                          setVehicleModalEditMode(null);
-                        }}
-                        disabled={uploadingImage}
-                        className={`px-4 py-2 rounded-lg font-medium transition-colors flex items-center gap-2 text-sm ${
-                          uploadingImage
-                            ? 'bg-gray-600 cursor-not-allowed text-gray-300'
-                            : 'bg-blue-600 hover:bg-blue-700 text-white'
-                        }`}
-                      >
-                        {uploadingImage ? 'Saving...' : 'Save Changes'}
-                      </button>
+                            setVehicleModalEditMode(null);
+                          }}
+                          disabled={uploadingImage}
+                          className={`px-4 py-2 rounded-lg font-medium transition-colors flex items-center gap-2 text-sm ${
+                            uploadingImage
+                              ? 'bg-gray-600 cursor-not-allowed text-gray-300'
+                              : 'bg-blue-600 hover:bg-blue-700 text-white'
+                          }`}
+                        >
+                          {uploadingImage ? 'Saving...' : 'Save Changes'}
+                        </button>
+                      </div>
                     ) : !vehicleModalProjectView ? (
                       <button
                         onClick={() => {
