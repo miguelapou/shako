@@ -4461,7 +4461,7 @@ const LandCruiserTracker = () => {
                       setShowProjectDetailModal(true);
                       console.log('[MODAL ANIMATION] States set - viewingProject:', project.name, 'editMode: false, showModal: true');
                     }}
-                    className={`relative rounded-lg shadow-lg pt-3 pb-6 px-6 transition-all hover:shadow-xl cursor-pointer ${
+                    className={`relative rounded-lg shadow-lg pt-3 pb-6 px-6 transition-all duration-200 hover:shadow-2xl hover:scale-105 cursor-pointer ${
                       draggedProject?.id === project.id 
                         ? 'ring-2 ring-blue-500 ring-offset-2' 
                         : dragOverProject?.id === project.id
@@ -4646,7 +4646,7 @@ const LandCruiserTracker = () => {
                           Priority:
                         </span>
                         <span className={`text-sm font-bold ${priorityColors[project.priority]}`}>
-                          {project.priority?.replace('_', ' ').toUpperCase()}
+                          {project.priority?.replace(/_/g, ' ').toUpperCase()}
                         </span>
                       </div>
                     </div>
@@ -5292,7 +5292,7 @@ const LandCruiserTracker = () => {
                     setOriginalVehicleData({ ...vehicle }); // Save original data for unsaved changes check
                     setShowVehicleDetailModal(true);
                   }}
-                  className={`relative rounded-lg shadow-lg pt-3 pb-6 px-6 transition-all hover:shadow-xl cursor-pointer border-t-4 ${
+                  className={`relative rounded-lg shadow-lg pt-3 pb-6 px-6 transition-all duration-200 hover:shadow-2xl hover:scale-105 cursor-pointer border-t-4 ${
                     draggedVehicle?.id === vehicle.id 
                       ? 'ring-2 ring-blue-500 ring-offset-2' 
                       : dragOverVehicle?.id === vehicle.id
