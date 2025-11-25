@@ -6406,6 +6406,7 @@ const LandCruiserTracker = () => {
                                           {projectParts.length} parts
                                         </span>
                                       </div>
+                                      <span className={darkMode ? 'text-gray-600' : 'text-gray-400'}>•</span>
                                       <div className="flex items-center gap-1">
                                         <BadgeDollarSign className={`w-3 h-3 ${
                                           darkMode ? 'text-gray-500' : 'text-gray-400'
@@ -6415,24 +6416,27 @@ const LandCruiserTracker = () => {
                                         </span>
                                       </div>
                                       {project.todos && project.todos.length > 0 && (
-                                        <div className="flex items-center gap-2">
-                                          <div className="flex items-center gap-1">
-                                            <CheckCircle className={`w-3 h-3 ${
-                                              darkMode ? 'text-green-400' : 'text-green-600'
-                                            }`} />
-                                            <span className={darkMode ? 'text-gray-400' : 'text-gray-600'}>
-                                              {completedTodos}
-                                            </span>
+                                        <>
+                                          <span className={darkMode ? 'text-gray-600' : 'text-gray-400'}>•</span>
+                                          <div className="flex items-center gap-2">
+                                            <div className="flex items-center gap-1">
+                                              <CheckCircle className={`w-3 h-3 ${
+                                                darkMode ? 'text-green-400' : 'text-green-600'
+                                              }`} />
+                                              <span className={darkMode ? 'text-gray-400' : 'text-gray-600'}>
+                                                {completedTodos}
+                                              </span>
+                                            </div>
+                                            <div className="flex items-center gap-1">
+                                              <Clock className={`w-3 h-3 ${
+                                                darkMode ? 'text-gray-400' : 'text-gray-500'
+                                              }`} />
+                                              <span className={darkMode ? 'text-gray-400' : 'text-gray-600'}>
+                                                {uncompletedTodos}
+                                              </span>
+                                            </div>
                                           </div>
-                                          <div className="flex items-center gap-1">
-                                            <Clock className={`w-3 h-3 ${
-                                              darkMode ? 'text-gray-400' : 'text-gray-500'
-                                            }`} />
-                                            <span className={darkMode ? 'text-gray-400' : 'text-gray-600'}>
-                                              {uncompletedTodos}
-                                            </span>
-                                          </div>
-                                        </div>
+                                        </>
                                       )}
                                     </div>
                                   </button>
