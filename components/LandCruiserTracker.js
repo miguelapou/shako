@@ -493,10 +493,10 @@ const ProjectDetailView = ({
           
           {/* Always-visible input for new todos */}
           <div 
-            className={`flex items-center gap-3 p-3 rounded-lg border-2 border-dashed transition-colors ${
+            className={`flex items-center gap-3 py-1.5 px-3 rounded-lg border transition-colors ${
               darkMode 
-                ? 'bg-gray-700/50 border-gray-600 hover:border-gray-500 focus-within:border-blue-500 focus-within:bg-gray-700' 
-                : 'bg-gray-50/50 border-gray-300 hover:border-gray-400 focus-within:border-blue-500 focus-within:bg-white'
+                ? 'bg-gray-700 border-gray-600 hover:border-gray-500 focus-within:border-blue-500' 
+                : 'bg-gray-50 border-gray-200 hover:border-gray-300 focus-within:border-blue-500'
             }`}
           >
             {/* Empty checkbox placeholder */}
@@ -4491,13 +4491,10 @@ const LandCruiserTracker = () => {
                     onDragLeave={handleDragLeave}
                     onDrop={(e) => handleDrop(e, project)}
                     onClick={() => {
-                      console.log('[MODAL ANIMATION] Project clicked, setting states...');
-                      console.log('[MODAL ANIMATION] Current projectModalEditMode:', projectModalEditMode);
                       setViewingProject(project);
                       setOriginalProjectData({ ...project }); // Save original data for unsaved changes check
                       setProjectModalEditMode(false);
                       setShowProjectDetailModal(true);
-                      console.log('[MODAL ANIMATION] States set - viewingProject:', project.name, 'editMode: false, showModal: true');
                     }}
                     className={`relative rounded-lg shadow-lg pt-3 pb-6 px-6 transition-all duration-200 hover:shadow-2xl hover:scale-[1.03] cursor-pointer ${
                       draggedProject?.id === project.id 
@@ -5074,14 +5071,12 @@ const LandCruiserTracker = () => {
                     }
                   }
                   
-                  console.log('[MODAL ANIMATION] Closing project modal');
                   setShowProjectDetailModal(false);
                   setViewingProject(null);
                   setOriginalProjectData(null);
                   setProjectModalEditMode(false);
                 })}
               >
-                {console.log('[MODAL ANIMATION] Rendering project modal - editMode:', projectModalEditMode, 'project:', viewingProject.name)}
                 <div 
                   className={`rounded-lg shadow-xl max-w-5xl w-full max-h-[90vh] overflow-hidden modal-content ${
                     isModalClosing ? 'modal-popup-exit' : 'modal-popup-enter'
@@ -5145,7 +5140,6 @@ const LandCruiserTracker = () => {
 
                   {/* Content - with slide animation */}
                   <div className="relative min-h-[calc(90vh-180px)]">
-                    {console.log('[MODAL ANIMATION] Content render - editMode:', projectModalEditMode)}
                     {/* Project Details View */}
                     <div 
                       className={`w-full transition-all duration-500 ease-in-out ${
@@ -5154,7 +5148,6 @@ const LandCruiserTracker = () => {
                           : 'relative opacity-100'
                       }`}
                     >
-                      {console.log('[MODAL ANIMATION] Details View classes:', projectModalEditMode ? 'HIDDEN (absolute, opacity-0)' : 'VISIBLE (relative, opacity-100)')}
                       <div className="p-6 space-y-6 max-h-[calc(90vh-180px)] overflow-y-auto">
                         <ProjectDetailView
                           project={viewingProject}
@@ -5193,7 +5186,6 @@ const LandCruiserTracker = () => {
                           : 'absolute opacity-0 translate-x-full pointer-events-none'
                       }`}
                     >
-                      {console.log('[MODAL ANIMATION] Edit View classes:', projectModalEditMode ? 'VISIBLE (relative, opacity-100)' : 'HIDDEN (absolute, opacity-0)')}
                       <div className="p-6 space-y-6 max-h-[calc(90vh-180px)] overflow-y-auto">
                         <ProjectEditForm
                           project={viewingProject}
@@ -5296,7 +5288,6 @@ const LandCruiserTracker = () => {
                     ) : (
                       <button
                         onClick={() => {
-                          console.log('[MODAL ANIMATION] Edit button clicked - switching to edit mode');
                           setProjectModalEditMode(true);
                         }}
                         className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium transition-colors flex items-center gap-2 text-sm"
@@ -7029,7 +7020,7 @@ const LandCruiserTracker = () => {
                                 setOriginalVehicleData(null);
                                 setVehicleModalEditMode(null);
                               }}
-                              className={`px-4 py-2 rounded-lg font-medium transition-colors flex items-center gap-2 text-sm ${
+                              className={`px-4 py-2 rounded-lg font-medium transition-colors flex items-center gap-2 text-sm mr-4 ${
                                 darkMode
                                   ? 'bg-red-900/30 hover:bg-red-900/50 text-red-400 border border-red-700'
                                   : 'bg-red-50 hover:bg-red-100 text-red-600 border border-red-300'
