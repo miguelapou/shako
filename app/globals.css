@@ -2,37 +2,82 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Force scrollbar styling on html element for Safari */
-html::-webkit-scrollbar {
+/* Scrollbar width for all browsers */
+*::-webkit-scrollbar {
   width: 12px;
   height: 12px;
 }
 
-html::-webkit-scrollbar-track {
+/* Light mode - all scrollable elements */
+*::-webkit-scrollbar-track {
   background: #f1f5f9;
 }
 
-html::-webkit-scrollbar-thumb {
+*::-webkit-scrollbar-thumb {
   background: #cbd5e1;
   border-radius: 6px;
   border: 2px solid #f1f5f9;
 }
 
-html::-webkit-scrollbar-thumb:hover {
+*::-webkit-scrollbar-thumb:hover {
   background: #94a3b8;
 }
 
-/* Dark mode - specifically target html element */
-html.dark-scrollbar::-webkit-scrollbar-track {
-  background: #1f2937 !important;
+/* Light mode - main page scrollbar (Safari targets body) */
+body::-webkit-scrollbar-track {
+  background: #f1f5f9;
 }
 
-html.dark-scrollbar::-webkit-scrollbar-thumb {
-  background: #4b5563 !important;
+body::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
   border-radius: 6px;
-  border: 2px solid #1f2937 !important;
+  border: 2px solid #f1f5f9;
 }
 
-html.dark-scrollbar::-webkit-scrollbar-thumb:hover {
-  background: #6b7280 !important;
+body::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}
+
+/* Dark mode - all scrollable elements */
+html.dark-scrollbar *::-webkit-scrollbar-track,
+body.dark-scrollbar *::-webkit-scrollbar-track {
+  background: #1f2937;
+}
+
+html.dark-scrollbar *::-webkit-scrollbar-thumb,
+body.dark-scrollbar *::-webkit-scrollbar-thumb {
+  background: #4b5563;
+  border-radius: 6px;
+  border: 2px solid #1f2937;
+}
+
+html.dark-scrollbar *::-webkit-scrollbar-thumb:hover,
+body.dark-scrollbar *::-webkit-scrollbar-thumb:hover {
+  background: #6b7280;
+}
+
+/* Dark mode - main page scrollbar (Safari) */
+body.dark-scrollbar::-webkit-scrollbar-track {
+  background: #1f2937;
+}
+
+body.dark-scrollbar::-webkit-scrollbar-thumb {
+  background: #4b5563;
+  border-radius: 6px;
+  border: 2px solid #1f2937;
+}
+
+body.dark-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: #6b7280;
+}
+
+/* Firefox fallback */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: #cbd5e1 #f1f5f9;
+}
+
+html.dark-scrollbar *,
+body.dark-scrollbar * {
+  scrollbar-color: #4b5563 #1f2937;
 }
