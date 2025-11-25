@@ -2,6 +2,11 @@
 @tailwind components;
 @tailwind utilities;
 
+/* TEST - This should make ALL scrollbars bright red */
+*::-webkit-scrollbar-thumb {
+  background: red !important;
+}
+
 /* Scrollbar styles for light mode */
 * {
   scrollbar-width: thin;
