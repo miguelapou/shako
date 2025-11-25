@@ -881,6 +881,14 @@ const fontStyles = `
   body.dark-scrollbar *::-webkit-scrollbar-thumb:hover {
     background: #6b7280;
   }
+
+  /* Line clamp utility for truncating text */
+  .line-clamp-2 {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
 `;
 
 // ========================================
@@ -1723,6 +1731,7 @@ const LandCruiserTracker = () => {
     status: 'planning',
     vehicle_id: null
   });
+  const [expandedDescriptions, setExpandedDescriptions] = useState({}); // Track which project descriptions are expanded
   
   const [darkMode, setDarkMode] = useState(() => {
     // Only access localStorage in the browser
@@ -4467,13 +4476,31 @@ const LandCruiserTracker = () => {
                     </div>
 
                     {/* Description */}
-                    <p className={`text-sm mb-4 ${
-                      project.description 
-                        ? (darkMode ? 'text-gray-400' : 'text-gray-600')
-                        : (darkMode ? 'text-gray-500 italic' : 'text-gray-500 italic')
-                    }`}>
-                      {project.description || 'No description added'}
-                    </p>
+                    <div className="mb-4" style={{ minHeight: '3rem' }}>
+                      <p className={`text-sm ${
+                        project.description 
+                          ? (darkMode ? 'text-gray-400' : 'text-gray-600')
+                          : (darkMode ? 'text-gray-500 italic' : 'text-gray-500 italic')
+                      } ${!expandedDescriptions[project.id] ? 'line-clamp-2' : ''}`}>
+                        {project.description || 'No description added'}
+                      </p>
+                      {project.description && project.description.length > 100 && (
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setExpandedDescriptions(prev => ({
+                              ...prev,
+                              [project.id]: !prev[project.id]
+                            }));
+                          }}
+                          className={`text-xs mt-1 font-medium ${
+                            darkMode ? 'text-blue-400 hover:text-blue-300' : 'text-blue-600 hover:text-blue-700'
+                          }`}
+                        >
+                          {expandedDescriptions[project.id] ? 'Show less' : 'Show more'}
+                        </button>
+                      )}
+                    </div>
 
                     {/* Progress Bar */}
                     <div className="mb-4">
