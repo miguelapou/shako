@@ -4492,9 +4492,15 @@ const LandCruiserTracker = () => {
                               : (darkMode ? 'text-gray-500 italic' : 'text-gray-500 italic')
                           }`}
                         >
-                          <div className={!expandedDescriptions[project.id] ? 'line-clamp-2' : ''}>
-                            {project.description}{' '}
-                            <ChevronDown className={`inline-block w-3 h-3 transition-transform ${
+                          <div className="relative">
+                            <div 
+                              className={`transition-all duration-300 ease-in-out ${
+                                !expandedDescriptions[project.id] ? 'line-clamp-2' : ''
+                              }`}
+                            >
+                              {project.description}
+                            </div>
+                            <ChevronDown className={`inline-block w-3 h-3 ml-1 transition-transform duration-300 ${
                               expandedDescriptions[project.id] ? 'rotate-180' : ''
                             } ${darkMode ? 'text-blue-400' : 'text-blue-600'}`} />
                           </div>
