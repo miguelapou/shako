@@ -2,7 +2,7 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Chrome/Edge - WebKit scrollbar styles */
+/* Chrome/Edge/Safari - WebKit scrollbar styles */
 *::-webkit-scrollbar {
   width: 12px;
   height: 12px;
@@ -39,14 +39,16 @@ body.dark-scrollbar *::-webkit-scrollbar-thumb:hover {
   background: #6b7280;
 }
 
-/* Safari/Firefox - scrollbar-color */
-* {
-  scrollbar-width: thin;
-  scrollbar-color: #cbd5e1 #f1f5f9;
-}
+/* Firefox only - scrollbar-color */
+@supports not selector(::-webkit-scrollbar) {
+  * {
+    scrollbar-width: thin;
+    scrollbar-color: #cbd5e1 #f1f5f9;
+  }
 
-html.dark-scrollbar *,
-body.dark-scrollbar * {
-  scrollbar-width: thin;
-  scrollbar-color: #4b5563 #1f2937;
+  html.dark-scrollbar *,
+  body.dark-scrollbar * {
+    scrollbar-width: thin;
+    scrollbar-color: #4b5563 #1f2937;
+  }
 }
