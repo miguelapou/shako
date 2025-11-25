@@ -554,7 +554,7 @@ const ProjectDetailView = ({
             {linkedParts.map((part) => (
               <div 
                 key={part.id}
-                className={`p-4 rounded-lg border ${
+                className={`p-4 rounded-lg border flex flex-col ${
                   darkMode ? 'bg-gray-700 border-gray-600' : 'bg-gray-50 border-gray-200'
                 }`}
               >
@@ -586,7 +586,7 @@ const ProjectDetailView = ({
                   </p>
                 )}
                 
-                <div className={`pt-3 border-t space-y-2 ${
+                <div className={`pt-3 border-t space-y-2 mt-auto ${
                   darkMode ? 'border-gray-600' : 'border-gray-200'
                 }`}>
                   <div className="flex justify-between text-sm">
