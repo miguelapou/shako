@@ -6390,7 +6390,7 @@ const LandCruiserTracker = () => {
                                     }`}>
                                       {project.name}
                                     </h4>
-                                    <p className={`text-sm mb-3 ${
+                                    <p className={`text-sm mb-3 line-clamp-3 ${
                                       project.description 
                                         ? (darkMode ? 'text-gray-400' : 'text-gray-600')
                                         : (darkMode ? 'text-gray-500 italic' : 'text-gray-500 italic')
