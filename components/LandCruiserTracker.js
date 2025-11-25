@@ -1868,16 +1868,23 @@ const LandCruiserTracker = () => {
   // Apply dark scrollbar styles to both html and body for cross-browser compatibility
   useEffect(() => {
     if (typeof document !== 'undefined') {
+      // Detect if Safari (not Chrome)
+      const isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
+      
       if (darkMode) {
         document.documentElement.classList.add('dark-scrollbar');
         document.body.classList.add('dark-scrollbar');
-        // Set color-scheme for Safari scrollbar
-        document.documentElement.style.colorScheme = 'dark';
+        // Only set color-scheme for Safari
+        if (isSafari) {
+          document.documentElement.style.colorScheme = 'dark';
+        }
       } else {
         document.documentElement.classList.remove('dark-scrollbar');
         document.body.classList.remove('dark-scrollbar');
-        // Set color-scheme for Safari scrollbar
-        document.documentElement.style.colorScheme = 'light';
+        // Only set color-scheme for Safari
+        if (isSafari) {
+          document.documentElement.style.colorScheme = 'light';
+        }
       }
     }
   }, [darkMode]);
