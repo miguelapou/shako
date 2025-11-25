@@ -1365,7 +1365,16 @@ const LandCruiserTracker = () => {
 
       if (error) throw error;
       if (data) {
-        setVehicles(data);
+        // Sort so archived vehicles are always at the end
+        const sorted = data.sort((a, b) => {
+          if (a.archived === b.archived) {
+            // If both have same archived status, sort by display_order
+            return (a.display_order || 0) - (b.display_order || 0);
+          }
+          // Put archived vehicles at the end
+          return a.archived ? 1 : -1;
+        });
+        setVehicles(sorted);
       }
     } catch (error) {
       console.error('Error loading vehicles:', error);
@@ -5252,7 +5261,7 @@ const LandCruiserTracker = () => {
                             darkMode 
                               ? 'bg-gray-900/80 text-gray-300 border-2 border-gray-600' 
                               : 'bg-white/80 text-gray-700 border-2 border-gray-400'
-                          }`}>
+                          }`} style={{ fontFamily: 'system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif' }}>
                             ARCHIVED
                           </span>
                         </div>
@@ -5935,11 +5944,22 @@ const LandCruiserTracker = () => {
                   <div className={`sticky top-0 z-10 px-6 py-4 border-b flex items-center justify-between ${
                     darkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-200'
                   }`}>
-                    <h2 className={`text-2xl font-bold ${
-                      darkMode ? 'text-gray-100' : 'text-gray-900'
-                    }`} style={{ fontFamily: "'FoundationOne', 'Courier New', monospace" }}>
-                      {vehicleModalProjectView ? vehicleModalProjectView.name : (viewingVehicle.nickname || viewingVehicle.name || 'Vehicle Details')}
-                    </h2>
+                    <div className="flex items-center gap-3">
+                      <h2 className={`text-2xl font-bold ${
+                        darkMode ? 'text-gray-100' : 'text-gray-900'
+                      }`} style={{ fontFamily: "'FoundationOne', 'Courier New', monospace" }}>
+                        {vehicleModalProjectView ? vehicleModalProjectView.name : (viewingVehicle.nickname || viewingVehicle.name || 'Vehicle Details')}
+                      </h2>
+                      {!vehicleModalProjectView && viewingVehicle.archived && (
+                        <span className={`px-3 py-1 rounded-full text-xs font-bold uppercase ${
+                          darkMode 
+                            ? 'bg-gray-700 text-gray-300 border border-gray-600' 
+                            : 'bg-gray-200 text-gray-700 border border-gray-400'
+                        }`}>
+                          Archived
+                        </span>
+                      )}
+                    </div>
                     <button
                       onClick={() => handleCloseModal(() => {
                         // Check for unsaved changes
@@ -6832,11 +6852,23 @@ const LandCruiserTracker = () => {
                               );
                               if (!confirmArchive) return;
                               
-                              const updatedVehicle = { 
-                                ...viewingVehicle, 
+                              // When archiving, set display_order to a high number to move to end
+                              // When unarchiving, keep current display_order
+                              const updates = { 
                                 archived: !viewingVehicle.archived 
                               };
-                              await updateVehicle(viewingVehicle.id, updatedVehicle);
+                              
+                              if (!viewingVehicle.archived) {
+                                // Archiving: set display_order to max + 1
+                                const maxOrder = Math.max(...vehicles.map(v => v.display_order || 0), 0);
+                                updates.display_order = maxOrder + 1;
+                              }
+                              
+                              const updatedVehicle = { 
+                                ...viewingVehicle, 
+                                ...updates
+                              };
+                              await updateVehicle(viewingVehicle.id, updates);
                               setViewingVehicle(updatedVehicle);
                               setOriginalVehicleData({ ...updatedVehicle });
                             }}
