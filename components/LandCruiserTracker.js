@@ -4478,27 +4478,27 @@ const LandCruiserTracker = () => {
                     {/* Description */}
                     <div className="mb-4" style={{ minHeight: '3rem' }}>
                       {project.description && project.description.length > 100 ? (
-                        <div className="relative">
-                          <button
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              setExpandedDescriptions(prev => ({
-                                ...prev,
-                                [project.id]: !prev[project.id]
-                              }));
-                            }}
-                            className={`text-sm text-left w-full ${
-                              project.description 
-                                ? (darkMode ? 'text-gray-400 hover:text-gray-300' : 'text-gray-600 hover:text-gray-700')
-                                : (darkMode ? 'text-gray-500 italic' : 'text-gray-500 italic')
-                            } ${!expandedDescriptions[project.id] ? 'line-clamp-2' : ''}`}
-                          >
-                            <span>{project.description}</span>
-                            <ChevronDown className={`inline-block w-3 h-3 ml-1 transition-transform ${
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setExpandedDescriptions(prev => ({
+                              ...prev,
+                              [project.id]: !prev[project.id]
+                            }));
+                          }}
+                          className={`text-sm text-left w-full ${
+                            project.description 
+                              ? (darkMode ? 'text-gray-400 hover:text-gray-300' : 'text-gray-600 hover:text-gray-700')
+                              : (darkMode ? 'text-gray-500 italic' : 'text-gray-500 italic')
+                          }`}
+                        >
+                          <div className={!expandedDescriptions[project.id] ? 'line-clamp-2' : ''}>
+                            {project.description}{' '}
+                            <ChevronDown className={`inline-block w-3 h-3 transition-transform ${
                               expandedDescriptions[project.id] ? 'rotate-180' : ''
                             } ${darkMode ? 'text-blue-400' : 'text-blue-600'}`} />
-                          </button>
-                        </div>
+                          </div>
+                        </button>
                       ) : (
                         <p className={`text-sm ${
                           project.description 
