@@ -1,5 +1,5 @@
 import React, { useState, useMemo, useEffect, useRef } from 'react';
-import { Search, Package, DollarSign, TrendingUp, Truck, CheckCircle, Clock, XCircle, ChevronDown, Plus, X, ExternalLink, ChevronUp, Edit2, Trash2, Moon, Sun, Wrench, List, Target, Calendar, GripVertical, ShoppingCart, Car, Upload, Image as ImageIcon } from 'lucide-react';
+import { Search, Package, DollarSign, TrendingUp, Truck, CheckCircle, Clock, XCircle, ChevronDown, Plus, X, ExternalLink, ChevronUp, Edit2, Trash2, Moon, Sun, Wrench, List, Target, Calendar, GripVertical, ShoppingCart, Car, Upload, Image as ImageIcon, Gauge } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 
 // ========================================
@@ -3293,10 +3293,13 @@ const LandCruiserTracker = () => {
                       const partProject = editingPart.projectId ? projects.find(p => p.id === editingPart.projectId) : null;
                       const vehicle = partProject?.vehicle_id ? vehicles.find(v => v.id === partProject.vehicle_id) : null;
                       return vehicle && (
-                        <span className={`inline-flex items-center px-2 py-1 rounded text-xs font-medium ${
-                          darkMode ? 'bg-gray-700 text-gray-300' : 'bg-gray-100 text-gray-700'
-                        }`}>
-                          <Car className="w-3 h-3 mr-1" style={{ color: vehicle.color || '#3B82F6' }} />
+                        <span 
+                          className={`inline-flex items-center px-2 py-1 rounded text-xs font-medium ${
+                            darkMode ? 'bg-gray-700' : 'bg-gray-100'
+                          }`}
+                          style={{ color: vehicle.color || '#3B82F6' }}
+                        >
+                          <Car className="w-3 h-3 mr-1" />
                           {vehicle.nickname || vehicle.name}
                         </span>
                       );
@@ -3641,10 +3644,13 @@ const LandCruiserTracker = () => {
                       const partProject = viewingPart.projectId ? projects.find(p => p.id === viewingPart.projectId) : null;
                       const vehicle = partProject?.vehicle_id ? vehicles.find(v => v.id === partProject.vehicle_id) : null;
                       return vehicle && (
-                        <span className={`inline-flex items-center px-2 py-1 rounded text-xs font-medium ${
-                          darkMode ? 'bg-gray-700 text-gray-300' : 'bg-gray-100 text-gray-700'
-                        }`}>
-                          <Car className="w-3 h-3 mr-1" style={{ color: vehicle.color || '#3B82F6' }} />
+                        <span 
+                          className={`inline-flex items-center px-2 py-1 rounded text-xs font-medium ${
+                            darkMode ? 'bg-gray-700' : 'bg-gray-100'
+                          }`}
+                          style={{ color: vehicle.color || '#3B82F6' }}
+                        >
+                          <Car className="w-3 h-3 mr-1" />
                           {vehicle.nickname || vehicle.name}
                         </span>
                       );
@@ -4174,10 +4180,13 @@ const LandCruiserTracker = () => {
                         const partProject = part.projectId ? projects.find(p => p.id === part.projectId) : null;
                         const vehicle = partProject?.vehicle_id ? vehicles.find(v => v.id === partProject.vehicle_id) : null;
                         return vehicle ? (
-                          <span className={`inline-flex items-center px-2 py-1 rounded text-xs font-medium border ${
-                            darkMode ? 'bg-gray-700 text-gray-300 border-gray-600' : 'bg-gray-100 text-gray-700 border-gray-300'
-                          }`}>
-                            <Car className="w-3 h-3 mr-1" style={{ color: vehicle.color || '#3B82F6' }} />
+                          <span 
+                            className={`inline-flex items-center px-2 py-1 rounded text-xs font-medium border ${
+                              darkMode ? 'bg-gray-700 border-gray-600' : 'bg-gray-100 border-gray-300'
+                            }`}
+                            style={{ color: vehicle.color || '#3B82F6' }}
+                          >
+                            <Car className="w-3 h-3 mr-1" />
                             {vehicle.nickname || vehicle.name}
                           </span>
                         ) : (
@@ -4338,10 +4347,13 @@ const LandCruiserTracker = () => {
                         <p className={`text-xs ${
                           darkMode ? 'text-gray-400' : 'text-gray-600'
                         }`}>Vehicle:</p>
-                        <span className={`inline-flex items-center px-2 py-0.5 rounded text-xs font-medium border ${
-                          darkMode ? 'bg-gray-700 text-gray-300 border-gray-600' : 'bg-gray-100 text-gray-700 border-gray-300'
-                        }`}>
-                          <Car className="w-3 h-3 mr-1" style={{ color: vehicle.color || '#3B82F6' }} />
+                        <span 
+                          className={`inline-flex items-center px-2 py-0.5 rounded text-xs font-medium border ${
+                            darkMode ? 'bg-gray-700 border-gray-600' : 'bg-gray-100 border-gray-300'
+                          }`}
+                          style={{ color: vehicle.color || '#3B82F6' }}
+                        >
+                          <Car className="w-3 h-3 mr-1" />
                           {vehicle.nickname || vehicle.name}
                         </span>
                       </div>
@@ -4557,10 +4569,13 @@ const LandCruiserTracker = () => {
                           {(() => {
                             const vehicle = project.vehicle_id ? vehicles.find(v => v.id === project.vehicle_id) : null;
                             return vehicle && (
-                              <span className={`inline-flex items-center px-2 py-1 rounded text-xs font-medium border ${
-                                darkMode ? 'bg-gray-700 text-gray-300 border-gray-600' : 'bg-gray-100 text-gray-700 border-gray-300'
-                              }`}>
-                                <Car className="w-3 h-3 mr-1" style={{ color: vehicle.color || '#3B82F6' }} />
+                              <span 
+                                className={`inline-flex items-center px-2 py-1 rounded text-xs font-medium border ${
+                                  darkMode ? 'bg-gray-700 border-gray-600' : 'bg-gray-100 border-gray-300'
+                                }`}
+                                style={{ color: vehicle.color || '#3B82F6' }}
+                              >
+                                <Car className="w-3 h-3 mr-1" />
                                 {vehicle.nickname || vehicle.name}
                               </span>
                             );
@@ -5087,10 +5102,13 @@ const LandCruiserTracker = () => {
                           {(() => {
                             const vehicle = viewingProject.vehicle_id ? vehicles.find(v => v.id === viewingProject.vehicle_id) : null;
                             return vehicle && (
-                              <span className={`inline-flex items-center px-2 py-1 rounded text-xs font-medium ${
-                                darkMode ? 'bg-gray-700 text-gray-300' : 'bg-gray-100 text-gray-700'
-                              }`}>
-                                <Car className="w-3 h-3 mr-1 flex-shrink-0" style={{ color: vehicle.color || '#3B82F6' }} />
+                              <span 
+                                className={`inline-flex items-center px-2 py-1 rounded text-xs font-medium ${
+                                  darkMode ? 'bg-gray-700' : 'bg-gray-100'
+                                }`}
+                                style={{ color: vehicle.color || '#3B82F6' }}
+                              >
+                                <Car className="w-3 h-3 mr-1 flex-shrink-0" />
                                 <span className="truncate">{vehicle.nickname || vehicle.name}</span>
                               </span>
                             );
@@ -6244,7 +6262,7 @@ const LandCruiserTracker = () => {
                         <div className={`text-center py-8 rounded-lg ${
                           darkMode ? 'bg-gray-700' : 'bg-gray-50'
                         }`}>
-                          <Wrench className={`w-12 h-12 mx-auto mb-3 ${
+                          <Gauge className={`w-12 h-12 mx-auto mb-3 ${
                             darkMode ? 'text-gray-600' : 'text-gray-400'
                           }`} />
                           <p className={`text-sm ${
