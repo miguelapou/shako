@@ -365,7 +365,7 @@ const ProjectDetailView = ({
             <div 
               key={todo.id}
               ref={(el) => todoRefs.current[todo.id] = el}
-              className={`flex items-center gap-3 p-3 rounded-lg border ${
+              className={`flex items-center gap-3 py-1.5 px-3 rounded-lg border ${
                 darkMode ? 'bg-gray-700 border-gray-600' : 'bg-gray-50 border-gray-200'
               }`}
             >
