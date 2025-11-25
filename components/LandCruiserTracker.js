@@ -1731,7 +1731,6 @@ const LandCruiserTracker = () => {
     status: 'planning',
     vehicle_id: null
   });
-  const [expandedDescriptions, setExpandedDescriptions] = useState({}); // Track which project descriptions are expanded
   
   const [darkMode, setDarkMode] = useState(() => {
     // Only access localStorage in the browser
@@ -4477,44 +4476,13 @@ const LandCruiserTracker = () => {
 
                     {/* Description */}
                     <div className="mb-4" style={{ minHeight: '3rem' }}>
-                      {project.description && project.description.length > 100 ? (
-                        <button
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            setExpandedDescriptions(prev => ({
-                              ...prev,
-                              [project.id]: !prev[project.id]
-                            }));
-                          }}
-                          className={`text-sm text-left w-full ${
-                            project.description 
-                              ? (darkMode ? 'text-gray-400 hover:text-gray-300' : 'text-gray-600 hover:text-gray-700')
-                              : (darkMode ? 'text-gray-500 italic' : 'text-gray-500 italic')
-                          }`}
-                        >
-                          <div 
-                            className="overflow-hidden transition-all duration-300 ease-in-out"
-                            style={{ 
-                              maxHeight: expandedDescriptions[project.id] ? '500px' : '2.8em',
-                            }}
-                          >
-                            <span className={!expandedDescriptions[project.id] ? 'line-clamp-2' : ''}>
-                              {project.description}
-                            </span>
-                          </div>
-                          <ChevronDown className={`inline-block w-3 h-3 ml-1 transition-transform duration-300 align-middle ${
-                            expandedDescriptions[project.id] ? 'rotate-180' : ''
-                          } ${darkMode ? 'text-blue-400' : 'text-blue-600'}`} />
-                        </button>
-                      ) : (
-                        <p className={`text-sm ${
-                          project.description 
-                            ? (darkMode ? 'text-gray-400' : 'text-gray-600')
-                            : (darkMode ? 'text-gray-500 italic' : 'text-gray-500 italic')
-                        }`}>
-                          {project.description || 'No description added'}
-                        </p>
-                      )}
+                      <p className={`text-sm line-clamp-2 ${
+                        project.description 
+                          ? (darkMode ? 'text-gray-400' : 'text-gray-600')
+                          : (darkMode ? 'text-gray-500 italic' : 'text-gray-500 italic')
+                      }`}>
+                        {project.description || 'No description added'}
+                      </p>
                     </div>
 
                     {/* Progress Bar */}
