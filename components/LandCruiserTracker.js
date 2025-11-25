@@ -6374,7 +6374,11 @@ const LandCruiserTracker = () => {
                                   type="text"
                                   value={viewingVehicle.nickname || ''}
                                   onChange={(e) => setViewingVehicle({ ...viewingVehicle, nickname: e.target.value })}
-                                  className={inputClasses(darkMode)}
+                                  className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
+                                    darkMode 
+                                      ? 'bg-gray-700 border-gray-600 text-gray-100 placeholder-gray-400' 
+                                      : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400'
+                                  }`}
                                   placeholder=""
                                 />
                               </div>
@@ -6490,7 +6494,11 @@ const LandCruiserTracker = () => {
                                   type="text"
                                   value={viewingVehicle.insurance_policy || ''}
                                   onChange={(e) => setViewingVehicle({ ...viewingVehicle, insurance_policy: e.target.value })}
-                                  className={inputClasses(darkMode)}
+                                  className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
+                                    darkMode 
+                                      ? 'bg-gray-700 border-gray-600 text-gray-100 placeholder-gray-400' 
+                                      : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400'
+                                  }`}
                                   placeholder=""
                                 />
                               </div>
