@@ -586,9 +586,10 @@ const ProjectDetailView = ({
                   </p>
                 )}
                 
-                <div className={`pt-3 border-t space-y-2 mt-auto ${
-                  darkMode ? 'border-gray-600' : 'border-gray-200'
-                }`}>
+                <div className="mt-auto">
+                  <div className={`pt-3 border-t space-y-2 ${
+                    darkMode ? 'border-gray-600' : 'border-gray-200'
+                  }`}>
                   <div className="flex justify-between text-sm">
                     <span className={darkMode ? 'text-gray-400' : 'text-gray-600'}>
                       Part Price:
@@ -636,6 +637,7 @@ const ProjectDetailView = ({
                       ${part.total.toFixed(2)}
                     </span>
                   </div>
+                </div>
                 </div>
               </div>
             ))}
