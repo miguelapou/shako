@@ -1,5 +1,5 @@
 import React, { useState, useMemo, useEffect, useRef } from 'react';
-import { Search, Package, DollarSign, TrendingUp, Truck, CheckCircle, Clock, XCircle, ChevronDown, Plus, X, ExternalLink, ChevronUp, Edit2, Trash2, Moon, Sun, Wrench, List, Target, Calendar, GripVertical, ShoppingCart, Car, Upload, Image as ImageIcon, Gauge } from 'lucide-react';
+import { Search, Package, BadgeDollarSign, TrendingUp, Truck, CheckCircle, Clock, XCircle, ChevronDown, Plus, X, ExternalLink, ChevronUp, Edit2, Trash2, Moon, Sun, Wrench, List, Target, Calendar, GripVertical, ShoppingCart, Car, Upload, Image as ImageIcon, Gauge } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 
 // ========================================
@@ -3851,7 +3851,7 @@ const LandCruiserTracker = () => {
               <div className={`rounded-lg shadow-md p-3 sm:p-4 lg:p-6 border-l-4 border-purple-500 relative overflow-hidden ${
                 darkMode ? 'bg-gray-800' : 'bg-white'
               }`}>
-                <DollarSign className="w-6 h-6 sm:w-8 sm:h-8 text-purple-500 opacity-20 absolute top-2 sm:top-4 right-2 sm:right-4" />
+                <BadgeDollarSign className="w-6 h-6 sm:w-8 sm:h-8 text-purple-500 opacity-20 absolute top-2 sm:top-4 right-2 sm:right-4" />
                 <div>
                   <p className={`text-xs sm:text-sm mb-1 sm:mb-2 lg:mb-3 ${
                     darkMode ? 'text-gray-400' : 'text-gray-600'
@@ -6407,7 +6407,7 @@ const LandCruiserTracker = () => {
                                         </span>
                                       </div>
                                       <div className="flex items-center gap-1">
-                                        <DollarSign className={`w-3 h-3 ${
+                                        <BadgeDollarSign className={`w-3 h-3 ${
                                           darkMode ? 'text-gray-500' : 'text-gray-400'
                                         }`} />
                                         <span className={darkMode ? 'text-gray-400' : 'text-gray-600'}>
