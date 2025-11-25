@@ -6380,7 +6380,7 @@ const LandCruiserTracker = () => {
                                       e.stopPropagation();
                                       setVehicleModalProjectView(project);
                                     }}
-                                    className={`rounded-lg p-4 border-l-4 text-left transition-all hover:shadow-md cursor-pointer ${
+                                    className={`flex flex-col rounded-lg p-4 border-l-4 text-left transition-all hover:shadow-md cursor-pointer ${
                                       darkMode ? 'bg-gray-700 hover:bg-gray-650' : 'bg-gray-50 hover:bg-gray-100'
                                     }`}
                                     style={{ borderLeftColor: getPriorityBorderColor(project.priority) }}
@@ -6390,14 +6390,14 @@ const LandCruiserTracker = () => {
                                     }`}>
                                       {project.name}
                                     </h4>
-                                    <p className={`text-sm mb-3 line-clamp-3 ${
+                                    <p className={`text-sm mb-3 line-clamp-3 flex-grow ${
                                       project.description 
                                         ? (darkMode ? 'text-gray-400' : 'text-gray-600')
                                         : (darkMode ? 'text-gray-500 italic' : 'text-gray-500 italic')
                                     }`}>
                                       {project.description || 'No description added'}
                                     </p>
-                                    <div className="flex flex-wrap gap-4 text-xs">
+                                    <div className="flex flex-wrap gap-4 text-xs mt-auto">
                                       <div className="flex items-center gap-1">
                                         <Package className={`w-3 h-3 ${
                                           darkMode ? 'text-gray-500' : 'text-gray-400'
