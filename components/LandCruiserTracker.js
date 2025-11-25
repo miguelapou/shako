@@ -1733,6 +1733,7 @@ const LandCruiserTracker = () => {
   const [showAddProjectModal, setShowAddProjectModal] = useState(false);
   const [showProjectDetailModal, setShowProjectDetailModal] = useState(false);
   const [viewingProject, setViewingProject] = useState(null);
+  const [originalProjectData, setOriginalProjectData] = useState(null); // Track original data for unsaved changes detection
   const [projectModalEditMode, setProjectModalEditMode] = useState(false); // Track if editing within project detail modal
   const [editingTodoId, setEditingTodoId] = useState(null); // Track which todo is being edited
   const [editingTodoText, setEditingTodoText] = useState(''); // Temp text while editing
@@ -1874,6 +1875,26 @@ const LandCruiserTracker = () => {
     // Check if a new image has been selected
     if (vehicleImageFile !== null) {
       return true;
+    }
+    
+    return false;
+  };
+
+  const hasUnsavedProjectChanges = () => {
+    if (!projectModalEditMode || !originalProjectData || !viewingProject) {
+      return false;
+    }
+    
+    // Check if any field has changed
+    const fieldsToCheck = [
+      'name', 'description', 'budget', 'priority', 
+      'start_date', 'target_date', 'vehicle_id'
+    ];
+    
+    for (const field of fieldsToCheck) {
+      if (viewingProject[field] !== originalProjectData[field]) {
+        return true;
+      }
     }
     
     return false;
@@ -4416,6 +4437,7 @@ const LandCruiserTracker = () => {
                       console.log('[MODAL ANIMATION] Project clicked, setting states...');
                       console.log('[MODAL ANIMATION] Current projectModalEditMode:', projectModalEditMode);
                       setViewingProject(project);
+                      setOriginalProjectData({ ...project }); // Save original data for unsaved changes check
                       setProjectModalEditMode(false);
                       setShowProjectDetailModal(true);
                       console.log('[MODAL ANIMATION] States set - viewingProject:', project.name, 'editMode: false, showModal: true');
@@ -4455,6 +4477,7 @@ const LandCruiserTracker = () => {
                       <button
                         onClick={() => {
                           setViewingProject(project);
+                          setOriginalProjectData({ ...project }); // Save original data for unsaved changes check
                           setProjectModalEditMode(true);
                           setShowProjectDetailModal(true);
                         }}
@@ -4984,9 +5007,20 @@ const LandCruiserTracker = () => {
                   isModalClosing ? 'modal-backdrop-exit' : 'modal-backdrop-enter'
                 }`}
                 onClick={() => handleCloseModal(() => {
+                  // Check for unsaved changes
+                  if (hasUnsavedProjectChanges()) {
+                    const confirmClose = window.confirm(
+                      'You have unsaved changes. Are you sure you want to close without saving?'
+                    );
+                    if (!confirmClose) {
+                      return;
+                    }
+                  }
+                  
                   console.log('[MODAL ANIMATION] Closing project modal');
                   setShowProjectDetailModal(false);
                   setViewingProject(null);
+                  setOriginalProjectData(null);
                   setProjectModalEditMode(false);
                 })}
               >
@@ -5028,8 +5062,19 @@ const LandCruiserTracker = () => {
                       </div>
                       <button
                         onClick={() => handleCloseModal(() => {
+                          // Check for unsaved changes
+                          if (hasUnsavedProjectChanges()) {
+                            const confirmClose = window.confirm(
+                              'You have unsaved changes. Are you sure you want to close without saving?'
+                            );
+                            if (!confirmClose) {
+                              return;
+                            }
+                          }
+                          
                           setShowProjectDetailModal(false);
                           setViewingProject(null);
+                          setOriginalProjectData(null);
                           setProjectModalEditMode(false);
                         })}
                         className={`p-2 rounded-md transition-colors flex-shrink-0 ${
@@ -5120,6 +5165,19 @@ const LandCruiserTracker = () => {
                     {projectModalEditMode ? (
                       <button
                         onClick={() => {
+                          // Check for unsaved changes before going back
+                          if (hasUnsavedProjectChanges()) {
+                            const confirmBack = window.confirm(
+                              'You have unsaved changes. Are you sure you want to go back without saving?'
+                            );
+                            if (!confirmBack) {
+                              return;
+                            }
+                            // Restore original data
+                            if (originalProjectData) {
+                              setViewingProject({ ...originalProjectData });
+                            }
+                          }
                           setProjectModalEditMode(false);
                         }}
                         className={`flex items-center gap-2 px-4 py-2 rounded-lg font-medium transition-colors border ${
@@ -5168,6 +5226,8 @@ const LandCruiserTracker = () => {
                               vehicle_id: viewingProject.vehicle_id || null,
                               todos: viewingProject.todos || []
                             });
+                            // Update original data after successful save
+                            setOriginalProjectData({ ...viewingProject });
                             setProjectModalEditMode(false);
                           }}
                           className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium transition-colors flex items-center gap-2 text-sm"
@@ -6038,50 +6098,56 @@ const LandCruiserTracker = () => {
                           Basic Info
                         </h3>
                         <div className="grid grid-cols-2 gap-4">
-                          {viewingVehicle.year && (
-                            <div>
-                              <p className={`text-sm font-medium mb-1 ${
-                                darkMode ? 'text-gray-400' : 'text-gray-600'
-                              }`}>Year</p>
-                              <p className={`text-base ${
-                                darkMode ? 'text-gray-100' : 'text-gray-900'
-                              }`}>{viewingVehicle.year}</p>
-                            </div>
-                          )}
-                          {viewingVehicle.name && (
-                            <div>
-                              <p className={`text-sm font-medium mb-1 ${
-                                darkMode ? 'text-gray-400' : 'text-gray-600'
-                              }`}>Model</p>
-                              <p className={`text-base ${
-                                darkMode ? 'text-gray-100' : 'text-gray-900'
-                              }`}>{viewingVehicle.name}</p>
-                            </div>
-                          )}
-                          {viewingVehicle.license_plate && (
-                            <div className="col-span-2">
-                              <p className={`text-sm font-medium mb-2 ${
-                                darkMode ? 'text-gray-400' : 'text-gray-600'
-                              }`}>License Plate</p>
-                              <span className={`inline-block px-3 py-1 rounded text-sm font-medium ${
-                                darkMode ? 'bg-blue-600 text-blue-100' : 'bg-blue-100 text-blue-800'
-                              }`}>
-                                {viewingVehicle.license_plate}
-                              </span>
-                            </div>
-                          )}
-                          {viewingVehicle.vin && (
-                            <div className="col-span-2">
-                              <p className={`text-sm font-medium mb-2 ${
-                                darkMode ? 'text-gray-400' : 'text-gray-600'
-                              }`}>VIN</p>
-                              <span className={`inline-block px-3 py-1 rounded-full text-xs font-mono ${
-                                darkMode ? 'bg-gray-800 text-gray-300' : 'bg-gray-100 text-gray-700'
-                              }`}>
-                                {viewingVehicle.vin}
-                              </span>
-                            </div>
-                          )}
+                          <div className="space-y-4">
+                            {viewingVehicle.year && (
+                              <div>
+                                <p className={`text-sm font-medium mb-1 ${
+                                  darkMode ? 'text-gray-400' : 'text-gray-600'
+                                }`}>Year</p>
+                                <p className={`text-base ${
+                                  darkMode ? 'text-gray-100' : 'text-gray-900'
+                                }`}>{viewingVehicle.year}</p>
+                              </div>
+                            )}
+                            {viewingVehicle.name && (
+                              <div>
+                                <p className={`text-sm font-medium mb-1 ${
+                                  darkMode ? 'text-gray-400' : 'text-gray-600'
+                                }`}>Model</p>
+                                <p className={`text-base ${
+                                  darkMode ? 'text-gray-100' : 'text-gray-900'
+                                }`}>{viewingVehicle.name}</p>
+                              </div>
+                            )}
+                          </div>
+                          
+                          <div className="space-y-4">
+                            {viewingVehicle.license_plate && (
+                              <div>
+                                <p className={`text-sm font-medium mb-2 ${
+                                  darkMode ? 'text-gray-400' : 'text-gray-600'
+                                }`}>License Plate</p>
+                                <span className={`inline-block px-3 py-1 rounded text-sm font-medium ${
+                                  darkMode ? 'bg-blue-600 text-blue-100' : 'bg-blue-100 text-blue-800'
+                                }`}>
+                                  {viewingVehicle.license_plate}
+                                </span>
+                              </div>
+                            )}
+                            {viewingVehicle.vin && (
+                              <div>
+                                <p className={`text-sm font-medium mb-2 ${
+                                  darkMode ? 'text-gray-400' : 'text-gray-600'
+                                }`}>VIN</p>
+                                <span className={`inline-block px-3 py-1 rounded-full text-xs font-mono ${
+                                  darkMode ? 'bg-gray-800 text-gray-300' : 'bg-gray-100 text-gray-700'
+                                }`}>
+                                  {viewingVehicle.vin}
+                                </span>
+                              </div>
+                            )}
+                          </div>
+                          
                           {viewingVehicle.insurance_policy && (
                             <div className="col-span-2">
                               <p className={`text-sm font-medium mb-1 ${
@@ -6097,24 +6163,43 @@ const LandCruiserTracker = () => {
                           {(() => {
                             const vehicleProjects = projects.filter(p => p.vehicle_id === viewingVehicle.id);
                             const totalSpent = calculateVehicleTotalSpent(viewingVehicle.id, projects, parts);
+                            const totalBudget = vehicleProjects.reduce((sum, project) => sum + (project.budget || 0), 0);
+                            const linkedPartsCount = vehicleProjects.reduce((count, project) => {
+                              return count + parts.filter(part => part.projectId === project.id).length;
+                            }, 0);
                             
                             return (
                               <div className={`col-span-2 pt-4 mt-4 border-t ${
                                 darkMode ? 'border-gray-600' : 'border-gray-300'
                               }`}>
-                                <p className={`text-sm font-medium mb-2 ${
-                                  darkMode ? 'text-gray-400' : 'text-gray-600'
-                                }`}>Total Spent</p>
-                                <p className={`text-2xl font-bold ${
-                                  darkMode ? 'text-green-400' : 'text-green-600'
-                                }`}>${totalSpent.toFixed(2)}</p>
-                                {vehicleProjects.length > 0 && (
-                                  <p className={`text-xs mt-1 ${
-                                    darkMode ? 'text-gray-500' : 'text-gray-500'
-                                  }`}>
-                                    {vehicleProjects.length} project{vehicleProjects.length !== 1 ? 's' : ''}
-                                  </p>
-                                )}
+                                <div className="grid grid-cols-2 gap-4">
+                                  <div>
+                                    <p className={`text-sm font-medium mb-2 ${
+                                      darkMode ? 'text-gray-400' : 'text-gray-600'
+                                    }`}>Total Spent</p>
+                                    <p className={`text-2xl font-bold ${
+                                      darkMode ? 'text-green-400' : 'text-green-600'
+                                    }`}>${totalSpent.toFixed(2)}</p>
+                                  </div>
+                                  <div>
+                                    <p className={`text-sm font-medium mb-2 ${
+                                      darkMode ? 'text-gray-400' : 'text-gray-600'
+                                    }`}>Total Budget</p>
+                                    <p className={`text-2xl font-bold ${
+                                      darkMode ? 'text-gray-100' : 'text-gray-900'
+                                    }`}>${totalBudget.toFixed(2)}</p>
+                                  </div>
+                                </div>
+                                <div className={`flex items-center gap-4 mt-2 text-xs ${
+                                  darkMode ? 'text-gray-500' : 'text-gray-500'
+                                }`}>
+                                  {vehicleProjects.length > 0 && (
+                                    <span>{vehicleProjects.length} project{vehicleProjects.length !== 1 ? 's' : ''}</span>
+                                  )}
+                                  {linkedPartsCount > 0 && (
+                                    <span>{linkedPartsCount} part{linkedPartsCount !== 1 ? 's' : ''}</span>
+                                  )}
+                                </div>
                               </div>
                             );
                           })()}
