@@ -8,6 +8,7 @@
   scrollbar-color: #cbd5e1 #f1f5f9;
 }
 
+/* WebKit browsers (Chrome, Edge, older Safari) */
 *::-webkit-scrollbar {
   width: 12px;
   height: 12px;
@@ -34,6 +35,7 @@ html.dark-scrollbar * {
   scrollbar-color: #4b5563 #1f2937;
 }
 
+/* WebKit browsers dark mode */
 html.dark-scrollbar::-webkit-scrollbar-track,
 html.dark-scrollbar *::-webkit-scrollbar-track {
   background: #1f2937;
