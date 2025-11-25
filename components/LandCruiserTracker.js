@@ -1871,9 +1871,13 @@ const LandCruiserTracker = () => {
       if (darkMode) {
         document.documentElement.classList.add('dark-scrollbar');
         document.body.classList.add('dark-scrollbar');
+        // Set color-scheme for Safari scrollbar
+        document.documentElement.style.colorScheme = 'dark';
       } else {
         document.documentElement.classList.remove('dark-scrollbar');
         document.body.classList.remove('dark-scrollbar');
+        // Set color-scheme for Safari scrollbar
+        document.documentElement.style.colorScheme = 'light';
       }
     }
   }, [darkMode]);
