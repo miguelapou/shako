@@ -1865,13 +1865,15 @@ const LandCruiserTracker = () => {
     }
   }, [darkMode]);
 
-  // Apply dark scrollbar styles to html element for main page scrollbar
+  // Apply dark scrollbar styles to both html and body for cross-browser compatibility
   useEffect(() => {
     if (typeof document !== 'undefined') {
       if (darkMode) {
         document.documentElement.classList.add('dark-scrollbar');
+        document.body.classList.add('dark-scrollbar');
       } else {
         document.documentElement.classList.remove('dark-scrollbar');
+        document.body.classList.remove('dark-scrollbar');
       }
     }
   }, [darkMode]);
