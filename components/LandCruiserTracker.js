@@ -6941,109 +6941,106 @@ const LandCruiserTracker = () => {
                     darkMode ? 'border-gray-700 bg-gray-800' : 'border-gray-200 bg-white'
                   }`}>
                     {(vehicleModalProjectView || vehicleModalEditMode) ? (
-                      <div className="flex items-center gap-2">
-                        <button
-                          onClick={() => {
-                            if (vehicleModalEditMode) {
-                              // Check for unsaved changes before going back
-                              if (hasUnsavedVehicleChanges()) {
-                                const confirmBack = window.confirm(
-                                  'You have unsaved changes. Are you sure you want to go back without saving?'
-                                );
-                                if (!confirmBack) {
-                                  return;
-                                }
-                                // Restore original data
-                                if (originalVehicleData) {
-                                  setViewingVehicle({ ...originalVehicleData });
-                                }
-                                clearImageSelection();
-                              }
-                              setVehicleModalEditMode(null);
-                            } else {
-                              setVehicleModalProjectView(null);
-                            }
-                          }}
-                          className={`flex items-center gap-2 px-4 py-2 rounded-lg font-medium transition-colors border ${
-                            darkMode 
-                              ? 'bg-gray-700 hover:bg-gray-600 text-gray-100 border-gray-600 hover:border-gray-500' 
-                              : 'bg-gray-200 hover:bg-gray-300 text-gray-800 border-gray-300 hover:border-gray-400'
-                          }`}
-                          title={vehicleModalEditMode ? 'Back' : 'Back to vehicle'}
-                        >
-                          <ChevronDown className="w-5 h-5 rotate-90" />
-                        </button>
-                        
-                        {vehicleModalEditMode === 'vehicle' && (
-                          <button
-                            onClick={async () => {
-                              const confirmDelete = window.confirm(
-                                'Are you sure you want to permanently delete this vehicle? This action cannot be undone.'
+                      <button
+                        onClick={() => {
+                          if (vehicleModalEditMode) {
+                            // Check for unsaved changes before going back
+                            if (hasUnsavedVehicleChanges()) {
+                              const confirmBack = window.confirm(
+                                'You have unsaved changes. Are you sure you want to go back without saving?'
                               );
-                              if (!confirmDelete) return;
-                              
-                              await deleteVehicle(viewingVehicle.id);
-                              setShowVehicleDetailModal(false);
-                              setViewingVehicle(null);
-                              setOriginalVehicleData(null);
-                              setVehicleModalEditMode(null);
-                            }}
-                            className={`px-4 py-2 rounded-lg font-medium transition-colors flex items-center gap-2 text-sm ${
-                              darkMode
-                                ? 'bg-red-900/30 hover:bg-red-900/50 text-red-400 border border-red-700'
-                                : 'bg-red-50 hover:bg-red-100 text-red-600 border border-red-300'
-                            }`}
-                          >
-                            <Trash2 className="w-4 h-4" />
-                            Delete
-                          </button>
-                        )}
-                      </div>
+                              if (!confirmBack) {
+                                return;
+                              }
+                              // Restore original data
+                              if (originalVehicleData) {
+                                setViewingVehicle({ ...originalVehicleData });
+                              }
+                              clearImageSelection();
+                            }
+                            setVehicleModalEditMode(null);
+                          } else {
+                            setVehicleModalProjectView(null);
+                          }
+                        }}
+                        className={`flex items-center gap-2 px-4 py-2 rounded-lg font-medium transition-colors border ${
+                          darkMode 
+                            ? 'bg-gray-700 hover:bg-gray-600 text-gray-100 border-gray-600 hover:border-gray-500' 
+                            : 'bg-gray-200 hover:bg-gray-300 text-gray-800 border-gray-300 hover:border-gray-400'
+                        }`}
+                        title={vehicleModalEditMode ? 'Back' : 'Back to vehicle'}
+                      >
+                        <ChevronDown className="w-5 h-5 rotate-90" />
+                      </button>
                     ) : (
                       <div></div>
                     )}
                     {vehicleModalEditMode ? (
                       <div className="flex items-center gap-2">
                         {vehicleModalEditMode === 'vehicle' && (
-                          <button
-                            onClick={async () => {
-                              const confirmArchive = window.confirm(
-                                viewingVehicle.archived 
-                                  ? 'Are you sure you want to unarchive this vehicle?' 
-                                  : 'Are you sure you want to archive this vehicle? It will still be visible but with limited information.'
-                              );
-                              if (!confirmArchive) return;
-                              
-                              // When archiving, set display_order to a high number to move to end
-                              // When unarchiving, keep current display_order
-                              const updates = { 
-                                archived: !viewingVehicle.archived 
-                              };
-                              
-                              if (!viewingVehicle.archived) {
-                                // Archiving: set display_order to max + 1
-                                const maxOrder = Math.max(...vehicles.map(v => v.display_order || 0), 0);
-                                updates.display_order = maxOrder + 1;
-                              }
-                              
-                              const updatedVehicle = { 
-                                ...viewingVehicle, 
-                                ...updates
-                              };
-                              await updateVehicle(viewingVehicle.id, updates);
-                              setViewingVehicle(updatedVehicle);
-                              setOriginalVehicleData({ ...updatedVehicle });
-                            }}
-                            className={`px-4 py-2 rounded-lg font-medium transition-colors flex items-center gap-2 text-sm ${
-                              viewingVehicle.archived
-                                ? 'bg-green-600 hover:bg-green-700 text-white'
-                                : darkMode
-                                  ? 'bg-gray-700 hover:bg-gray-600 text-gray-100 border border-gray-600'
-                                  : 'bg-gray-200 hover:bg-gray-300 text-gray-800 border border-gray-300'
-                            }`}
-                          >
-                            {viewingVehicle.archived ? 'Unarchive' : 'Archive'}
-                          </button>
+                          <>
+                            <button
+                              onClick={async () => {
+                                const confirmDelete = window.confirm(
+                                  'Are you sure you want to permanently delete this vehicle? This action cannot be undone.'
+                                );
+                                if (!confirmDelete) return;
+                                
+                                await deleteVehicle(viewingVehicle.id);
+                                setShowVehicleDetailModal(false);
+                                setViewingVehicle(null);
+                                setOriginalVehicleData(null);
+                                setVehicleModalEditMode(null);
+                              }}
+                              className={`px-4 py-2 rounded-lg font-medium transition-colors flex items-center gap-2 text-sm ${
+                                darkMode
+                                  ? 'bg-red-900/30 hover:bg-red-900/50 text-red-400 border border-red-700'
+                                  : 'bg-red-50 hover:bg-red-100 text-red-600 border border-red-300'
+                              }`}
+                            >
+                              <Trash2 className="w-4 h-4" />
+                              Delete
+                            </button>
+                            <button
+                              onClick={async () => {
+                                const confirmArchive = window.confirm(
+                                  viewingVehicle.archived 
+                                    ? 'Are you sure you want to unarchive this vehicle?' 
+                                    : 'Are you sure you want to archive this vehicle? It will still be visible but with limited information.'
+                                );
+                                if (!confirmArchive) return;
+                                
+                                // When archiving, set display_order to a high number to move to end
+                                // When unarchiving, keep current display_order
+                                const updates = { 
+                                  archived: !viewingVehicle.archived 
+                                };
+                                
+                                if (!viewingVehicle.archived) {
+                                  // Archiving: set display_order to max + 1
+                                  const maxOrder = Math.max(...vehicles.map(v => v.display_order || 0), 0);
+                                  updates.display_order = maxOrder + 1;
+                                }
+                                
+                                const updatedVehicle = { 
+                                  ...viewingVehicle, 
+                                  ...updates
+                                };
+                                await updateVehicle(viewingVehicle.id, updates);
+                                setViewingVehicle(updatedVehicle);
+                                setOriginalVehicleData({ ...updatedVehicle });
+                              }}
+                              className={`px-4 py-2 rounded-lg font-medium transition-colors flex items-center gap-2 text-sm ${
+                                viewingVehicle.archived
+                                  ? 'bg-green-600 hover:bg-green-700 text-white'
+                                  : darkMode
+                                    ? 'bg-gray-700 hover:bg-gray-600 text-gray-100 border border-gray-600'
+                                    : 'bg-gray-200 hover:bg-gray-300 text-gray-800 border border-gray-300'
+                              }`}
+                            >
+                              {viewingVehicle.archived ? 'Unarchive' : 'Archive'}
+                            </button>
+                          </>
                         )}
                         {vehicleModalEditMode === 'project' && (
                           <button
