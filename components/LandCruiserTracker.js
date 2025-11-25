@@ -3189,7 +3189,9 @@ const LandCruiserTracker = () => {
                           }`}
                         >
                           <Car className="w-3 h-3 mr-1" />
-                          {vehicle.nickname || vehicle.name}
+                          <span style={{ color: vehicle.color || '#3B82F6' }}>
+                            {vehicle.nickname || vehicle.name}
+                          </span>
                         </span>
                       );
                     })()}
@@ -3539,7 +3541,9 @@ const LandCruiserTracker = () => {
                           }`}
                         >
                           <Car className="w-3 h-3 mr-1" />
-                          {vehicle.nickname || vehicle.name}
+                          <span style={{ color: vehicle.color || '#3B82F6' }}>
+                            {vehicle.nickname || vehicle.name}
+                          </span>
                         </span>
                       );
                     })()}
@@ -4074,7 +4078,9 @@ const LandCruiserTracker = () => {
                             }`}
                           >
                             <Car className="w-3 h-3 mr-1" />
-                            {vehicle.nickname || vehicle.name}
+                            <span style={{ color: vehicle.color || '#3B82F6' }}>
+                              {vehicle.nickname || vehicle.name}
+                            </span>
                           </span>
                         ) : (
                           <span className={`inline-block px-2 py-1 rounded text-xs font-medium border ${
@@ -4240,7 +4246,9 @@ const LandCruiserTracker = () => {
                           }`}
                         >
                           <Car className="w-3 h-3 mr-1" />
-                          {vehicle.nickname || vehicle.name}
+                          <span style={{ color: vehicle.color || '#3B82F6' }}>
+                            {vehicle.nickname || vehicle.name}
+                          </span>
                         </span>
                       </div>
                     );
@@ -4461,7 +4469,9 @@ const LandCruiserTracker = () => {
                                 }`}
                               >
                                 <Car className="w-3 h-3 mr-1" />
-                                {vehicle.nickname || vehicle.name}
+                                <span style={{ color: vehicle.color || '#3B82F6' }}>
+                                  {vehicle.nickname || vehicle.name}
+                                </span>
                               </span>
                             );
                           })()}
@@ -4995,7 +5005,9 @@ const LandCruiserTracker = () => {
                                 }`}
                               >
                                 <Car className="w-3 h-3 mr-1 flex-shrink-0" />
-                                <span className="truncate">{vehicle.nickname || vehicle.name}</span>
+                                <span className="truncate" style={{ color: vehicle.color || '#3B82F6' }}>
+                                  {vehicle.nickname || vehicle.name}
+                                </span>
                               </span>
                             );
                           })()}
