@@ -441,10 +441,10 @@ const ProjectDetailView = ({
                     setEditingTodoText('');
                   }}
                   autoFocus
-                  className={`flex-1 text-sm px-2 py-1 rounded border-2 focus:outline-none ${
+                  className={`flex-1 text-sm px-2 py-1 bg-transparent border-0 focus:outline-none ${
                     darkMode
-                      ? 'bg-gray-600 border-blue-500 text-gray-100'
-                      : 'bg-white border-blue-500 text-gray-800'
+                      ? 'text-gray-100'
+                      : 'text-gray-800'
                   }`}
                 />
               ) : (
