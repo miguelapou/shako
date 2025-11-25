@@ -943,94 +943,74 @@ const ProjectEditForm = ({
         />
       </div>
 
-      <div>
-        <label className={`block text-sm font-medium mb-2 ${
-          darkMode ? 'text-gray-300' : 'text-gray-700'
-        }`}>
-          Budget ($)
-        </label>
-        <input
-          type="number"
-          step="0.01"
-          value={project.budget}
-          onChange={(e) => onProjectChange({ ...project, budget: e.target.value })}
-          className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none ${
-            darkMode 
-              ? 'bg-gray-700 border-gray-600 text-gray-100' 
-              : 'bg-white border-gray-300 text-gray-900'
-          }`}
-        />
-      </div>
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div>
+          <label className={`block text-sm font-medium mb-2 ${
+            darkMode ? 'text-gray-300' : 'text-gray-700'
+          }`}>
+            Budget ($)
+          </label>
+          <input
+            type="number"
+            step="0.01"
+            value={project.budget}
+            onChange={(e) => onProjectChange({ ...project, budget: e.target.value })}
+            className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none ${
+              darkMode 
+                ? 'bg-gray-700 border-gray-600 text-gray-100' 
+                : 'bg-white border-gray-300 text-gray-900'
+            }`}
+          />
+        </div>
 
-      <div>
-        <label className={`block text-sm font-medium mb-2 ${
-          darkMode ? 'text-gray-300' : 'text-gray-700'
-        }`}>
-          Priority
-        </label>
-        <select
-          value={project.priority}
-          onChange={(e) => onProjectChange({ ...project, priority: e.target.value })}
-          className={`w-full px-4 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent appearance-none ${
-            darkMode 
-              ? 'bg-gray-700 border-gray-600 text-gray-100' 
-              : 'bg-white border-gray-300 text-gray-900'
-          }`}
-        >
-          <option value="not_set">Not Set</option>
-          <option value="low">Low</option>
-          <option value="medium">Medium</option>
-          <option value="high">High</option>
-        </select>
-      </div>
+        <div>
+          <label className={`block text-sm font-medium mb-2 ${
+            darkMode ? 'text-gray-300' : 'text-gray-700'
+          }`}>
+            Priority
+          </label>
+          <select
+            value={project.priority}
+            onChange={(e) => onProjectChange({ ...project, priority: e.target.value })}
+            className={`w-full px-4 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent appearance-none ${
+              darkMode 
+                ? 'bg-gray-700 border-gray-600 text-gray-100' 
+                : 'bg-white border-gray-300 text-gray-900'
+            }`}
+          >
+            <option value="not_set">Not Set</option>
+            <option value="low">Low</option>
+            <option value="medium">Medium</option>
+            <option value="high">High</option>
+          </select>
+        </div>
 
-      <div>
-        <label className={`block text-sm font-medium mb-2 ${
-          darkMode ? 'text-gray-300' : 'text-gray-700'
-        }`}>
-          Status
-        </label>
-        <select
-          value={project.status}
-          onChange={(e) => onProjectChange({ ...project, status: e.target.value })}
-          className={`w-full px-4 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent appearance-none ${
-            darkMode 
-              ? 'bg-gray-700 border-gray-600 text-gray-100' 
-              : 'bg-white border-gray-300 text-gray-900'
-          }`}
-        >
-          <option value="planning">Planning</option>
-          <option value="in_progress">In Progress</option>
-          <option value="on_hold">On Hold</option>
-          <option value="completed">Completed</option>
-        </select>
-      </div>
-
-      <div>
-        <label className={`block text-sm font-medium mb-2 ${
-          darkMode ? 'text-gray-300' : 'text-gray-700'
-        }`}>
-          <div className="flex items-center gap-2">
-            <Car className="w-4 h-4" />
-            <span>Linked Vehicle</span>
-          </div>
-        </label>
-        <select
-          value={project.vehicle_id || ''}
-          onChange={(e) => onProjectChange({ ...project, vehicle_id: e.target.value ? parseInt(e.target.value) : null })}
-          className={`w-full px-4 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent appearance-none ${
-            darkMode 
-              ? 'bg-gray-700 border-gray-600 text-gray-100' 
-              : 'bg-white border-gray-300 text-gray-900'
-          }`}
-        >
-          <option value="">No vehicle</option>
-          {vehicles.map(vehicle => (
-            <option key={vehicle.id} value={vehicle.id}>
-              {vehicle.nickname || vehicle.name}
-            </option>
-          ))}
-        </select>
+        <div>
+          <label className={`block text-sm font-medium mb-2 ${
+            darkMode ? 'text-gray-300' : 'text-gray-700'
+          }`}>
+            <div className="flex items-center gap-2">
+              <Car className="w-4 h-4" />
+              <span>Linked Vehicle</span>
+            </div>
+          </label>
+          <select
+            value={project.vehicle_id || ''}
+            onChange={(e) => onProjectChange({ ...project, vehicle_id: e.target.value ? parseInt(e.target.value) : null })}
+            className={`w-full px-4 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent appearance-none ${
+              darkMode 
+                ? 'bg-gray-700 border-gray-600 text-gray-100' 
+                : 'bg-white border-gray-300 text-gray-900'
+            }`}
+          >
+            <option value="">No vehicle</option>
+            {vehicles.map(vehicle => (
+              <option key={vehicle.id} value={vehicle.id}>
+                {vehicle.nickname || vehicle.name}
+              </option>
+            ))}
+          </select>
+        </div>
       </div>
 
       <div>
@@ -1322,8 +1302,33 @@ const LandCruiserTracker = () => {
     }
   };
 
+  // Helper function to calculate project status based on todos
+  const calculateProjectStatus = (todos, currentStatus) => {
+    // If status is manually set to "on_hold", keep it
+    if (currentStatus === 'on_hold') return 'on_hold';
+    
+    if (!todos || todos.length === 0) {
+      return 'planning';
+    }
+    
+    const completedCount = todos.filter(todo => todo.completed).length;
+    
+    if (completedCount === 0) {
+      return 'planning';
+    } else if (completedCount === todos.length) {
+      return 'completed';
+    } else {
+      return 'in_progress';
+    }
+  };
+
   const updateProject = async (projectId, updates) => {
     try {
+      // Auto-calculate status based on todos unless it's being set to on_hold
+      if (updates.todos && updates.status !== 'on_hold') {
+        updates.status = calculateProjectStatus(updates.todos, updates.status);
+      }
+      
       const { error } = await supabase
         .from('projects')
         .update(updates)
@@ -5128,25 +5133,46 @@ const LandCruiserTracker = () => {
                       <div></div>
                     )}
                     {projectModalEditMode ? (
-                      <button
-                        onClick={async () => {
-                          await updateProject(viewingProject.id, {
-                            name: viewingProject.name,
-                            description: viewingProject.description,
-                            budget: parseFloat(viewingProject.budget),
-                            priority: viewingProject.priority,
-                            start_date: viewingProject.start_date && viewingProject.start_date.trim() !== '' ? viewingProject.start_date : null,
-                            target_date: viewingProject.target_date && viewingProject.target_date.trim() !== '' ? viewingProject.target_date : null,
-                            status: viewingProject.status,
-                            vehicle_id: viewingProject.vehicle_id || null,
-                            todos: viewingProject.todos || []
-                          });
-                          setProjectModalEditMode(false);
-                        }}
-                        className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium transition-colors flex items-center gap-2 text-sm"
-                      >
-                        Save Changes
-                      </button>
+                      <div className="flex items-center gap-2">
+                        <button
+                          onClick={async () => {
+                            // Toggle on_hold status
+                            const newStatus = viewingProject.status === 'on_hold' ? 'in_progress' : 'on_hold';
+                            const updatedProject = { ...viewingProject, status: newStatus };
+                            await updateProject(viewingProject.id, {
+                              status: newStatus
+                            });
+                            setViewingProject(updatedProject);
+                          }}
+                          className={`px-4 py-2 rounded-lg font-medium transition-colors flex items-center gap-2 text-sm ${
+                            viewingProject.status === 'on_hold'
+                              ? 'bg-green-600 hover:bg-green-700 text-white'
+                              : darkMode
+                                ? 'bg-gray-700 hover:bg-gray-600 text-gray-100 border border-gray-600'
+                                : 'bg-gray-200 hover:bg-gray-300 text-gray-800 border border-gray-300'
+                          }`}
+                        >
+                          {viewingProject.status === 'on_hold' ? 'Resume' : 'Pause'}
+                        </button>
+                        <button
+                          onClick={async () => {
+                            await updateProject(viewingProject.id, {
+                              name: viewingProject.name,
+                              description: viewingProject.description,
+                              budget: parseFloat(viewingProject.budget),
+                              priority: viewingProject.priority,
+                              start_date: viewingProject.start_date && viewingProject.start_date.trim() !== '' ? viewingProject.start_date : null,
+                              target_date: viewingProject.target_date && viewingProject.target_date.trim() !== '' ? viewingProject.target_date : null,
+                              vehicle_id: viewingProject.vehicle_id || null,
+                              todos: viewingProject.todos || []
+                            });
+                            setProjectModalEditMode(false);
+                          }}
+                          className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium transition-colors flex items-center gap-2 text-sm"
+                        >
+                          Save Changes
+                        </button>
+                      </div>
                     ) : (
                       <button
                         onClick={() => {
@@ -6883,6 +6909,28 @@ const LandCruiserTracker = () => {
                             {viewingVehicle.archived ? 'Unarchive' : 'Archive'}
                           </button>
                         )}
+                        {vehicleModalEditMode === 'project' && (
+                          <button
+                            onClick={async () => {
+                              // Toggle on_hold status
+                              const newStatus = vehicleModalProjectView.status === 'on_hold' ? 'in_progress' : 'on_hold';
+                              const updatedProject = { ...vehicleModalProjectView, status: newStatus };
+                              await updateProject(vehicleModalProjectView.id, {
+                                status: newStatus
+                              });
+                              setVehicleModalProjectView(updatedProject);
+                            }}
+                            className={`px-4 py-2 rounded-lg font-medium transition-colors flex items-center gap-2 text-sm ${
+                              vehicleModalProjectView.status === 'on_hold'
+                                ? 'bg-green-600 hover:bg-green-700 text-white'
+                                : darkMode
+                                  ? 'bg-gray-700 hover:bg-gray-600 text-gray-100 border border-gray-600'
+                                  : 'bg-gray-200 hover:bg-gray-300 text-gray-800 border border-gray-300'
+                            }`}
+                          >
+                            {vehicleModalProjectView.status === 'on_hold' ? 'Resume' : 'Pause'}
+                          </button>
+                        )}
                         <button
                           onClick={async () => {
                             // Save logic based on what's being edited
@@ -6907,8 +6955,8 @@ const LandCruiserTracker = () => {
                                 priority: vehicleModalProjectView.priority,
                                 start_date: vehicleModalProjectView.start_date && vehicleModalProjectView.start_date.trim() !== '' ? vehicleModalProjectView.start_date : null,
                                 target_date: vehicleModalProjectView.target_date && vehicleModalProjectView.target_date.trim() !== '' ? vehicleModalProjectView.target_date : null,
-                                status: vehicleModalProjectView.status,
-                                vehicle_id: vehicleModalProjectView.vehicle_id || null
+                                vehicle_id: vehicleModalProjectView.vehicle_id || null,
+                                todos: vehicleModalProjectView.todos || []
                               });
                             }
                             setVehicleModalEditMode(null);
