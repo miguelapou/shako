@@ -2,11 +2,6 @@
 @tailwind components;
 @tailwind utilities;
 
-/* TEST - This should make ALL scrollbars bright red */
-*::-webkit-scrollbar-thumb {
-  background: red !important;
-}
-
 /* Scrollbar styles for light mode */
 * {
   scrollbar-width: thin;
@@ -32,25 +27,25 @@
   background: #94a3b8;
 }
 
-/* Scrollbar styles for dark mode */
-body.dark-scrollbar,
-body.dark-scrollbar * {
+/* Scrollbar styles for dark mode - target html element */
+html.dark-scrollbar,
+html.dark-scrollbar * {
   scrollbar-width: thin;
   scrollbar-color: #4b5563 #1f2937;
 }
 
-body.dark-scrollbar::-webkit-scrollbar-track,
-body.dark-scrollbar *::-webkit-scrollbar-track {
+html.dark-scrollbar::-webkit-scrollbar-track,
+html.dark-scrollbar *::-webkit-scrollbar-track {
   background: #1f2937;
 }
 
-body.dark-scrollbar::-webkit-scrollbar-thumb,
-body.dark-scrollbar *::-webkit-scrollbar-thumb {
+html.dark-scrollbar::-webkit-scrollbar-thumb,
+html.dark-scrollbar *::-webkit-scrollbar-thumb {
   background: #4b5563;
   border-color: #1f2937;
 }
 
-body.dark-scrollbar::-webkit-scrollbar-thumb:hover,
-body.dark-scrollbar *::-webkit-scrollbar-thumb:hover {
+html.dark-scrollbar::-webkit-scrollbar-thumb:hover,
+html.dark-scrollbar *::-webkit-scrollbar-thumb:hover {
   background: #6b7280;
 }
