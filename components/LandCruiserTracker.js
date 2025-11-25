@@ -16,7 +16,7 @@ const getStatusColors = (darkMode) => ({
 
 // Priority color mappings
 const getPriorityColors = (darkMode) => ({
-  not_set: darkMode ? 'text-gray-400' : 'text-gray-500',
+  not_set: darkMode ? 'text-blue-400' : 'text-blue-600',
   low: darkMode ? 'text-green-400' : 'text-green-600',
   medium: darkMode ? 'text-yellow-400' : 'text-yellow-600',
   high: darkMode ? 'text-red-400' : 'text-red-600'
@@ -25,12 +25,12 @@ const getPriorityColors = (darkMode) => ({
 // Priority border colors
 const getPriorityBorderColor = (priority) => {
   const colors = {
-    not_set: '#6b7280',
+    not_set: '#3b82f6',
     low: '#10b981',
     medium: '#f59e0b',
     high: '#ef4444',
   };
-  return colors[priority] || '#6b7280';
+  return colors[priority] || '#3b82f6';
 };
 
 // Vendor color mapping
@@ -2606,7 +2606,7 @@ const LandCruiserTracker = () => {
     // Get priority color for selected project
     const getPriorityButtonColor = (priority) => {
       const colors = {
-        not_set: darkMode ? 'bg-gray-700 text-gray-300 border-gray-600' : 'bg-gray-100 text-gray-700 border-gray-300',
+        not_set: darkMode ? 'bg-blue-900/30 text-blue-200 border-blue-700' : 'bg-blue-50 text-blue-800 border-blue-200',
         low: darkMode ? 'bg-green-900/30 text-green-200 border-green-700' : 'bg-green-50 text-green-800 border-green-200',
         medium: darkMode ? 'bg-yellow-900/30 text-yellow-200 border-yellow-700' : 'bg-yellow-50 text-yellow-800 border-yellow-200',
         high: darkMode ? 'bg-red-900/30 text-red-200 border-red-700' : 'bg-red-50 text-red-800 border-red-200'
@@ -2695,7 +2695,7 @@ const LandCruiserTracker = () => {
               </button>
               {projects.map(project => {
                 const priorityColor = {
-                  not_set: darkMode ? 'bg-gray-600' : 'bg-gray-400',
+                  not_set: darkMode ? 'bg-blue-500' : 'bg-blue-600',
                   low: darkMode ? 'bg-green-500' : 'bg-green-600',
                   medium: darkMode ? 'bg-yellow-500' : 'bg-yellow-600',
                   high: darkMode ? 'bg-red-500' : 'bg-red-600'
