@@ -4669,41 +4669,15 @@ const LandCruiserTracker = () => {
                           </span>
                         </div>
                       </div>
-                      <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-2">
-                          <span className={`text-sm font-medium ${
-                            darkMode ? 'text-gray-400' : 'text-gray-600'
-                          }`}>
-                            Priority:
-                          </span>
-                          <span className={`text-sm font-bold ${priorityColors[project.priority]}`}>
-                            {project.priority?.replace('_', ' ').toUpperCase()}
-                          </span>
-                        </div>
-                        {project.todos && project.todos.length > 0 && (
-                          <div className="flex items-center gap-3">
-                            <div className="flex items-center gap-1">
-                              <CheckCircle className={`w-3.5 h-3.5 ${
-                                darkMode ? 'text-green-400' : 'text-green-600'
-                              }`} />
-                              <span className={`text-xs font-medium ${
-                                darkMode ? 'text-gray-300' : 'text-gray-700'
-                              }`}>
-                                {project.todos.filter(t => t.completed).length}
-                              </span>
-                            </div>
-                            <div className="flex items-center gap-1">
-                              <Clock className={`w-3.5 h-3.5 ${
-                                darkMode ? 'text-gray-400' : 'text-gray-500'
-                              }`} />
-                              <span className={`text-xs font-medium ${
-                                darkMode ? 'text-gray-300' : 'text-gray-700'
-                              }`}>
-                                {project.todos.filter(t => !t.completed).length}
-                              </span>
-                            </div>
-                          </div>
-                        )}
+                      <div className="flex items-center gap-2">
+                        <span className={`text-sm font-medium ${
+                          darkMode ? 'text-gray-400' : 'text-gray-600'
+                        }`}>
+                          Priority:
+                        </span>
+                        <span className={`text-sm font-bold ${priorityColors[project.priority]}`}>
+                          {project.priority?.replace('_', ' ').toUpperCase()}
+                        </span>
                       </div>
                     </div>
 
@@ -4762,6 +4736,34 @@ const LandCruiserTracker = () => {
                         </div>
                       );
                     })()}
+
+                    {/* Todo Counter - Bottom Right */}
+                    {project.todos && project.todos.length > 0 && (
+                      <div className="mt-4 flex justify-end">
+                        <div className="flex items-center gap-3">
+                          <div className="flex items-center gap-1">
+                            <CheckCircle className={`w-3.5 h-3.5 ${
+                              darkMode ? 'text-green-400' : 'text-green-600'
+                            }`} />
+                            <span className={`text-xs font-medium ${
+                              darkMode ? 'text-gray-300' : 'text-gray-700'
+                            }`}>
+                              {project.todos.filter(t => t.completed).length}
+                            </span>
+                          </div>
+                          <div className="flex items-center gap-1">
+                            <Clock className={`w-3.5 h-3.5 ${
+                              darkMode ? 'text-gray-400' : 'text-gray-500'
+                            }`} />
+                            <span className={`text-xs font-medium ${
+                              darkMode ? 'text-gray-300' : 'text-gray-700'
+                            }`}>
+                              {project.todos.filter(t => !t.completed).length}
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+                    )}
                   </div>
                 );
               })}
