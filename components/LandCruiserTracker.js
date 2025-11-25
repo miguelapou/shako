@@ -4641,7 +4641,7 @@ const LandCruiserTracker = () => {
 
                     {/* Todo Counter - Bottom Right */}
                     {project.todos && project.todos.length > 0 && (
-                      <div className="mt-2 flex justify-end -mb-4 mr-2">
+                      <div className="absolute bottom-2 right-2">
                         <div className="flex items-center gap-2">
                           <div className="flex items-center gap-1">
                             <CheckCircle className={`w-3.5 h-3.5 ${
