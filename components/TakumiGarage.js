@@ -1209,6 +1209,49 @@ const fontStyles = `
     animation: slideInFromLeft 0.4s cubic-bezier(0.16, 1, 0.3, 1);
   }
 
+  /* Sort chevron spin animation */
+  @keyframes spinIn180 {
+    0% {
+      transform: rotate(0deg);
+      opacity: 0.5;
+    }
+    100% {
+      transform: rotate(180deg);
+      opacity: 1;
+    }
+  }
+
+  .spin-in-180 {
+    animation: spinIn180 0.3s ease-out;
+  }
+
+  /* Table sorting animations */
+  @keyframes tableFadeSlide {
+    0% {
+      opacity: 0.3;
+      transform: translateY(-10px);
+    }
+    100% {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .table-sorting tbody tr {
+    animation: tableFadeSlide 0.4s ease-out;
+  }
+
+  .table-sorting tbody tr:nth-child(1) { animation-delay: 0s; }
+  .table-sorting tbody tr:nth-child(2) { animation-delay: 0.02s; }
+  .table-sorting tbody tr:nth-child(3) { animation-delay: 0.04s; }
+  .table-sorting tbody tr:nth-child(4) { animation-delay: 0.06s; }
+  .table-sorting tbody tr:nth-child(5) { animation-delay: 0.08s; }
+  .table-sorting tbody tr:nth-child(6) { animation-delay: 0.1s; }
+  .table-sorting tbody tr:nth-child(7) { animation-delay: 0.12s; }
+  .table-sorting tbody tr:nth-child(8) { animation-delay: 0.14s; }
+  .table-sorting tbody tr:nth-child(9) { animation-delay: 0.16s; }
+  .table-sorting tbody tr:nth-child(10) { animation-delay: 0.18s; }
+
   /* Garage Door Loading Spinner */
   .garage-spinner {
     width: 100px;
@@ -2161,6 +2204,7 @@ const TakumiGarage = () => {
   const [vendorFilter, setVendorFilter] = useState('all');
   const [sortBy, setSortBy] = useState('status');
   const [sortOrder, setSortOrder] = useState('asc');
+  const [isSorting, setIsSorting] = useState(false);
   const [openDropdown, setOpenDropdown] = useState(null);
   const [showAddModal, setShowAddModal] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
@@ -2706,6 +2750,9 @@ const TakumiGarage = () => {
   };
 
   const handleSort = (field) => {
+    // Trigger animation
+    setIsSorting(true);
+    
     if (sortBy === field) {
       // Toggle sort order if clicking the same column
       setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc');
@@ -2714,11 +2761,16 @@ const TakumiGarage = () => {
       setSortBy(field);
       setSortOrder('asc');
     }
+    
+    // Remove animation class after animation completes
+    setTimeout(() => setIsSorting(false), 400);
   };
 
   const getSortIcon = (field) => {
     if (sortBy !== field) return null;
-    return sortOrder === 'asc' ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />;
+    return sortOrder === 'asc' 
+      ? <ChevronUp className="w-4 h-4 transition-transform duration-300 animate-in spin-in-180" /> 
+      : <ChevronDown className="w-4 h-4 transition-transform duration-300 animate-in spin-in-180" />;
   };
 
   const filteredParts = useMemo(() => {
@@ -5218,84 +5270,84 @@ const TakumiGarage = () => {
           darkMode ? 'bg-gray-800' : 'bg-white'
         }`}>
           <div className="overflow-x-auto">
-            <table className="w-full">
+            <table className={`w-full ${isSorting ? 'table-sorting' : ''}`}>
               <thead className={`border-b ${
                 darkMode ? 'bg-gray-700 border-gray-600' : 'bg-slate-100 border-slate-200'
               }`}>
                 <tr>
                   <th 
                     onClick={() => handleSort('status')}
-                    className={`px-6 py-4 text-left text-xs font-semibold uppercase tracking-wider cursor-pointer transition-colors ${
+                    className={`px-6 py-4 text-center text-xs font-semibold uppercase tracking-wider cursor-pointer transition-colors ${
                       darkMode ? 'text-gray-300 hover:bg-gray-600' : 'text-slate-700 hover:bg-slate-200'
                     }`}
                   >
-                    <div className="flex items-center gap-2">
+                    <div className="flex items-center justify-center gap-2">
                       Status
                       {getSortIcon('status')}
                     </div>
                   </th>
-                  <th className={`px-6 py-4 text-left text-xs font-semibold uppercase tracking-wider ${
+                  <th className={`px-6 py-4 text-center text-xs font-semibold uppercase tracking-wider ${
                     darkMode ? 'text-gray-300' : 'text-slate-700'
                   }`}>Part</th>
-                  <th className={`hidden px-6 py-4 text-left text-xs font-semibold uppercase tracking-wider ${
+                  <th className={`hidden px-6 py-4 text-center text-xs font-semibold uppercase tracking-wider ${
                     darkMode ? 'text-gray-300' : 'text-slate-700'
                   }`}>Part #</th>
                   <th 
                     onClick={() => handleSort('vendor')}
-                    className={`px-6 py-4 text-left text-xs font-semibold uppercase tracking-wider cursor-pointer transition-colors ${
+                    className={`px-6 py-4 text-center text-xs font-semibold uppercase tracking-wider cursor-pointer transition-colors ${
                       darkMode ? 'text-gray-300 hover:bg-gray-600' : 'text-slate-700 hover:bg-slate-200'
                     }`}
                   >
-                    <div className="flex items-center gap-2">
+                    <div className="flex items-center justify-center gap-2">
                       Vendor
                       {getSortIcon('vendor')}
                     </div>
                   </th>
                   <th 
                     onClick={() => handleSort('project')}
-                    className={`px-6 py-4 text-left text-xs font-semibold uppercase tracking-wider cursor-pointer transition-colors ${
+                    className={`px-6 py-4 text-center text-xs font-semibold uppercase tracking-wider cursor-pointer transition-colors ${
                       darkMode ? 'text-gray-300 hover:bg-gray-600' : 'text-slate-700 hover:bg-slate-200'
                     }`}
                   >
-                    <div className="flex items-center gap-2">
+                    <div className="flex items-center justify-center gap-2">
                       Project
                       {getSortIcon('project')}
                     </div>
                   </th>
                   <th 
                     onClick={() => handleSort('vehicle')}
-                    className={`px-6 py-4 text-left text-xs font-semibold uppercase tracking-wider cursor-pointer transition-colors ${
+                    className={`px-6 py-4 text-center text-xs font-semibold uppercase tracking-wider cursor-pointer transition-colors ${
                       darkMode ? 'text-gray-300 hover:bg-gray-600' : 'text-slate-700 hover:bg-slate-200'
                     }`}
                   >
-                    <div className="flex items-center gap-2">
+                    <div className="flex items-center justify-center gap-2">
                       Vehicle
                       {getSortIcon('vehicle')}
                     </div>
                   </th>
                   <th 
                     onClick={() => handleSort('price')}
-                    className={`px-6 py-4 text-right text-xs font-semibold uppercase tracking-wider cursor-pointer transition-colors ${
+                    className={`px-6 py-4 text-center text-xs font-semibold uppercase tracking-wider cursor-pointer transition-colors ${
                       darkMode ? 'text-gray-300 hover:bg-gray-600' : 'text-slate-700 hover:bg-slate-200'
                     }`}
                   >
-                    <div className="flex items-center justify-end gap-2">
+                    <div className="flex items-center justify-center gap-2">
                       Price
                       {getSortIcon('price')}
                     </div>
                   </th>
                   <th 
                     onClick={() => handleSort('total')}
-                    className={`px-6 py-4 text-right text-xs font-semibold uppercase tracking-wider cursor-pointer transition-colors ${
+                    className={`px-6 py-4 text-center text-xs font-semibold uppercase tracking-wider cursor-pointer transition-colors ${
                       darkMode ? 'text-gray-300 hover:bg-gray-600' : 'text-slate-700 hover:bg-slate-200'
                     }`}
                   >
-                    <div className="flex items-center justify-end gap-2">
+                    <div className="flex items-center justify-center gap-2">
                       Total
                       {getSortIcon('total')}
                     </div>
                   </th>
-                  <th className={`px-6 py-4 text-left text-xs font-semibold uppercase tracking-wider ${
+                  <th className={`px-6 py-4 text-center text-xs font-semibold uppercase tracking-wider ${
                     darkMode ? 'text-gray-300' : 'text-slate-700'
                   }`}>Tracking</th>
                 </tr>
