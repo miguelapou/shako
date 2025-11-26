@@ -169,8 +169,9 @@ const ProjectDetailView = ({
           const bCompletedAt = b.completed_at ? new Date(b.completed_at) : new Date(b.created_at);
           return aCompletedAt - bCompletedAt;
         } else {
-          // Both uncompleted: sort by created_at (most recently created first)
-          return new Date(b.created_at) - new Date(a.created_at);
+          // Both uncompleted: sort by created_at (oldest created first)
+          // This makes new todos go to bottom, and unchecked todos (with new created_at) go to top
+          return new Date(a.created_at) - new Date(b.created_at);
         }
       }
       // Different completion status: completed items first
@@ -366,8 +367,8 @@ const ProjectDetailView = ({
             <div 
               key={todo.id}
               ref={(el) => todoRefs.current[todo.id] = el}
-              className={`flex items-center gap-3 py-1.5 px-3 rounded-lg border ${
-                darkMode ? 'bg-gray-700 border-gray-600' : 'bg-gray-50 border-gray-200'
+              className={`flex items-center gap-3 py-1.5 px-3 rounded-lg border transition-colors ${
+                darkMode ? 'bg-gray-700 border-gray-600 focus-within:!border-blue-500' : 'bg-gray-50 border-gray-200 focus-within:!border-blue-500'
               }`}
             >
               {/* Checkbox */}
@@ -443,7 +444,7 @@ const ProjectDetailView = ({
                     setEditingTodoText('');
                   }}
                   autoFocus
-                  className={`flex-1 text-sm px-2 py-1 bg-transparent border-0 focus:outline-none ${
+                  className={`flex-1 text-base px-2 py-1 bg-transparent border-0 focus:outline-none ${
                     darkMode
                       ? 'text-gray-100'
                       : 'text-gray-800'
@@ -456,7 +457,7 @@ const ProjectDetailView = ({
                     setEditingTodoId(todo.id);
                     setEditingTodoText(todo.text);
                   }}
-                  className={`flex-1 text-sm cursor-pointer hover:opacity-70 transition-opacity ${
+                  className={`flex-1 text-base cursor-pointer hover:opacity-70 transition-opacity ${
                     todo.completed
                       ? darkMode
                         ? 'text-gray-500 line-through'
@@ -497,8 +498,8 @@ const ProjectDetailView = ({
           <div 
             className={`flex items-center gap-3 py-1.5 px-3 rounded-lg border transition-colors ${
               darkMode 
-                ? 'bg-gray-700 border-gray-600 hover:border-gray-500 focus-within:border-blue-500' 
-                : 'bg-gray-50 border-gray-200 hover:border-gray-300 focus-within:border-blue-500'
+                ? 'bg-gray-700 border-gray-600 hover:border-gray-500 focus-within:!border-blue-500' 
+                : 'bg-gray-50 border-gray-200 hover:border-gray-300 focus-within:!border-blue-500'
             }`}
           >
             {/* Empty checkbox placeholder */}
@@ -529,8 +530,23 @@ const ProjectDetailView = ({
                   }
                 }
               }}
+              onBlur={() => {
+                if (newTodoText.trim()) {
+                  const currentTodos = project.todos || [];
+                  const newTodo = {
+                    id: Date.now(),
+                    text: newTodoText.trim(),
+                    completed: false,
+                    created_at: new Date().toISOString()
+                  };
+                  updateProject(project.id, {
+                    todos: [...currentTodos, newTodo]
+                  });
+                  setNewTodoText('');
+                }
+              }}
               placeholder="Add a to-do item..."
-              className={`flex-1 text-sm px-2 py-1 bg-transparent border-0 focus:outline-none ${
+              className={`flex-1 text-base px-2 py-1 bg-transparent border-0 focus:outline-none ${
                 darkMode
                   ? 'text-gray-100 placeholder-gray-500'
                   : 'text-gray-800 placeholder-gray-400'
@@ -1134,7 +1150,7 @@ const LinkedPartsSection = ({
   );
 };
 
-const TakumiGarage = () => {
+const LandCruiserTracker = () => {
   const [parts, setParts] = useState([]);
   const [projects, setProjects] = useState([]);
   const [vehicles, setVehicles] = useState([]);
@@ -7170,4 +7186,4 @@ const TakumiGarage = () => {
   );
 };
 
-export default TakumiGarage;
+export default LandCruiserTracker;
