@@ -5601,7 +5601,7 @@ const TakumiGarage = () => {
                           </div>
                           {linkedParts.length > 0 ? (
                             <div className={`grid grid-cols-2 gap-1 ${
-                              linkedParts.length === 6 ? 'pb-8' : ''
+                              linkedParts.length === 6 ? 'pb-6' : ''
                             }`}>
                               {linkedParts.slice(0, 6).map((part) => (
                                 <div 
@@ -5614,7 +5614,7 @@ const TakumiGarage = () => {
                                 </div>
                               ))}
                               {linkedParts.length > 6 && (
-                                <div className={`col-span-2 text-xs text-center py-1 ${
+                                <div className={`col-span-2 text-xs text-center ${
                                   darkMode ? 'text-gray-400' : 'text-gray-600'
                                 }`}>
                                   +{linkedParts.length - 6} more
