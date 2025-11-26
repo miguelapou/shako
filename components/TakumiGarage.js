@@ -3548,7 +3548,7 @@ const TakumiGarage = () => {
         {showAddModal && (
           <div 
             className={`fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4 animate-fadeIn`}
-            onClick={() => handleCloseModal(() => setShowAddModal(false))}
+            onClick={() => setShowAddModal(false)}
           >
             <div 
               className={`rounded-lg shadow-xl max-w-4xl w-full max-h-[90vh] animate-modalSlideUp ${darkMode ? 'bg-gray-800' : 'bg-white'}`}
@@ -3561,7 +3561,7 @@ const TakumiGarage = () => {
                   darkMode ? 'text-gray-100' : 'text-gray-800'
                 }`} style={{ fontFamily: "'FoundationOne', 'Courier New', monospace" }}>Add Part</h2>
                 <button
-                  onClick={() => handleCloseModal(() => setShowAddModal(false))}
+                  onClick={() => setShowAddModal(false)}
                   className={`transition-colors ${
                     darkMode ? 'text-gray-400 hover:text-gray-300' : 'text-gray-400 hover:text-gray-600'
                   }`}
@@ -3898,7 +3898,7 @@ const TakumiGarage = () => {
         {showEditModal && editingPart && (
           <div 
             className={`fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4 animate-fadeIn`}
-            onClick={() => handleCloseModal(() => {
+            onClick={() => {
               if (hasUnsavedPartChanges()) {
                 setConfirmDialog({
                   isOpen: true,
@@ -3916,10 +3916,10 @@ const TakumiGarage = () => {
                 return;
               }
               setShowEditModal(false);
-                    setPartModalView(null);
+              setPartModalView(null);
               setEditingPart(null);
               setOriginalPartData(null);
-            })}
+            }}
           >
             <div 
               className={`rounded-lg shadow-xl max-w-4xl w-full max-h-[90vh] animate-modalSlideUp ${darkMode ? 'bg-gray-800' : 'bg-white'}`}
@@ -3966,7 +3966,7 @@ const TakumiGarage = () => {
                     })()}
                   </div>
                   <button
-                    onClick={() => handleCloseModal(() => {
+                    onClick={() => {
                       if (hasUnsavedPartChanges()) {
                         setConfirmDialog({
                           isOpen: true,
@@ -3976,7 +3976,7 @@ const TakumiGarage = () => {
                           cancelText: 'Go Back',
                           onConfirm: () => {
                             setShowEditModal(false);
-                    setPartModalView(null);
+                            setPartModalView(null);
                             setEditingPart(null);
                             setOriginalPartData(null);
                           }
@@ -3984,10 +3984,10 @@ const TakumiGarage = () => {
                         return;
                       }
                       setShowEditModal(false);
-                    setPartModalView(null);
+                      setPartModalView(null);
                       setEditingPart(null);
                       setOriginalPartData(null);
-                    })}
+                    }}
                     className={`transition-colors ${
                       darkMode ? 'text-gray-400 hover:text-gray-300' : 'text-gray-400 hover:text-gray-600'
                     }`}
@@ -6183,7 +6183,7 @@ const TakumiGarage = () => {
             {showAddProjectModal && (
               <div 
                 className={`fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4 animate-fadeIn`}
-                onClick={() => handleCloseModal(() => setShowAddProjectModal(false))}
+                onClick={() => setShowAddProjectModal(false)}
               >
                 <div 
                   className={`rounded-lg shadow-xl max-w-4xl w-full max-h-[90vh] animate-modalSlideUp ${darkMode ? 'bg-gray-800' : 'bg-white'}`}
@@ -6198,7 +6198,7 @@ const TakumiGarage = () => {
                       Add Project
                     </h2>
                     <button
-                      onClick={() => handleCloseModal(() => setShowAddProjectModal(false))}
+                      onClick={() => setShowAddProjectModal(false)}
                       className={`transition-colors ${
                         darkMode ? 'text-gray-400 hover:text-gray-300' : 'text-gray-400 hover:text-gray-600'
                       }`}
@@ -6967,7 +6967,7 @@ const TakumiGarage = () => {
             {showAddVehicleModal && (
               <div 
                 className={`fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4 animate-fadeIn`}
-                onClick={() => handleCloseModal(() => setShowAddVehicleModal(false))}
+                onClick={() => setShowAddVehicleModal(false)}
               >
                 <div 
                   className={`rounded-lg shadow-xl max-w-4xl w-full max-h-[90vh] animate-modalSlideUp ${darkMode ? 'bg-gray-800' : 'bg-white'}`}
@@ -6982,7 +6982,7 @@ const TakumiGarage = () => {
                       Add Vehicle
                     </h2>
                     <button
-                      onClick={() => handleCloseModal(() => setShowAddVehicleModal(false))}
+                      onClick={() => setShowAddVehicleModal(false)}
                       className={`transition-colors ${
                         darkMode ? 'text-gray-400 hover:text-gray-300' : 'text-gray-400 hover:text-gray-600'
                       }`}
