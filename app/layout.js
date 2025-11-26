@@ -2,7 +2,7 @@ import './globals.css';
 
 export const metadata = {
   title: 'Takumi Garage',
-  description: 'Track your Land Cruiser restoration parts',
+  description: 'Track your vehicle restoration projects',
   icons: {
     icon: '/icon.png',
     shortcut: '/icon.png',
