@@ -5195,7 +5195,6 @@ const TakumiGarage = () => {
         {/* PARTS TAB CONTENT */}
         {activeTab === 'parts' && (
           <div className="slide-in-left">
-          <>
         {/* Statistics and Cost Breakdown - Side by Side */}
         <div className="flex flex-col lg:grid lg:grid-cols-2 gap-6 mb-6">
           {/* Statistics Cards - order-1 on mobile, contains search on desktop */}
@@ -5847,9 +5846,6 @@ const TakumiGarage = () => {
                 Add First Part
               </button>
             )}
-          </div>
-        )}
-        </>
           </div>
         )}
 
