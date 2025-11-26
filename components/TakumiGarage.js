@@ -208,6 +208,16 @@ const ProjectDetailView = ({
   const [isNewTodoFocused, setIsNewTodoFocused] = React.useState(false);
   const [showCompletedTodos, setShowCompletedTodos] = React.useState(false);
   const [isDescriptionExpanded, setIsDescriptionExpanded] = React.useState(false);
+  const [isDescriptionClamped, setIsDescriptionClamped] = React.useState(false);
+  const descriptionRef = React.useRef(null);
+  
+  // Check if description is clamped (more than 3 lines)
+  React.useEffect(() => {
+    if (descriptionRef.current && project.description) {
+      const element = descriptionRef.current;
+      setIsDescriptionClamped(element.scrollHeight > element.clientHeight);
+    }
+  }, [project.description]);
   
   // Confirmation dialog state
   const [confirmDialog, setConfirmDialog] = React.useState({
@@ -357,14 +367,17 @@ const ProjectDetailView = ({
               darkMode ? 'text-gray-200' : 'text-gray-800'
             }`}>Description</h3>
             <div className="relative">
-              <p className={`text-base transition-all duration-300 ease-in-out ${
-                project.description 
-                  ? (darkMode ? 'text-gray-400' : 'text-gray-600')
-                  : (darkMode ? 'text-gray-500 italic' : 'text-gray-500 italic')
-              } ${!isDescriptionExpanded && project.description ? 'line-clamp-3' : ''}`}>
+              <p 
+                ref={descriptionRef}
+                className={`text-base transition-all duration-300 ease-in-out ${
+                  project.description 
+                    ? (darkMode ? 'text-gray-400' : 'text-gray-600')
+                    : (darkMode ? 'text-gray-500 italic' : 'text-gray-500 italic')
+                } ${!isDescriptionExpanded && project.description ? 'line-clamp-3' : ''}`}
+              >
                 {project.description || 'No description added'}
               </p>
-              {project.description && (
+              {project.description && isDescriptionClamped && (
                 <button
                   onClick={() => setIsDescriptionExpanded(!isDescriptionExpanded)}
                   className={`mt-2 flex items-center gap-1 text-sm font-medium transition-colors ${
@@ -3729,12 +3742,13 @@ const TakumiGarage = () => {
                     <select
                       value={newPart.projectId || ''}
                       onChange={(e) => setNewPart({ ...newPart, projectId: e.target.value ? parseInt(e.target.value) : null })}
-                      className={`w-full px-4 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent appearance-none ${
+                      className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent min-h-[42px] box-border ${
                         darkMode 
                           ? 'bg-gray-700 border-gray-600 text-gray-100' 
                           : 'bg-white border-gray-300 text-gray-900'
                       }`}
                     >
+                      style={{ width: '100%', WebkitAppearance: 'none', appearance: 'none', backgroundImage: `url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e")`, backgroundRepeat: 'no-repeat', backgroundPosition: 'right 1rem center', backgroundSize: '1.25em 1.25em', paddingRight: '2.5rem' }}
                       <option value="">No Project</option>
                       {projects.map(project => (
                         <option key={project.id} value={project.id}>
@@ -4162,12 +4176,13 @@ const TakumiGarage = () => {
                     <select
                       value={editingPart.projectId || ''}
                       onChange={(e) => setEditingPart({ ...editingPart, projectId: e.target.value ? parseInt(e.target.value) : null })}
-                      className={`w-full px-4 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent appearance-none ${
+                      className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent min-h-[42px] box-border ${
                         darkMode 
                           ? 'bg-gray-700 border-gray-600 text-gray-100' 
                           : 'bg-white border-gray-300 text-gray-900'
                       }`}
                     >
+                      style={{ width: '100%', WebkitAppearance: 'none', appearance: 'none', backgroundImage: `url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e")`, backgroundRepeat: 'no-repeat', backgroundPosition: 'right 1rem center', backgroundSize: '1.25em 1.25em', paddingRight: '2.5rem' }}
                       <option value="">No Project</option>
                       {projects.map(project => (
                         <option key={project.id} value={project.id}>
@@ -4863,12 +4878,13 @@ const TakumiGarage = () => {
                     <select
                       value={editingPart.projectId || ''}
                       onChange={(e) => setEditingPart({ ...editingPart, projectId: e.target.value ? parseInt(e.target.value) : null })}
-                      className={`w-full px-4 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent appearance-none ${
+                      className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent min-h-[42px] box-border ${
                         darkMode 
                           ? 'bg-gray-700 border-gray-600 text-gray-100' 
                           : 'bg-white border-gray-300 text-gray-900'
                       }`}
                     >
+                      style={{ width: '100%', WebkitAppearance: 'none', appearance: 'none', backgroundImage: `url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e")`, backgroundRepeat: 'no-repeat', backgroundPosition: 'right 1rem center', backgroundSize: '1.25em 1.25em', paddingRight: '2.5rem' }}
                       <option value="">No Project</option>
                       {projects.map(project => (
                         <option key={project.id} value={project.id}>
@@ -6542,7 +6558,7 @@ const TakumiGarage = () => {
                     <div 
                       className={`w-full transition-all duration-500 ease-in-out ${
                         projectModalEditMode
-                          ? 'absolute opacity-0 pointer-events-none -translate-x-full' 
+                          ? 'absolute opacity-0 pointer-events-none' 
                           : 'relative opacity-100'
                       }`}
                     >
@@ -6580,8 +6596,8 @@ const TakumiGarage = () => {
                     <div 
                       className={`w-full transition-all duration-500 ease-in-out ${
                         projectModalEditMode
-                          ? 'relative opacity-100 translate-x-0' 
-                          : 'absolute opacity-0 translate-x-full pointer-events-none'
+                          ? 'relative opacity-100' 
+                          : 'absolute opacity-0 pointer-events-none'
                       }`}
                     >
                       <div className="p-6 space-y-6 max-h-[calc(90vh-180px)] overflow-y-auto">
@@ -7585,7 +7601,7 @@ const TakumiGarage = () => {
                     <div 
                       className={`w-full transition-all duration-500 ease-in-out ${
                         vehicleModalProjectView || vehicleModalEditMode
-                          ? 'absolute opacity-0 pointer-events-none -translate-x-full' 
+                          ? 'absolute opacity-0 pointer-events-none' 
                           : 'relative opacity-100'
                       }`}
                     >
@@ -7953,8 +7969,8 @@ const TakumiGarage = () => {
                       <div 
                         className={`w-full transition-all duration-500 ease-in-out ${
                           vehicleModalProjectView && !vehicleModalEditMode
-                            ? 'relative opacity-100 translate-x-0' 
-                            : 'absolute opacity-0 translate-x-full pointer-events-none'
+                            ? 'relative opacity-100' 
+                            : 'absolute opacity-0 pointer-events-none'
                         }`}
                       >
                         <div className="p-6 space-y-6 max-h-[calc(90vh-164px)] overflow-y-auto">
@@ -7992,8 +8008,8 @@ const TakumiGarage = () => {
                     <div 
                       className={`w-full transition-all duration-500 ease-in-out ${
                         vehicleModalEditMode === 'project'
-                          ? 'relative opacity-100 translate-x-0' 
-                          : 'absolute opacity-0 translate-x-full pointer-events-none'
+                          ? 'relative opacity-100' 
+                          : 'absolute opacity-0 pointer-events-none'
                       }`}
                     >
                       {vehicleModalProjectView && (
@@ -8024,8 +8040,8 @@ const TakumiGarage = () => {
                     <div 
                       className={`w-full transition-all duration-500 ease-in-out ${
                         vehicleModalEditMode === 'vehicle'
-                          ? 'relative opacity-100 translate-x-0' 
-                          : 'absolute opacity-0 translate-x-full pointer-events-none'
+                          ? 'relative opacity-100' 
+                          : 'absolute opacity-0 pointer-events-none'
                       }`}
                     >
                       {viewingVehicle && (
