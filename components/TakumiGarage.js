@@ -465,7 +465,17 @@ const ProjectDetailView = ({
                       ? 'text-gray-100'
                       : 'text-gray-800'
                   }`}
-                  style={{ fontSize: '16px', lineHeight: '1.5' }}
+                  style={{ 
+                    fontSize: '16px !important', 
+                    lineHeight: '1.5 !important',
+                    padding: '0.25rem 0.5rem !important',
+                    backgroundColor: 'transparent !important',
+                    border: '0 !important',
+                    margin: '0 !important',
+                    boxShadow: 'none !important',
+                    appearance: 'none',
+                    WebkitAppearance: 'none'
+                  }}
                 />
               ) : (
                 <span 
