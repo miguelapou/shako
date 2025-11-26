@@ -273,101 +273,108 @@ const ProjectDetailView = ({
         </span>
       </div>
 
-      {/* Description */}
-      <div className="mb-6">
-        <h3 className={`text-lg font-semibold mb-2 ${
-          darkMode ? 'text-gray-200' : 'text-gray-800'
-        }`}>Description</h3>
-        <p className={`text-base ${
-          project.description 
-            ? (darkMode ? 'text-gray-400' : 'text-gray-600')
-            : (darkMode ? 'text-gray-500 italic' : 'text-gray-500 italic')
+      {/* Two Column Layout: Project Details (Left) and Todo List (Right) */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+        
+        {/* Left Column: Project Details */}
+        <div className="space-y-6">
+          
+          {/* Description */}
+          <div>
+            <h3 className={`text-lg font-semibold mb-2 ${
+              darkMode ? 'text-gray-200' : 'text-gray-800'
+            }`}>Description</h3>
+            <p className={`text-base ${
+              project.description 
+                ? (darkMode ? 'text-gray-400' : 'text-gray-600')
+                : (darkMode ? 'text-gray-500 italic' : 'text-gray-500 italic')
+            }`}>
+              {project.description || 'No description added'}
+            </p>
+          </div>
+
+          {/* Budget Progress */}
+          <div>
+            <h3 className={`text-lg font-semibold mb-3 ${
+              darkMode ? 'text-gray-200' : 'text-gray-800'
+            }`}>Budget Used</h3>
+            <div className="flex justify-between items-center mb-2">
+              <span className={`text-sm font-medium ${
+                darkMode ? 'text-gray-300' : 'text-gray-700'
+              }`}>
+                ${linkedPartsTotal.toFixed(2)} / ${project.budget?.toFixed(2) || '0.00'}
+              </span>
+              <span className={`text-sm font-bold ${
+                darkMode ? 'text-gray-200' : 'text-gray-900'
+              }`}>
+                {progress.toFixed(0)}%
+              </span>
+            </div>
+            <div className={`w-full rounded-full h-4 ${
+              darkMode ? 'bg-gray-700' : 'bg-gray-200'
+            }`}>
+              <div
+                className={`h-4 rounded-full transition-all ${
+                  progress > 90
+                    ? 'bg-red-500'
+                    : progress > 70
+                    ? 'bg-yellow-500'
+                    : 'bg-green-500'
+                }`}
+                style={{ width: `${Math.min(progress, 100)}%` }}
+              />
+            </div>
+          </div>
+
+          {/* Project Details Grid */}
+          <div className={`grid grid-cols-2 gap-4 p-4 rounded-lg ${
+            darkMode ? 'bg-gray-700' : 'bg-gray-50'
+          }`}>
+            <div>
+              <p className={`text-xs mb-1 ${
+                darkMode ? 'text-gray-400' : 'text-gray-600'
+              }`}>Priority</p>
+              <p className={`text-lg font-bold ${priorityColors[project.priority]}`}>
+                {project.priority?.toUpperCase()}
+              </p>
+            </div>
+            <div>
+              <p className={`text-xs mb-1 ${
+                darkMode ? 'text-gray-400' : 'text-gray-600'
+              }`}>Parts Linked</p>
+              <p className={`text-lg font-bold ${
+                darkMode ? 'text-gray-100' : 'text-gray-900'
+              }`}>
+                {linkedParts.length}
+              </p>
+            </div>
+            <div>
+              <p className={`text-xs mb-1 ${
+                darkMode ? 'text-gray-400' : 'text-gray-600'
+              }`}>Start Date</p>
+              <p className={`text-sm font-medium ${
+                darkMode ? 'text-gray-300' : 'text-gray-700'
+              }`}>
+                {project.start_date ? new Date(project.start_date + 'T00:00:00').toLocaleDateString() : 'TBD'}
+              </p>
+            </div>
+            <div>
+              <p className={`text-xs mb-1 ${
+                darkMode ? 'text-gray-400' : 'text-gray-600'
+              }`}>Target Date</p>
+              <p className={`text-sm font-medium ${
+                darkMode ? 'text-gray-300' : 'text-gray-700'
+              }`}>
+                {project.target_date ? new Date(project.target_date + 'T00:00:00').toLocaleDateString() : 'Not set'}
+              </p>
+            </div>
+          </div>
+        </div>
+
+        {/* Right Column: To-Do List Section */}
+        <div className={`${
+          darkMode ? '' : ''
         }`}>
-          {project.description || 'No description added'}
-        </p>
-      </div>
-
-      {/* Budget Progress */}
-      <div className="mb-6">
-        <h3 className={`text-lg font-semibold mb-3 ${
-          darkMode ? 'text-gray-200' : 'text-gray-800'
-        }`}>Budget Used</h3>
-        <div className="flex justify-between items-center mb-2">
-          <span className={`text-sm font-medium ${
-            darkMode ? 'text-gray-300' : 'text-gray-700'
-          }`}>
-            ${linkedPartsTotal.toFixed(2)} / ${project.budget?.toFixed(2) || '0.00'}
-          </span>
-          <span className={`text-sm font-bold ${
-            darkMode ? 'text-gray-200' : 'text-gray-900'
-          }`}>
-            {progress.toFixed(0)}%
-          </span>
-        </div>
-        <div className={`w-full rounded-full h-4 ${
-          darkMode ? 'bg-gray-700' : 'bg-gray-200'
-        }`}>
-          <div
-            className={`h-4 rounded-full transition-all ${
-              progress > 90
-                ? 'bg-red-500'
-                : progress > 70
-                ? 'bg-yellow-500'
-                : 'bg-green-500'
-            }`}
-            style={{ width: `${Math.min(progress, 100)}%` }}
-          />
-        </div>
-      </div>
-
-      {/* Project Details Grid */}
-      <div className={`grid grid-cols-2 gap-4 mb-6 p-4 rounded-lg ${
-        darkMode ? 'bg-gray-700' : 'bg-gray-50'
-      }`}>
-        <div>
-          <p className={`text-xs mb-1 ${
-            darkMode ? 'text-gray-400' : 'text-gray-600'
-          }`}>Priority</p>
-          <p className={`text-lg font-bold ${priorityColors[project.priority]}`}>
-            {project.priority?.toUpperCase()}
-          </p>
-        </div>
-        <div>
-          <p className={`text-xs mb-1 ${
-            darkMode ? 'text-gray-400' : 'text-gray-600'
-          }`}>Parts Linked</p>
-          <p className={`text-lg font-bold ${
-            darkMode ? 'text-gray-100' : 'text-gray-900'
-          }`}>
-            {linkedParts.length}
-          </p>
-        </div>
-        <div>
-          <p className={`text-xs mb-1 ${
-            darkMode ? 'text-gray-400' : 'text-gray-600'
-          }`}>Start Date</p>
-          <p className={`text-sm font-medium ${
-            darkMode ? 'text-gray-300' : 'text-gray-700'
-          }`}>
-            {project.start_date ? new Date(project.start_date + 'T00:00:00').toLocaleDateString() : 'TBD'}
-          </p>
-        </div>
-        <div>
-          <p className={`text-xs mb-1 ${
-            darkMode ? 'text-gray-400' : 'text-gray-600'
-          }`}>Target Date</p>
-          <p className={`text-sm font-medium ${
-            darkMode ? 'text-gray-300' : 'text-gray-700'
-          }`}>
-            {project.target_date ? new Date(project.target_date + 'T00:00:00').toLocaleDateString() : 'Not set'}
-          </p>
-        </div>
-      </div>
-
-      {/* To-Do List Section */}
-      <div className={`pt-6 border-t ${
-        darkMode ? 'border-gray-700' : 'border-gray-200'
-      }`}>
         <div className="mb-3">
           <h3 className={`text-lg font-semibold ${
             darkMode ? 'text-gray-200' : 'text-gray-800'
@@ -607,8 +614,11 @@ const ProjectDetailView = ({
           </div>
         </div>
       </div>
+      
+      {/* End of two-column grid */}
+      </div>
 
-      {/* Linked Parts List */}
+      {/* Linked Parts List - Full Width Below */}
       {linkedParts.length > 0 && (
         <div className={`pt-6 border-t ${
           darkMode ? 'border-gray-700' : 'border-gray-200'
