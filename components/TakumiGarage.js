@@ -36,7 +36,6 @@ const getPriorityBorderColor = (priority) => {
 // Vendor color mapping
 const getVendorColor = (vendor) => {
   if (!vendor) return 'bg-gray-100 text-gray-700 border border-gray-200';
-  
   const vendorLower = vendor.toLowerCase();
   if (vendorLower === 'toyota') return 'bg-red-100 text-red-700 border border-red-200';
   if (vendorLower === 'ebay') return 'bg-green-100 text-green-700 border border-green-200';
@@ -45,7 +44,6 @@ const getVendorColor = (vendor) => {
   if (vendorLower === 'best buy') return 'bg-purple-100 text-purple-700 border border-purple-200';
   if (vendorLower === 'amazon') return 'bg-blue-100 text-blue-700 border border-blue-200';
   if (vendorLower === 'jauce') return 'bg-fuchsia-100 text-fuchsia-700 border border-fuchsia-200';
-  
   return 'bg-gray-100 text-gray-700 border border-gray-200';
 };
 
@@ -61,13 +59,11 @@ const calculateVehicleTotalSpent = (vehicleId, projects, parts) => {
 // Convert hex color to muted version (reduces opacity)
 const getMutedColor = (hexColor, darkMode) => {
   if (!hexColor) return darkMode ? 'rgba(59, 130, 246, 0.3)' : 'rgba(59, 130, 246, 0.4)';
-  
   // Parse hex color
   const hex = hexColor.replace('#', '');
   const r = parseInt(hex.substr(0, 2), 16);
   const g = parseInt(hex.substr(2, 2), 16);
   const b = parseInt(hex.substr(4, 2), 16);
-  
   // Return as rgba with reduced opacity (30% for dark mode, 40% for light mode)
   const opacity = darkMode ? 0.3 : 0.4;
   return `rgba(${r}, ${g}, ${b}, ${opacity})`;
@@ -116,6 +112,7 @@ const buttonClasses = (darkMode, variant = 'primary') => {
   return '';
 };
 
+
 // Common select dropdown custom arrow style (prevents React from recreating this object on every render)
 const selectDropdownStyle = {
   width: '100%',
@@ -150,12 +147,10 @@ const ConfirmDialog = ({ isOpen, onClose, onConfirm, title, message, confirmText
             {title}
           </h3>
         </div>
-        
         {/* Body */}
         <div className={`px-6 py-4 ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>
           <p>{message}</p>
         </div>
-        
         {/* Footer */}
         <div className={`px-6 py-4 flex justify-end gap-3 border-t ${darkMode ? 'border-gray-700' : 'border-gray-200'}`}>
           <button
@@ -222,7 +217,6 @@ const ProjectDetailView = ({
   const [isDescriptionExpanded, setIsDescriptionExpanded] = React.useState(false);
   const [isDescriptionClamped, setIsDescriptionClamped] = React.useState(false);
   const descriptionRef = React.useRef(null);
-  
   // Check if description is clamped (more than 3 lines)
   React.useEffect(() => {
     if (descriptionRef.current && project.description) {
@@ -230,7 +224,6 @@ const ProjectDetailView = ({
       setIsDescriptionClamped(element.scrollHeight > element.clientHeight);
     }
   }, [project.description]);
-  
   // Confirmation dialog state
   const [confirmDialog, setConfirmDialog] = React.useState({
     isOpen: false,
@@ -256,7 +249,6 @@ const ProjectDetailView = ({
       if (a.completed !== b.completed) {
         return b.completed - a.completed;
       }
-      
       // Both have same completion status
       if (a.completed) {
         // Both completed: sort by completed_at (oldest first, newest at bottom)
@@ -271,15 +263,12 @@ const ProjectDetailView = ({
         const bCreatedMs = new Date(b.created_at).getTime();
         const aOriginalMs = a.original_created_at ? new Date(a.original_created_at).getTime() : aCreatedMs;
         const bOriginalMs = b.original_created_at ? new Date(b.original_created_at).getTime() : bCreatedMs;
-        
         // Only consider it "recently unchecked" if created_at is recent AND different from original_created_at
         const aIsRecentlyUnchecked = (now - aCreatedMs < 1000) && (Math.abs(aCreatedMs - aOriginalMs) > 100);
         const bIsRecentlyUnchecked = (now - bCreatedMs < 1000) && (Math.abs(bCreatedMs - bOriginalMs) > 100);
-        
         // If one is recently unchecked and other isn't, put recently unchecked one first
         if (aIsRecentlyUnchecked && !bIsRecentlyUnchecked) return -1;
         if (!aIsRecentlyUnchecked && bIsRecentlyUnchecked) return 1;
-        
         // Otherwise sort by original_created_at (oldest first = new todos at bottom)
         const aOriginal = new Date(a.original_created_at || a.created_at);
         const bOriginal = new Date(b.original_created_at || b.created_at);
@@ -302,15 +291,12 @@ const ProjectDetailView = ({
       hasInitialized.current = true;
       return; // Don't animate on first render
     }
-    
     if (isAnimating) {
       return; // Don't interrupt ongoing animations
     }
-    
     // Capture the old positions before React updates the DOM
     const oldPositions = { ...prevPositions.current };
     const hasOldPositions = Object.keys(oldPositions).length > 0;
-    
     // Collect new positions first before any animations
     const newPositions = {};
     sortedTodos.forEach(todo => {
@@ -319,29 +305,23 @@ const ProjectDetailView = ({
         newPositions[todo.id] = element.getBoundingClientRect().top;
       }
     });
-    
     // Now set up animations and update stored positions
     sortedTodos.forEach(todo => {
       const element = todoRefs.current[todo.id];
       if (element) {
         const newPos = newPositions[todo.id];
         const oldPos = oldPositions[todo.id];
-        
         if (hasOldPositions && oldPos !== undefined && newPos !== oldPos) {
           // Calculate how far the element has moved
           const deltaY = oldPos - newPos;
-          
           // Immediately move it back to the old position
           element.style.transform = `translateY(${deltaY}px)`;
           element.style.transition = 'none';
-          
           setIsAnimating(true);
-          
           // Then animate it to the new position
           requestAnimationFrame(() => {
             element.style.transition = 'transform 0.3s ease-out';
             element.style.transform = 'translateY(0)';
-            
             // Clear animation state after animation completes
             setTimeout(() => {
               setIsAnimating(false);
@@ -349,7 +329,6 @@ const ProjectDetailView = ({
             }, 300);
           });
         }
-        
         // Store new position for next time
         prevPositions.current[todo.id] = newPos;
       }
@@ -369,10 +348,8 @@ const ProjectDetailView = ({
 
       {/* Two Column Layout: Project Details (Left) and Todo List (Right) */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
-        
         {/* Left Column: Project Details */}
         <div className="space-y-6">
-          
           {/* Description */}
           <div>
             <h3 className={`text-lg font-semibold mb-2 ${
@@ -494,7 +471,6 @@ const ProjectDetailView = ({
             To-Do List
           </h3>
         </div>
-        
         {/* To-Do Items */}
         <div className="space-y-2">
           {/* Checked Todos Section (Collapsible) */}
@@ -520,7 +496,6 @@ const ProjectDetailView = ({
                   showCompletedTodos ? 'rotate-180' : ''
                 }`} />
               </button>
-              
               <div 
                 className={`overflow-hidden transition-all duration-300 ease-in-out ${
                   showCompletedTodos 
@@ -580,7 +555,6 @@ const ProjectDetailView = ({
                       <CheckCircle className="w-4 h-4 text-white" />
                     )}
                   </button>
-                  
                   {/* Todo Text - Click to edit inline */}
                   {editingTodoId === todo.id ? (
                     <textarea
@@ -672,7 +646,6 @@ const ProjectDetailView = ({
                       {todo.text}
                     </span>
                   )}
-                  
                   {/* Delete Button */}
                   <button
                     onClick={(e) => {
@@ -703,7 +676,6 @@ const ProjectDetailView = ({
               </div>
             </div>
           )}
-          
           {/* Unchecked Todos */}
           {sortedTodos.filter(todo => !todo.completed).map((todo) => (
             <div 
@@ -756,7 +728,6 @@ const ProjectDetailView = ({
                   <CheckCircle className="w-4 h-4 text-white" />
                 )}
               </button>
-              
               {/* Todo Text - Click to edit inline */}
               {editingTodoId === todo.id ? (
                 <textarea
@@ -848,7 +819,6 @@ const ProjectDetailView = ({
                   {todo.text}
                 </span>
               )}
-              
               {/* Delete Button */}
               <button
                 onClick={(e) => {
@@ -875,7 +845,6 @@ const ProjectDetailView = ({
               </button>
             </div>
           ))}
-          
           {/* Always-visible input for new todos */}
           <div 
             className={`flex items-center gap-3 py-1.5 px-3 rounded-lg border transition-colors ${
@@ -892,7 +861,6 @@ const ProjectDetailView = ({
             <div className={`flex-shrink-0 w-5 h-5 rounded border-2 ${
               darkMode ? 'border-gray-600' : 'border-gray-300'
             }`} />
-            
             {/* Input field - auto-expanding textarea */}
             <textarea
               type="text"
@@ -967,7 +935,6 @@ const ProjectDetailView = ({
           </div>
         </div>
       </div>
-      
       {/* End of two-column grid */}
       </div>
 
@@ -1009,7 +976,6 @@ const ProjectDetailView = ({
                     {getStatusText(part)}
                   </div>
                 </div>
-                
                 {part.partNumber && part.partNumber !== '-' && (
                   <p className={`text-xs font-mono mb-3 ${
                     darkMode ? 'text-gray-400' : 'text-gray-600'
@@ -1017,7 +983,6 @@ const ProjectDetailView = ({
                     Part #: {part.partNumber}
                   </p>
                 )}
-                
                 <div className={`border-t ${
                   darkMode ? 'border-gray-600' : 'border-gray-200'
                 }`}>
@@ -1032,7 +997,6 @@ const ProjectDetailView = ({
                       ${part.price.toFixed(2)}
                     </span>
                   </div>
-                  
                   {part.shipping > 0 && (
                     <div className="flex justify-between text-sm">
                       <span className={darkMode ? 'text-gray-400' : 'text-gray-600'}>
@@ -1045,7 +1009,6 @@ const ProjectDetailView = ({
                       </span>
                     </div>
                   )}
-                  
                   {part.duties > 0 && (
                     <div className="flex justify-between text-sm">
                       <span className={darkMode ? 'text-gray-400' : 'text-gray-600'}>
@@ -1058,7 +1021,6 @@ const ProjectDetailView = ({
                       </span>
                     </div>
                   )}
-                  
                   <div className={`flex justify-between text-base font-bold pt-2 border-t ${
                     darkMode ? 'border-gray-600' : 'border-gray-200'
                   }`}>
@@ -1091,7 +1053,6 @@ const ProjectDetailView = ({
           </p>
         </div>
       )}
-      
       {/* Confirmation Dialog */}
       <ConfirmDialog
         isOpen={confirmDialog.isOpen}
@@ -1131,7 +1092,6 @@ const fontStyles = `
     flex-direction: column;
     overflow: hidden;
   }
-  
   /* Scrollable area for modal body - use this class on the middle content div */
   .modal-scrollable {
     overflow-y: auto;
@@ -1142,20 +1102,7 @@ const fontStyles = `
   /* Constrain date inputs to prevent full-width on Safari/mobile */
   input[type="date"] {
     max-width: 100%;
-    min-height: 42px;
-    box-sizing: border-box;
   }
-  
-  /* Safari-specific date input fixes */
-  input[type="date"]::-webkit-date-and-time-value {
-    text-align: left;
-    min-height: 1.5em;
-  }
-  
-  input[type="date"]::-webkit-calendar-picker-indicator {
-    margin-left: 4px;
-  }
-  
   @media (min-width: 768px) {
     input[type="date"] {
       max-width: 300px;
@@ -1262,40 +1209,6 @@ const fontStyles = `
     animation: slideInFromLeft 0.4s cubic-bezier(0.16, 1, 0.3, 1);
   }
 
-  /* Table header sort animations */
-  @keyframes sortIconFadeIn {
-    0% {
-      opacity: 0;
-      transform: scale(0.8) rotate(90deg);
-    }
-    100% {
-      opacity: 1;
-      transform: scale(1) rotate(0deg);
-    }
-  }
-
-  @keyframes headerPulse {
-    0%, 100% {
-      transform: scale(1);
-    }
-    50% {
-      transform: scale(1.02);
-    }
-  }
-
-  /* Table sort animations */
-  th.sorting-active {
-    animation: headerPulse 0.3s ease-out;
-  }
-
-  th svg {
-    transition: transform 0.3s ease, opacity 0.3s ease;
-  }
-
-  th:hover svg {
-    transform: scale(1.1);
-  }
-
   /* Garage Door Loading Spinner */
   .garage-spinner {
     width: 100px;
@@ -1379,7 +1292,6 @@ const fontStyles = `
     -webkit-box-orient: vertical;
     overflow: hidden;
   }
-  
   .line-clamp-3 {
     display: -webkit-box;
     -webkit-line-clamp: 3;
@@ -1488,7 +1400,7 @@ const ProjectEditForm = ({
           }`}>
             <div className="flex items-center gap-2">
               <Car className="w-4 h-4" />
-              <span>Vehicle</span>
+              <span>Linked Vehicle</span>
             </div>
           </label>
           <select
@@ -1563,7 +1475,6 @@ const LinkedPartsSection = ({
   setConfirmDialog
 }) => {
   const linkedParts = parts.filter(part => part.projectId === projectId);
-  
   if (linkedParts.length === 0) {
     return null;
   }
@@ -1654,11 +1565,9 @@ const VendorSelect = ({ value, onChange, darkMode, uniqueVendors }) => {
           <option key={vendor} value={vendor}>{vendor}</option>
         ))}
       </select>
-      
       <div className={`text-xs ${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>
         Or enter a new vendor:
       </div>
-      
       <input
         type="text"
         value={uniqueVendors.includes(value) ? '' : value}
@@ -1762,12 +1671,10 @@ const TakumiGarage = () => {
         // For parts tab (rightmost): add right padding to prevent overflow on mobile
         let leftOffset = offsetLeft;
         let width = offsetWidth;
-        
         if (activeTab === 'parts') {
           const rightPadding = 12;
           width = offsetWidth - rightPadding;
         }
-        
         setUnderlineStyle({
           left: leftOffset,
           width: width
@@ -1866,13 +1773,10 @@ const TakumiGarage = () => {
   const calculateProjectStatus = (todos, currentStatus) => {
     // If status is manually set to "on_hold", keep it
     if (currentStatus === 'on_hold') return 'on_hold';
-    
     if (!todos || todos.length === 0) {
       return 'planning';
     }
-    
     const completedCount = todos.filter(todo => todo.completed).length;
-    
     if (completedCount === 0) {
       return 'planning';
     } else if (completedCount === todos.length) {
@@ -1888,7 +1792,6 @@ const TakumiGarage = () => {
       if (updates.todos && updates.status !== 'on_hold') {
         updates.status = calculateProjectStatus(updates.todos, updates.status);
       }
-      
       const { error } = await supabase
         .from('projects')
         .update(updates)
@@ -1976,7 +1879,6 @@ const TakumiGarage = () => {
 
   const deleteVehicle = async (vehicleId) => {
     const projectsForVehicle = projects.filter(p => p.vehicle_id === vehicleId);
-    
     try {
       const { error } = await supabase
         .from('vehicles')
@@ -2013,7 +1915,6 @@ const TakumiGarage = () => {
   const uploadVehicleImage = async (file) => {
     try {
       setUploadingImage(true);
-      
       // Create a unique filename with timestamp
       const fileExt = file.name.split('.').pop();
       const fileName = `${Math.random().toString(36).substring(2)}-${Date.now()}.${fileExt}`;
@@ -2052,7 +1953,6 @@ const TakumiGarage = () => {
         alert('Please select an image file');
         return;
       }
-      
       // Validate file size (max 5MB)
       if (file.size > 5 * 1024 * 1024) {
         alert('Image size must be less than 5MB');
@@ -2060,7 +1960,6 @@ const TakumiGarage = () => {
       }
 
       setVehicleImageFile(file);
-      
       // Create preview
       const reader = new FileReader();
       reader.onloadend = () => {
@@ -2105,7 +2004,6 @@ const TakumiGarage = () => {
         alert('Please select an image file');
         return;
       }
-      
       // Validate file size (max 5MB)
       if (file.size > 5 * 1024 * 1024) {
         alert('Image size must be less than 5MB');
@@ -2113,7 +2011,6 @@ const TakumiGarage = () => {
       }
 
       setVehicleImageFile(file);
-      
       // Create preview
       const reader = new FileReader();
       reader.onloadend = () => {
@@ -2143,7 +2040,6 @@ const TakumiGarage = () => {
 
   const handleDrop = (e, targetProject) => {
     e.preventDefault();
-    
     if (!draggedProject || draggedProject.id === targetProject.id) {
       setDraggedProject(null);
       setDragOverProject(null);
@@ -2190,7 +2086,6 @@ const TakumiGarage = () => {
 
   const handleVehicleDrop = (e, targetVehicle) => {
     e.preventDefault();
-    
     if (!draggedVehicle || draggedVehicle.id === targetVehicle.id) {
       setDraggedVehicle(null);
       setDragOverVehicle(null);
@@ -2280,7 +2175,6 @@ const TakumiGarage = () => {
   const [isModalClosing, setIsModalClosing] = useState(false);
   const [partModalView, setPartModalView] = useState(null); // null = edit part, 'manage-vendors' = manage vendors view
   const [editingVendor, setEditingVendor] = useState(null); // { oldName: string, newName: string }
-  
   // Project-related state
   const [showAddProjectModal, setShowAddProjectModal] = useState(false);
   const [showProjectDetailModal, setShowProjectDetailModal] = useState(false);
@@ -2300,7 +2194,6 @@ const TakumiGarage = () => {
     status: 'planning',
     vehicle_id: null
   });
-  
   const [darkMode, setDarkMode] = useState(false); // Always start with false to match SSR
   const [darkModeInitialized, setDarkModeInitialized] = useState(false);
   const [mounted, setMounted] = useState(false);
@@ -2335,7 +2228,6 @@ const TakumiGarage = () => {
     if (typeof document !== 'undefined') {
       // Detect if Safari (not Chrome)
       const isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
-      
       if (darkMode) {
         document.documentElement.classList.add('dark-scrollbar');
         document.body.classList.add('dark-scrollbar');
@@ -2374,7 +2266,6 @@ const TakumiGarage = () => {
                           showAddProjectModal || showProjectDetailModal ||
                           showAddVehicleModal || showVehicleDetailModal ||
                           showPartDetailModal;
-    
     if (isAnyModalOpen) {
       // Store current scroll position when opening a modal
       if (savedScrollPosition.current === 0) {
@@ -2388,14 +2279,12 @@ const TakumiGarage = () => {
       document.body.style.position = '';
       document.body.style.top = '';
       document.body.style.width = '';
-      
       // Restore scroll position
       if (savedScrollPosition.current > 0) {
         window.scrollTo(0, savedScrollPosition.current);
         savedScrollPosition.current = 0; // Reset for next modal
       }
     }
-    
     // Cleanup on unmount
     return () => {
       document.body.style.position = '';
@@ -2422,25 +2311,21 @@ const TakumiGarage = () => {
     if (!vehicleModalEditMode || vehicleModalEditMode !== 'vehicle' || !originalVehicleData || !viewingVehicle) {
       return false;
     }
-    
     // Check if any field has changed
     const fieldsToCheck = [
       'nickname', 'name', 'year', 'license_plate', 'vin', 'insurance_policy',
       'fuel_filter', 'air_filter', 'oil_filter', 'oil_type', 'oil_capacity',
       'oil_brand', 'drain_plug', 'battery', 'color'
     ];
-    
     for (const field of fieldsToCheck) {
       if (viewingVehicle[field] !== originalVehicleData[field]) {
         return true;
       }
     }
-    
     // Check if a new image has been selected
     if (vehicleImageFile !== null) {
       return true;
     }
-    
     return false;
   };
 
@@ -2448,19 +2333,16 @@ const TakumiGarage = () => {
     if (!projectModalEditMode || !originalProjectData || !viewingProject) {
       return false;
     }
-    
     // Check if any field has changed
     const fieldsToCheck = [
       'name', 'description', 'budget', 'priority', 
       'start_date', 'target_date', 'vehicle_id'
     ];
-    
     for (const field of fieldsToCheck) {
       if (viewingProject[field] !== originalProjectData[field]) {
         return true;
       }
     }
-    
     return false;
   };
 
@@ -2468,19 +2350,16 @@ const TakumiGarage = () => {
     if (!originalPartData || !editingPart) {
       return false;
     }
-    
     // Check if any field has changed
     const fieldsToCheck = [
       'part', 'partNumber', 'vendor', 'price', 'shipping', 'duties', 
       'tracking', 'status', 'projectId'
     ];
-    
     for (const field of fieldsToCheck) {
       if (String(editingPart[field] || '') !== String(originalPartData[field] || '')) {
         return true;
       }
     }
-    
     return false;
   };
 
@@ -2497,24 +2376,19 @@ const TakumiGarage = () => {
       setOpenDropdown(null);
       return;
     }
-    
     try {
       const statusMap = {
         delivered: { delivered: true, shipped: true, purchased: true },
         purchased: { delivered: false, shipped: false, purchased: true },
         pending: { delivered: false, shipped: false, purchased: false }
       };
-      
       const updates = statusMap[newStatus];
-      
       // Update in database
       const { error } = await supabase
         .from('parts')
         .update(updates)
         .eq('id', partId);
-      
       if (error) throw error;
-      
       // Update local state
       setParts(prevParts => prevParts.map(part => {
         if (part.id === partId) {
@@ -2522,7 +2396,6 @@ const TakumiGarage = () => {
         }
         return part;
       }));
-      
       setOpenDropdown(null);
     } catch (error) {
       console.error('Error updating part status:', error);
@@ -2542,9 +2415,7 @@ const TakumiGarage = () => {
           tracking: trackingInput
         })
         .eq('id', trackingModalPartId);
-      
       if (error) throw error;
-      
       // Update local state
       setParts(prevParts => prevParts.map(part => {
         if (part.id === trackingModalPartId) {
@@ -2558,7 +2429,6 @@ const TakumiGarage = () => {
         }
         return part;
       }));
-      
       setShowTrackingModal(false);
       setTrackingModalPartId(null);
       setTrackingInput('');
@@ -2579,9 +2449,7 @@ const TakumiGarage = () => {
           purchased: true
         })
         .eq('id', trackingModalPartId);
-      
       if (error) throw error;
-      
       // Update local state
       setParts(prevParts => prevParts.map(part => {
         if (part.id === trackingModalPartId) {
@@ -2594,7 +2462,6 @@ const TakumiGarage = () => {
         }
         return part;
       }));
-      
       setShowTrackingModal(false);
       setTrackingModalPartId(null);
       setTrackingInput('');
@@ -2617,14 +2484,12 @@ const TakumiGarage = () => {
     const shipping = parseFloat(editingPart.shipping) || 0;
     const duties = parseFloat(editingPart.duties) || 0;
     const total = price + shipping + duties;
-    
     const statusMap = {
       delivered: { delivered: true, shipped: true, purchased: true },
       shipped: { delivered: false, shipped: true, purchased: true },
       purchased: { delivered: false, shipped: false, purchased: true },
       pending: { delivered: false, shipped: false, purchased: false }
     };
-    
     try {
       // Update in database
       const { error } = await supabase
@@ -2642,9 +2507,7 @@ const TakumiGarage = () => {
           project_id: editingPart.projectId || null
         })
         .eq('id', editingPart.id);
-      
       if (error) throw error;
-      
       // Update local state
       setParts(prevParts => prevParts.map(part => {
         if (part.id === editingPart.id) {
@@ -2664,7 +2527,6 @@ const TakumiGarage = () => {
         }
         return part;
       }));
-      
       setShowEditModal(false);
                     setPartModalView(null);
       setEditingPart(null);
@@ -2682,9 +2544,7 @@ const TakumiGarage = () => {
         .from('parts')
         .delete()
         .eq('id', partId);
-      
       if (error) throw error;
-        
         // Update local state
         setParts(prevParts => prevParts.filter(part => part.id !== partId));
       } catch (error) {
@@ -2702,25 +2562,20 @@ const TakumiGarage = () => {
 
     try {
       const partsToUpdate = parts.filter(p => p.vendor === oldName);
-      
       // Update all parts in database
       const { error } = await supabase
         .from('parts')
         .update({ vendor: newName.trim() })
         .eq('vendor', oldName);
-      
       if (error) throw error;
-      
       // Update local state
       setParts(prevParts => prevParts.map(part => 
         part.vendor === oldName ? { ...part, vendor: newName.trim() } : part
       ));
-      
       // Update editingPart if it has the old vendor
       if (editingPart && editingPart.vendor === oldName) {
         setEditingPart({ ...editingPart, vendor: newName.trim() });
       }
-      
       setEditingVendor(null);
     } catch (error) {
       console.error('Error renaming vendor:', error);
@@ -2731,20 +2586,16 @@ const TakumiGarage = () => {
   const deleteVendor = async (vendorName) => {
     try {
       const partsWithVendor = parts.filter(p => p.vendor === vendorName);
-      
       // Update all parts in database to have empty vendor
       const { error } = await supabase
         .from('parts')
         .update({ vendor: '' })
         .eq('vendor', vendorName);
-      
       if (error) throw error;
-      
       // Update local state
       setParts(prevParts => prevParts.map(part => 
         part.vendor === vendorName ? { ...part, vendor: '' } : part
       ));
-      
       // Update editingPart if it has this vendor
       if (editingPart && editingPart.vendor === vendorName) {
         setEditingPart({ ...editingPart, vendor: '' });
@@ -2762,9 +2613,7 @@ const TakumiGarage = () => {
         .from('parts')
         .update({ project_id: null })
         .eq('id', partId);
-      
       if (error) throw error;
-      
       // Update local state
       setParts(prevParts => prevParts.map(part => 
         part.id === partId ? { ...part, projectId: null } : part
@@ -2782,9 +2631,7 @@ const TakumiGarage = () => {
         .from('parts')
         .update({ project_id: projectId || null })
         .eq('id', partId);
-      
       if (error) throw error;
-      
       // Update local state
       setParts(prevParts => prevParts.map(part => 
         part.id === partId ? { ...part, projectId: projectId || null } : part
@@ -2800,14 +2647,12 @@ const TakumiGarage = () => {
     const shipping = parseFloat(newPart.shipping) || 0;
     const duties = parseFloat(newPart.duties) || 0;
     const total = price + shipping + duties;
-    
     const statusMap = {
       delivered: { delivered: true, shipped: true, purchased: true },
       shipped: { delivered: false, shipped: true, purchased: true },
       purchased: { delivered: false, shipped: false, purchased: true },
       pending: { delivered: false, shipped: false, purchased: false }
     };
-    
     try {
       // Insert into database
       const { data, error } = await supabase
@@ -2826,9 +2671,7 @@ const TakumiGarage = () => {
         })
         .select()
         .single();
-      
       if (error) throw error;
-      
       // Add to local state with the ID from database
       const partToAdd = {
         id: data.id,
@@ -2843,7 +2686,6 @@ const TakumiGarage = () => {
         tracking: newPart.tracking,
         projectId: newPart.projectId || null
       };
-      
       setParts([...parts, partToAdd]);
       setShowAddModal(false);
       setNewPart({
@@ -2876,9 +2718,7 @@ const TakumiGarage = () => {
 
   const getSortIcon = (field) => {
     if (sortBy !== field) return null;
-    return sortOrder === 'asc' 
-      ? <ChevronUp className="w-4 h-4 animate-in fade-in duration-300" /> 
-      : <ChevronDown className="w-4 h-4 animate-in fade-in duration-300" />;
+    return sortOrder === 'asc' ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />;
   };
 
   const filteredParts = useMemo(() => {
@@ -2887,20 +2727,16 @@ const TakumiGarage = () => {
         const matchesSearch = part.part.toLowerCase().includes(searchTerm.toLowerCase()) ||
                             part.partNumber.toLowerCase().includes(searchTerm.toLowerCase()) ||
                             part.vendor.toLowerCase().includes(searchTerm.toLowerCase());
-        
         const matchesStatus = statusFilter === 'all' ||
                              (statusFilter === 'delivered' && part.delivered) ||
                              (statusFilter === 'shipped' && part.shipped && !part.delivered) ||
                              (statusFilter === 'purchased' && part.purchased && !part.shipped) ||
                              (statusFilter === 'pending' && !part.purchased);
-        
         const matchesVendor = vendorFilter === 'all' || part.vendor === vendorFilter;
-        
         return matchesSearch && matchesStatus && matchesVendor;
       })
       .sort((a, b) => {
         let aVal, bVal;
-        
         // Special handling for status sorting
         if (sortBy === 'status') {
           // Assign numeric values: pending=0, purchased=1, shipped=2, delivered=3
@@ -2912,7 +2748,6 @@ const TakumiGarage = () => {
           const bProject = projects.find(p => p.id === b.projectId);
           aVal = (aProject?.name || '').toLowerCase();
           bVal = (bProject?.name || '').toLowerCase();
-          
           // Sort empty values to the end
           if (!aVal && bVal) return 1;
           if (aVal && !bVal) return -1;
@@ -2924,27 +2759,23 @@ const TakumiGarage = () => {
           const bVehicle = bProject?.vehicle_id ? vehicles.find(v => v.id === bProject.vehicle_id) : null;
           aVal = (aVehicle?.nickname || aVehicle?.name || '').toLowerCase();
           bVal = (bVehicle?.nickname || bVehicle?.name || '').toLowerCase();
-          
           // Sort empty values to the end
           if (!aVal && bVal) return 1;
           if (aVal && !bVal) return -1;
         } else {
           aVal = a[sortBy];
           bVal = b[sortBy];
-          
           if (typeof aVal === 'string') {
             aVal = aVal.toLowerCase();
             bVal = bVal.toLowerCase();
           }
         }
-        
         if (sortOrder === 'asc') {
           return aVal > bVal ? 1 : -1;
         } else {
           return aVal < bVal ? 1 : -1;
         }
       });
-    
     return sorted;
   }, [parts, searchTerm, statusFilter, vendorFilter, sortBy, sortOrder, projects, vehicles]);
 
@@ -2961,7 +2792,6 @@ const TakumiGarage = () => {
   const stats = useMemo(() => {
     // Filter out pending items (items where purchased is false) for cost calculations
     const purchasedParts = parts.filter(p => p.purchased);
-    
     return {
       total: parts.length,
       delivered: parts.filter(p => p.delivered).length,
@@ -3025,89 +2855,72 @@ const TakumiGarage = () => {
 
   const getTrackingUrl = (tracking) => {
     if (!tracking) return null;
-    
     // If it's already a full URL, return it
     if (tracking.startsWith('http')) {
       return tracking;
     }
-    
     // Check if it's an Orange Connex tracking number (starts with EX)
     if (tracking.startsWith('EX')) {
       return `https://www.orangeconnex.com/tracking?language=en&trackingnumber=${tracking}`;
     }
-    
     // Check if it's an ECMS tracking number (starts with ECSDT)
     if (tracking.startsWith('ECSDT')) {
       return `https://www.ecmsglobal.com/en-us/tracking.html?orderNumber=${tracking}`;
     }
-    
     // Check if it's a UPS tracking number
     if (tracking.startsWith('1Z')) {
       return `https://www.ups.com/track?tracknum=${tracking}&loc=en_US&requester=ST/trackdetails`;
     }
-    
     // Check if it's a FedEx tracking number (12-14 digits)
     if (/^\d{12,14}$/.test(tracking)) {
       return `https://www.fedex.com/fedextrack/?trknbr=${tracking}`;
     }
-    
     // Check if it's a USPS tracking number (20-22 digits or specific patterns)
     if (/^\d{20,22}$/.test(tracking) || /^(94|92|93)\d{20}$/.test(tracking)) {
       return `https://tools.usps.com/go/TrackConfirmAction?tLabels=${tracking}`;
     }
-    
     // Check if it's a DHL tracking number (10-11 digits)
     if (/^\d{10,11}$/.test(tracking)) {
       return `https://www.dhl.com/us-en/home/tracking/tracking-express.html?submit=1&tracking-id=${tracking}`;
     }
-    
     // For generic text like "Local", "USPS", "FedEx" without tracking number
     return null;
   };
 
   const getCarrierName = (tracking) => {
     if (!tracking) return null;
-    
     // Check if it's an Amazon URL or tracking
     if (tracking.toLowerCase().includes('amazon.com') || tracking.toLowerCase().includes('amzn')) {
       return 'Amazon';
     }
-    
     // Check if it's a FedEx URL
     if (tracking.toLowerCase().includes('fedex.com')) {
       return 'FedEx';
     }
-    
     // Check if it's an Orange Connex tracking number (starts with EX)
     if (tracking.startsWith('EX')) {
       return 'Orange Connex';
     }
-    
     // Check if it's an ECMS tracking number (starts with ECSDT)
     if (tracking.startsWith('ECSDT')) {
       return 'ECMS';
     }
-    
     // Check if it's a UPS tracking number
     if (tracking.startsWith('1Z')) {
       return 'UPS';
     }
-    
     // Check if it's a FedEx tracking number (12-14 digits)
     if (/^\d{12,14}$/.test(tracking)) {
       return 'FedEx';
     }
-    
     // Check if it's a USPS tracking number
     if (/^\d{20,22}$/.test(tracking) || /^(94|92|93)\d{20}$/.test(tracking)) {
       return 'USPS';
     }
-    
     // Check if it's a DHL tracking number
     if (/^\d{10,11}$/.test(tracking)) {
       return 'DHL';
     }
-    
     // For text like "Local", "USPS", "FedEx", "ECMS" etc.
     const upper = tracking.toUpperCase();
     if (upper.includes('UPS')) return 'UPS';
@@ -3116,7 +2929,6 @@ const TakumiGarage = () => {
     if (upper.includes('DHL')) return 'DHL';
     if (upper.includes('ECMS')) return 'ECMS';
     if (upper.includes('LOCAL')) return 'Local';
-    
     return tracking; // Return as-is if unknown
   };
 
@@ -3125,7 +2937,6 @@ const TakumiGarage = () => {
     const buttonRef = useRef(null);
     const [dropdownPosition, setDropdownPosition] = useState('bottom');
     const [isPositioned, setIsPositioned] = useState(false);
-    
     useEffect(() => {
       if (isOpen && buttonRef.current) {
         // Calculate position immediately when opening
@@ -3135,21 +2946,18 @@ const TakumiGarage = () => {
         const tableFooterHeight = 70; // Account for "Showing X of Y parts" footer
         const spaceBelow = viewportHeight - rect.bottom - tableFooterHeight; // Include footer in calculation
         const spaceAbove = rect.top - 10; // 10px margin
-        
         // Prefer bottom, but switch to top if not enough space below AND enough space above
         if (spaceBelow < dropdownHeight && spaceAbove >= dropdownHeight) {
           setDropdownPosition('top');
         } else {
           setDropdownPosition('bottom');
         }
-        
         // Mark as positioned to show the dropdown
         setIsPositioned(true);
       } else {
         setIsPositioned(false);
       }
     }, [isOpen]);
-    
     return (
       <div className="relative">
         <button
@@ -3165,7 +2973,6 @@ const TakumiGarage = () => {
           <span className="flex-1 text-left">{getStatusText(part)}</span>
           <ChevronDown className={`w-3 h-3 transition-transform flex-shrink-0 ${isOpen ? 'rotate-180' : ''}`} />
         </button>
-        
         {isOpen && isPositioned && (
           <>
             <div 
@@ -3249,7 +3056,6 @@ const TakumiGarage = () => {
     const buttonRef = useRef(null);
     const [dropdownPosition, setDropdownPosition] = useState('bottom');
     const [isPositioned, setIsPositioned] = useState(false);
-    
     // Get priority color for selected project
     const getPriorityButtonColor = (priority) => {
       const colors = {
@@ -3260,7 +3066,6 @@ const TakumiGarage = () => {
       };
       return colors[priority] || colors.not_set;
     };
-    
     useEffect(() => {
       if (isOpen && buttonRef.current) {
         // Calculate position immediately when opening
@@ -3270,26 +3075,22 @@ const TakumiGarage = () => {
         const maxVisibleItems = 6; // max-h-60 = 240px / 40px per item
         const actualItems = Math.min(projects.length + 1, maxVisibleItems); // +1 for "None" option
         const dropdownHeight = actualItems * itemHeight;
-        
         const viewportHeight = window.innerHeight;
         const tableFooterHeight = 70; // Account for "Showing X of Y parts" footer
         const spaceBelow = viewportHeight - rect.bottom - tableFooterHeight; // Include footer in calculation
         const spaceAbove = rect.top - 10; // 10px margin
-        
         // Prefer bottom, but switch to top if not enough space below AND enough space above
         if (spaceBelow < dropdownHeight && spaceAbove >= dropdownHeight) {
           setDropdownPosition('top');
         } else {
           setDropdownPosition('bottom');
         }
-        
         // Mark as positioned to show the dropdown
         setIsPositioned(true);
       } else {
         setIsPositioned(false);
       }
     }, [isOpen, projects.length]);
-    
     return (
       <div className="relative">
         <button
@@ -3308,7 +3109,6 @@ const TakumiGarage = () => {
           <span className="flex-1 text-left truncate">{selectedProject ? selectedProject.name : 'None'}</span>
           <ChevronDown className={`w-3 h-3 transition-transform flex-shrink-0 ${isOpen ? 'rotate-180' : ''}`} />
         </button>
-        
         {isOpen && isPositioned && (
           <>
             <div 
@@ -3439,7 +3239,6 @@ const TakumiGarage = () => {
                     </div>
                     <ChevronDown className="w-4 h-4" />
                   </button>
-                  
                   {showVehicleFilterDropdown && (
                     <>
                       <div 
@@ -3633,7 +3432,6 @@ const TakumiGarage = () => {
                   <X className="w-6 h-6" />
                 </button>
               </div>
-              
               <div className="p-6 modal-scrollable">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div className="md:col-span-1">
@@ -3655,9 +3453,7 @@ const TakumiGarage = () => {
                       required
                     />
                   </div>
-                  
                   <div></div>
-                  
                   <div>
                     <label className={`block text-sm font-medium mb-2 ${
                       darkMode ? 'text-gray-300' : 'text-gray-700'
@@ -3676,7 +3472,6 @@ const TakumiGarage = () => {
                       placeholder="e.g., 12345-67890"
                     />
                   </div>
-                  
                   <div>
                     <label className={`block text-sm font-medium mb-2 ${
                       darkMode ? 'text-gray-300' : 'text-gray-700'
@@ -3696,7 +3491,6 @@ const TakumiGarage = () => {
                       placeholder="0.00"
                     />
                   </div>
-                  
                   <div>
                     <label className={`block text-sm font-medium mb-2 ${
                       darkMode ? 'text-gray-300' : 'text-gray-700'
@@ -3716,7 +3510,6 @@ const TakumiGarage = () => {
                       placeholder="0.00"
                     />
                   </div>
-                  
                   <div>
                     <label className={`block text-sm font-medium mb-2 ${
                       darkMode ? 'text-gray-300' : 'text-gray-700'
@@ -3736,7 +3529,6 @@ const TakumiGarage = () => {
                       placeholder="0.00"
                     />
                   </div>
-                  
                   <div>
                     <label className={`block text-sm font-medium mb-2 ${
                       darkMode ? 'text-gray-300' : 'text-gray-700'
@@ -3755,7 +3547,6 @@ const TakumiGarage = () => {
                       placeholder="e.g., FedEx, USPS"
                     />
                   </div>
-                  
                   <div>
                     <label className={`block text-sm font-medium mb-2 ${
                       darkMode ? 'text-gray-300' : 'text-gray-700'
@@ -3778,7 +3569,6 @@ const TakumiGarage = () => {
                       <option value="delivered">Delivered</option>
                     </select>
                   </div>
-                  
                   <div>
                     <label className={`block text-sm font-medium mb-2 ${
                       darkMode ? 'text-gray-300' : 'text-gray-700'
@@ -3817,7 +3607,6 @@ const TakumiGarage = () => {
                       ))}
                     </select>
                   </div>
-                  
                   {(newPart.price || newPart.shipping || newPart.duties) && (
                     <div className={`md:col-span-2 border rounded-lg p-4 ${
                       darkMode 
@@ -3838,11 +3627,9 @@ const TakumiGarage = () => {
                   )}
                 </div>
               </div>
-              
               <div className={`border-t ${
                 darkMode ? 'border-gray-700' : 'border-gray-200'
               }`}></div>
-              
               <div className="p-6">
                 <div className="flex gap-3">
                   <button
@@ -3909,14 +3696,12 @@ const TakumiGarage = () => {
                   <X className="w-5 h-5" />
                 </button>
               </div>
-              
               <div className="p-6 modal-scrollable">
                 <p className={`text-sm mb-4 ${
                   darkMode ? 'text-gray-400' : 'text-gray-600'
                 }`}>
                   Enter the tracking number for this shipment (optional)
                 </p>
-                
                 <label className={`block text-sm font-medium mb-2 ${
                   darkMode ? 'text-gray-300' : 'text-gray-700'
                 }`}>
@@ -3934,7 +3719,6 @@ const TakumiGarage = () => {
                   placeholder="e.g., 1Z999AA10123456784"
                   autoFocus
                 />
-                
                 <div className="flex gap-3 mt-6">
                   <button
                     onClick={saveTrackingInfo}
@@ -4064,7 +3848,6 @@ const TakumiGarage = () => {
                   </button>
                 </div>
               </div>
-              
               {/* Edit Part View */}
               {!partModalView && (
               <div className="slide-in-left">
@@ -4089,9 +3872,7 @@ const TakumiGarage = () => {
                       required
                     />
                   </div>
-                  
                   <div></div>
-                  
                   <div>
                     <label className={`block text-sm font-medium mb-2 ${
                       darkMode ? 'text-gray-300' : 'text-gray-700'
@@ -4110,7 +3891,6 @@ const TakumiGarage = () => {
                       placeholder="e.g., 12345-67890"
                     />
                   </div>
-                  
                   <div>
                     <label className={`block text-sm font-medium mb-2 ${
                       darkMode ? 'text-gray-300' : 'text-gray-700'
@@ -4130,7 +3910,6 @@ const TakumiGarage = () => {
                       placeholder="0.00"
                     />
                   </div>
-                  
                   <div>
                     <label className={`block text-sm font-medium mb-2 ${
                       darkMode ? 'text-gray-300' : 'text-gray-700'
@@ -4150,7 +3929,6 @@ const TakumiGarage = () => {
                       placeholder="0.00"
                     />
                   </div>
-                  
                   <div>
                     <label className={`block text-sm font-medium mb-2 ${
                       darkMode ? 'text-gray-300' : 'text-gray-700'
@@ -4170,7 +3948,6 @@ const TakumiGarage = () => {
                       placeholder="0.00"
                     />
                   </div>
-                  
                   <div>
                     <label className={`block text-sm font-medium mb-2 ${
                       darkMode ? 'text-gray-300' : 'text-gray-700'
@@ -4189,7 +3966,6 @@ const TakumiGarage = () => {
                       placeholder="e.g., 1Z999AA10123456784"
                     />
                   </div>
-                  
                   <div>
                     <label className={`block text-sm font-medium mb-2 ${
                       darkMode ? 'text-gray-300' : 'text-gray-700'
@@ -4212,7 +3988,6 @@ const TakumiGarage = () => {
                       <option value="delivered">Delivered</option>
                     </select>
                   </div>
-                  
                   <div>
                     <label className={`block text-sm font-medium mb-2 ${
                       darkMode ? 'text-gray-300' : 'text-gray-700'
@@ -4241,9 +4016,8 @@ const TakumiGarage = () => {
                           ? 'bg-gray-700 border-gray-600 text-gray-100' 
                           : 'bg-white border-gray-300 text-gray-900'
                       }`}
-                    
                       style={selectDropdownStyle}
-                      style={selectDropdownStyle}
+                    >
                       <option value="">No Project</option>
                       {projects.map(project => (
                         <option key={project.id} value={project.id}>
@@ -4252,7 +4026,6 @@ const TakumiGarage = () => {
                       ))}
                     </select>
                   </div>
-                  
                   <div className={`md:col-span-2 border rounded-lg p-4 ${
                     darkMode 
                       ? 'bg-gray-700/50 border-gray-600' 
@@ -4269,7 +4042,6 @@ const TakumiGarage = () => {
                           ${(parseFloat(editingPart.price) || 0).toFixed(2)}
                         </span>
                       </div>
-                      
                       {(parseFloat(editingPart.shipping) || 0) > 0 && (
                         <div className="flex items-center justify-between">
                           <span className={`text-sm ${
@@ -4282,7 +4054,6 @@ const TakumiGarage = () => {
                           </span>
                         </div>
                       )}
-                      
                       {(parseFloat(editingPart.duties) || 0) > 0 && (
                         <div className="flex items-center justify-between">
                           <span className={`text-sm ${
@@ -4295,7 +4066,6 @@ const TakumiGarage = () => {
                           </span>
                         </div>
                       )}
-                      
                       <div className={`flex items-center justify-between pt-2 border-t ${
                         darkMode ? 'border-gray-600' : 'border-gray-300'
                       }`}>
@@ -4312,11 +4082,9 @@ const TakumiGarage = () => {
                   </div>
                 </div>
               </div>
-              
               <div className={`border-t ${
                 darkMode ? 'border-gray-700' : 'border-gray-200'
               }`}></div>
-              
               <div className={`sticky bottom-0 border-t p-4 flex items-center justify-between ${
                 darkMode ? 'border-gray-700 bg-gray-800' : 'border-gray-200 bg-white'
               }`}>
@@ -4405,7 +4173,6 @@ const TakumiGarage = () => {
               </div>
               </div>
               )}
-              
               {/* Manage Vendors View */}
               {partModalView === 'manage-vendors' && (
               <div className="slide-in-right">
@@ -4422,7 +4189,6 @@ const TakumiGarage = () => {
                     {uniqueVendors.map(vendor => {
                       const partCount = parts.filter(p => p.vendor === vendor).length;
                       const isEditing = editingVendor?.oldName === vendor;
-                      
                       return (
                         <div 
                           key={vendor}
@@ -4767,7 +4533,6 @@ const TakumiGarage = () => {
               </div>
               </div>
               )}
-              
               {/* Edit View */}
               {partDetailView === 'edit' && editingPart && (
               <div className="slide-in-right">
@@ -4792,9 +4557,7 @@ const TakumiGarage = () => {
                       required
                     />
                   </div>
-                  
                   <div></div>
-                  
                   <div>
                     <label className={`block text-sm font-medium mb-2 ${
                       darkMode ? 'text-gray-300' : 'text-gray-700'
@@ -4813,7 +4576,6 @@ const TakumiGarage = () => {
                       placeholder="e.g., 12345-67890"
                     />
                   </div>
-                  
                   <div>
                     <label className={`block text-sm font-medium mb-2 ${
                       darkMode ? 'text-gray-300' : 'text-gray-700'
@@ -4833,7 +4595,6 @@ const TakumiGarage = () => {
                       placeholder="0.00"
                     />
                   </div>
-                  
                   <div>
                     <label className={`block text-sm font-medium mb-2 ${
                       darkMode ? 'text-gray-300' : 'text-gray-700'
@@ -4853,7 +4614,6 @@ const TakumiGarage = () => {
                       placeholder="0.00"
                     />
                   </div>
-                  
                   <div>
                     <label className={`block text-sm font-medium mb-2 ${
                       darkMode ? 'text-gray-300' : 'text-gray-700'
@@ -4873,7 +4633,6 @@ const TakumiGarage = () => {
                       placeholder="0.00"
                     />
                   </div>
-                  
                   <div>
                     <label className={`block text-sm font-medium mb-2 ${
                       darkMode ? 'text-gray-300' : 'text-gray-700'
@@ -4892,7 +4651,6 @@ const TakumiGarage = () => {
                       placeholder="e.g., 1Z999AA10123456784"
                     />
                   </div>
-                  
                   <div>
                     <label className={`block text-sm font-medium mb-2 ${
                       darkMode ? 'text-gray-300' : 'text-gray-700'
@@ -4915,7 +4673,6 @@ const TakumiGarage = () => {
                       <option value="delivered">Delivered</option>
                     </select>
                   </div>
-                  
                   <div>
                     <label className={`block text-sm font-medium mb-2 ${
                       darkMode ? 'text-gray-300' : 'text-gray-700'
@@ -4944,9 +4701,8 @@ const TakumiGarage = () => {
                           ? 'bg-gray-700 border-gray-600 text-gray-100' 
                           : 'bg-white border-gray-300 text-gray-900'
                       }`}
-                    
                       style={selectDropdownStyle}
-                      style={selectDropdownStyle}
+                    >
                       <option value="">No Project</option>
                       {projects.map(project => (
                         <option key={project.id} value={project.id}>
@@ -4955,7 +4711,6 @@ const TakumiGarage = () => {
                       ))}
                     </select>
                   </div>
-                  
                   <div className={`md:col-span-2 border rounded-lg p-4 ${
                     darkMode 
                       ? 'bg-gray-700/50 border-gray-600' 
@@ -4972,7 +4727,6 @@ const TakumiGarage = () => {
                           ${(parseFloat(editingPart.price) || 0).toFixed(2)}
                         </span>
                       </div>
-                      
                       {(parseFloat(editingPart.shipping) || 0) > 0 && (
                         <div className="flex items-center justify-between">
                           <span className={`text-sm ${
@@ -4985,7 +4739,6 @@ const TakumiGarage = () => {
                           </span>
                         </div>
                       )}
-                      
                       {(parseFloat(editingPart.duties) || 0) > 0 && (
                         <div className="flex items-center justify-between">
                           <span className={`text-sm ${
@@ -4998,7 +4751,6 @@ const TakumiGarage = () => {
                           </span>
                         </div>
                       )}
-                      
                       <div className={`flex items-center justify-between pt-2 border-t ${
                         darkMode ? 'border-gray-600' : 'border-gray-300'
                       }`}>
@@ -5034,7 +4786,6 @@ const TakumiGarage = () => {
                     {uniqueVendors.map(vendor => {
                       const partCount = parts.filter(p => p.vendor === vendor).length;
                       const isEditing = editingVendor?.oldName === vendor;
-                      
                       return (
                         <div 
                           key={vendor}
@@ -5141,7 +4892,6 @@ const TakumiGarage = () => {
               }`}>
                 <button
                   onClick={() => {
-                    console.log('✏️ Edit Part button clicked', { part: viewingPart?.part, id: viewingPart?.id });
                     const partData = {
                       ...viewingPart,
                       status: viewingPart.delivered ? 'delivered' : (viewingPart.shipped ? 'shipped' : (viewingPart.purchased ? 'purchased' : 'pending'))
@@ -5157,7 +4907,6 @@ const TakumiGarage = () => {
                 </button>
               </div>
               )}
-              
               {partDetailView === 'edit' && (
               <div className={`sticky bottom-0 border-t p-4 flex items-center justify-between ${
                 darkMode ? 'border-gray-700 bg-gray-800' : 'border-gray-200 bg-white'
@@ -5222,14 +4971,12 @@ const TakumiGarage = () => {
                 </button>
               </div>
               )}
-              
               {partDetailView === 'manage-vendors' && (
               <div className={`sticky bottom-0 border-t p-4 flex items-center justify-between ${
                 darkMode ? 'border-gray-700 bg-gray-800' : 'border-gray-200 bg-white'
               }`}>
                 <button
                   onClick={() => {
-                    console.log('↩️ Back to Edit button clicked (from Manage Vendors)');
                     setPartDetailView('edit');
                     setEditingVendor(null);
                   }}
@@ -5243,7 +4990,6 @@ const TakumiGarage = () => {
                 </button>
                 <button
                   onClick={() => {
-                    console.log('↩️ Back to Edit button clicked (Done managing vendors)');
                     setPartDetailView('edit');
                     setEditingVendor(null);
                   }}
@@ -5479,77 +5225,77 @@ const TakumiGarage = () => {
                 <tr>
                   <th 
                     onClick={() => handleSort('status')}
-                    className={`px-6 py-4 text-center text-xs font-semibold uppercase tracking-wider cursor-pointer transition-all duration-200 active:scale-95 ${
+                    className={`px-6 py-4 text-left text-xs font-semibold uppercase tracking-wider cursor-pointer transition-colors ${
                       darkMode ? 'text-gray-300 hover:bg-gray-600' : 'text-slate-700 hover:bg-slate-200'
                     }`}
                   >
-                    <div className="flex items-center justify-center gap-2">
+                    <div className="flex items-center gap-2">
                       Status
                       {getSortIcon('status')}
                     </div>
                   </th>
-                  <th className={`px-6 py-4 text-center text-xs font-semibold uppercase tracking-wider ${
+                  <th className={`px-6 py-4 text-left text-xs font-semibold uppercase tracking-wider ${
                     darkMode ? 'text-gray-300' : 'text-slate-700'
                   }`}>Part</th>
-                  <th className={`hidden px-6 py-4 text-center text-xs font-semibold uppercase tracking-wider ${
+                  <th className={`hidden px-6 py-4 text-left text-xs font-semibold uppercase tracking-wider ${
                     darkMode ? 'text-gray-300' : 'text-slate-700'
                   }`}>Part #</th>
                   <th 
                     onClick={() => handleSort('vendor')}
-                    className={`px-6 py-4 text-center text-xs font-semibold uppercase tracking-wider cursor-pointer transition-all duration-200 active:scale-95 ${
+                    className={`px-6 py-4 text-left text-xs font-semibold uppercase tracking-wider cursor-pointer transition-colors ${
                       darkMode ? 'text-gray-300 hover:bg-gray-600' : 'text-slate-700 hover:bg-slate-200'
                     }`}
                   >
-                    <div className="flex items-center justify-center gap-2">
+                    <div className="flex items-center gap-2">
                       Vendor
                       {getSortIcon('vendor')}
                     </div>
                   </th>
                   <th 
                     onClick={() => handleSort('project')}
-                    className={`px-6 py-4 text-center text-xs font-semibold uppercase tracking-wider cursor-pointer transition-all duration-200 active:scale-95 ${
+                    className={`px-6 py-4 text-left text-xs font-semibold uppercase tracking-wider cursor-pointer transition-colors ${
                       darkMode ? 'text-gray-300 hover:bg-gray-600' : 'text-slate-700 hover:bg-slate-200'
                     }`}
                   >
-                    <div className="flex items-center justify-center gap-2">
+                    <div className="flex items-center gap-2">
                       Project
                       {getSortIcon('project')}
                     </div>
                   </th>
                   <th 
                     onClick={() => handleSort('vehicle')}
-                    className={`px-6 py-4 text-center text-xs font-semibold uppercase tracking-wider cursor-pointer transition-all duration-200 active:scale-95 ${
+                    className={`px-6 py-4 text-left text-xs font-semibold uppercase tracking-wider cursor-pointer transition-colors ${
                       darkMode ? 'text-gray-300 hover:bg-gray-600' : 'text-slate-700 hover:bg-slate-200'
                     }`}
                   >
-                    <div className="flex items-center justify-center gap-2">
+                    <div className="flex items-center gap-2">
                       Vehicle
                       {getSortIcon('vehicle')}
                     </div>
                   </th>
                   <th 
                     onClick={() => handleSort('price')}
-                    className={`px-6 py-4 text-center text-xs font-semibold uppercase tracking-wider cursor-pointer transition-all duration-200 active:scale-95 ${
+                    className={`px-6 py-4 text-right text-xs font-semibold uppercase tracking-wider cursor-pointer transition-colors ${
                       darkMode ? 'text-gray-300 hover:bg-gray-600' : 'text-slate-700 hover:bg-slate-200'
                     }`}
                   >
-                    <div className="flex items-center justify-center gap-2">
+                    <div className="flex items-center justify-end gap-2">
                       Price
                       {getSortIcon('price')}
                     </div>
                   </th>
                   <th 
                     onClick={() => handleSort('total')}
-                    className={`px-6 py-4 text-center text-xs font-semibold uppercase tracking-wider cursor-pointer transition-all duration-200 active:scale-95 ${
+                    className={`px-6 py-4 text-right text-xs font-semibold uppercase tracking-wider cursor-pointer transition-colors ${
                       darkMode ? 'text-gray-300 hover:bg-gray-600' : 'text-slate-700 hover:bg-slate-200'
                     }`}
                   >
-                    <div className="flex items-center justify-center gap-2">
+                    <div className="flex items-center justify-end gap-2">
                       Total
                       {getSortIcon('total')}
                     </div>
                   </th>
-                  <th className={`px-6 py-4 text-center text-xs font-semibold uppercase tracking-wider ${
+                  <th className={`px-6 py-4 text-left text-xs font-semibold uppercase tracking-wider ${
                     darkMode ? 'text-gray-300' : 'text-slate-700'
                   }`}>Tracking</th>
                 </tr>
@@ -5680,7 +5426,6 @@ const TakumiGarage = () => {
               </tbody>
             </table>
           </div>
-          
           <div className={`px-6 py-4 border-t ${
             darkMode ? 'bg-gray-700 border-gray-600' : 'bg-slate-50 border-slate-200'
           }`}>
@@ -5712,7 +5457,7 @@ const TakumiGarage = () => {
             </p>
             {!searchTerm && statusFilter === 'all' && vendorFilter === 'all' && (
               <button
-                onClick={() => { console.log('🔵 Add New Part button clicked (Desktop)'); setShowAddModal(true); }}
+                onClick={() => setShowAddModal(true)}
                 className="inline-flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg shadow-md transition-colors font-medium"
               >
                 <Plus className="w-5 h-5" />
@@ -5772,7 +5517,6 @@ const TakumiGarage = () => {
                       </div>
                     </div>
                   </div>
-                  
                   {/* Vehicle info on second line if available */}
                   {(() => {
                     const partProject = part.projectId ? projects.find(p => p.id === part.projectId) : null;
@@ -5872,7 +5616,6 @@ const TakumiGarage = () => {
                     </span>
                   )}
                 </div>
-                
                 {/* Part Number - Bottom Right Corner */}
                 {part.partNumber && part.partNumber !== '-' && (
                   <div className="flex justify-end mt-2">
@@ -5905,7 +5648,7 @@ const TakumiGarage = () => {
             </p>
             {!searchTerm && statusFilter === 'all' && vendorFilter === 'all' && (
               <button
-                onClick={() => { console.log('🔵 Add New Part button clicked (Mobile)'); setShowAddModal(true); }}
+                onClick={() => setShowAddModal(true)}
                 className="inline-flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg shadow-md transition-colors font-medium"
               >
                 <Plus className="w-5 h-5" />
@@ -6436,7 +6179,7 @@ const TakumiGarage = () => {
                         }`}>
                           <div className="flex items-center gap-2">
                             <Car className="w-4 h-4" />
-                            <span>Vehicle</span>
+                            <span>Linked Vehicle</span>
                           </div>
                         </label>
                         <select
@@ -6458,11 +6201,9 @@ const TakumiGarage = () => {
                       </div>
                     </div>
                   </div>
-                  
                   <div className={`border-t ${
                     darkMode ? 'border-gray-700' : 'border-gray-200'
                   }`}></div>
-                  
                   <div className="p-6">
                     <div className="flex gap-3">
                       <button
@@ -6525,7 +6266,6 @@ const TakumiGarage = () => {
                       message: 'You have unsaved changes. Are you sure you want to close without saving?',
                       confirmText: 'Discard',
                       cancelText: 'Go Back',
-                      
                       onConfirm: () => {
                         setShowProjectDetailModal(false);
                         setViewingProject(null);
@@ -6535,7 +6275,6 @@ const TakumiGarage = () => {
                     });
                     return;
                   }
-                  
                   setShowProjectDetailModal(false);
                   setViewingProject(null);
                   setOriginalProjectData(null);
@@ -6592,7 +6331,6 @@ const TakumiGarage = () => {
                               message: 'You have unsaved changes. Are you sure you want to close without saving?',
                               confirmText: 'Discard',
                               cancelText: 'Go Back',
-                              
                               onConfirm: () => {
                                 setShowProjectDetailModal(false);
                                 setViewingProject(null);
@@ -6602,7 +6340,6 @@ const TakumiGarage = () => {
                             });
                             return;
                           }
-                          
                           setShowProjectDetailModal(false);
                           setViewingProject(null);
                           setOriginalProjectData(null);
@@ -6703,7 +6440,6 @@ const TakumiGarage = () => {
                               message: 'You have unsaved changes. Are you sure you want to go back without saving?',
                               confirmText: 'Discard',
                               cancelText: 'Keep Editing',
-                              
                               onConfirm: () => {
                                 // Restore original data
                                 if (originalProjectData) {
@@ -6734,7 +6470,6 @@ const TakumiGarage = () => {
                           onClick={async () => {
                             const partsForProject = parts.filter(p => p.projectId === viewingProject.id);
                             const hasParts = partsForProject.length > 0;
-                            
                             setConfirmDialog({
                               isOpen: true,
                               title: 'Delete Project',
@@ -7078,7 +6813,6 @@ const TakumiGarage = () => {
                       <X className="w-6 h-6" />
                     </button>
                   </div>
-                  
                   <div className="p-6 modal-scrollable">
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                       {/* Left Column - Basic Information */}
@@ -7223,7 +6957,6 @@ const TakumiGarage = () => {
                           }`}>
                             Vehicle Image
                           </label>
-                          
                           {/* Image Preview */}
                           {vehicleImagePreview && (
                             <div className="mb-3 relative">
@@ -7243,7 +6976,6 @@ const TakumiGarage = () => {
                               </button>
                             </div>
                           )}
-                          
                           {/* File Upload Button */}
                           {!vehicleImagePreview && (
                             <label 
@@ -7479,11 +7211,9 @@ const TakumiGarage = () => {
                       </div>
                     </div>
                   </div>
-                  
                   <div className={`border-t ${
                     darkMode ? 'border-gray-700' : 'border-gray-200'
                   }`}></div>
-                  
                   <div className="p-6">
                     <div className="flex gap-3">
                       <button
@@ -7505,7 +7235,6 @@ const TakumiGarage = () => {
                             alert('Please enter a nickname');
                             return;
                           }
-                          
                           // Upload image if one is selected
                           let imageUrl = '';
                           if (vehicleImageFile) {
@@ -7514,7 +7243,6 @@ const TakumiGarage = () => {
                               return; // Upload failed, don't proceed
                             }
                           }
-                          
                           // Add vehicle with image URL
                           await addVehicle({ ...newVehicle, image_url: imageUrl });
                           setShowAddVehicleModal(false);
@@ -7570,7 +7298,6 @@ const TakumiGarage = () => {
                       message: 'You have unsaved changes. Are you sure you want to close without saving?',
                       confirmText: 'Discard',
                       cancelText: 'Go Back',
-                      
                       onConfirm: () => {
                         setShowVehicleDetailModal(false);
                         setViewingVehicle(null);
@@ -7582,7 +7309,6 @@ const TakumiGarage = () => {
                     });
                     return;
                   }
-                  
                   setShowVehicleDetailModal(false);
                   setViewingVehicle(null);
                   setOriginalVehicleData(null);
@@ -7632,7 +7358,6 @@ const TakumiGarage = () => {
                             message: 'You have unsaved changes. Are you sure you want to close without saving?',
                             confirmText: 'Discard',
                             cancelText: 'Go Back',
-                            
                             onConfirm: () => {
                               setShowVehicleDetailModal(false);
                               setViewingVehicle(null);
@@ -7644,7 +7369,6 @@ const TakumiGarage = () => {
                           });
                           return;
                         }
-                        
                         setShowVehicleDetailModal(false);
                         setViewingVehicle(null);
                         setOriginalVehicleData(null);
@@ -7705,7 +7429,6 @@ const TakumiGarage = () => {
                               </div>
                             )}
                           </div>
-                          
                           <div className="space-y-4">
                             {viewingVehicle.license_plate && (
                               <div>
@@ -7732,7 +7455,6 @@ const TakumiGarage = () => {
                               </div>
                             )}
                           </div>
-                          
                           {viewingVehicle.insurance_policy && (
                             <div className="col-span-2">
                               <p className={`text-sm font-medium mb-1 ${
@@ -7743,7 +7465,6 @@ const TakumiGarage = () => {
                               }`}>{viewingVehicle.insurance_policy}</p>
                             </div>
                           )}
-                          
                           {/* Total Spent on Linked Projects */}
                           {(() => {
                             const vehicleProjects = projects.filter(p => p.vehicle_id === viewingVehicle.id);
@@ -7752,7 +7473,6 @@ const TakumiGarage = () => {
                             const linkedPartsCount = vehicleProjects.reduce((count, project) => {
                               return count + parts.filter(part => part.projectId === project.id).length;
                             }, 0);
-                            
                             return (
                               <div className={`col-span-2 pt-4 mt-4 border-t ${
                                 darkMode ? 'border-gray-600' : 'border-gray-300'
@@ -7793,7 +7513,6 @@ const TakumiGarage = () => {
                           })()}
                         </div>
                       </div>
-                      
                       {/* Vehicle Image - Half width on desktop - appears first on mobile */}
                       {viewingVehicle.image_url && (
                         <div className="order-first md:order-last rounded-lg overflow-hidden">
@@ -7932,7 +7651,7 @@ const TakumiGarage = () => {
                             </div>
                           </h3>
                           {vehicleProjects.length > 0 ? (
-                            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 pb-6">
+                            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                               {vehicleProjects.map((project) => {
                                 const projectParts = parts.filter(p => p.projectId === project.id);
                                 const projectTotal = projectParts.reduce((sum, part) => sum + part.total, 0);
@@ -8262,7 +7981,6 @@ const TakumiGarage = () => {
                                 }`}>
                                   Vehicle Image
                                 </label>
-                                
                                 {/* Current Image or Preview */}
                                 {(vehicleImagePreview || viewingVehicle.image_url) && (
                                   <div className="mb-3 relative">
@@ -8288,7 +8006,6 @@ const TakumiGarage = () => {
                                     </button>
                                   </div>
                                 )}
-                                
                                 {/* File Upload Button */}
                                 {!vehicleImagePreview && !viewingVehicle.image_url && (
                                   <label 
@@ -8524,7 +8241,6 @@ const TakumiGarage = () => {
                                 message: 'You have unsaved changes. Are you sure you want to go back without saving?',
                                 confirmText: 'Discard',
                                 cancelText: 'Keep Editing',
-                                
                                 onConfirm: () => {
                                   // Restore original data
                                   if (originalVehicleData) {
@@ -8564,7 +8280,6 @@ const TakumiGarage = () => {
                                 const partsForVehicle = parts.filter(part => projectIds.includes(part.projectId));
                                 const hasProjects = projectsForVehicle.length > 0;
                                 const hasParts = partsForVehicle.length > 0;
-                                
                                 let message = 'Are you sure you want to permanently delete this vehicle? This action cannot be undone.';
                                 if (hasProjects || hasParts) {
                                   const items = [];
@@ -8572,7 +8287,6 @@ const TakumiGarage = () => {
                                   if (hasParts) items.push(`${partsForVehicle.length} part(s)`);
                                   message = `This vehicle has ${items.join(' and ')} linked to it. Deleting it will unlink these items. This action cannot be undone.`;
                                 }
-                                
                                 setConfirmDialog({
                                   isOpen: true,
                                   title: 'Delete Vehicle',
@@ -8612,13 +8326,11 @@ const TakumiGarage = () => {
                                     const updates = { 
                                       archived: !viewingVehicle.archived 
                                     };
-                                    
                                     if (!viewingVehicle.archived) {
                                       // Archiving: set display_order to max + 1
                                       const maxOrder = Math.max(...vehicles.map(v => v.display_order || 0), 0);
                                       updates.display_order = maxOrder + 1;
                                     }
-                                    
                                     const updatedVehicle = { 
                                       ...viewingVehicle, 
                                       ...updates
@@ -8735,7 +8447,6 @@ const TakumiGarage = () => {
         </>
         )}
       </div>
-      
       {/* Confirmation Dialog */}
       <ConfirmDialog
         isOpen={confirmDialog.isOpen}
