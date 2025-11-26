@@ -382,7 +382,9 @@ const ProjectDetailView = ({
               key={todo.id}
               ref={(el) => todoRefs.current[todo.id] = el}
               className={`flex items-center gap-3 py-1.5 px-3 rounded-lg border transition-colors ${
-                darkMode ? 'bg-gray-700 border-gray-600 focus-within:!border-blue-500' : 'bg-gray-50 border-gray-200 focus-within:!border-blue-500'
+                darkMode 
+                  ? 'bg-gray-700 border-gray-600 hover:border-blue-500 focus-within:!border-blue-500' 
+                  : 'bg-gray-50 border-gray-200 hover:border-blue-500 focus-within:!border-blue-500'
               }`}
             >
               {/* Checkbox */}
@@ -426,6 +428,11 @@ const ProjectDetailView = ({
               {/* Todo Text - Click to edit inline */}
               {editingTodoId === todo.id ? (
                 <input
+                  ref={(el) => {
+                    if (el) {
+                      el.focus({ preventScroll: true });
+                    }
+                  }}
                   type="text"
                   value={editingTodoText}
                   onChange={(e) => setEditingTodoText(e.target.value)}
@@ -526,8 +533,8 @@ const ProjectDetailView = ({
           <div 
             className={`flex items-center gap-3 py-1.5 px-3 rounded-lg border transition-colors ${
               darkMode 
-                ? 'bg-gray-700 border-gray-600 hover:border-gray-500 focus-within:!border-blue-500' 
-                : 'bg-gray-50 border-gray-200 hover:border-gray-300 focus-within:!border-blue-500'
+                ? 'bg-gray-700 border-gray-600 hover:border-blue-500 focus-within:!border-blue-500' 
+                : 'bg-gray-50 border-gray-200 hover:border-blue-500 focus-within:!border-blue-500'
             }`}
           >
             {/* Empty checkbox placeholder */}
