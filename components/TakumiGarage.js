@@ -5195,6 +5195,7 @@ const TakumiGarage = () => {
         {/* PARTS TAB CONTENT */}
         {activeTab === 'parts' && (
           <div className="slide-in-left">
+          <>
         {/* Statistics and Cost Breakdown - Side by Side */}
         <div className="flex flex-col lg:grid lg:grid-cols-2 gap-6 mb-6">
           {/* Statistics Cards - order-1 on mobile, contains search on desktop */}
@@ -5848,10 +5849,14 @@ const TakumiGarage = () => {
             )}
           </div>
         )}
+        </>
+          </div>
+        )}
 
         {/* PROJECTS TAB CONTENT */}
         {activeTab === 'projects' && (
           <div className={previousTab === 'vehicles' ? 'slide-in-left' : 'slide-in-right'}>
+          <>
             {/* Projects Grid */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {projects
@@ -6746,12 +6751,14 @@ const TakumiGarage = () => {
                 </div>
               </div>
             )}
+          </>
           </div>
         )}
 
         {/* VEHICLES TAB CONTENT */}
         {activeTab === 'vehicles' && (
           <div className="slide-in-right">
+          <>
             {/* Vehicles Grid */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {vehicles.map((vehicle) => (
@@ -8656,7 +8663,11 @@ const TakumiGarage = () => {
                 </div>
               </div>
             )}
+          </>
           </div>
+        )}
+
+        </>
         )}
       </div>
       
