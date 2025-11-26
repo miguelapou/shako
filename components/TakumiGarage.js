@@ -5600,7 +5600,9 @@ const TakumiGarage = () => {
                             </span>
                           </div>
                           {linkedParts.length > 0 ? (
-                            <div className="grid grid-cols-2 gap-1">
+                            <div className={`grid grid-cols-2 gap-1 ${
+                              linkedParts.length === 6 ? 'pb-8' : ''
+                            }`}>
                               {linkedParts.slice(0, 6).map((part) => (
                                 <div 
                                   key={part.id}
@@ -5620,10 +5622,10 @@ const TakumiGarage = () => {
                               )}
                             </div>
                           ) : (
-                            <div className={`text-center py-2 rounded-lg ${
+                            <div className={`text-center py-3 rounded-lg ${
                               darkMode ? 'bg-gray-700' : 'bg-gray-50'
                             }`}>
-                              <Package className={`w-6 h-6 mx-auto mb-1 ${
+                              <Package className={`w-8 h-8 mx-auto mb-1.5 ${
                                 darkMode ? 'text-gray-600' : 'text-gray-400'
                               }`} />
                               <p className={`text-xs ${
