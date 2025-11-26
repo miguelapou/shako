@@ -6754,7 +6754,6 @@ const TakumiGarage = () => {
         {/* VEHICLES TAB CONTENT */}
         {activeTab === 'vehicles' && (
           <div className="slide-in-right">
-          <>
             {/* Vehicles Grid */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {vehicles.map((vehicle) => (
@@ -8659,11 +8658,7 @@ const TakumiGarage = () => {
                 </div>
               </div>
             )}
-          </>
           </div>
-        )}
-
-        </>
         )}
       </div>
       
