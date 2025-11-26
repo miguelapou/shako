@@ -206,7 +206,7 @@ const ProjectDetailView = ({
   const [isAnimating, setIsAnimating] = React.useState(false);
   const hasInitialized = React.useRef(false);
   const [isNewTodoFocused, setIsNewTodoFocused] = React.useState(false);
-  const [showCompletedTodos, setShowCompletedTodos] = React.useState(true);
+  const [showCompletedTodos, setShowCompletedTodos] = React.useState(false);
   
   // Confirmation dialog state
   const [confirmDialog, setConfirmDialog] = React.useState({
@@ -1643,6 +1643,7 @@ const TakumiGarage = () => {
 
   // Filter and sort states
   const [projectVehicleFilter, setProjectVehicleFilter] = useState('all'); // 'all' or vehicle ID
+  const [showVehicleFilterDropdown, setShowVehicleFilterDropdown] = useState(false);
 
   // Load parts and projects from Supabase on mount
   useEffect(() => {
@@ -3305,6 +3306,93 @@ const TakumiGarage = () => {
               }`} style={{ fontFamily: "'FoundationOne', 'Courier New', monospace" }}>TAKUMI GARAGE</h1>
             </div>
             <div className="flex items-center gap-2 sm:gap-3">
+              {/* Vehicle Filter - Only visible on Projects tab */}
+              {activeTab === 'projects' && (
+                <div className="relative">
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setShowVehicleFilterDropdown(!showVehicleFilterDropdown);
+                    }}
+                    className={`px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm text-left flex items-center justify-between gap-2 ${
+                      darkMode 
+                        ? 'bg-gray-800 border-gray-600 text-gray-100' 
+                        : 'bg-white border-gray-300 text-gray-900'
+                    }`}
+                  >
+                    <div className="flex items-center gap-2">
+                      {projectVehicleFilter !== 'all' && (() => {
+                        const selectedVehicle = vehicles.find(v => String(v.id) === String(projectVehicleFilter));
+                        return selectedVehicle ? (
+                          <>
+                            <div 
+                              className="w-3 h-3 rounded-full border"
+                              style={{ 
+                                backgroundColor: selectedVehicle.color || '#3B82F6',
+                                borderColor: darkMode ? '#4B5563' : '#D1D5DB'
+                              }}
+                            />
+                            <span className="hidden sm:inline">{selectedVehicle.nickname || selectedVehicle.name}</span>
+                          </>
+                        ) : null;
+                      })()}
+                      {projectVehicleFilter === 'all' && <span>All Vehicles</span>}
+                    </div>
+                    <ChevronDown className="w-4 h-4" />
+                  </button>
+                  
+                  {showVehicleFilterDropdown && (
+                    <>
+                      <div 
+                        className="fixed inset-0 z-10"
+                        onClick={() => setShowVehicleFilterDropdown(false)}
+                      />
+                      <div className={`absolute right-0 z-20 mt-1 w-64 rounded-lg border shadow-lg py-1 max-h-60 overflow-y-auto ${
+                        darkMode ? 'bg-gray-800 border-gray-600' : 'bg-white border-gray-300'
+                      }`}>
+                        <button
+                          onClick={() => {
+                            setProjectVehicleFilter('all');
+                            setShowVehicleFilterDropdown(false);
+                          }}
+                          className={`w-full px-3 py-2 text-left text-sm flex items-center gap-2 ${
+                            projectVehicleFilter === 'all'
+                              ? darkMode ? 'bg-blue-600 text-white' : 'bg-blue-600 text-white'
+                              : darkMode ? 'hover:bg-gray-700 text-gray-100' : 'hover:bg-gray-100 text-gray-900'
+                          }`}
+                        >
+                          All Vehicles
+                        </button>
+                        {vehicles.map(vehicle => (
+                          <button
+                            key={vehicle.id}
+                            onClick={() => {
+                              setProjectVehicleFilter(String(vehicle.id));
+                              setShowVehicleFilterDropdown(false);
+                            }}
+                            className={`w-full px-3 py-2 text-left text-sm flex items-center gap-2 ${
+                              String(projectVehicleFilter) === String(vehicle.id)
+                                ? darkMode ? 'bg-blue-600 text-white' : 'bg-blue-600 text-white'
+                                : darkMode ? 'hover:bg-gray-700 text-gray-100' : 'hover:bg-gray-100 text-gray-900'
+                            }`}
+                          >
+                            <div 
+                              className="w-3 h-3 rounded-full border flex-shrink-0"
+                              style={{ 
+                                backgroundColor: vehicle.color || '#3B82F6',
+                                borderColor: darkMode ? '#4B5563' : '#D1D5DB'
+                              }}
+                            />
+                            <span className="truncate">
+                              {vehicle.nickname ? `${vehicle.nickname} (${vehicle.name})` : vehicle.name}
+                            </span>
+                          </button>
+                        ))}
+                      </div>
+                    </>
+                  )}
+                </div>
+              )}
               <button
                 onClick={() => setDarkMode(!darkMode)}
                 className={`p-2 sm:p-3 rounded-lg shadow-md transition-colors ${
@@ -5255,54 +5343,11 @@ const TakumiGarage = () => {
         {activeTab === 'projects' && (
           <div className={previousTab === 'vehicles' ? 'slide-in-left' : 'slide-in-right'}>
           <>
-            {/* Vehicle Filter Dropdown - Compact */}
-            <div className="mb-4 flex items-center gap-3">
-              <select
-                value={projectVehicleFilter}
-                onChange={(e) => setProjectVehicleFilter(e.target.value)}
-                className={`px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm max-w-xs appearance-none ${
-                  darkMode 
-                    ? 'bg-gray-800 border-gray-600 text-gray-100' 
-                    : 'bg-white border-gray-300 text-gray-900'
-                }`}
-                style={{ 
-                  backgroundImage: `url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e")`,
-                  backgroundRepeat: 'no-repeat',
-                  backgroundPosition: 'right 0.75rem center',
-                  backgroundSize: '1.25em 1.25em',
-                  paddingRight: '2.5rem'
-                }}
-              >
-                <option value="all">All Vehicles</option>
-                <option value="none">No Vehicle</option>
-                {vehicles.map(vehicle => (
-                  <option key={vehicle.id} value={vehicle.id}>
-                    {vehicle.nickname || vehicle.name} {vehicle.year && `(${vehicle.year})`}
-                  </option>
-                ))}
-              </select>
-              {/* Color indicator for selected vehicle */}
-              {projectVehicleFilter !== 'all' && projectVehicleFilter !== 'none' && (() => {
-                const selectedVehicle = vehicles.find(v => String(v.id) === String(projectVehicleFilter));
-                return selectedVehicle ? (
-                  <div 
-                    className="w-6 h-6 rounded-full border-2 shadow-sm"
-                    style={{ 
-                      backgroundColor: selectedVehicle.color || '#3B82F6',
-                      borderColor: darkMode ? '#374151' : '#fff'
-                    }}
-                    title={selectedVehicle.nickname || selectedVehicle.name}
-                  />
-                ) : null;
-              })()}
-            </div>
-
             {/* Projects Grid */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {projects
                 .filter(project => {
                   if (projectVehicleFilter === 'all') return true;
-                  if (projectVehicleFilter === 'none') return !project.vehicle_id;
                   // Convert both to strings for comparison since select values are strings
                   return String(project.vehicle_id) === String(projectVehicleFilter);
                 })
