@@ -2201,7 +2201,7 @@ const TakumiGarage = () => {
   const [showTrackingModal, setShowTrackingModal] = useState(false);
   const [showPartDetailModal, setShowPartDetailModal] = useState(false);
   const [viewingPart, setViewingPart] = useState(null);
-  const [partDetailView, setPartDetailView] = useState('detail'); // 'detail' or 'edit'
+  const [partDetailView, setPartDetailView] = useState('detail'); // 'detail', 'edit', or 'manage-vendors'
   const [trackingModalPartId, setTrackingModalPartId] = useState(null);
   const [trackingInput, setTrackingInput] = useState('');
   const [editingPart, setEditingPart] = useState(null);
@@ -4492,10 +4492,10 @@ const TakumiGarage = () => {
             })}
           >
             <div 
-              className={`rounded-lg shadow-xl max-w-4xl w-full modal-content transition-all duration-500 ease-in-out ${
+              className={`rounded-lg shadow-xl max-w-4xl w-full modal-content overflow-hidden transition-all duration-500 ease-in-out ${
                 isModalClosing ? 'modal-popup-exit' : 'modal-popup-enter'
               } ${darkMode ? 'bg-gray-800' : 'bg-white'} ${
-                partDetailView === 'edit' ? 'max-h-[90vh]' : 'h-auto'
+                partDetailView === 'edit' || partDetailView === 'manage-vendors' ? 'max-h-[90vh]' : ''
               }`}
               onClick={(e) => e.stopPropagation()}
             >
@@ -4504,39 +4504,10 @@ const TakumiGarage = () => {
               }`} style={{ zIndex: 10 }}>
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-3">
-                    {partDetailView === 'edit' && (
-                      <button
-                        onClick={() => {
-                          if (hasUnsavedPartChanges()) {
-                            setConfirmDialog({
-                              isOpen: true,
-                              title: 'Unsaved Changes',
-                              message: 'You have unsaved changes. Are you sure you want to go back without saving?',
-                              confirmText: 'Discard',
-                              cancelText: 'Keep Editing',
-                              onConfirm: () => {
-                                setPartDetailView('detail');
-                                setEditingPart(null);
-                                setOriginalPartData(null);
-                              }
-                            });
-                            return;
-                          }
-                          setPartDetailView('detail');
-                          setEditingPart(null);
-                          setOriginalPartData(null);
-                        }}
-                        className={`transition-colors ${
-                          darkMode ? 'text-gray-400 hover:text-gray-300' : 'text-gray-400 hover:text-gray-600'
-                        }`}
-                      >
-                        <ChevronDown className="w-6 h-6 -rotate-90" />
-                      </button>
-                    )}
                     <h2 className={`text-2xl font-bold ${
                       darkMode ? 'text-gray-100' : 'text-gray-800'
                     }`} style={{ fontFamily: "'FoundationOne', 'Courier New', monospace" }}>
-                      {partDetailView === 'edit' ? 'Edit Part' : viewingPart.part}
+                      {partDetailView === 'manage-vendors' ? 'Manage Vendors' : (partDetailView === 'edit' ? 'Edit Part' : viewingPart.part)}
                     </h2>
                     {(() => {
                       const partProject = viewingPart.projectId ? projects.find(p => p.id === viewingPart.projectId) : null;
@@ -4575,7 +4546,7 @@ const TakumiGarage = () => {
               {/* Detail View */}
               {partDetailView === 'detail' && (
               <div className="slide-in-left">
-              <div className="p-6 overflow-y-auto">
+              <div className="p-6 overflow-y-auto max-h-[calc(90vh-140px)]">
                 {/* Status Badge */}
                 <div className="mb-6">
                   <div className={`inline-flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium border ${getStatusColor(viewingPart)}`}>
@@ -4967,6 +4938,122 @@ const TakumiGarage = () => {
               </div>
               )}
 
+              {/* Manage Vendors View */}
+              {partDetailView === 'manage-vendors' && (
+              <div className="slide-in-right">
+              <div className="p-6 overflow-y-auto max-h-[calc(90vh-140px)]">
+                {uniqueVendors.length === 0 ? (
+                  <div className={`text-center py-12 ${
+                    darkMode ? 'text-gray-400' : 'text-gray-600'
+                  }`}>
+                    <Package className="w-16 h-16 mx-auto mb-4 opacity-50" />
+                    <p>No vendors yet. Add parts with vendors to see them here.</p>
+                  </div>
+                ) : (
+                  <div className="space-y-3">
+                    {uniqueVendors.map(vendor => {
+                      const partCount = parts.filter(p => p.vendor === vendor).length;
+                      const isEditing = editingVendor?.oldName === vendor;
+                      
+                      return (
+                        <div 
+                          key={vendor}
+                          className={`p-4 rounded-lg border ${
+                            darkMode ? 'bg-gray-700 border-gray-600' : 'bg-gray-50 border-gray-200'
+                          }`}
+                        >
+                          {isEditing ? (
+                            <div className="flex items-center gap-3">
+                              <input
+                                type="text"
+                                value={editingVendor.newName}
+                                onChange={(e) => setEditingVendor({ ...editingVendor, newName: e.target.value })}
+                                className={`flex-1 px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
+                                  darkMode 
+                                    ? 'bg-gray-600 border-gray-500 text-gray-100' 
+                                    : 'bg-white border-gray-300 text-gray-900'
+                                }`}
+                                autoFocus
+                                onKeyDown={(e) => {
+                                  if (e.key === 'Enter') {
+                                    renameVendor(editingVendor.oldName, editingVendor.newName);
+                                  } else if (e.key === 'Escape') {
+                                    setEditingVendor(null);
+                                  }
+                                }}
+                              />
+                              <button
+                                onClick={() => renameVendor(editingVendor.oldName, editingVendor.newName)}
+                                className="px-3 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium transition-colors text-sm"
+                              >
+                                Save
+                              </button>
+                              <button
+                                onClick={() => setEditingVendor(null)}
+                                className={`px-3 py-2 rounded-lg font-medium transition-colors text-sm ${
+                                  darkMode 
+                                    ? 'bg-gray-600 hover:bg-gray-500 text-gray-100' 
+                                    : 'bg-gray-200 hover:bg-gray-300 text-gray-800'
+                                }`}
+                              >
+                                Cancel
+                              </button>
+                            </div>
+                          ) : (
+                            <div className="flex items-center justify-between">
+                              <div className="flex items-center gap-3">
+                                <span className={`inline-block px-3 py-1 rounded-full text-sm font-medium ${getVendorColor(vendor)}`}>
+                                  {vendor}
+                                </span>
+                                <span className={`text-sm ${
+                                  darkMode ? 'text-gray-400' : 'text-gray-600'
+                                }`}>
+                                  {partCount} part{partCount !== 1 ? 's' : ''}
+                                </span>
+                              </div>
+                              <div className="flex items-center gap-2">
+                                <button
+                                  onClick={() => setEditingVendor({ oldName: vendor, newName: vendor })}
+                                  className={`px-3 py-1.5 rounded-lg font-medium transition-colors text-sm flex items-center gap-1.5 ${
+                                    darkMode 
+                                      ? 'bg-gray-600 hover:bg-gray-500 text-gray-100' 
+                                      : 'bg-gray-200 hover:bg-gray-300 text-gray-800'
+                                  }`}
+                                >
+                                  <Edit2 className="w-3.5 h-3.5" />
+                                  Rename
+                                </button>
+                                <button
+                                  onClick={() => {
+                                    setConfirmDialog({
+                                      isOpen: true,
+                                      title: 'Delete Vendor',
+                                      message: `Are you sure you want to delete "${vendor}"? This will remove the vendor from ${partCount} part${partCount !== 1 ? 's' : ''}.`,
+                                      confirmText: 'Delete',
+                                      onConfirm: () => deleteVendor(vendor)
+                                    });
+                                  }}
+                                  className={`px-3 py-1.5 rounded-lg font-medium transition-colors text-sm flex items-center gap-1.5 ${
+                                    darkMode
+                                      ? 'bg-red-900/30 hover:bg-red-900/50 text-red-400 border border-red-700'
+                                      : 'bg-red-50 hover:bg-red-100 text-red-600 border border-red-300'
+                                  }`}
+                                >
+                                  <Trash2 className="w-3.5 h-3.5" />
+                                  Delete
+                                </button>
+                              </div>
+                            </div>
+                          )}
+                        </div>
+                      );
+                    })}
+                  </div>
+                )}
+              </div>
+              </div>
+              )}
+
               {/* Footer */}
               {partDetailView === 'detail' && (
               <div className={`sticky bottom-0 border-t p-4 flex justify-end ${
@@ -4994,36 +5081,49 @@ const TakumiGarage = () => {
               <div className={`sticky bottom-0 border-t p-4 flex items-center justify-between ${
                 darkMode ? 'border-gray-700 bg-gray-800' : 'border-gray-200 bg-white'
               }`}>
-                <button
-                  onClick={() => {
-                    if (hasUnsavedPartChanges()) {
-                      setConfirmDialog({
-                        isOpen: true,
-                        title: 'Unsaved Changes',
-                        message: 'You have unsaved changes. Are you sure you want to go back without saving?',
-                        confirmText: 'Discard',
-                        cancelText: 'Keep Editing',
-                        onConfirm: () => {
-                          setPartDetailView('detail');
-                          setEditingPart(null);
-                          setOriginalPartData(null);
-                        }
-                      });
-                      return;
-                    }
-                    setPartDetailView('detail');
-                    setEditingPart(null);
-                    setOriginalPartData(null);
-                  }}
-                  className={`px-4 py-2 rounded-lg font-medium transition-colors flex items-center gap-2 text-sm border ${
-                    darkMode
-                      ? 'bg-gray-700 hover:bg-gray-600 text-gray-100 border-gray-600'
-                      : 'bg-gray-200 hover:bg-gray-300 text-gray-800 border-gray-300'
-                  }`}
-                >
-                  <ChevronDown className="w-4 h-4 rotate-90" />
-                  Back
-                </button>
+                <div className="flex items-center gap-2">
+                  <button
+                    onClick={() => {
+                      if (hasUnsavedPartChanges()) {
+                        setConfirmDialog({
+                          isOpen: true,
+                          title: 'Unsaved Changes',
+                          message: 'You have unsaved changes. Are you sure you want to go back without saving?',
+                          confirmText: 'Discard',
+                          cancelText: 'Keep Editing',
+                          onConfirm: () => {
+                            setPartDetailView('detail');
+                            setEditingPart(null);
+                            setOriginalPartData(null);
+                          }
+                        });
+                        return;
+                      }
+                      setPartDetailView('detail');
+                      setEditingPart(null);
+                      setOriginalPartData(null);
+                    }}
+                    className={`px-4 py-2 rounded-lg font-medium transition-colors flex items-center gap-2 text-sm border ${
+                      darkMode
+                        ? 'bg-gray-700 hover:bg-gray-600 text-gray-100 border-gray-600'
+                        : 'bg-gray-200 hover:bg-gray-300 text-gray-800 border-gray-300'
+                    }`}
+                  >
+                    <ChevronDown className="w-4 h-4 rotate-90" />
+                    Back
+                  </button>
+                  <button
+                    onClick={() => setPartDetailView('manage-vendors')}
+                    className={`px-4 py-2 rounded-lg font-medium transition-colors flex items-center gap-2 text-sm border ${
+                      darkMode
+                        ? 'bg-gray-700 hover:bg-gray-600 text-gray-100 border-gray-600'
+                        : 'bg-gray-100 hover:bg-gray-200 text-gray-700 border-gray-300'
+                    }`}
+                  >
+                    <Settings className="w-4 h-4" />
+                    Manage Vendors
+                  </button>
+                </div>
                 <button
                   onClick={async () => {
                     await saveEditedPart();
@@ -5039,6 +5139,36 @@ const TakumiGarage = () => {
                   }`}
                 >
                   Save Changes
+                </button>
+              </div>
+              )}
+              
+              {partDetailView === 'manage-vendors' && (
+              <div className={`sticky bottom-0 border-t p-4 flex items-center justify-between ${
+                darkMode ? 'border-gray-700 bg-gray-800' : 'border-gray-200 bg-white'
+              }`}>
+                <button
+                  onClick={() => {
+                    setPartDetailView('edit');
+                    setEditingVendor(null);
+                  }}
+                  className={`px-4 py-2 rounded-lg font-medium transition-colors flex items-center gap-2 text-sm border ${
+                    darkMode
+                      ? 'bg-gray-700 hover:bg-gray-600 text-gray-100 border-gray-600'
+                      : 'bg-gray-200 hover:bg-gray-300 text-gray-800 border-gray-300'
+                  }`}
+                >
+                  <ChevronDown className="w-4 h-4 rotate-90" />
+                  Back
+                </button>
+                <button
+                  onClick={() => {
+                    setPartDetailView('edit');
+                    setEditingVendor(null);
+                  }}
+                  className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium transition-colors text-sm"
+                >
+                  Done
                 </button>
               </div>
               )}
