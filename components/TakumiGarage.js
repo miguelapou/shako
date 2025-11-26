@@ -5256,11 +5256,11 @@ const TakumiGarage = () => {
           <div className={previousTab === 'vehicles' ? 'slide-in-left' : 'slide-in-right'}>
           <>
             {/* Vehicle Filter Dropdown - Compact */}
-            <div className="mb-6 flex items-center gap-3">
+            <div className="mb-4 flex items-center gap-3">
               <select
                 value={projectVehicleFilter}
                 onChange={(e) => setProjectVehicleFilter(e.target.value)}
-                className={`px-3 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm max-w-xs appearance-none ${
+                className={`px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm max-w-xs appearance-none ${
                   darkMode 
                     ? 'bg-gray-800 border-gray-600 text-gray-100' 
                     : 'bg-white border-gray-300 text-gray-900'
@@ -5286,8 +5286,11 @@ const TakumiGarage = () => {
                 const selectedVehicle = vehicles.find(v => String(v.id) === String(projectVehicleFilter));
                 return selectedVehicle ? (
                   <div 
-                    className="w-6 h-6 rounded-full border-2 border-white shadow-sm"
-                    style={{ backgroundColor: selectedVehicle.color || '#3B82F6' }}
+                    className="w-6 h-6 rounded-full border-2 shadow-sm"
+                    style={{ 
+                      backgroundColor: selectedVehicle.color || '#3B82F6',
+                      borderColor: darkMode ? '#374151' : '#fff'
+                    }}
                     title={selectedVehicle.nickname || selectedVehicle.name}
                   />
                 ) : null;
