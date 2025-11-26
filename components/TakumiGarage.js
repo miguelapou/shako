@@ -479,17 +479,25 @@ const ProjectDetailView = ({
                   
                   {/* Todo Text - Click to edit inline */}
                   {editingTodoId === todo.id ? (
-                    <input
+                    <textarea
                       ref={(el) => {
                         if (el) {
                           el.focus({ preventScroll: true });
+                          // Set initial height based on content
+                          el.style.height = 'auto';
+                          el.style.height = el.scrollHeight + 'px';
                         }
                       }}
                       type="text"
                       value={editingTodoText}
-                      onChange={(e) => setEditingTodoText(e.target.value)}
+                      onChange={(e) => {
+                        setEditingTodoText(e.target.value);
+                        // Auto-resize textarea
+                        e.target.style.height = 'auto';
+                        e.target.style.height = e.target.scrollHeight + 'px';
+                      }}
                       onKeyDown={(e) => {
-                        if (e.key === 'Enter') {
+                        if (e.key === 'Enter' && !e.shiftKey) {
                           e.preventDefault();
                           if (editingTodoText.trim()) {
                             const updatedTodos = project.todos.map(t => 
@@ -519,7 +527,8 @@ const ProjectDetailView = ({
                         setEditingTodoText('');
                       }}
                       inputMode="text"
-                      className={`flex-1 text-base bg-transparent border-0 focus:outline-none ${
+                      rows="1"
+                      className={`flex-1 text-base bg-transparent border-0 focus:outline-none resize-none overflow-hidden ${
                         darkMode
                           ? 'text-gray-100'
                           : 'text-gray-800'
@@ -533,7 +542,8 @@ const ProjectDetailView = ({
                         margin: '0 !important',
                         boxShadow: 'none !important',
                         appearance: 'none',
-                        WebkitAppearance: 'none'
+                        WebkitAppearance: 'none',
+                        minHeight: '24px'
                       }}
                     />
                   ) : (
@@ -640,17 +650,25 @@ const ProjectDetailView = ({
               
               {/* Todo Text - Click to edit inline */}
               {editingTodoId === todo.id ? (
-                <input
+                <textarea
                   ref={(el) => {
                     if (el) {
                       el.focus({ preventScroll: true });
+                      // Set initial height based on content
+                      el.style.height = 'auto';
+                      el.style.height = el.scrollHeight + 'px';
                     }
                   }}
                   type="text"
                   value={editingTodoText}
-                  onChange={(e) => setEditingTodoText(e.target.value)}
+                  onChange={(e) => {
+                    setEditingTodoText(e.target.value);
+                    // Auto-resize textarea
+                    e.target.style.height = 'auto';
+                    e.target.style.height = e.target.scrollHeight + 'px';
+                  }}
                   onKeyDown={(e) => {
-                    if (e.key === 'Enter') {
+                    if (e.key === 'Enter' && !e.shiftKey) {
                       e.preventDefault();
                       if (editingTodoText.trim()) {
                         const updatedTodos = project.todos.map(t => 
@@ -680,7 +698,8 @@ const ProjectDetailView = ({
                     setEditingTodoText('');
                   }}
                   inputMode="text"
-                  className={`flex-1 text-base bg-transparent border-0 focus:outline-none ${
+                  rows="1"
+                  className={`flex-1 text-base bg-transparent border-0 focus:outline-none resize-none overflow-hidden ${
                     darkMode
                       ? 'text-gray-100'
                       : 'text-gray-800'
@@ -694,7 +713,8 @@ const ProjectDetailView = ({
                     margin: '0 !important',
                     boxShadow: 'none !important',
                     appearance: 'none',
-                    WebkitAppearance: 'none'
+                    WebkitAppearance: 'none',
+                    minHeight: '24px'
                   }}
                 />
               ) : (
@@ -759,14 +779,19 @@ const ProjectDetailView = ({
               darkMode ? 'border-gray-600' : 'border-gray-300'
             }`} />
             
-            {/* Input field */}
-            <input
+            {/* Input field - auto-expanding textarea */}
+            <textarea
               type="text"
               value={newTodoText}
-              onChange={(e) => setNewTodoText(e.target.value)}
+              onChange={(e) => {
+                setNewTodoText(e.target.value);
+                // Auto-resize textarea
+                e.target.style.height = 'auto';
+                e.target.style.height = e.target.scrollHeight + 'px';
+              }}
               onFocus={() => setIsNewTodoFocused(true)}
               onKeyDown={(e) => {
-                if (e.key === 'Enter') {
+                if (e.key === 'Enter' && !e.shiftKey) {
                   e.preventDefault();
                   if (newTodoText.trim()) {
                     const currentTodos = project.todos || [];
@@ -782,10 +807,16 @@ const ProjectDetailView = ({
                       todos: [...currentTodos, newTodo]
                     });
                     setNewTodoText('');
+                    // Reset height after clearing
+                    setTimeout(() => {
+                      if (e.target) {
+                        e.target.style.height = 'auto';
+                      }
+                    }, 0);
                   }
                 }
               }}
-              onBlur={() => {
+              onBlur={(e) => {
                 setIsNewTodoFocused(false);
                 if (newTodoText.trim()) {
                   const currentTodos = project.todos || [];
@@ -801,16 +832,23 @@ const ProjectDetailView = ({
                     todos: [...currentTodos, newTodo]
                   });
                   setNewTodoText('');
+                  // Reset height after clearing
+                  setTimeout(() => {
+                    if (e.target) {
+                      e.target.style.height = 'auto';
+                    }
+                  }, 0);
                 }
               }}
               placeholder="Add a to-do item..."
               inputMode="text"
-              className={`flex-1 text-base px-2 py-1 bg-transparent border-0 focus:outline-none ${
+              rows="1"
+              className={`flex-1 text-base px-2 py-1 bg-transparent border-0 focus:outline-none resize-none overflow-hidden ${
                 darkMode
                   ? 'text-gray-100 placeholder-gray-500'
                   : 'text-gray-800 placeholder-gray-400'
               }`}
-              style={{ fontSize: '16px' }}
+              style={{ fontSize: '16px', lineHeight: '1.5', minHeight: '24px' }}
             />
           </div>
         </div>
