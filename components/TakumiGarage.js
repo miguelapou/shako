@@ -3807,8 +3807,8 @@ const TakumiGarage = () => {
                           ? 'bg-gray-700 border-gray-600 text-gray-100' 
                           : 'bg-white border-gray-300 text-gray-900'
                       }`}
-                    >
                       style={selectDropdownStyle}
+                    >
                       <option value="">No Project</option>
                       {projects.map(project => (
                         <option key={project.id} value={project.id}>
