@@ -2206,7 +2206,7 @@ const TakumiGarage = () => {
   const [editingPart, setEditingPart] = useState(null);
   const [originalPartData, setOriginalPartData] = useState(null); // Track original data for unsaved changes detection
   const [isModalClosing, setIsModalClosing] = useState(false);
-  const [showManageVendorsModal, setShowManageVendorsModal] = useState(false);
+  const [partModalView, setPartModalView] = useState(null); // null = edit part, 'manage-vendors' = manage vendors view
   const [editingVendor, setEditingVendor] = useState(null); // { oldName: string, newName: string }
   
   // Project-related state
@@ -2594,7 +2594,9 @@ const TakumiGarage = () => {
       }));
       
       setShowEditModal(false);
+                    setPartModalView(null);
       setEditingPart(null);
+      setPartModalView(null);
     } catch (error) {
       console.error('Error saving part:', error);
       alert('Error saving part. Please try again.');
@@ -3897,6 +3899,7 @@ const TakumiGarage = () => {
                   cancelText: 'Go Back',
                   onConfirm: () => {
                     setShowEditModal(false);
+                    setPartModalView(null);
                     setEditingPart(null);
                     setOriginalPartData(null);
                   }
@@ -3904,6 +3907,7 @@ const TakumiGarage = () => {
                 return;
               }
               setShowEditModal(false);
+                    setPartModalView(null);
               setEditingPart(null);
               setOriginalPartData(null);
             })}
@@ -3919,10 +3923,25 @@ const TakumiGarage = () => {
               }`} style={{ zIndex: 10 }}>
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-3">
+                    {partModalView === 'manage-vendors' && (
+                      <button
+                        onClick={() => {
+                          setPartModalView(null);
+                          setEditingVendor(null);
+                        }}
+                        className={`transition-colors ${
+                          darkMode ? 'text-gray-400 hover:text-gray-300' : 'text-gray-400 hover:text-gray-600'
+                        }`}
+                      >
+                        <ChevronDown className="w-6 h-6 -rotate-90" />
+                      </button>
+                    )}
                     <h2 className={`text-2xl font-bold ${
                       darkMode ? 'text-gray-100' : 'text-gray-800'
-                    }`} style={{ fontFamily: "'FoundationOne', 'Courier New', monospace" }}>Edit Part</h2>
-                    {(() => {
+                    }`} style={{ fontFamily: "'FoundationOne', 'Courier New', monospace" }}>
+                      {partModalView === 'manage-vendors' ? 'Manage Vendors' : 'Edit Part'}
+                    </h2>
+                    {!partModalView && (() => {
                       const partProject = editingPart.projectId ? projects.find(p => p.id === editingPart.projectId) : null;
                       const vehicle = partProject?.vehicle_id ? vehicles.find(v => v.id === partProject.vehicle_id) : null;
                       return vehicle && (
@@ -3950,6 +3969,7 @@ const TakumiGarage = () => {
                           cancelText: 'Go Back',
                           onConfirm: () => {
                             setShowEditModal(false);
+                    setPartModalView(null);
                             setEditingPart(null);
                             setOriginalPartData(null);
                           }
@@ -3957,6 +3977,7 @@ const TakumiGarage = () => {
                         return;
                       }
                       setShowEditModal(false);
+                    setPartModalView(null);
                       setEditingPart(null);
                       setOriginalPartData(null);
                     })}
@@ -3969,6 +3990,9 @@ const TakumiGarage = () => {
                 </div>
               </div>
               
+              {/* Edit Part View */}
+              {!partModalView && (
+              <>
               <div className="p-6 modal-scrollable">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div className="md:col-span-1">
@@ -4220,7 +4244,7 @@ const TakumiGarage = () => {
                 darkMode ? 'border-gray-700 bg-gray-800' : 'border-gray-200 bg-white'
               }`}>
                 <button
-                  onClick={() => setShowManageVendorsModal(true)}
+                  onClick={() => setPartModalView('manage-vendors')}
                   className={`px-4 py-2 rounded-lg font-medium transition-colors flex items-center gap-2 text-sm border ${
                     darkMode
                       ? 'bg-gray-700 hover:bg-gray-600 text-gray-100 border-gray-600'
@@ -4241,6 +4265,7 @@ const TakumiGarage = () => {
                         onConfirm: () => {
                           deletePart(editingPart.id);
                           setShowEditModal(false);
+                    setPartModalView(null);
                           setEditingPart(null);
                           setOriginalPartData(null);
                         }
@@ -4266,6 +4291,7 @@ const TakumiGarage = () => {
                           cancelText: 'Go Back',
                           onConfirm: () => {
                             setShowEditModal(false);
+                    setPartModalView(null);
                             setEditingPart(null);
                             setOriginalPartData(null);
                           }
@@ -4273,6 +4299,7 @@ const TakumiGarage = () => {
                         return;
                       }
                       setShowEditModal(false);
+                    setPartModalView(null);
                       setEditingPart(null);
                       setOriginalPartData(null);
                     }}
@@ -4299,50 +4326,12 @@ const TakumiGarage = () => {
                   </button>
                 </div>
               </div>
-            </div>
-          </div>
-        )}
-
-        {/* Manage Vendors Modal */}
-        {showManageVendorsModal && (
-          <div 
-            className={`fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4 modal-backdrop ${
-              isModalClosing ? 'modal-backdrop-exit' : 'modal-backdrop-enter'
-            }`}
-            onClick={() => handleCloseModal(() => {
-              setShowManageVendorsModal(false);
-              setEditingVendor(null);
-            })}
-          >
-            <div 
-              className={`rounded-lg shadow-xl max-w-3xl w-full max-h-[90vh] modal-content ${
-                isModalClosing ? 'modal-popup-exit' : 'modal-popup-enter'
-              } ${darkMode ? 'bg-gray-800' : 'bg-white'}`}
-              onClick={(e) => e.stopPropagation()}
-            >
-              <div className={`sticky top-0 border-b px-6 py-4 ${
-                darkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-200'
-              }`}>
-                <div className="flex items-center justify-between">
-                  <h2 className={`text-2xl font-bold ${
-                    darkMode ? 'text-gray-100' : 'text-gray-800'
-                  }`}>
-                    Manage Vendors
-                  </h2>
-                  <button
-                    onClick={() => handleCloseModal(() => {
-                      setShowManageVendorsModal(false);
-                      setEditingVendor(null);
-                    })}
-                    className={`transition-colors ${
-                      darkMode ? 'text-gray-400 hover:text-gray-300' : 'text-gray-400 hover:text-gray-600'
-                    }`}
-                  >
-                    <X className="w-6 h-6" />
-                  </button>
-                </div>
-              </div>
-
+              </>
+              )}
+              
+              {/* Manage Vendors View */}
+              {partModalView === 'manage-vendors' && (
+              <>
               <div className="p-6 overflow-y-auto max-h-[calc(90vh-140px)]">
                 {uniqueVendors.length === 0 ? (
                   <div className={`text-center py-12 ${
@@ -4459,7 +4448,7 @@ const TakumiGarage = () => {
               }`}>
                 <button
                   onClick={() => {
-                    setShowManageVendorsModal(false);
+                    setPartModalView(null);
                     setEditingVendor(null);
                   }}
                   className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium transition-colors text-sm"
@@ -4467,6 +4456,8 @@ const TakumiGarage = () => {
                   Done
                 </button>
               </div>
+              </>
+              )}
             </div>
           </div>
         )}
@@ -5614,7 +5605,7 @@ const TakumiGarage = () => {
                                 </div>
                               ))}
                               {linkedParts.length > 6 && (
-                                <div className={`col-span-2 text-xs text-center ${
+                                <div className={`col-span-2 text-xs text-center pt-1 ${
                                   darkMode ? 'text-gray-400' : 'text-gray-600'
                                 }`}>
                                   +{linkedParts.length - 6} more
