@@ -1,7 +1,7 @@
 'use client';
 
-import LandCruiserTracker from '../components/LandCruiserTracker';
+import LandCruiserTracker from '../components/TakumiGarage';
 
 export default function Home() {
-  return <LandCruiserTracker />;
+  return <TakumiGarage />;
 }
