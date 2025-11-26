@@ -151,6 +151,7 @@ const ProjectDetailView = ({
   const [isAnimating, setIsAnimating] = React.useState(false);
   const hasInitialized = React.useRef(false);
   const [isNewTodoFocused, setIsNewTodoFocused] = React.useState(false);
+  const [showCompletedTodos, setShowCompletedTodos] = React.useState(true);
 
   // Reset on project change
   React.useEffect(() => {
@@ -158,39 +159,42 @@ const ProjectDetailView = ({
     prevPositions.current = {};
   }, [project.id]);
 
-  // Sort todos: completed first (by completion time), then uncompleted (by creation time)
+  // Sort todos: 
+  // - Checked first, then unchecked
+  // - Within checked: by completed_at (oldest first, newest at bottom)
+  // - Within unchecked: recently unchecked at top, then by original_created_at (oldest first = new at bottom)
   const sortedTodos = React.useMemo(() => {
     if (!project.todos) return [];
     return [...project.todos].sort((a, b) => {
-      // If both have same completion status
-      if (a.completed === b.completed) {
-        if (a.completed) {
-          // Both completed: sort by completed_at (oldest completed first, newest at bottom)
-          const aCompletedAt = a.completed_at ? new Date(a.completed_at) : new Date(a.created_at);
-          const bCompletedAt = b.completed_at ? new Date(b.completed_at) : new Date(b.created_at);
-          return aCompletedAt - bCompletedAt;
-        } else {
-          // Both uncompleted: 
-          // First check if either has a fresh created_at (recently unchecked)
-          // If created_at is very recent (within 1 second of now), it was just unchecked - prioritize it
-          const now = Date.now();
-          const aCreatedMs = new Date(a.created_at).getTime();
-          const bCreatedMs = new Date(b.created_at).getTime();
-          const aIsRecent = now - aCreatedMs < 1000; // Within last second
-          const bIsRecent = now - bCreatedMs < 1000;
-          
-          // If one is recently unchecked and other isn't, put recent one first
-          if (aIsRecent && !bIsRecent) return -1;
-          if (!aIsRecent && bIsRecent) return 1;
-          
-          // Otherwise sort by original_created_at (oldest first = new todos at bottom)
-          const aOriginal = new Date(a.original_created_at || a.created_at);
-          const bOriginal = new Date(b.original_created_at || b.created_at);
-          return aOriginal - bOriginal;
-        }
-      }
       // Different completion status: completed items first
-      return b.completed - a.completed;
+      if (a.completed !== b.completed) {
+        return b.completed - a.completed;
+      }
+      
+      // Both have same completion status
+      if (a.completed) {
+        // Both completed: sort by completed_at (oldest first, newest at bottom)
+        const aCompletedAt = a.completed_at ? new Date(a.completed_at) : new Date(a.created_at);
+        const bCompletedAt = b.completed_at ? new Date(b.completed_at) : new Date(b.created_at);
+        return aCompletedAt - bCompletedAt;
+      } else {
+        // Both uncompleted: 
+        // Check if either was recently unchecked (created_at is very recent)
+        const now = Date.now();
+        const aCreatedMs = new Date(a.created_at).getTime();
+        const bCreatedMs = new Date(b.created_at).getTime();
+        const aIsRecent = now - aCreatedMs < 1000; // Within last second
+        const bIsRecent = now - bCreatedMs < 1000;
+        
+        // If one is recently unchecked and other isn't, put recent one first
+        if (aIsRecent && !bIsRecent) return -1;
+        if (!aIsRecent && bIsRecent) return 1;
+        
+        // Otherwise sort by original_created_at (oldest first = new todos at bottom)
+        const aOriginal = new Date(a.original_created_at || a.created_at);
+        const bOriginal = new Date(b.original_created_at || b.created_at);
+        return aOriginal - bOriginal;
+      }
     });
   }, [project.todos]);
 
@@ -385,7 +389,188 @@ const ProjectDetailView = ({
         
         {/* To-Do Items */}
         <div className="space-y-2">
-          {sortedTodos.map((todo) => (
+          {/* Checked Todos Section (Collapsible) */}
+          {sortedTodos.some(todo => todo.completed) && (
+            <div className="space-y-2">
+              <button
+                onClick={() => setShowCompletedTodos(!showCompletedTodos)}
+                className={`w-full flex items-center justify-between px-3 py-2 rounded-lg border transition-colors ${
+                  darkMode 
+                    ? 'bg-gray-700/50 border-gray-600 hover:border-gray-500 text-gray-300' 
+                    : 'bg-gray-100 border-gray-300 hover:border-gray-400 text-gray-700'
+                }`}
+              >
+                <span className="text-sm font-medium flex items-center gap-2">
+                  <CheckCircle className="w-4 h-4" />
+                  Completed ({sortedTodos.filter(t => t.completed).length})
+                </span>
+                {showCompletedTodos ? (
+                  <ChevronUp className="w-4 h-4" />
+                ) : (
+                  <ChevronDown className="w-4 h-4" />
+                )}
+              </button>
+              
+              {showCompletedTodos && sortedTodos.filter(todo => todo.completed).map((todo) => (
+                <div 
+                  key={todo.id}
+                  ref={(el) => todoRefs.current[todo.id] = el}
+                  className={`flex items-center gap-3 py-1.5 px-3 rounded-lg border transition-colors ${
+                    editingTodoId === todo.id
+                      ? darkMode 
+                        ? 'bg-gray-700 border-blue-500' 
+                        : 'bg-gray-50 border-blue-500'
+                      : darkMode 
+                        ? 'bg-gray-700 border-gray-600 hover:border-white' 
+                        : 'bg-gray-50 border-gray-200 hover:border-gray-400'
+                  }`}
+                >
+                  {/* Checkbox */}
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      const updatedTodos = project.todos.map(t => {
+                        if (t.id === todo.id) {
+                          const newCompleted = !t.completed;
+                          return { 
+                            ...t, 
+                            completed: newCompleted,
+                            completed_at: newCompleted ? new Date().toISOString() : null,
+                            // Update created_at when unchecking so it goes to top of uncompleted list
+                            created_at: !newCompleted ? new Date().toISOString() : t.created_at,
+                            // Preserve original_created_at or set it if missing (for old todos)
+                            original_created_at: t.original_created_at || t.created_at
+                          };
+                        }
+                        return t;
+                      });
+                      updateProject(project.id, {
+                        todos: updatedTodos
+                      });
+                    }}
+                    className={`flex-shrink-0 w-5 h-5 rounded border-2 flex items-center justify-center transition-colors ${
+                      todo.completed
+                        ? darkMode
+                          ? 'bg-green-600 border-green-600'
+                          : 'bg-green-500 border-green-500'
+                        : darkMode
+                          ? 'border-gray-500 hover:border-gray-400'
+                          : 'border-gray-400 hover:border-gray-500'
+                    }`}
+                  >
+                    {todo.completed && (
+                      <CheckCircle className="w-4 h-4 text-white" />
+                    )}
+                  </button>
+                  
+                  {/* Todo Text - Click to edit inline */}
+                  {editingTodoId === todo.id ? (
+                    <input
+                      ref={(el) => {
+                        if (el) {
+                          el.focus({ preventScroll: true });
+                        }
+                      }}
+                      type="text"
+                      value={editingTodoText}
+                      onChange={(e) => setEditingTodoText(e.target.value)}
+                      onKeyDown={(e) => {
+                        if (e.key === 'Enter') {
+                          e.preventDefault();
+                          if (editingTodoText.trim()) {
+                            const updatedTodos = project.todos.map(t => 
+                              t.id === todo.id ? { ...t, text: editingTodoText.trim() } : t
+                            );
+                            updateProject(project.id, {
+                              todos: updatedTodos
+                            });
+                            setEditingTodoId(null);
+                            setEditingTodoText('');
+                          }
+                        } else if (e.key === 'Escape') {
+                          setEditingTodoId(null);
+                          setEditingTodoText('');
+                        }
+                      }}
+                      onBlur={() => {
+                        if (editingTodoText.trim() && editingTodoText !== todo.text) {
+                          const updatedTodos = project.todos.map(t => 
+                            t.id === todo.id ? { ...t, text: editingTodoText.trim() } : t
+                          );
+                          updateProject(project.id, {
+                            todos: updatedTodos
+                          });
+                        }
+                        setEditingTodoId(null);
+                        setEditingTodoText('');
+                      }}
+                      inputMode="text"
+                      className={`flex-1 text-base bg-transparent border-0 focus:outline-none ${
+                        darkMode
+                          ? 'text-gray-100'
+                          : 'text-gray-800'
+                      }`}
+                      style={{ 
+                        fontSize: '16px !important', 
+                        lineHeight: '1.5 !important',
+                        padding: '0 !important',
+                        backgroundColor: 'transparent !important',
+                        border: '0 !important',
+                        margin: '0 !important',
+                        boxShadow: 'none !important',
+                        appearance: 'none',
+                        WebkitAppearance: 'none'
+                      }}
+                    />
+                  ) : (
+                    <span 
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setEditingTodoId(todo.id);
+                        setEditingTodoText(todo.text);
+                      }}
+                      className={`flex-1 text-base cursor-pointer hover:opacity-70 transition-opacity ${
+                        todo.completed
+                          ? darkMode
+                            ? 'text-gray-500 line-through'
+                            : 'text-gray-400 line-through'
+                          : darkMode
+                            ? 'text-gray-200'
+                            : 'text-gray-800'
+                      }`}
+                      style={{ lineHeight: '1.5' }}
+                      title="Click to edit"
+                    >
+                      {todo.text}
+                    </span>
+                  )}
+                  
+                  {/* Delete Button */}
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      if (confirm('Delete this to-do item?')) {
+                        const updatedTodos = project.todos.filter(t => t.id !== todo.id);
+                        updateProject(project.id, {
+                          todos: updatedTodos
+                        });
+                      }
+                    }}
+                    className={`flex-shrink-0 p-1 rounded transition-colors ${
+                      darkMode 
+                        ? 'text-gray-500 hover:text-red-400 hover:bg-gray-600' 
+                        : 'text-gray-400 hover:text-red-600 hover:bg-gray-200'
+                    }`}
+                  >
+                    <X className="w-4 h-4" />
+                  </button>
+                </div>
+              ))}
+            </div>
+          )}
+          
+          {/* Unchecked Todos */}
+          {sortedTodos.filter(todo => !todo.completed).map((todo) => (
             <div 
               key={todo.id}
               ref={(el) => todoRefs.current[todo.id] = el}
