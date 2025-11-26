@@ -179,16 +179,20 @@ const ProjectDetailView = ({
         return aCompletedAt - bCompletedAt;
       } else {
         // Both uncompleted: 
-        // Check if either was recently unchecked (created_at is very recent)
+        // Check if either was recently UNCHECKED (created_at is very recent AND different from original_created_at)
         const now = Date.now();
         const aCreatedMs = new Date(a.created_at).getTime();
         const bCreatedMs = new Date(b.created_at).getTime();
-        const aIsRecent = now - aCreatedMs < 1000; // Within last second
-        const bIsRecent = now - bCreatedMs < 1000;
+        const aOriginalMs = a.original_created_at ? new Date(a.original_created_at).getTime() : aCreatedMs;
+        const bOriginalMs = b.original_created_at ? new Date(b.original_created_at).getTime() : bCreatedMs;
         
-        // If one is recently unchecked and other isn't, put recent one first
-        if (aIsRecent && !bIsRecent) return -1;
-        if (!aIsRecent && bIsRecent) return 1;
+        // Only consider it "recently unchecked" if created_at is recent AND different from original_created_at
+        const aIsRecentlyUnchecked = (now - aCreatedMs < 1000) && (Math.abs(aCreatedMs - aOriginalMs) > 100);
+        const bIsRecentlyUnchecked = (now - bCreatedMs < 1000) && (Math.abs(bCreatedMs - bOriginalMs) > 100);
+        
+        // If one is recently unchecked and other isn't, put recently unchecked one first
+        if (aIsRecentlyUnchecked && !bIsRecentlyUnchecked) return -1;
+        if (!aIsRecentlyUnchecked && bIsRecentlyUnchecked) return 1;
         
         // Otherwise sort by original_created_at (oldest first = new todos at bottom)
         const aOriginal = new Date(a.original_created_at || a.created_at);
@@ -401,17 +405,27 @@ const ProjectDetailView = ({
                 }`}
               >
                 <span className="text-sm font-medium flex items-center gap-2">
-                  <CheckCircle className="w-4 h-4" />
+                  <CheckCircle className={`w-4 h-4 transition-colors ${
+                    showCompletedTodos 
+                      ? '' 
+                      : 'text-green-500'
+                  }`} />
                   Completed ({sortedTodos.filter(t => t.completed).length})
                 </span>
-                {showCompletedTodos ? (
-                  <ChevronUp className="w-4 h-4" />
-                ) : (
-                  <ChevronDown className="w-4 h-4" />
-                )}
+                <ChevronDown className={`w-4 h-4 transition-transform duration-200 ${
+                  showCompletedTodos ? 'rotate-180' : ''
+                }`} />
               </button>
               
-              {showCompletedTodos && sortedTodos.filter(todo => todo.completed).map((todo) => (
+              <div 
+                className={`overflow-hidden transition-all duration-300 ease-in-out ${
+                  showCompletedTodos 
+                    ? 'max-h-[2000px] opacity-100' 
+                    : 'max-h-0 opacity-0'
+                }`}
+              >
+                <div className="space-y-2">
+                  {sortedTodos.filter(todo => todo.completed).map((todo) => (
                 <div 
                   key={todo.id}
                   ref={(el) => todoRefs.current[todo.id] = el}
@@ -566,6 +580,8 @@ const ProjectDetailView = ({
                   </button>
                 </div>
               ))}
+                </div>
+              </div>
             </div>
           )}
           
