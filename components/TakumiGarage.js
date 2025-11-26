@@ -2302,7 +2302,7 @@ const TakumiGarage = () => {
       // Small delay to ensure DOM has updated
       setTimeout(() => {
         // Find all scrollable containers in the modal and scroll to top
-        const scrollContainers = document.querySelectorAll('.max-h-\\[calc\\(90vh-180px\\)\\]');
+        const scrollContainers = document.querySelectorAll('.max-h-\\[calc\\(90vh-140px\\)\\]');
         scrollContainers.forEach(container => {
           container.scrollTop = 0;
         });
@@ -3547,15 +3547,11 @@ const TakumiGarage = () => {
         {/* Add New Part Modal */}
         {showAddModal && (
           <div 
-            className={`fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4 modal-backdrop ${
-              isModalClosing ? 'modal-backdrop-exit' : 'modal-backdrop-enter'
-            }`}
+            className={`fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4 animate-fadeIn`}
             onClick={() => handleCloseModal(() => setShowAddModal(false))}
           >
             <div 
-              className={`rounded-lg shadow-xl max-w-4xl w-full max-h-[90vh] modal-content ${
-                isModalClosing ? 'modal-popup-exit' : 'modal-popup-enter'
-              } ${darkMode ? 'bg-gray-800' : 'bg-white'}`}
+              className={`rounded-lg shadow-xl max-w-4xl w-full max-h-[90vh] animate-modalSlideUp ${darkMode ? 'bg-gray-800' : 'bg-white'}`}
               onClick={(e) => e.stopPropagation()}
             >
               <div className={`sticky top-0 border-b px-6 py-4 flex items-center justify-between ${
@@ -3901,9 +3897,7 @@ const TakumiGarage = () => {
         {/* Edit Part Modal */}
         {showEditModal && editingPart && (
           <div 
-            className={`fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4 modal-backdrop ${
-              isModalClosing ? 'modal-backdrop-exit' : 'modal-backdrop-enter'
-            }`}
+            className={`fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4 animate-fadeIn`}
             onClick={() => handleCloseModal(() => {
               if (hasUnsavedPartChanges()) {
                 setConfirmDialog({
@@ -3928,9 +3922,7 @@ const TakumiGarage = () => {
             })}
           >
             <div 
-              className={`rounded-lg shadow-xl max-w-4xl w-full max-h-[90vh] modal-content ${
-                isModalClosing ? 'modal-popup-exit' : 'modal-popup-enter'
-              } ${darkMode ? 'bg-gray-800' : 'bg-white'}`}
+              className={`rounded-lg shadow-xl max-w-4xl w-full max-h-[90vh] animate-modalSlideUp ${darkMode ? 'bg-gray-800' : 'bg-white'}`}
               onClick={(e) => e.stopPropagation()}
             >
               <div className={`sticky top-0 border-b px-6 py-4 ${
@@ -4494,9 +4486,7 @@ const TakumiGarage = () => {
         {/* Part Detail Modal */}
         {showPartDetailModal && viewingPart && (
           <div 
-            className={`fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4 modal-backdrop ${
-              isModalClosing ? 'modal-backdrop-exit' : 'modal-backdrop-enter'
-            }`}
+            className={`fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4 animate-fadeIn`}
             onClick={() => handleCloseModal(() => {
               setShowPartDetailModal(false);
               setViewingPart(null);
@@ -4506,14 +4496,12 @@ const TakumiGarage = () => {
             })}
           >
             <div 
-              className={`rounded-lg shadow-xl max-w-4xl w-full modal-content overflow-hidden transition-all duration-700 ease-in-out grid ${
-                isModalClosing ? 'modal-popup-exit' : 'modal-popup-enter'
-              } ${darkMode ? 'bg-gray-800' : 'bg-white'}`}
+              className={`rounded-lg shadow-xl max-w-4xl w-full overflow-hidden transition-all duration-300 ease-out grid animate-modalSlideUp ${darkMode ? 'bg-gray-800' : 'bg-white'}`}
               style={{
                 gridTemplateRows: partDetailView === 'detail' ? 'auto 1fr auto' : 'auto 1fr auto',
                 maxHeight: partDetailView === 'detail' ? '80vh' : '90vh',
                 height: partDetailView === 'manage-vendors' ? '90vh' : 'auto',
-                transition: 'max-height 0.7s ease-in-out, height 0.7s ease-in-out'
+                transition: 'max-height 0.3s ease-in-out, height 0.3s ease-in-out'
               }}
               onClick={(e) => e.stopPropagation()}
             >
@@ -6194,15 +6182,11 @@ const TakumiGarage = () => {
             {/* Add Project Modal */}
             {showAddProjectModal && (
               <div 
-                className={`fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4 modal-backdrop ${
-                  isModalClosing ? 'modal-backdrop-exit' : 'modal-backdrop-enter'
-                }`}
+                className={`fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4 animate-fadeIn`}
                 onClick={() => handleCloseModal(() => setShowAddProjectModal(false))}
               >
                 <div 
-                  className={`rounded-lg shadow-xl max-w-4xl w-full max-h-[90vh] modal-content ${
-                    isModalClosing ? 'modal-popup-exit' : 'modal-popup-enter'
-                  } ${darkMode ? 'bg-gray-800' : 'bg-white'}`}
+                  className={`rounded-lg shadow-xl max-w-4xl w-full max-h-[90vh] animate-modalSlideUp ${darkMode ? 'bg-gray-800' : 'bg-white'}`}
                   onClick={(e) => e.stopPropagation()}
                 >
                   <div className={`sticky top-0 border-b px-6 py-4 flex items-center justify-between ${
@@ -6982,15 +6966,11 @@ const TakumiGarage = () => {
             {/* Add Vehicle Modal */}
             {showAddVehicleModal && (
               <div 
-                className={`fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4 modal-backdrop ${
-                  isModalClosing ? 'modal-backdrop-exit' : 'modal-backdrop-enter'
-                }`}
+                className={`fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4 animate-fadeIn`}
                 onClick={() => handleCloseModal(() => setShowAddVehicleModal(false))}
               >
                 <div 
-                  className={`rounded-lg shadow-xl max-w-4xl w-full max-h-[90vh] modal-content ${
-                    isModalClosing ? 'modal-popup-exit' : 'modal-popup-enter'
-                  } ${darkMode ? 'bg-gray-800' : 'bg-white'}`}
+                  className={`rounded-lg shadow-xl max-w-4xl w-full max-h-[90vh] animate-modalSlideUp ${darkMode ? 'bg-gray-800' : 'bg-white'}`}
                   onClick={(e) => e.stopPropagation()}
                 >
                   <div className={`sticky top-0 border-b px-6 py-4 flex items-center justify-between ${
