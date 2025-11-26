@@ -2311,6 +2311,9 @@ const TakumiGarage = () => {
                           showAddVehicleModal || showVehicleDetailModal ||
                           showPartDetailModal;
     if (isAnyModalOpen) {
+      // Calculate scrollbar width before locking
+      const scrollbarWidth = window.innerWidth - document.documentElement.clientWidth;
+      
       // Store current scroll position when opening a modal
       if (savedScrollPosition.current === 0) {
         savedScrollPosition.current = window.scrollY;
@@ -2318,11 +2321,13 @@ const TakumiGarage = () => {
       document.body.style.position = 'fixed';
       document.body.style.top = `-${savedScrollPosition.current}px`;
       document.body.style.width = '100%';
+      document.body.style.paddingRight = `${scrollbarWidth}px`;
     } else {
       // Remove fixed positioning but maintain scroll position
       document.body.style.position = '';
       document.body.style.top = '';
       document.body.style.width = '';
+      document.body.style.paddingRight = '';
       // Restore scroll position
       if (savedScrollPosition.current > 0) {
         window.scrollTo(0, savedScrollPosition.current);
@@ -2334,6 +2339,7 @@ const TakumiGarage = () => {
       document.body.style.position = '';
       document.body.style.top = '';
       document.body.style.width = '';
+      document.body.style.paddingRight = '';
     };
   }, [showAddModal, showEditModal, showTrackingModal, showAddProjectModal, 
       showProjectDetailModal, showAddVehicleModal, showVehicleDetailModal, showPartDetailModal]);
