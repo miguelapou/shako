@@ -388,8 +388,8 @@ const ProjectDetailView = ({
                     ? 'bg-gray-700 border-blue-500' 
                     : 'bg-gray-50 border-blue-500'
                   : darkMode 
-                    ? 'bg-gray-700 border-gray-600 hover:border-blue-500' 
-                    : 'bg-gray-50 border-gray-200 hover:border-blue-500'
+                    ? 'bg-gray-700 border-gray-600 hover:border-white' 
+                    : 'bg-gray-50 border-gray-200 hover:border-gray-400'
               }`}
             >
               {/* Checkbox */}
@@ -542,8 +542,8 @@ const ProjectDetailView = ({
                   ? 'bg-gray-700 border-blue-500' 
                   : 'bg-gray-50 border-blue-500'
                 : darkMode 
-                  ? 'bg-gray-700 border-gray-600 hover:border-blue-500' 
-                  : 'bg-gray-50 border-gray-200 hover:border-blue-500'
+                  ? 'bg-gray-700 border-gray-600 hover:border-white' 
+                  : 'bg-gray-50 border-gray-200 hover:border-gray-400'
             }`}
           >
             {/* Empty checkbox placeholder */}
