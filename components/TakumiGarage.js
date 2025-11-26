@@ -116,18 +116,6 @@ const buttonClasses = (darkMode, variant = 'primary') => {
   return '';
 };
 
-// Common select dropdown custom arrow style (prevents React from recreating this object on every render)
-const selectDropdownStyle = {
-  width: '100%',
-  WebkitAppearance: 'none',
-  appearance: 'none',
-  backgroundImage: `url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e")`,
-  backgroundRepeat: 'no-repeat',
-  backgroundPosition: 'right 1rem center',
-  backgroundSize: '1.25em 1.25em',
-  paddingRight: '2.5rem'
-};
-
 // ========================================
 // REUSABLE COMPONENTS
 // ========================================
@@ -1601,7 +1589,7 @@ const VendorSelect = ({ value, onChange, darkMode, uniqueVendors }) => {
             ? 'bg-gray-700 border-gray-600 text-gray-100' 
             : 'bg-white border-gray-300 text-gray-900'
         }`}
-        style={selectDropdownStyle}
+        style={{ width: '100%', WebkitAppearance: 'none', appearance: 'none', backgroundImage: `url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e")`, backgroundRepeat: 'no-repeat', backgroundPosition: 'right 1rem center', backgroundSize: '1.25em 1.25em', paddingRight: '2.5rem' }}
       >
         <option value="">Select a vendor...</option>
         {uniqueVendors.map(vendor => (
@@ -2314,7 +2302,7 @@ const TakumiGarage = () => {
       // Small delay to ensure DOM has updated
       setTimeout(() => {
         // Find all scrollable containers in the modal and scroll to top
-        const scrollContainers = document.querySelectorAll('.max-h-\\[calc\\(90vh-140px\\)\\]');
+        const scrollContainers = document.querySelectorAll('.max-h-\\[calc\\(90vh-180px\\)\\]');
         scrollContainers.forEach(container => {
           container.scrollTop = 0;
         });
@@ -3559,11 +3547,15 @@ const TakumiGarage = () => {
         {/* Add New Part Modal */}
         {showAddModal && (
           <div 
-            className={`fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4`}
-            onClick={() => setShowAddModal(false)}
+            className={`fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4 modal-backdrop ${
+              isModalClosing ? 'modal-backdrop-exit' : 'modal-backdrop-enter'
+            }`}
+            onClick={() => handleCloseModal(() => setShowAddModal(false))}
           >
             <div 
-              className={`rounded-lg shadow-xl max-w-4xl w-full max-h-[90vh] ${darkMode ? 'bg-gray-800' : 'bg-white'}`}
+              className={`rounded-lg shadow-xl max-w-4xl w-full max-h-[90vh] modal-content ${
+                isModalClosing ? 'modal-popup-exit' : 'modal-popup-enter'
+              } ${darkMode ? 'bg-gray-800' : 'bg-white'}`}
               onClick={(e) => e.stopPropagation()}
             >
               <div className={`sticky top-0 border-b px-6 py-4 flex items-center justify-between ${
@@ -3573,7 +3565,7 @@ const TakumiGarage = () => {
                   darkMode ? 'text-gray-100' : 'text-gray-800'
                 }`} style={{ fontFamily: "'FoundationOne', 'Courier New', monospace" }}>Add Part</h2>
                 <button
-                  onClick={() => setShowAddModal(false)}
+                  onClick={() => handleCloseModal(() => setShowAddModal(false))}
                   className={`transition-colors ${
                     darkMode ? 'text-gray-400 hover:text-gray-300' : 'text-gray-400 hover:text-gray-600'
                   }`}
@@ -3718,7 +3710,7 @@ const TakumiGarage = () => {
                           ? 'bg-gray-700 border-gray-600 text-gray-100' 
                           : 'bg-white border-gray-300 text-gray-900'
                       }`}
-                      style={selectDropdownStyle}
+                      style={{ width: '100%', WebkitAppearance: 'none', appearance: 'none', backgroundImage: `url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e")`, backgroundRepeat: 'no-repeat', backgroundPosition: 'right 1rem center', backgroundSize: '1.25em 1.25em', paddingRight: '2.5rem' }}
                     >
                       <option value="pending">Pending</option>
                       <option value="purchased">Ordered</option>
@@ -3756,7 +3748,7 @@ const TakumiGarage = () => {
                           : 'bg-white border-gray-300 text-gray-900'
                       }`}
                     >
-                      style={selectDropdownStyle}
+                      style={{ width: '100%', WebkitAppearance: 'none', appearance: 'none', backgroundImage: `url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e")`, backgroundRepeat: 'no-repeat', backgroundPosition: 'right 1rem center', backgroundSize: '1.25em 1.25em', paddingRight: '2.5rem' }}
                       <option value="">No Project</option>
                       {projects.map(project => (
                         <option key={project.id} value={project.id}>
@@ -3909,8 +3901,10 @@ const TakumiGarage = () => {
         {/* Edit Part Modal */}
         {showEditModal && editingPart && (
           <div 
-            className={`fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4`}
-            onClick={() => {
+            className={`fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4 modal-backdrop ${
+              isModalClosing ? 'modal-backdrop-exit' : 'modal-backdrop-enter'
+            }`}
+            onClick={() => handleCloseModal(() => {
               if (hasUnsavedPartChanges()) {
                 setConfirmDialog({
                   isOpen: true,
@@ -3928,13 +3922,15 @@ const TakumiGarage = () => {
                 return;
               }
               setShowEditModal(false);
-              setPartModalView(null);
+                    setPartModalView(null);
               setEditingPart(null);
               setOriginalPartData(null);
-            }}
+            })}
           >
             <div 
-              className={`rounded-lg shadow-xl max-w-4xl w-full max-h-[90vh] ${darkMode ? 'bg-gray-800' : 'bg-white'}`}
+              className={`rounded-lg shadow-xl max-w-4xl w-full max-h-[90vh] modal-content ${
+                isModalClosing ? 'modal-popup-exit' : 'modal-popup-enter'
+              } ${darkMode ? 'bg-gray-800' : 'bg-white'}`}
               onClick={(e) => e.stopPropagation()}
             >
               <div className={`sticky top-0 border-b px-6 py-4 ${
@@ -3978,7 +3974,7 @@ const TakumiGarage = () => {
                     })()}
                   </div>
                   <button
-                    onClick={() => {
+                    onClick={() => handleCloseModal(() => {
                       if (hasUnsavedPartChanges()) {
                         setConfirmDialog({
                           isOpen: true,
@@ -3988,7 +3984,7 @@ const TakumiGarage = () => {
                           cancelText: 'Go Back',
                           onConfirm: () => {
                             setShowEditModal(false);
-                            setPartModalView(null);
+                    setPartModalView(null);
                             setEditingPart(null);
                             setOriginalPartData(null);
                           }
@@ -3996,10 +3992,10 @@ const TakumiGarage = () => {
                         return;
                       }
                       setShowEditModal(false);
-                      setPartModalView(null);
+                    setPartModalView(null);
                       setEditingPart(null);
                       setOriginalPartData(null);
-                    }}
+                    })}
                     className={`transition-colors ${
                       darkMode ? 'text-gray-400 hover:text-gray-300' : 'text-gray-400 hover:text-gray-600'
                     }`}
@@ -4148,7 +4144,7 @@ const TakumiGarage = () => {
                           ? 'bg-gray-700 border-gray-600 text-gray-100' 
                           : 'bg-white border-gray-300 text-gray-900'
                       }`}
-                      style={selectDropdownStyle}
+                      style={{ width: '100%', WebkitAppearance: 'none', appearance: 'none', backgroundImage: `url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e")`, backgroundRepeat: 'no-repeat', backgroundPosition: 'right 1rem center', backgroundSize: '1.25em 1.25em', paddingRight: '2.5rem' }}
                     >
                       <option value="pending">Pending</option>
                       <option value="purchased">Ordered</option>
@@ -4186,7 +4182,7 @@ const TakumiGarage = () => {
                           : 'bg-white border-gray-300 text-gray-900'
                       }`}
                     >
-                      style={selectDropdownStyle}
+                      style={{ width: '100%', WebkitAppearance: 'none', appearance: 'none', backgroundImage: `url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e")`, backgroundRepeat: 'no-repeat', backgroundPosition: 'right 1rem center', backgroundSize: '1.25em 1.25em', paddingRight: '2.5rem' }}
                       <option value="">No Project</option>
                       {projects.map(project => (
                         <option key={project.id} value={project.id}>
@@ -4498,22 +4494,26 @@ const TakumiGarage = () => {
         {/* Part Detail Modal */}
         {showPartDetailModal && viewingPart && (
           <div 
-            className={`fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4 modal-backdrop-enter`}
-            onClick={() => {
+            className={`fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4 modal-backdrop ${
+              isModalClosing ? 'modal-backdrop-exit' : 'modal-backdrop-enter'
+            }`}
+            onClick={() => handleCloseModal(() => {
               setShowPartDetailModal(false);
               setViewingPart(null);
               setPartDetailView('detail');
               setEditingPart(null);
               setOriginalPartData(null);
-            }}
+            })}
           >
             <div 
-              className={`rounded-lg shadow-xl max-w-4xl w-full overflow-hidden transition-all duration-300 ease-out grid modal-popup-enter ${darkMode ? 'bg-gray-800' : 'bg-white'}`}
+              className={`rounded-lg shadow-xl max-w-4xl w-full modal-content overflow-hidden transition-all duration-700 ease-in-out grid ${
+                isModalClosing ? 'modal-popup-exit' : 'modal-popup-enter'
+              } ${darkMode ? 'bg-gray-800' : 'bg-white'}`}
               style={{
                 gridTemplateRows: partDetailView === 'detail' ? 'auto 1fr auto' : 'auto 1fr auto',
                 maxHeight: partDetailView === 'detail' ? '80vh' : '90vh',
                 height: partDetailView === 'manage-vendors' ? '90vh' : 'auto',
-                transition: 'max-height 0.3s ease-in-out, height 0.3s ease-in-out'
+                transition: 'max-height 0.7s ease-in-out, height 0.7s ease-in-out'
               }}
               onClick={(e) => e.stopPropagation()}
             >
@@ -4545,13 +4545,13 @@ const TakumiGarage = () => {
                     })()}
                   </div>
                   <button
-                    onClick={() => {
+                    onClick={() => handleCloseModal(() => {
                       setShowPartDetailModal(false);
                       setViewingPart(null);
                       setPartDetailView('detail');
                       setEditingPart(null);
                       setOriginalPartData(null);
-                    }}
+                    })}
                     className={`transition-colors ${
                       darkMode ? 'text-gray-400 hover:text-gray-300' : 'text-gray-400 hover:text-gray-600'
                     }`}
@@ -4847,7 +4847,7 @@ const TakumiGarage = () => {
                           ? 'bg-gray-700 border-gray-600 text-gray-100' 
                           : 'bg-white border-gray-300 text-gray-900'
                       }`}
-                      style={selectDropdownStyle}
+                      style={{ width: '100%', WebkitAppearance: 'none', appearance: 'none', backgroundImage: `url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e")`, backgroundRepeat: 'no-repeat', backgroundPosition: 'right 1rem center', backgroundSize: '1.25em 1.25em', paddingRight: '2.5rem' }}
                     >
                       <option value="pending">Pending</option>
                       <option value="purchased">Ordered</option>
@@ -4885,7 +4885,7 @@ const TakumiGarage = () => {
                           : 'bg-white border-gray-300 text-gray-900'
                       }`}
                     >
-                      style={selectDropdownStyle}
+                      style={{ width: '100%', WebkitAppearance: 'none', appearance: 'none', backgroundImage: `url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e")`, backgroundRepeat: 'no-repeat', backgroundPosition: 'right 1rem center', backgroundSize: '1.25em 1.25em', paddingRight: '2.5rem' }}
                       <option value="">No Project</option>
                       {projects.map(project => (
                         <option key={project.id} value={project.id}>
@@ -6194,11 +6194,15 @@ const TakumiGarage = () => {
             {/* Add Project Modal */}
             {showAddProjectModal && (
               <div 
-                className={`fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4 modal-backdrop-enter`}
-                onClick={() => setShowAddProjectModal(false)}
+                className={`fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4 modal-backdrop ${
+                  isModalClosing ? 'modal-backdrop-exit' : 'modal-backdrop-enter'
+                }`}
+                onClick={() => handleCloseModal(() => setShowAddProjectModal(false))}
               >
                 <div 
-                  className={`rounded-lg shadow-xl max-w-4xl w-full max-h-[90vh] modal-popup-enter ${darkMode ? 'bg-gray-800' : 'bg-white'}`}
+                  className={`rounded-lg shadow-xl max-w-4xl w-full max-h-[90vh] modal-content ${
+                    isModalClosing ? 'modal-popup-exit' : 'modal-popup-enter'
+                  } ${darkMode ? 'bg-gray-800' : 'bg-white'}`}
                   onClick={(e) => e.stopPropagation()}
                 >
                   <div className={`sticky top-0 border-b px-6 py-4 flex items-center justify-between ${
@@ -6210,7 +6214,7 @@ const TakumiGarage = () => {
                       Add Project
                     </h2>
                     <button
-                      onClick={() => setShowAddProjectModal(false)}
+                      onClick={() => handleCloseModal(() => setShowAddProjectModal(false))}
                       className={`transition-colors ${
                         darkMode ? 'text-gray-400 hover:text-gray-300' : 'text-gray-400 hover:text-gray-600'
                       }`}
@@ -6445,8 +6449,10 @@ const TakumiGarage = () => {
             {/* Project Detail Modal */}
             {showProjectDetailModal && viewingProject && (
               <div 
-                className={`fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50 modal-backdrop-enter`}
-                onClick={() => {
+                className={`fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50 modal-backdrop ${
+                  isModalClosing ? 'modal-backdrop-exit' : 'modal-backdrop-enter'
+                }`}
+                onClick={() => handleCloseModal(() => {
                   // Check for unsaved changes
                   if (hasUnsavedProjectChanges()) {
                     setConfirmDialog({
@@ -6470,14 +6476,16 @@ const TakumiGarage = () => {
                   setViewingProject(null);
                   setOriginalProjectData(null);
                   setProjectModalEditMode(false);
-                }}
+                })}
               >
                 <div 
-                  className={`rounded-lg shadow-xl max-w-5xl w-full overflow-hidden transition-all duration-300 ease-out grid modal-popup-enter ${darkMode ? 'bg-gray-800' : 'bg-white'}`}
+                  className={`rounded-lg shadow-xl max-w-5xl w-full overflow-hidden modal-content transition-all duration-700 ease-in-out grid ${
+                    isModalClosing ? 'modal-popup-exit' : 'modal-popup-enter'
+                  } ${darkMode ? 'bg-gray-800' : 'bg-white'}`}
                   style={{
                     gridTemplateRows: 'auto 1fr auto',
                     maxHeight: projectModalEditMode ? '90vh' : '85vh',
-                    transition: 'max-height 0.3s ease-in-out'
+                    transition: 'max-height 0.7s ease-in-out'
                   }}
                   onClick={(e) => e.stopPropagation()}
                 >
@@ -6511,7 +6519,7 @@ const TakumiGarage = () => {
                         </div>
                       </div>
                       <button
-                        onClick={() => {
+                        onClick={() => handleCloseModal(() => {
                           // Check for unsaved changes
                           if (hasUnsavedProjectChanges()) {
                             setConfirmDialog({
@@ -6535,7 +6543,7 @@ const TakumiGarage = () => {
                           setViewingProject(null);
                           setOriginalProjectData(null);
                           setProjectModalEditMode(false);
-                        }}
+                        })}
                         className={`p-2 rounded-md transition-colors flex-shrink-0 ${
                           darkMode ? 'hover:bg-gray-700 text-gray-400' : 'hover:bg-gray-100 text-gray-600'
                         }`}
@@ -6978,11 +6986,15 @@ const TakumiGarage = () => {
             {/* Add Vehicle Modal */}
             {showAddVehicleModal && (
               <div 
-                className={`fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4 modal-backdrop-enter`}
-                onClick={() => setShowAddVehicleModal(false)}
+                className={`fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4 modal-backdrop ${
+                  isModalClosing ? 'modal-backdrop-exit' : 'modal-backdrop-enter'
+                }`}
+                onClick={() => handleCloseModal(() => setShowAddVehicleModal(false))}
               >
                 <div 
-                  className={`rounded-lg shadow-xl max-w-4xl w-full max-h-[90vh] modal-popup-enter ${darkMode ? 'bg-gray-800' : 'bg-white'}`}
+                  className={`rounded-lg shadow-xl max-w-4xl w-full max-h-[90vh] modal-content ${
+                    isModalClosing ? 'modal-popup-exit' : 'modal-popup-enter'
+                  } ${darkMode ? 'bg-gray-800' : 'bg-white'}`}
                   onClick={(e) => e.stopPropagation()}
                 >
                   <div className={`sticky top-0 border-b px-6 py-4 flex items-center justify-between ${
@@ -6994,7 +7006,7 @@ const TakumiGarage = () => {
                       Add Vehicle
                     </h2>
                     <button
-                      onClick={() => setShowAddVehicleModal(false)}
+                      onClick={() => handleCloseModal(() => setShowAddVehicleModal(false))}
                       className={`transition-colors ${
                         darkMode ? 'text-gray-400 hover:text-gray-300' : 'text-gray-400 hover:text-gray-600'
                       }`}
@@ -7482,8 +7494,10 @@ const TakumiGarage = () => {
             {/* Vehicle Detail Modal */}
             {showVehicleDetailModal && viewingVehicle && (
               <div 
-                className={`fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50 modal-backdrop-enter`}
-                onClick={() => {
+                className={`fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50 modal-backdrop ${
+                  isModalClosing ? 'modal-backdrop-exit' : 'modal-backdrop-enter'
+                }`}
+                onClick={() => handleCloseModal(() => {
                   // Check for unsaved changes
                   if (hasUnsavedVehicleChanges()) {
                     setConfirmDialog({
@@ -7511,14 +7525,16 @@ const TakumiGarage = () => {
                   setVehicleModalProjectView(null);
                   setVehicleModalEditMode(null);
                   clearImageSelection();
-                }}
+                })}
               >
                 <div 
-                  className={`rounded-lg shadow-xl max-w-5xl w-full overflow-hidden transition-all duration-300 ease-out grid modal-popup-enter ${darkMode ? 'bg-gray-800' : 'bg-white'}`}
+                  className={`rounded-lg shadow-xl max-w-5xl w-full overflow-hidden modal-content transition-all duration-700 ease-in-out grid ${
+                    isModalClosing ? 'modal-popup-exit' : 'modal-popup-enter'
+                  } ${darkMode ? 'bg-gray-800' : 'bg-white'}`}
                   style={{
                     gridTemplateRows: 'auto 1fr auto',
                     maxHeight: vehicleModalEditMode ? '90vh' : '85vh',
-                    transition: 'max-height 0.3s ease-in-out'
+                    transition: 'max-height 0.7s ease-in-out'
                   }}
                   onClick={(e) => e.stopPropagation()}
                 >
@@ -7543,7 +7559,7 @@ const TakumiGarage = () => {
                       )}
                     </div>
                     <button
-                      onClick={() => {
+                      onClick={() => handleCloseModal(() => {
                         // Check for unsaved changes
                         if (hasUnsavedVehicleChanges()) {
                           setConfirmDialog({
@@ -7571,7 +7587,7 @@ const TakumiGarage = () => {
                         setVehicleModalProjectView(null);
                         setVehicleModalEditMode(null);
                         clearImageSelection();
-                      }}
+                      })}
                       className={`p-2 rounded-md transition-colors ${
                         darkMode ? 'hover:bg-gray-700 text-gray-400' : 'hover:bg-gray-100 text-gray-600'
                       }`}
@@ -7590,7 +7606,7 @@ const TakumiGarage = () => {
                           : 'relative opacity-100'
                       }`}
                     >
-                      <div className="p-6 space-y-6 max-h-[calc(90vh-140px)] overflow-y-auto pb-8">
+                      <div className="p-6 space-y-6 max-h-[calc(90vh-140px)] overflow-y-auto">
                     {/* Top Section: Image and Basic Info side by side */}
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                       {/* Basic Info Card - Half width on desktop, two column layout - appears second on mobile */}
@@ -7958,7 +7974,7 @@ const TakumiGarage = () => {
                             : 'absolute opacity-0 pointer-events-none'
                         }`}
                       >
-                        <div className="p-6 space-y-6 max-h-[calc(90vh-140px)] overflow-y-auto pb-8">
+                        <div className="p-6 space-y-6 max-h-[calc(90vh-140px)] overflow-y-auto">
                           <ProjectDetailView
                             project={vehicleModalProjectView}
                             parts={parts}
@@ -7998,7 +8014,7 @@ const TakumiGarage = () => {
                       }`}
                     >
                       {vehicleModalProjectView && (
-                        <div className="p-6 space-y-6 max-h-[calc(90vh-140px)] overflow-y-auto pb-8">
+                        <div className="p-6 space-y-6 max-h-[calc(90vh-140px)] overflow-y-auto">
                           <ProjectEditForm
                             project={vehicleModalProjectView}
                             onProjectChange={setVehicleModalProjectView}
@@ -8030,7 +8046,7 @@ const TakumiGarage = () => {
                       }`}
                     >
                       {viewingVehicle && (
-                        <div className="p-6 space-y-6 max-h-[calc(90vh-140px)] overflow-y-auto pb-8">
+                        <div className="p-6 space-y-6 max-h-[calc(90vh-140px)] overflow-y-auto">
                           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                             {/* Left Column - Basic Information */}
                             <div className="space-y-4">
