@@ -4459,7 +4459,6 @@ const TakumiGarage = () => {
                   }`}
                 >
                   <ChevronDown className="w-4 h-4 rotate-90" />
-                  Back
                 </button>
                 <button
                   onClick={() => {
@@ -5113,7 +5112,6 @@ const TakumiGarage = () => {
                     }`}
                   >
                     <ChevronDown className="w-4 h-4 rotate-90" />
-                    Back
                   </button>
                   <button
                     onClick={() => setPartDetailView('manage-vendors')}
@@ -5162,7 +5160,6 @@ const TakumiGarage = () => {
                   }`}
                 >
                   <ChevronDown className="w-4 h-4 rotate-90" />
-                  Back
                 </button>
                 <button
                   onClick={() => {
@@ -6465,9 +6462,14 @@ const TakumiGarage = () => {
                 })}
               >
                 <div 
-                  className={`rounded-lg shadow-xl max-w-5xl w-full max-h-[90vh] overflow-hidden modal-content ${
+                  className={`rounded-lg shadow-xl max-w-5xl w-full overflow-hidden modal-content transition-all duration-700 ease-in-out grid ${
                     isModalClosing ? 'modal-popup-exit' : 'modal-popup-enter'
                   } ${darkMode ? 'bg-gray-800' : 'bg-white'}`}
+                  style={{
+                    gridTemplateRows: 'auto 1fr auto',
+                    maxHeight: projectModalEditMode ? '90vh' : '85vh',
+                    transition: 'max-height 0.7s ease-in-out'
+                  }}
                   onClick={(e) => e.stopPropagation()}
                 >
                   {/* Header */}
@@ -7509,9 +7511,14 @@ const TakumiGarage = () => {
                 })}
               >
                 <div 
-                  className={`rounded-lg shadow-xl max-w-5xl w-full max-h-[90vh] overflow-hidden modal-content ${
+                  className={`rounded-lg shadow-xl max-w-5xl w-full overflow-hidden modal-content transition-all duration-700 ease-in-out grid ${
                     isModalClosing ? 'modal-popup-exit' : 'modal-popup-enter'
                   } ${darkMode ? 'bg-gray-800' : 'bg-white'}`}
+                  style={{
+                    gridTemplateRows: 'auto 1fr auto',
+                    maxHeight: vehicleModalEditMode ? '90vh' : '85vh',
+                    transition: 'max-height 0.7s ease-in-out'
+                  }}
                   onClick={(e) => e.stopPropagation()}
                 >
                   {/* Header */}
