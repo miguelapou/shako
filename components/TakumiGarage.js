@@ -116,6 +116,18 @@ const buttonClasses = (darkMode, variant = 'primary') => {
   return '';
 };
 
+// Common select dropdown custom arrow style (prevents React from recreating this object on every render)
+const selectDropdownStyle = {
+  width: '100%',
+  WebkitAppearance: 'none',
+  appearance: 'none',
+  backgroundImage: `url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e")`,
+  backgroundRepeat: 'no-repeat',
+  backgroundPosition: 'right 1rem center',
+  backgroundSize: '1.25em 1.25em',
+  paddingRight: '2.5rem'
+};
+
 // ========================================
 // REUSABLE COMPONENTS
 // ========================================
@@ -1589,7 +1601,7 @@ const VendorSelect = ({ value, onChange, darkMode, uniqueVendors }) => {
             ? 'bg-gray-700 border-gray-600 text-gray-100' 
             : 'bg-white border-gray-300 text-gray-900'
         }`}
-        style={{ width: '100%', WebkitAppearance: 'none', appearance: 'none', backgroundImage: `url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e")`, backgroundRepeat: 'no-repeat', backgroundPosition: 'right 1rem center', backgroundSize: '1.25em 1.25em', paddingRight: '2.5rem' }}
+        style={selectDropdownStyle}
       >
         <option value="">Select a vendor...</option>
         {uniqueVendors.map(vendor => (
@@ -3706,7 +3718,7 @@ const TakumiGarage = () => {
                           ? 'bg-gray-700 border-gray-600 text-gray-100' 
                           : 'bg-white border-gray-300 text-gray-900'
                       }`}
-                      style={{ width: '100%', WebkitAppearance: 'none', appearance: 'none', backgroundImage: `url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e")`, backgroundRepeat: 'no-repeat', backgroundPosition: 'right 1rem center', backgroundSize: '1.25em 1.25em', paddingRight: '2.5rem' }}
+                      style={selectDropdownStyle}
                     >
                       <option value="pending">Pending</option>
                       <option value="purchased">Ordered</option>
@@ -3744,7 +3756,7 @@ const TakumiGarage = () => {
                           : 'bg-white border-gray-300 text-gray-900'
                       }`}
                     >
-                      style={{ width: '100%', WebkitAppearance: 'none', appearance: 'none', backgroundImage: `url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e")`, backgroundRepeat: 'no-repeat', backgroundPosition: 'right 1rem center', backgroundSize: '1.25em 1.25em', paddingRight: '2.5rem' }}
+                      style={selectDropdownStyle}
                       <option value="">No Project</option>
                       {projects.map(project => (
                         <option key={project.id} value={project.id}>
@@ -4136,7 +4148,7 @@ const TakumiGarage = () => {
                           ? 'bg-gray-700 border-gray-600 text-gray-100' 
                           : 'bg-white border-gray-300 text-gray-900'
                       }`}
-                      style={{ width: '100%', WebkitAppearance: 'none', appearance: 'none', backgroundImage: `url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e")`, backgroundRepeat: 'no-repeat', backgroundPosition: 'right 1rem center', backgroundSize: '1.25em 1.25em', paddingRight: '2.5rem' }}
+                      style={selectDropdownStyle}
                     >
                       <option value="pending">Pending</option>
                       <option value="purchased">Ordered</option>
@@ -4174,7 +4186,7 @@ const TakumiGarage = () => {
                           : 'bg-white border-gray-300 text-gray-900'
                       }`}
                     >
-                      style={{ width: '100%', WebkitAppearance: 'none', appearance: 'none', backgroundImage: `url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e")`, backgroundRepeat: 'no-repeat', backgroundPosition: 'right 1rem center', backgroundSize: '1.25em 1.25em', paddingRight: '2.5rem' }}
+                      style={selectDropdownStyle}
                       <option value="">No Project</option>
                       {projects.map(project => (
                         <option key={project.id} value={project.id}>
@@ -4835,7 +4847,7 @@ const TakumiGarage = () => {
                           ? 'bg-gray-700 border-gray-600 text-gray-100' 
                           : 'bg-white border-gray-300 text-gray-900'
                       }`}
-                      style={{ width: '100%', WebkitAppearance: 'none', appearance: 'none', backgroundImage: `url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e")`, backgroundRepeat: 'no-repeat', backgroundPosition: 'right 1rem center', backgroundSize: '1.25em 1.25em', paddingRight: '2.5rem' }}
+                      style={selectDropdownStyle}
                     >
                       <option value="pending">Pending</option>
                       <option value="purchased">Ordered</option>
@@ -4873,7 +4885,7 @@ const TakumiGarage = () => {
                           : 'bg-white border-gray-300 text-gray-900'
                       }`}
                     >
-                      style={{ width: '100%', WebkitAppearance: 'none', appearance: 'none', backgroundImage: `url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e")`, backgroundRepeat: 'no-repeat', backgroundPosition: 'right 1rem center', backgroundSize: '1.25em 1.25em', paddingRight: '2.5rem' }}
+                      style={selectDropdownStyle}
                       <option value="">No Project</option>
                       {projects.map(project => (
                         <option key={project.id} value={project.id}>
