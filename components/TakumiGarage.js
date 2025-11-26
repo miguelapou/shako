@@ -1250,6 +1250,40 @@ const fontStyles = `
     animation: slideInFromLeft 0.4s cubic-bezier(0.16, 1, 0.3, 1);
   }
 
+  /* Table header sort animations */
+  @keyframes sortIconFadeIn {
+    0% {
+      opacity: 0;
+      transform: scale(0.8) rotate(90deg);
+    }
+    100% {
+      opacity: 1;
+      transform: scale(1) rotate(0deg);
+    }
+  }
+
+  @keyframes headerPulse {
+    0%, 100% {
+      transform: scale(1);
+    }
+    50% {
+      transform: scale(1.02);
+    }
+  }
+
+  /* Table sort animations */
+  th.sorting-active {
+    animation: headerPulse 0.3s ease-out;
+  }
+
+  th svg {
+    transition: transform 0.3s ease, opacity 0.3s ease;
+  }
+
+  th:hover svg {
+    transform: scale(1.1);
+  }
+
   /* Garage Door Loading Spinner */
   .garage-spinner {
     width: 100px;
@@ -2830,7 +2864,9 @@ const TakumiGarage = () => {
 
   const getSortIcon = (field) => {
     if (sortBy !== field) return null;
-    return sortOrder === 'asc' ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />;
+    return sortOrder === 'asc' 
+      ? <ChevronUp className="w-4 h-4 animate-in fade-in duration-300" /> 
+      : <ChevronDown className="w-4 h-4 animate-in fade-in duration-300" />;
   };
 
   const filteredParts = useMemo(() => {
@@ -5426,7 +5462,7 @@ const TakumiGarage = () => {
                 <tr>
                   <th 
                     onClick={() => handleSort('status')}
-                    className={`px-6 py-4 text-center text-xs font-semibold uppercase tracking-wider cursor-pointer transition-colors ${
+                    className={`px-6 py-4 text-center text-xs font-semibold uppercase tracking-wider cursor-pointer transition-all duration-200 active:scale-95 ${
                       darkMode ? 'text-gray-300 hover:bg-gray-600' : 'text-slate-700 hover:bg-slate-200'
                     }`}
                   >
@@ -5443,7 +5479,7 @@ const TakumiGarage = () => {
                   }`}>Part #</th>
                   <th 
                     onClick={() => handleSort('vendor')}
-                    className={`px-6 py-4 text-center text-xs font-semibold uppercase tracking-wider cursor-pointer transition-colors ${
+                    className={`px-6 py-4 text-center text-xs font-semibold uppercase tracking-wider cursor-pointer transition-all duration-200 active:scale-95 ${
                       darkMode ? 'text-gray-300 hover:bg-gray-600' : 'text-slate-700 hover:bg-slate-200'
                     }`}
                   >
@@ -5454,7 +5490,7 @@ const TakumiGarage = () => {
                   </th>
                   <th 
                     onClick={() => handleSort('project')}
-                    className={`px-6 py-4 text-center text-xs font-semibold uppercase tracking-wider cursor-pointer transition-colors ${
+                    className={`px-6 py-4 text-center text-xs font-semibold uppercase tracking-wider cursor-pointer transition-all duration-200 active:scale-95 ${
                       darkMode ? 'text-gray-300 hover:bg-gray-600' : 'text-slate-700 hover:bg-slate-200'
                     }`}
                   >
@@ -5465,7 +5501,7 @@ const TakumiGarage = () => {
                   </th>
                   <th 
                     onClick={() => handleSort('vehicle')}
-                    className={`px-6 py-4 text-center text-xs font-semibold uppercase tracking-wider cursor-pointer transition-colors ${
+                    className={`px-6 py-4 text-center text-xs font-semibold uppercase tracking-wider cursor-pointer transition-all duration-200 active:scale-95 ${
                       darkMode ? 'text-gray-300 hover:bg-gray-600' : 'text-slate-700 hover:bg-slate-200'
                     }`}
                   >
@@ -5476,7 +5512,7 @@ const TakumiGarage = () => {
                   </th>
                   <th 
                     onClick={() => handleSort('price')}
-                    className={`px-6 py-4 text-center text-xs font-semibold uppercase tracking-wider cursor-pointer transition-colors ${
+                    className={`px-6 py-4 text-center text-xs font-semibold uppercase tracking-wider cursor-pointer transition-all duration-200 active:scale-95 ${
                       darkMode ? 'text-gray-300 hover:bg-gray-600' : 'text-slate-700 hover:bg-slate-200'
                     }`}
                   >
@@ -5487,7 +5523,7 @@ const TakumiGarage = () => {
                   </th>
                   <th 
                     onClick={() => handleSort('total')}
-                    className={`px-6 py-4 text-center text-xs font-semibold uppercase tracking-wider cursor-pointer transition-colors ${
+                    className={`px-6 py-4 text-center text-xs font-semibold uppercase tracking-wider cursor-pointer transition-all duration-200 active:scale-95 ${
                       darkMode ? 'text-gray-300 hover:bg-gray-600' : 'text-slate-700 hover:bg-slate-200'
                     }`}
                   >
