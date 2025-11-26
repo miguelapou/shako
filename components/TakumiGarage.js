@@ -2322,12 +2322,17 @@ const TakumiGarage = () => {
       document.body.style.top = `-${savedScrollPosition.current}px`;
       document.body.style.width = '100%';
       document.body.style.paddingRight = `${scrollbarWidth}px`;
+      // Match background color to app's background based on dark mode
+      document.body.style.background = darkMode 
+        ? 'linear-gradient(to bottom right, rgb(17, 24, 39), rgb(31, 41, 55))' 
+        : 'linear-gradient(to bottom right, rgb(248, 250, 252), rgb(226, 232, 240))';
     } else {
       // Remove fixed positioning but maintain scroll position
       document.body.style.position = '';
       document.body.style.top = '';
       document.body.style.width = '';
       document.body.style.paddingRight = '';
+      document.body.style.background = '';
       // Restore scroll position
       if (savedScrollPosition.current > 0) {
         window.scrollTo(0, savedScrollPosition.current);
@@ -2340,9 +2345,10 @@ const TakumiGarage = () => {
       document.body.style.top = '';
       document.body.style.width = '';
       document.body.style.paddingRight = '';
+      document.body.style.background = '';
     };
   }, [showAddModal, showEditModal, showTrackingModal, showAddProjectModal, 
-      showProjectDetailModal, showAddVehicleModal, showVehicleDetailModal, showPartDetailModal]);
+      showProjectDetailModal, showAddVehicleModal, showVehicleDetailModal, showPartDetailModal, darkMode]);
 
   const [newPart, setNewPart] = useState({
     part: '',
