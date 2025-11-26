@@ -460,7 +460,7 @@ const ProjectDetailView = ({
                     setEditingTodoText('');
                   }}
                   inputMode="text"
-                  className={`flex-1 text-base px-2 py-1 bg-transparent border-0 focus:outline-none ${
+                  className={`flex-1 text-base bg-transparent border-0 focus:outline-none ${
                     darkMode
                       ? 'text-gray-100'
                       : 'text-gray-800'
@@ -468,7 +468,7 @@ const ProjectDetailView = ({
                   style={{ 
                     fontSize: '16px !important', 
                     lineHeight: '1.5 !important',
-                    padding: '0.25rem 0.5rem !important',
+                    padding: '0 !important',
                     backgroundColor: 'transparent !important',
                     border: '0 !important',
                     margin: '0 !important',
