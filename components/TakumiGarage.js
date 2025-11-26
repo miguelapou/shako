@@ -207,6 +207,7 @@ const ProjectDetailView = ({
   const hasInitialized = React.useRef(false);
   const [isNewTodoFocused, setIsNewTodoFocused] = React.useState(false);
   const [showCompletedTodos, setShowCompletedTodos] = React.useState(false);
+  const [isDescriptionExpanded, setIsDescriptionExpanded] = React.useState(false);
   
   // Confirmation dialog state
   const [confirmDialog, setConfirmDialog] = React.useState({
@@ -355,13 +356,28 @@ const ProjectDetailView = ({
             <h3 className={`text-lg font-semibold mb-2 ${
               darkMode ? 'text-gray-200' : 'text-gray-800'
             }`}>Description</h3>
-            <p className={`text-base ${
-              project.description 
-                ? (darkMode ? 'text-gray-400' : 'text-gray-600')
-                : (darkMode ? 'text-gray-500 italic' : 'text-gray-500 italic')
-            }`}>
-              {project.description || 'No description added'}
-            </p>
+            <div className="relative">
+              <p className={`text-base transition-all duration-300 ease-in-out ${
+                project.description 
+                  ? (darkMode ? 'text-gray-400' : 'text-gray-600')
+                  : (darkMode ? 'text-gray-500 italic' : 'text-gray-500 italic')
+              } ${!isDescriptionExpanded && project.description ? 'line-clamp-3' : ''}`}>
+                {project.description || 'No description added'}
+              </p>
+              {project.description && (
+                <button
+                  onClick={() => setIsDescriptionExpanded(!isDescriptionExpanded)}
+                  className={`mt-2 flex items-center gap-1 text-sm font-medium transition-colors ${
+                    darkMode ? 'text-blue-400 hover:text-blue-300' : 'text-blue-600 hover:text-blue-700'
+                  }`}
+                >
+                  {isDescriptionExpanded ? 'Show less' : 'Show more'}
+                  <ChevronDown className={`w-4 h-4 transition-transform duration-300 ${
+                    isDescriptionExpanded ? 'rotate-180' : ''
+                  }`} />
+                </button>
+              )}
+            </div>
           </div>
 
           {/* Budget Progress */}
@@ -1289,6 +1305,13 @@ const fontStyles = `
   .line-clamp-2 {
     display: -webkit-box;
     -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+  
+  .line-clamp-3 {
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
     -webkit-box-orient: vertical;
     overflow: hidden;
   }
@@ -3347,7 +3370,7 @@ const TakumiGarage = () => {
                         className="fixed inset-0 z-10"
                         onClick={() => setShowVehicleFilterDropdown(false)}
                       />
-                      <div className={`absolute right-0 z-20 mt-1 w-64 rounded-lg border shadow-lg py-1 max-h-60 overflow-y-auto ${
+                      <div className={`absolute right-0 z-20 mt-1 min-w-[240px] w-max rounded-lg border shadow-lg py-1 max-h-60 overflow-y-auto ${
                         darkMode ? 'bg-gray-800 border-gray-600' : 'bg-white border-gray-300'
                       }`}>
                         <button
@@ -5597,10 +5620,10 @@ const TakumiGarage = () => {
                               )}
                             </div>
                           ) : (
-                            <div className={`text-center py-4 rounded-lg ${
+                            <div className={`text-center py-2 rounded-lg ${
                               darkMode ? 'bg-gray-700' : 'bg-gray-50'
                             }`}>
-                              <Package className={`w-8 h-8 mx-auto mb-2 ${
+                              <Package className={`w-6 h-6 mx-auto mb-1 ${
                                 darkMode ? 'text-gray-600' : 'text-gray-400'
                               }`} />
                               <p className={`text-xs ${
