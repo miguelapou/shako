@@ -1643,7 +1643,6 @@ const TakumiGarage = () => {
 
   // Filter and sort states
   const [projectVehicleFilter, setProjectVehicleFilter] = useState('all'); // 'all' or vehicle ID
-  const [partsSortBy, setPartsSortBy] = useState('part'); // 'part', 'vehicle', 'project'
 
   // Load parts and projects from Supabase on mount
   useEffect(() => {
@@ -2183,6 +2182,8 @@ const TakumiGarage = () => {
   const [editingPart, setEditingPart] = useState(null);
   const [originalPartData, setOriginalPartData] = useState(null); // Track original data for unsaved changes detection
   const [isModalClosing, setIsModalClosing] = useState(false);
+  const [showManageVendorsModal, setShowManageVendorsModal] = useState(false);
+  const [editingVendor, setEditingVendor] = useState(null); // { oldName: string, newName: string }
   
   // Project-related state
   const [showAddProjectModal, setShowAddProjectModal] = useState(false);
@@ -2594,6 +2595,68 @@ const TakumiGarage = () => {
       }
   };
 
+  // Vendor management functions
+  const renameVendor = async (oldName, newName) => {
+    if (!newName || !newName.trim()) {
+      alert('Vendor name cannot be empty');
+      return;
+    }
+
+    try {
+      const partsToUpdate = parts.filter(p => p.vendor === oldName);
+      
+      // Update all parts in database
+      const { error } = await supabase
+        .from('parts')
+        .update({ vendor: newName.trim() })
+        .eq('vendor', oldName);
+      
+      if (error) throw error;
+      
+      // Update local state
+      setParts(prevParts => prevParts.map(part => 
+        part.vendor === oldName ? { ...part, vendor: newName.trim() } : part
+      ));
+      
+      // Update editingPart if it has the old vendor
+      if (editingPart && editingPart.vendor === oldName) {
+        setEditingPart({ ...editingPart, vendor: newName.trim() });
+      }
+      
+      setEditingVendor(null);
+    } catch (error) {
+      console.error('Error renaming vendor:', error);
+      alert('Error renaming vendor. Please try again.');
+    }
+  };
+
+  const deleteVendor = async (vendorName) => {
+    try {
+      const partsWithVendor = parts.filter(p => p.vendor === vendorName);
+      
+      // Update all parts in database to have empty vendor
+      const { error } = await supabase
+        .from('parts')
+        .update({ vendor: '' })
+        .eq('vendor', vendorName);
+      
+      if (error) throw error;
+      
+      // Update local state
+      setParts(prevParts => prevParts.map(part => 
+        part.vendor === vendorName ? { ...part, vendor: '' } : part
+      ));
+      
+      // Update editingPart if it has this vendor
+      if (editingPart && editingPart.vendor === vendorName) {
+        setEditingPart({ ...editingPart, vendor: '' });
+      }
+    } catch (error) {
+      console.error('Error deleting vendor:', error);
+      alert('Error deleting vendor. Please try again.');
+    }
+  };
+
   const unlinkPartFromProject = async (partId) => {
     try {
       // Update in database
@@ -2736,36 +2799,6 @@ const TakumiGarage = () => {
         return matchesSearch && matchesStatus && matchesVendor;
       })
       .sort((a, b) => {
-        // If grouping by vehicle or project, sort by that first
-        if (partsSortBy === 'vehicle') {
-          const aVehicle = projects.find(p => p.id === a.projectId)?.vehicle_id || '';
-          const bVehicle = projects.find(p => p.id === b.projectId)?.vehicle_id || '';
-          const aVehicleName = vehicles.find(v => v.id === aVehicle)?.nickname || 
-                               vehicles.find(v => v.id === aVehicle)?.name || '';
-          const bVehicleName = vehicles.find(v => v.id === bVehicle)?.nickname || 
-                               vehicles.find(v => v.id === bVehicle)?.name || '';
-          
-          if (aVehicleName !== bVehicleName) {
-            // Sort empty vehicle names to the end
-            if (!aVehicleName) return 1;
-            if (!bVehicleName) return -1;
-            return aVehicleName.toLowerCase() > bVehicleName.toLowerCase() ? 1 : -1;
-          }
-        } else if (partsSortBy === 'project') {
-          const aProject = projects.find(p => p.id === a.projectId);
-          const bProject = projects.find(p => p.id === b.projectId);
-          const aProjectName = aProject?.name || '';
-          const bProjectName = bProject?.name || '';
-          
-          if (aProjectName !== bProjectName) {
-            // Sort empty project names to the end
-            if (!aProjectName) return 1;
-            if (!bProjectName) return -1;
-            return aProjectName.toLowerCase() > bProjectName.toLowerCase() ? 1 : -1;
-          }
-        }
-        
-        // Then apply the regular sort
         let aVal, bVal;
         
         // Special handling for status sorting
@@ -2773,6 +2806,28 @@ const TakumiGarage = () => {
           // Assign numeric values: pending=0, purchased=1, shipped=2, delivered=3
           aVal = a.delivered ? 3 : (a.shipped ? 2 : (a.purchased ? 1 : 0));
           bVal = b.delivered ? 3 : (b.shipped ? 2 : (b.purchased ? 1 : 0));
+        } else if (sortBy === 'project') {
+          // Sort by project name
+          const aProject = projects.find(p => p.id === a.projectId);
+          const bProject = projects.find(p => p.id === b.projectId);
+          aVal = (aProject?.name || '').toLowerCase();
+          bVal = (bProject?.name || '').toLowerCase();
+          
+          // Sort empty values to the end
+          if (!aVal && bVal) return 1;
+          if (aVal && !bVal) return -1;
+        } else if (sortBy === 'vehicle') {
+          // Sort by vehicle name (via project)
+          const aProject = projects.find(p => p.id === a.projectId);
+          const bProject = projects.find(p => p.id === b.projectId);
+          const aVehicle = aProject?.vehicle_id ? vehicles.find(v => v.id === aProject.vehicle_id) : null;
+          const bVehicle = bProject?.vehicle_id ? vehicles.find(v => v.id === bProject.vehicle_id) : null;
+          aVal = (aVehicle?.nickname || aVehicle?.name || '').toLowerCase();
+          bVal = (bVehicle?.nickname || bVehicle?.name || '').toLowerCase();
+          
+          // Sort empty values to the end
+          if (!aVal && bVal) return 1;
+          if (aVal && !bVal) return -1;
         } else {
           aVal = a[sortBy];
           bVal = b[sortBy];
@@ -2791,7 +2846,7 @@ const TakumiGarage = () => {
       });
     
     return sorted;
-  }, [parts, searchTerm, statusFilter, vendorFilter, sortBy, sortOrder, partsSortBy, projects, vehicles]);
+  }, [parts, searchTerm, statusFilter, vendorFilter, sortBy, sortOrder, projects, vehicles]);
 
   // Get unique vendors from existing parts for the dropdown
   const uniqueVendors = useMemo(() => {
@@ -4053,7 +4108,17 @@ const TakumiGarage = () => {
               <div className={`sticky bottom-0 border-t p-4 flex items-center justify-between ${
                 darkMode ? 'border-gray-700 bg-gray-800' : 'border-gray-200 bg-white'
               }`}>
-                <div></div>
+                <button
+                  onClick={() => setShowManageVendorsModal(true)}
+                  className={`px-4 py-2 rounded-lg font-medium transition-colors flex items-center gap-2 text-sm border ${
+                    darkMode
+                      ? 'bg-gray-700 hover:bg-gray-600 text-gray-100 border-gray-600'
+                      : 'bg-gray-100 hover:bg-gray-200 text-gray-700 border-gray-300'
+                  }`}
+                >
+                  <Settings className="w-4 h-4" />
+                  Manage Vendors
+                </button>
                 <div className="flex items-center gap-2">
                   <button
                     onClick={() => {
@@ -4122,6 +4187,174 @@ const TakumiGarage = () => {
                     Save Changes
                   </button>
                 </div>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Manage Vendors Modal */}
+        {showManageVendorsModal && (
+          <div 
+            className={`fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4 modal-backdrop ${
+              isModalClosing ? 'modal-backdrop-exit' : 'modal-backdrop-enter'
+            }`}
+            onClick={() => handleCloseModal(() => {
+              setShowManageVendorsModal(false);
+              setEditingVendor(null);
+            })}
+          >
+            <div 
+              className={`rounded-lg shadow-xl max-w-3xl w-full max-h-[90vh] modal-content ${
+                isModalClosing ? 'modal-popup-exit' : 'modal-popup-enter'
+              } ${darkMode ? 'bg-gray-800' : 'bg-white'}`}
+              onClick={(e) => e.stopPropagation()}
+            >
+              <div className={`sticky top-0 border-b px-6 py-4 ${
+                darkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-200'
+              }`}>
+                <div className="flex items-center justify-between">
+                  <h2 className={`text-2xl font-bold ${
+                    darkMode ? 'text-gray-100' : 'text-gray-800'
+                  }`}>
+                    Manage Vendors
+                  </h2>
+                  <button
+                    onClick={() => handleCloseModal(() => {
+                      setShowManageVendorsModal(false);
+                      setEditingVendor(null);
+                    })}
+                    className={`transition-colors ${
+                      darkMode ? 'text-gray-400 hover:text-gray-300' : 'text-gray-400 hover:text-gray-600'
+                    }`}
+                  >
+                    <X className="w-6 h-6" />
+                  </button>
+                </div>
+              </div>
+
+              <div className="p-6 overflow-y-auto max-h-[calc(90vh-140px)]">
+                {uniqueVendors.length === 0 ? (
+                  <div className={`text-center py-12 ${
+                    darkMode ? 'text-gray-400' : 'text-gray-600'
+                  }`}>
+                    <Package className="w-16 h-16 mx-auto mb-4 opacity-50" />
+                    <p>No vendors yet. Add parts with vendors to see them here.</p>
+                  </div>
+                ) : (
+                  <div className="space-y-3">
+                    {uniqueVendors.map(vendor => {
+                      const partCount = parts.filter(p => p.vendor === vendor).length;
+                      const isEditing = editingVendor?.oldName === vendor;
+                      
+                      return (
+                        <div 
+                          key={vendor}
+                          className={`p-4 rounded-lg border ${
+                            darkMode ? 'bg-gray-700 border-gray-600' : 'bg-gray-50 border-gray-200'
+                          }`}
+                        >
+                          {isEditing ? (
+                            <div className="flex items-center gap-3">
+                              <input
+                                type="text"
+                                value={editingVendor.newName}
+                                onChange={(e) => setEditingVendor({ ...editingVendor, newName: e.target.value })}
+                                className={`flex-1 px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
+                                  darkMode 
+                                    ? 'bg-gray-600 border-gray-500 text-gray-100' 
+                                    : 'bg-white border-gray-300 text-gray-900'
+                                }`}
+                                autoFocus
+                                onKeyDown={(e) => {
+                                  if (e.key === 'Enter') {
+                                    renameVendor(editingVendor.oldName, editingVendor.newName);
+                                  } else if (e.key === 'Escape') {
+                                    setEditingVendor(null);
+                                  }
+                                }}
+                              />
+                              <button
+                                onClick={() => renameVendor(editingVendor.oldName, editingVendor.newName)}
+                                className="px-3 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium transition-colors text-sm"
+                              >
+                                Save
+                              </button>
+                              <button
+                                onClick={() => setEditingVendor(null)}
+                                className={`px-3 py-2 rounded-lg font-medium transition-colors text-sm ${
+                                  darkMode 
+                                    ? 'bg-gray-600 hover:bg-gray-500 text-gray-100' 
+                                    : 'bg-gray-200 hover:bg-gray-300 text-gray-800'
+                                }`}
+                              >
+                                Cancel
+                              </button>
+                            </div>
+                          ) : (
+                            <div className="flex items-center justify-between">
+                              <div className="flex items-center gap-3">
+                                <span className={`inline-block px-3 py-1 rounded-full text-sm font-medium ${getVendorColor(vendor)}`}>
+                                  {vendor}
+                                </span>
+                                <span className={`text-sm ${
+                                  darkMode ? 'text-gray-400' : 'text-gray-600'
+                                }`}>
+                                  {partCount} part{partCount !== 1 ? 's' : ''}
+                                </span>
+                              </div>
+                              <div className="flex items-center gap-2">
+                                <button
+                                  onClick={() => setEditingVendor({ oldName: vendor, newName: vendor })}
+                                  className={`px-3 py-1.5 rounded-lg font-medium transition-colors text-sm flex items-center gap-1.5 ${
+                                    darkMode 
+                                      ? 'bg-gray-600 hover:bg-gray-500 text-gray-100' 
+                                      : 'bg-gray-200 hover:bg-gray-300 text-gray-800'
+                                  }`}
+                                >
+                                  <Edit2 className="w-3.5 h-3.5" />
+                                  Rename
+                                </button>
+                                <button
+                                  onClick={() => {
+                                    setConfirmDialog({
+                                      isOpen: true,
+                                      title: 'Delete Vendor',
+                                      message: `Are you sure you want to delete "${vendor}"? This will remove the vendor from ${partCount} part${partCount !== 1 ? 's' : ''}.`,
+                                      confirmText: 'Delete',
+                                      onConfirm: () => deleteVendor(vendor)
+                                    });
+                                  }}
+                                  className={`px-3 py-1.5 rounded-lg font-medium transition-colors text-sm flex items-center gap-1.5 ${
+                                    darkMode
+                                      ? 'bg-red-900/30 hover:bg-red-900/50 text-red-400 border border-red-700'
+                                      : 'bg-red-50 hover:bg-red-100 text-red-600 border border-red-300'
+                                  }`}
+                                >
+                                  <Trash2 className="w-3.5 h-3.5" />
+                                  Delete
+                                </button>
+                              </div>
+                            </div>
+                          )}
+                        </div>
+                      );
+                    })}
+                  </div>
+                )}
+              </div>
+
+              <div className={`sticky bottom-0 border-t p-4 flex justify-end ${
+                darkMode ? 'border-gray-700 bg-gray-800' : 'border-gray-200 bg-white'
+              }`}>
+                <button
+                  onClick={() => {
+                    setShowManageVendorsModal(false);
+                    setEditingVendor(null);
+                  }}
+                  className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium transition-colors text-sm"
+                >
+                  Done
+                </button>
               </div>
             </div>
           </div>
@@ -4465,23 +4698,6 @@ const TakumiGarage = () => {
               </div>
             </div>
 
-            {/* Group By Dropdown - Shows in left column on desktop only */}
-            <div className={`hidden lg:block rounded-lg shadow-md p-3 ${
-              darkMode ? 'bg-gray-800' : 'bg-white'
-            }`}>
-              <label className={`block text-xs font-medium mb-2 ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>
-                Group By
-              </label>
-              <select
-                value={partsSortBy}
-                onChange={(e) => setPartsSortBy(e.target.value)}
-                className={selectClasses(darkMode, 'py-2 text-sm')}
-              >
-                <option value="part">Part Name</option>
-                <option value="vehicle">Vehicle</option>
-                <option value="project">Project</option>
-              </select>
-            </div>
           </div>
 
           {/* Cost Breakdown - order-2 on mobile */}
@@ -4622,12 +4838,28 @@ const TakumiGarage = () => {
                       {getSortIcon('vendor')}
                     </div>
                   </th>
-                  <th className={`px-6 py-4 text-left text-xs font-semibold uppercase tracking-wider ${
-                    darkMode ? 'text-gray-300' : 'text-slate-700'
-                  }`}>Project</th>
-                  <th className={`px-6 py-4 text-left text-xs font-semibold uppercase tracking-wider ${
-                    darkMode ? 'text-gray-300' : 'text-slate-700'
-                  }`}>Vehicle</th>
+                  <th 
+                    onClick={() => handleSort('project')}
+                    className={`px-6 py-4 text-left text-xs font-semibold uppercase tracking-wider cursor-pointer transition-colors ${
+                      darkMode ? 'text-gray-300 hover:bg-gray-600' : 'text-slate-700 hover:bg-slate-200'
+                    }`}
+                  >
+                    <div className="flex items-center gap-2">
+                      Project
+                      {getSortIcon('project')}
+                    </div>
+                  </th>
+                  <th 
+                    onClick={() => handleSort('vehicle')}
+                    className={`px-6 py-4 text-left text-xs font-semibold uppercase tracking-wider cursor-pointer transition-colors ${
+                      darkMode ? 'text-gray-300 hover:bg-gray-600' : 'text-slate-700 hover:bg-slate-200'
+                    }`}
+                  >
+                    <div className="flex items-center gap-2">
+                      Vehicle
+                      {getSortIcon('vehicle')}
+                    </div>
+                  </th>
                   <th 
                     onClick={() => handleSort('price')}
                     className={`px-6 py-4 text-right text-xs font-semibold uppercase tracking-wider cursor-pointer transition-colors ${
