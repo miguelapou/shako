@@ -2201,6 +2201,7 @@ const TakumiGarage = () => {
   const [showTrackingModal, setShowTrackingModal] = useState(false);
   const [showPartDetailModal, setShowPartDetailModal] = useState(false);
   const [viewingPart, setViewingPart] = useState(null);
+  const [partDetailView, setPartDetailView] = useState('detail'); // 'detail' or 'edit'
   const [trackingModalPartId, setTrackingModalPartId] = useState(null);
   const [trackingInput, setTrackingInput] = useState('');
   const [editingPart, setEditingPart] = useState(null);
@@ -3992,7 +3993,7 @@ const TakumiGarage = () => {
               
               {/* Edit Part View */}
               {!partModalView && (
-              <>
+              <div className="slide-in-left">
               <div className="p-6 modal-scrollable">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div className="md:col-span-1">
@@ -4326,12 +4327,12 @@ const TakumiGarage = () => {
                   </button>
                 </div>
               </div>
-              </>
+              </div>
               )}
               
               {/* Manage Vendors View */}
               {partModalView === 'manage-vendors' && (
-              <>
+              <div className="slide-in-right">
               <div className="p-6 overflow-y-auto max-h-[calc(90vh-140px)]">
                 {uniqueVendors.length === 0 ? (
                   <div className={`text-center py-12 ${
@@ -4443,9 +4444,23 @@ const TakumiGarage = () => {
                 )}
               </div>
 
-              <div className={`sticky bottom-0 border-t p-4 flex justify-end ${
+              <div className={`sticky bottom-0 border-t p-4 flex items-center justify-between ${
                 darkMode ? 'border-gray-700 bg-gray-800' : 'border-gray-200 bg-white'
               }`}>
+                <button
+                  onClick={() => {
+                    setPartModalView(null);
+                    setEditingVendor(null);
+                  }}
+                  className={`px-4 py-2 rounded-lg font-medium transition-colors flex items-center gap-2 text-sm border ${
+                    darkMode
+                      ? 'bg-gray-700 hover:bg-gray-600 text-gray-100 border-gray-600'
+                      : 'bg-gray-200 hover:bg-gray-300 text-gray-800 border-gray-300'
+                  }`}
+                >
+                  <ChevronDown className="w-4 h-4 rotate-90" />
+                  Back
+                </button>
                 <button
                   onClick={() => {
                     setPartModalView(null);
@@ -4456,7 +4471,7 @@ const TakumiGarage = () => {
                   Done
                 </button>
               </div>
-              </>
+              </div>
               )}
             </div>
           </div>
@@ -4471,12 +4486,17 @@ const TakumiGarage = () => {
             onClick={() => handleCloseModal(() => {
               setShowPartDetailModal(false);
               setViewingPart(null);
+              setPartDetailView('detail');
+              setEditingPart(null);
+              setOriginalPartData(null);
             })}
           >
             <div 
-              className={`rounded-lg shadow-xl max-w-4xl w-full max-h-[90vh] modal-content ${
+              className={`rounded-lg shadow-xl max-w-4xl w-full modal-content transition-all duration-500 ease-in-out ${
                 isModalClosing ? 'modal-popup-exit' : 'modal-popup-enter'
-              } ${darkMode ? 'bg-gray-800' : 'bg-white'}`}
+              } ${darkMode ? 'bg-gray-800' : 'bg-white'} ${
+                partDetailView === 'edit' ? 'max-h-[90vh]' : 'h-auto'
+              }`}
               onClick={(e) => e.stopPropagation()}
             >
               <div className={`sticky top-0 border-b px-6 py-4 rounded-t-lg ${
@@ -4484,10 +4504,39 @@ const TakumiGarage = () => {
               }`} style={{ zIndex: 10 }}>
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-3">
+                    {partDetailView === 'edit' && (
+                      <button
+                        onClick={() => {
+                          if (hasUnsavedPartChanges()) {
+                            setConfirmDialog({
+                              isOpen: true,
+                              title: 'Unsaved Changes',
+                              message: 'You have unsaved changes. Are you sure you want to go back without saving?',
+                              confirmText: 'Discard',
+                              cancelText: 'Keep Editing',
+                              onConfirm: () => {
+                                setPartDetailView('detail');
+                                setEditingPart(null);
+                                setOriginalPartData(null);
+                              }
+                            });
+                            return;
+                          }
+                          setPartDetailView('detail');
+                          setEditingPart(null);
+                          setOriginalPartData(null);
+                        }}
+                        className={`transition-colors ${
+                          darkMode ? 'text-gray-400 hover:text-gray-300' : 'text-gray-400 hover:text-gray-600'
+                        }`}
+                      >
+                        <ChevronDown className="w-6 h-6 -rotate-90" />
+                      </button>
+                    )}
                     <h2 className={`text-2xl font-bold ${
                       darkMode ? 'text-gray-100' : 'text-gray-800'
                     }`} style={{ fontFamily: "'FoundationOne', 'Courier New', monospace" }}>
-                      {viewingPart.part}
+                      {partDetailView === 'edit' ? 'Edit Part' : viewingPart.part}
                     </h2>
                     {(() => {
                       const partProject = viewingPart.projectId ? projects.find(p => p.id === viewingPart.projectId) : null;
@@ -4510,6 +4559,9 @@ const TakumiGarage = () => {
                     onClick={() => handleCloseModal(() => {
                       setShowPartDetailModal(false);
                       setViewingPart(null);
+                      setPartDetailView('detail');
+                      setEditingPart(null);
+                      setOriginalPartData(null);
                     })}
                     className={`transition-colors ${
                       darkMode ? 'text-gray-400 hover:text-gray-300' : 'text-gray-400 hover:text-gray-600'
@@ -4520,6 +4572,9 @@ const TakumiGarage = () => {
                 </div>
               </div>
 
+              {/* Detail View */}
+              {partDetailView === 'detail' && (
+              <div className="slide-in-left">
               <div className="p-6 overflow-y-auto">
                 {/* Status Badge */}
                 <div className="mb-6">
@@ -4661,26 +4716,59 @@ const TakumiGarage = () => {
                   </div>
                 )}
               </div>
+              </div>
+              )}
+              
+              {/* Edit View */}
+              {partDetailView === 'edit' && editingPart && (
+              <div className="slide-in-right">
+              <div className="p-6 modal-scrollable overflow-y-auto max-h-[calc(90vh-180px)]">
+                {/* TODO: Copy the complete edit form from the standalone Edit Part modal here */}
+                {/* For now, this will reuse the same editingPart state */}
+                {/* The form should include all fields: Part Name, Part Number, Vendor, Price, Shipping, Duties, Tracking, Status, Project */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="md:col-span-1">
+                    <label className={`block text-sm font-medium mb-2 ${
+                      darkMode ? 'text-gray-300' : 'text-gray-700'
+                    }`}>
+                      Part Name <span className="text-red-500">*</span>
+                    </label>
+                    <input
+                      type="text"
+                      value={editingPart.part}
+                      onChange={(e) => setEditingPart({ ...editingPart, part: e.target.value })}
+                      className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
+                        darkMode 
+                          ? 'bg-gray-700 border-gray-600 text-gray-100 placeholder-gray-400' 
+                          : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400'
+                      }`}
+                      placeholder="e.g., Front Bumper"
+                      required
+                    />
+                  </div>
+                  <div className={`text-center py-8 ${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>
+                    <p className="text-sm">Full edit form will be integrated here</p>
+                    <p className="text-xs mt-2">Use standalone Edit Part modal for now</p>
+                  </div>
+                </div>
+              </div>
+              </div>
+              )}
 
-              {/* Footer with Edit Button */}
+              {/* Footer */}
+              {partDetailView === 'detail' && (
               <div className={`sticky bottom-0 border-t p-4 flex justify-end ${
                 darkMode ? 'border-gray-700 bg-gray-800' : 'border-gray-200 bg-white'
               }`}>
                 <button
                   onClick={() => {
-                    // Set transition flag to prevent scroll restoration
-                    isTransitioningModals.current = true;
-                    const partToEdit = viewingPart;
                     const partData = {
-                      ...partToEdit,
-                      status: partToEdit.delivered ? 'delivered' : (partToEdit.shipped ? 'shipped' : (partToEdit.purchased ? 'purchased' : 'pending'))
+                      ...viewingPart,
+                      status: viewingPart.delivered ? 'delivered' : (viewingPart.shipped ? 'shipped' : (viewingPart.purchased ? 'purchased' : 'pending'))
                     };
                     setEditingPart(partData);
-                    setOriginalPartData({ ...partData }); // Save original data for unsaved changes check
-                    setShowEditModal(true);
-                    // Close detail modal immediately
-                    setShowPartDetailModal(false);
-                    setViewingPart(null);
+                    setOriginalPartData({ ...partData });
+                    setPartDetailView('edit');
                   }}
                   className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium transition-colors flex items-center gap-2 text-sm"
                 >
@@ -4688,6 +4776,60 @@ const TakumiGarage = () => {
                   Edit
                 </button>
               </div>
+              )}
+              
+              {partDetailView === 'edit' && (
+              <div className={`sticky bottom-0 border-t p-4 flex items-center justify-between ${
+                darkMode ? 'border-gray-700 bg-gray-800' : 'border-gray-200 bg-white'
+              }`}>
+                <button
+                  onClick={() => {
+                    if (hasUnsavedPartChanges()) {
+                      setConfirmDialog({
+                        isOpen: true,
+                        title: 'Unsaved Changes',
+                        message: 'You have unsaved changes. Are you sure you want to go back without saving?',
+                        confirmText: 'Discard',
+                        cancelText: 'Keep Editing',
+                        onConfirm: () => {
+                          setPartDetailView('detail');
+                          setEditingPart(null);
+                          setOriginalPartData(null);
+                        }
+                      });
+                      return;
+                    }
+                    setPartDetailView('detail');
+                    setEditingPart(null);
+                    setOriginalPartData(null);
+                  }}
+                  className={`px-4 py-2 rounded-lg font-medium transition-colors flex items-center gap-2 text-sm border ${
+                    darkMode
+                      ? 'bg-gray-700 hover:bg-gray-600 text-gray-100 border-gray-600'
+                      : 'bg-gray-200 hover:bg-gray-300 text-gray-800 border-gray-300'
+                  }`}
+                >
+                  <ChevronDown className="w-4 h-4 rotate-90" />
+                  Back
+                </button>
+                <button
+                  onClick={async () => {
+                    await saveEditedPart();
+                    setPartDetailView('detail');
+                  }}
+                  disabled={!editingPart.part}
+                  className={`px-4 py-2 rounded-lg font-medium transition-colors text-sm ${
+                    !editingPart.part
+                      ? darkMode 
+                        ? 'bg-gray-700 text-gray-500 cursor-not-allowed'
+                        : 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                      : 'bg-blue-600 hover:bg-blue-700 text-white'
+                  }`}
+                >
+                  Save Changes
+                </button>
+              </div>
+              )}
             </div>
           </div>
         )}
