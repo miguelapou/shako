@@ -4487,13 +4487,13 @@ const TakumiGarage = () => {
         {showPartDetailModal && viewingPart && (
           <div 
             className={`fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4 animate-fadeIn`}
-            onClick={() => handleCloseModal(() => {
+            onClick={() => {
               setShowPartDetailModal(false);
               setViewingPart(null);
               setPartDetailView('detail');
               setEditingPart(null);
               setOriginalPartData(null);
-            })}
+            }}
           >
             <div 
               className={`rounded-lg shadow-xl max-w-4xl w-full overflow-hidden transition-all duration-300 ease-out grid animate-modalSlideUp ${darkMode ? 'bg-gray-800' : 'bg-white'}`}
@@ -4533,13 +4533,13 @@ const TakumiGarage = () => {
                     })()}
                   </div>
                   <button
-                    onClick={() => handleCloseModal(() => {
+                    onClick={() => {
                       setShowPartDetailModal(false);
                       setViewingPart(null);
                       setPartDetailView('detail');
                       setEditingPart(null);
                       setOriginalPartData(null);
-                    })}
+                    }}
                     className={`transition-colors ${
                       darkMode ? 'text-gray-400 hover:text-gray-300' : 'text-gray-400 hover:text-gray-600'
                     }`}
@@ -6434,7 +6434,7 @@ const TakumiGarage = () => {
             {showProjectDetailModal && viewingProject && (
               <div 
                 className={`fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50 animate-fadeIn`}
-                onClick={() => handleCloseModal(() => {
+                onClick={() => {
                   // Check for unsaved changes
                   if (hasUnsavedProjectChanges()) {
                     setConfirmDialog({
@@ -6458,7 +6458,7 @@ const TakumiGarage = () => {
                   setViewingProject(null);
                   setOriginalProjectData(null);
                   setProjectModalEditMode(false);
-                })}
+                }}
               >
                 <div 
                   className={`rounded-lg shadow-xl max-w-5xl w-full overflow-hidden transition-all duration-300 ease-out grid animate-modalSlideUp ${darkMode ? 'bg-gray-800' : 'bg-white'}`}
@@ -6499,7 +6499,7 @@ const TakumiGarage = () => {
                         </div>
                       </div>
                       <button
-                        onClick={() => handleCloseModal(() => {
+                        onClick={() => {
                           // Check for unsaved changes
                           if (hasUnsavedProjectChanges()) {
                             setConfirmDialog({
@@ -6523,7 +6523,7 @@ const TakumiGarage = () => {
                           setViewingProject(null);
                           setOriginalProjectData(null);
                           setProjectModalEditMode(false);
-                        })}
+                        }}
                         className={`p-2 rounded-md transition-colors flex-shrink-0 ${
                           darkMode ? 'hover:bg-gray-700 text-gray-400' : 'hover:bg-gray-100 text-gray-600'
                         }`}
@@ -7471,7 +7471,7 @@ const TakumiGarage = () => {
             {showVehicleDetailModal && viewingVehicle && (
               <div 
                 className={`fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50 animate-fadeIn`}
-                onClick={() => handleCloseModal(() => {
+                onClick={() => {
                   // Check for unsaved changes
                   if (hasUnsavedVehicleChanges()) {
                     setConfirmDialog({
@@ -7499,7 +7499,7 @@ const TakumiGarage = () => {
                   setVehicleModalProjectView(null);
                   setVehicleModalEditMode(null);
                   clearImageSelection();
-                })}
+                }}
               >
                 <div 
                   className={`rounded-lg shadow-xl max-w-5xl w-full overflow-hidden transition-all duration-300 ease-out grid animate-modalSlideUp ${darkMode ? 'bg-gray-800' : 'bg-white'}`}
@@ -7531,7 +7531,7 @@ const TakumiGarage = () => {
                       )}
                     </div>
                     <button
-                      onClick={() => handleCloseModal(() => {
+                      onClick={() => {
                         // Check for unsaved changes
                         if (hasUnsavedVehicleChanges()) {
                           setConfirmDialog({
@@ -7559,7 +7559,7 @@ const TakumiGarage = () => {
                         setVehicleModalProjectView(null);
                         setVehicleModalEditMode(null);
                         clearImageSelection();
-                      })}
+                      }}
                       className={`p-2 rounded-md transition-colors ${
                         darkMode ? 'hover:bg-gray-700 text-gray-400' : 'hover:bg-gray-100 text-gray-600'
                       }`}
