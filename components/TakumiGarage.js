@@ -1541,6 +1541,48 @@ const LinkedPartsSection = ({
   );
 };
 
+// VendorSelect Component - moved outside to prevent recreation on every render
+const VendorSelect = ({ value, onChange, darkMode, uniqueVendors }) => {
+  return (
+    <div className="space-y-2">
+      <select
+        value={uniqueVendors.includes(value) ? value : ''}
+        onChange={(e) => onChange(e.target.value)}
+        className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent min-h-[42px] box-border ${
+          darkMode 
+            ? 'bg-gray-700 border-gray-600 text-gray-100' 
+            : 'bg-white border-gray-300 text-gray-900'
+        }`}
+        style={{ width: '100%', WebkitAppearance: 'none', appearance: 'none', backgroundImage: `url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e")`, backgroundRepeat: 'no-repeat', backgroundPosition: 'right 1rem center', backgroundSize: '1.25em 1.25em', paddingRight: '2.5rem' }}
+      >
+        <option value="">Select a vendor...</option>
+        {uniqueVendors.map(vendor => (
+          <option key={vendor} value={vendor}>{vendor}</option>
+        ))}
+      </select>
+      
+      <div className={`text-xs ${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>
+        Or enter a new vendor:
+      </div>
+      
+      <input
+        type="text"
+        value={uniqueVendors.includes(value) ? '' : value}
+        onChange={(e) => {
+          const newValue = e.target.value;
+          onChange(newValue);
+        }}
+        className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
+          darkMode 
+            ? 'bg-gray-700 border-gray-600 text-gray-100 placeholder-gray-400' 
+            : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400'
+        }`}
+        placeholder="Enter new vendor name"
+      />
+    </div>
+  );
+};
+
 const TakumiGarage = () => {
   const [parts, setParts] = useState([]);
   const [projects, setProjects] = useState([]);
@@ -2139,6 +2181,7 @@ const TakumiGarage = () => {
   const [trackingModalPartId, setTrackingModalPartId] = useState(null);
   const [trackingInput, setTrackingInput] = useState('');
   const [editingPart, setEditingPart] = useState(null);
+  const [originalPartData, setOriginalPartData] = useState(null); // Track original data for unsaved changes detection
   const [isModalClosing, setIsModalClosing] = useState(false);
   
   // Project-related state
@@ -2317,6 +2360,26 @@ const TakumiGarage = () => {
     
     for (const field of fieldsToCheck) {
       if (viewingProject[field] !== originalProjectData[field]) {
+        return true;
+      }
+    }
+    
+    return false;
+  };
+
+  const hasUnsavedPartChanges = () => {
+    if (!originalPartData || !editingPart) {
+      return false;
+    }
+    
+    // Check if any field has changed
+    const fieldsToCheck = [
+      'part', 'partNumber', 'vendor', 'price', 'shipping', 'duties', 
+      'tracking', 'status', 'projectId'
+    ];
+    
+    for (const field of fieldsToCheck) {
+      if (String(editingPart[field] || '') !== String(originalPartData[field] || '')) {
         return true;
       }
     }
@@ -2902,47 +2965,6 @@ const TakumiGarage = () => {
     return tracking; // Return as-is if unknown
   };
 
-  const VendorSelect = ({ value, onChange, darkMode }) => {
-    return (
-      <div className="space-y-2">
-        <select
-          value={uniqueVendors.includes(value) ? value : ''}
-          onChange={(e) => onChange(e.target.value)}
-          className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent min-h-[42px] box-border ${
-            darkMode 
-              ? 'bg-gray-700 border-gray-600 text-gray-100' 
-              : 'bg-white border-gray-300 text-gray-900'
-          }`}
-          style={{ width: '100%', WebkitAppearance: 'none', appearance: 'none', backgroundImage: `url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e")`, backgroundRepeat: 'no-repeat', backgroundPosition: 'right 1rem center', backgroundSize: '1.25em 1.25em', paddingRight: '2.5rem' }}
-        >
-          <option value="">Select a vendor...</option>
-          {uniqueVendors.map(vendor => (
-            <option key={vendor} value={vendor}>{vendor}</option>
-          ))}
-        </select>
-        
-        <div className={`text-xs ${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>
-          Or enter a new vendor:
-        </div>
-        
-        <input
-          type="text"
-          value={uniqueVendors.includes(value) ? '' : value}
-          onChange={(e) => {
-            const newValue = e.target.value;
-            onChange(newValue);
-          }}
-          className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
-            darkMode 
-              ? 'bg-gray-700 border-gray-600 text-gray-100 placeholder-gray-400' 
-              : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400'
-          }`}
-          placeholder="Enter new vendor name"
-        />
-      </div>
-    );
-  };
-
   const StatusDropdown = ({ part }) => {
     const isOpen = openDropdown === part.id;
     const buttonRef = useRef(null);
@@ -3525,6 +3547,7 @@ const TakumiGarage = () => {
                       value={newPart.vendor}
                       onChange={(value) => setNewPart({ ...newPart, vendor: value })}
                       darkMode={darkMode}
+                      uniqueVendors={uniqueVendors}
                     />
                   </div>
 
@@ -3699,8 +3722,24 @@ const TakumiGarage = () => {
               isModalClosing ? 'modal-backdrop-exit' : 'modal-backdrop-enter'
             }`}
             onClick={() => handleCloseModal(() => {
+              if (hasUnsavedPartChanges()) {
+                setConfirmDialog({
+                  isOpen: true,
+                  title: 'Unsaved Changes',
+                  message: 'You have unsaved changes. Are you sure you want to close without saving?',
+                  confirmText: 'Discard',
+                  cancelText: 'Go Back',
+                  onConfirm: () => {
+                    setShowEditModal(false);
+                    setEditingPart(null);
+                    setOriginalPartData(null);
+                  }
+                });
+                return;
+              }
               setShowEditModal(false);
               setEditingPart(null);
+              setOriginalPartData(null);
             })}
           >
             <div 
@@ -3736,8 +3775,24 @@ const TakumiGarage = () => {
                   </div>
                   <button
                     onClick={() => handleCloseModal(() => {
+                      if (hasUnsavedPartChanges()) {
+                        setConfirmDialog({
+                          isOpen: true,
+                          title: 'Unsaved Changes',
+                          message: 'You have unsaved changes. Are you sure you want to close without saving?',
+                          confirmText: 'Discard',
+                          cancelText: 'Go Back',
+                          onConfirm: () => {
+                            setShowEditModal(false);
+                            setEditingPart(null);
+                            setOriginalPartData(null);
+                          }
+                        });
+                        return;
+                      }
                       setShowEditModal(false);
                       setEditingPart(null);
+                      setOriginalPartData(null);
                     })}
                     className={`transition-colors ${
                       darkMode ? 'text-gray-400 hover:text-gray-300' : 'text-gray-400 hover:text-gray-600'
@@ -3903,6 +3958,7 @@ const TakumiGarage = () => {
                       value={editingPart.vendor}
                       onChange={(value) => setEditingPart({ ...editingPart, vendor: value })}
                       darkMode={darkMode}
+                      uniqueVendors={uniqueVendors}
                     />
                   </div>
 
@@ -3994,8 +4050,11 @@ const TakumiGarage = () => {
                 darkMode ? 'border-gray-700' : 'border-gray-200'
               }`}></div>
               
-              <div className="p-6">
-                <div className="flex gap-3">
+              <div className={`sticky bottom-0 border-t p-4 flex items-center justify-between ${
+                darkMode ? 'border-gray-700 bg-gray-800' : 'border-gray-200 bg-white'
+              }`}>
+                <div></div>
+                <div className="flex items-center gap-2">
                   <button
                     onClick={() => {
                       setConfirmDialog({
@@ -4007,26 +4066,44 @@ const TakumiGarage = () => {
                           deletePart(editingPart.id);
                           setShowEditModal(false);
                           setEditingPart(null);
+                          setOriginalPartData(null);
                         }
                       });
                     }}
-                    className={`px-6 py-3 rounded-lg font-medium transition-colors ${
-                      darkMode 
-                        ? 'bg-red-600/20 text-red-400 hover:bg-red-600/30 hover:text-red-300' 
-                        : 'bg-red-50 text-red-600 hover:bg-red-100'
+                    className={`px-4 py-2 rounded-lg font-medium transition-colors flex items-center gap-2 text-sm mr-4 ${
+                      darkMode
+                        ? 'bg-red-900/30 hover:bg-red-900/50 text-red-400 border border-red-700'
+                        : 'bg-red-50 hover:bg-red-100 text-red-600 border border-red-300'
                     }`}
                   >
+                    <Trash2 className="w-4 h-4" />
                     Delete
                   </button>
                   <button
                     onClick={() => {
+                      if (hasUnsavedPartChanges()) {
+                        setConfirmDialog({
+                          isOpen: true,
+                          title: 'Unsaved Changes',
+                          message: 'You have unsaved changes. Are you sure you want to close without saving?',
+                          confirmText: 'Discard',
+                          cancelText: 'Go Back',
+                          onConfirm: () => {
+                            setShowEditModal(false);
+                            setEditingPart(null);
+                            setOriginalPartData(null);
+                          }
+                        });
+                        return;
+                      }
                       setShowEditModal(false);
                       setEditingPart(null);
+                      setOriginalPartData(null);
                     }}
-                    className={`flex-1 px-6 py-3 rounded-lg font-medium transition-colors ${
+                    className={`px-4 py-2 rounded-lg font-medium transition-colors text-sm ${
                       darkMode 
-                        ? 'bg-gray-700 hover:bg-gray-600 text-gray-100' 
-                        : 'bg-gray-200 hover:bg-gray-300 text-gray-800'
+                        ? 'bg-gray-700 hover:bg-gray-600 text-gray-100 border border-gray-600' 
+                        : 'bg-gray-200 hover:bg-gray-300 text-gray-800 border border-gray-300'
                     }`}
                   >
                     Cancel
@@ -4034,7 +4111,7 @@ const TakumiGarage = () => {
                   <button
                     onClick={saveEditedPart}
                     disabled={!editingPart.part}
-                    className={`flex-1 px-6 py-3 rounded-lg font-medium transition-colors ${
+                    className={`px-4 py-2 rounded-lg font-medium transition-colors text-sm ${
                       !editingPart.part
                         ? darkMode 
                           ? 'bg-gray-700 text-gray-500 cursor-not-allowed'
@@ -4259,10 +4336,12 @@ const TakumiGarage = () => {
                     // Set transition flag to prevent scroll restoration
                     isTransitioningModals.current = true;
                     const partToEdit = viewingPart;
-                    setEditingPart({
+                    const partData = {
                       ...partToEdit,
                       status: partToEdit.delivered ? 'delivered' : (partToEdit.shipped ? 'shipped' : (partToEdit.purchased ? 'purchased' : 'pending'))
-                    });
+                    };
+                    setEditingPart(partData);
+                    setOriginalPartData({ ...partData }); // Save original data for unsaved changes check
                     setShowEditModal(true);
                     // Close detail modal immediately
                     setShowPartDetailModal(false);
