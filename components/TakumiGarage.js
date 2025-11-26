@@ -1745,7 +1745,6 @@ const TakumiGarage = () => {
   useEffect(() => {
     if (showAddModal) {
       console.log('🟢 ADD PART MODAL OPENED');
-      console.log('State:', { showAddModal, newPart });
     } else {
       console.log('🔴 ADD PART MODAL CLOSED');
     }
@@ -1755,7 +1754,6 @@ const TakumiGarage = () => {
   useEffect(() => {
     if (showEditModal) {
       console.log('🟢 EDIT PART MODAL OPENED');
-      console.log('State:', { showEditModal, editingPart });
     } else {
       console.log('🔴 EDIT PART MODAL CLOSED');
     }
