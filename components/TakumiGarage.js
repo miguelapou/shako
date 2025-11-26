@@ -1465,7 +1465,8 @@ const LinkedPartsSection = ({
   parts,
   unlinkPartFromProject,
   getVendorColor,
-  darkMode
+  darkMode,
+  setConfirmDialog
 }) => {
   const linkedParts = parts.filter(part => part.projectId === projectId);
   
@@ -1597,6 +1598,10 @@ const TakumiGarage = () => {
     message: '',
     onConfirm: () => {}
   });
+
+  // Filter and sort states
+  const [projectVehicleFilter, setProjectVehicleFilter] = useState('all'); // 'all' or vehicle ID
+  const [partsSortBy, setPartsSortBy] = useState('part'); // 'part', 'vehicle', 'project'
 
   // Load parts and projects from Supabase on mount
   useEffect(() => {
@@ -1762,8 +1767,6 @@ const TakumiGarage = () => {
   };
 
   const deleteProject = async (projectId) => {
-    if (!confirm('Are you sure you want to delete this project?')) return;
-    
     try {
       const { error } = await supabase
         .from('projects')
@@ -1837,14 +1840,6 @@ const TakumiGarage = () => {
 
   const deleteVehicle = async (vehicleId) => {
     const projectsForVehicle = projects.filter(p => p.vehicle_id === vehicleId);
-    
-    if (projectsForVehicle.length > 0) {
-      if (!confirm(`This vehicle has ${projectsForVehicle.length} project(s) linked to it. Deleting it will unlink these projects. Continue?`)) {
-        return;
-      }
-    } else if (!confirm('Are you sure you want to delete this vehicle?')) {
-      return;
-    }
     
     try {
       const { error } = await supabase
@@ -2661,7 +2656,7 @@ const TakumiGarage = () => {
   };
 
   const filteredParts = useMemo(() => {
-    return parts
+    let sorted = parts
       .filter(part => {
         const matchesSearch = part.part.toLowerCase().includes(searchTerm.toLowerCase()) ||
                             part.partNumber.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -2678,6 +2673,36 @@ const TakumiGarage = () => {
         return matchesSearch && matchesStatus && matchesVendor;
       })
       .sort((a, b) => {
+        // If grouping by vehicle or project, sort by that first
+        if (partsSortBy === 'vehicle') {
+          const aVehicle = projects.find(p => p.id === a.projectId)?.vehicle_id || '';
+          const bVehicle = projects.find(p => p.id === b.projectId)?.vehicle_id || '';
+          const aVehicleName = vehicles.find(v => v.id === aVehicle)?.nickname || 
+                               vehicles.find(v => v.id === aVehicle)?.name || '';
+          const bVehicleName = vehicles.find(v => v.id === bVehicle)?.nickname || 
+                               vehicles.find(v => v.id === bVehicle)?.name || '';
+          
+          if (aVehicleName !== bVehicleName) {
+            // Sort empty vehicle names to the end
+            if (!aVehicleName) return 1;
+            if (!bVehicleName) return -1;
+            return aVehicleName.toLowerCase() > bVehicleName.toLowerCase() ? 1 : -1;
+          }
+        } else if (partsSortBy === 'project') {
+          const aProject = projects.find(p => p.id === a.projectId);
+          const bProject = projects.find(p => p.id === b.projectId);
+          const aProjectName = aProject?.name || '';
+          const bProjectName = bProject?.name || '';
+          
+          if (aProjectName !== bProjectName) {
+            // Sort empty project names to the end
+            if (!aProjectName) return 1;
+            if (!bProjectName) return -1;
+            return aProjectName.toLowerCase() > bProjectName.toLowerCase() ? 1 : -1;
+          }
+        }
+        
+        // Then apply the regular sort
         let aVal, bVal;
         
         // Special handling for status sorting
@@ -2701,7 +2726,9 @@ const TakumiGarage = () => {
           return aVal < bVal ? 1 : -1;
         }
       });
-  }, [parts, searchTerm, statusFilter, vendorFilter, sortBy, sortOrder]);
+    
+    return sorted;
+  }, [parts, searchTerm, statusFilter, vendorFilter, sortBy, sortOrder, partsSortBy, projects, vehicles]);
 
   // Get unique vendors from existing parts for the dropdown
   const uniqueVendors = useMemo(() => {
@@ -4355,6 +4382,24 @@ const TakumiGarage = () => {
                 )}
               </div>
             </div>
+
+            {/* Group By Dropdown - Shows in left column on desktop only */}
+            <div className={`hidden lg:block rounded-lg shadow-md p-3 ${
+              darkMode ? 'bg-gray-800' : 'bg-white'
+            }`}>
+              <label className={`block text-xs font-medium mb-2 ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>
+                Group By
+              </label>
+              <select
+                value={partsSortBy}
+                onChange={(e) => setPartsSortBy(e.target.value)}
+                className={selectClasses(darkMode, 'py-2 text-sm')}
+              >
+                <option value="part">Part Name</option>
+                <option value="vehicle">Vehicle</option>
+                <option value="project">Project</option>
+              </select>
+            </div>
           </div>
 
           {/* Cost Breakdown - order-2 on mobile */}
@@ -4896,9 +4941,35 @@ const TakumiGarage = () => {
         {activeTab === 'projects' && (
           <div className={previousTab === 'vehicles' ? 'slide-in-left' : 'slide-in-right'}>
           <>
+            {/* Vehicle Filter Dropdown */}
+            <div className="mb-6">
+              <label className={`block text-sm font-medium mb-2 ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>
+                Filter by Vehicle
+              </label>
+              <select
+                value={projectVehicleFilter}
+                onChange={(e) => setProjectVehicleFilter(e.target.value)}
+                className={selectClasses(darkMode, 'py-3 max-w-md')}
+              >
+                <option value="all">All Vehicles</option>
+                <option value="none">No Vehicle</option>
+                {vehicles.map(vehicle => (
+                  <option key={vehicle.id} value={vehicle.id}>
+                    {vehicle.nickname || vehicle.name} {vehicle.year && `(${vehicle.year})`}
+                  </option>
+                ))}
+              </select>
+            </div>
+
             {/* Projects Grid */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {projects.map((project) => {
+              {projects
+                .filter(project => {
+                  if (projectVehicleFilter === 'all') return true;
+                  if (projectVehicleFilter === 'none') return !project.vehicle_id;
+                  return project.vehicle_id === projectVehicleFilter;
+                })
+                .map((project) => {
                 // Calculate spent based on linked parts
                 const linkedPartsTotal = calculateProjectTotal(project.id, parts);
                 const progress = project.budget > 0 ? (linkedPartsTotal / project.budget) * 100 : 0;
@@ -5489,6 +5560,9 @@ const TakumiGarage = () => {
                       isOpen: true,
                       title: 'Unsaved Changes',
                       message: 'You have unsaved changes. Are you sure you want to close without saving?',
+                      confirmText: 'Discard',
+                      cancelText: 'Go Back',
+                      isDangerous: false,
                       onConfirm: () => {
                         setShowProjectDetailModal(false);
                         setViewingProject(null);
@@ -5548,6 +5622,9 @@ const TakumiGarage = () => {
                               isOpen: true,
                               title: 'Unsaved Changes',
                               message: 'You have unsaved changes. Are you sure you want to close without saving?',
+                              confirmText: 'Discard',
+                              cancelText: 'Go Back',
+                              isDangerous: false,
                               onConfirm: () => {
                                 setShowProjectDetailModal(false);
                                 setViewingProject(null);
@@ -5637,6 +5714,7 @@ const TakumiGarage = () => {
                           unlinkPartFromProject={unlinkPartFromProject}
                           getVendorColor={getVendorColor}
                           darkMode={darkMode}
+                          setConfirmDialog={setConfirmDialog}
                         />
                       </div>
                     </div>
@@ -5655,6 +5733,9 @@ const TakumiGarage = () => {
                               isOpen: true,
                               title: 'Unsaved Changes',
                               message: 'You have unsaved changes. Are you sure you want to go back without saving?',
+                              confirmText: 'Discard',
+                              cancelText: 'Keep Editing',
+                              isDangerous: false,
                               onConfirm: () => {
                                 // Restore original data
                                 if (originalProjectData) {
@@ -5681,6 +5762,36 @@ const TakumiGarage = () => {
                     )}
                     {projectModalEditMode ? (
                       <div className="flex items-center gap-2">
+                        <button
+                          onClick={async () => {
+                            const partsForProject = parts.filter(p => p.projectId === viewingProject.id);
+                            const hasParts = partsForProject.length > 0;
+                            
+                            setConfirmDialog({
+                              isOpen: true,
+                              title: 'Delete Project',
+                              message: hasParts
+                                ? `This project has ${partsForProject.length} part(s) linked to it. Deleting it will unlink these parts. This action cannot be undone.`
+                                : 'Are you sure you want to permanently delete this project? This action cannot be undone.',
+                              confirmText: 'Delete',
+                              onConfirm: async () => {
+                                await deleteProject(viewingProject.id);
+                                setShowProjectDetailModal(false);
+                                setViewingProject(null);
+                                setOriginalProjectData(null);
+                                setProjectModalEditMode(false);
+                              }
+                            });
+                          }}
+                          className={`px-4 py-2 rounded-lg font-medium transition-colors flex items-center gap-2 text-sm mr-4 ${
+                            darkMode
+                              ? 'bg-red-900/30 hover:bg-red-900/50 text-red-400 border border-red-700'
+                              : 'bg-red-50 hover:bg-red-100 text-red-600 border border-red-300'
+                          }`}
+                        >
+                          <Trash2 className="w-4 h-4" />
+                          Delete
+                        </button>
                         <button
                           onClick={async () => {
                             // Toggle on_hold status
@@ -6489,6 +6600,9 @@ const TakumiGarage = () => {
                       isOpen: true,
                       title: 'Unsaved Changes',
                       message: 'You have unsaved changes. Are you sure you want to close without saving?',
+                      confirmText: 'Discard',
+                      cancelText: 'Go Back',
+                      isDangerous: false,
                       onConfirm: () => {
                         setShowVehicleDetailModal(false);
                         setViewingVehicle(null);
@@ -6543,6 +6657,9 @@ const TakumiGarage = () => {
                             isOpen: true,
                             title: 'Unsaved Changes',
                             message: 'You have unsaved changes. Are you sure you want to close without saving?',
+                            confirmText: 'Discard',
+                            cancelText: 'Go Back',
+                            isDangerous: false,
                             onConfirm: () => {
                               setShowVehicleDetailModal(false);
                               setViewingVehicle(null);
@@ -7005,6 +7122,7 @@ const TakumiGarage = () => {
                             unlinkPartFromProject={unlinkPartFromProject}
                             getVendorColor={getVendorColor}
                             darkMode={darkMode}
+                            setConfirmDialog={setConfirmDialog}
                           />
                         </div>
                       )}
@@ -7431,6 +7549,9 @@ const TakumiGarage = () => {
                                 isOpen: true,
                                 title: 'Unsaved Changes',
                                 message: 'You have unsaved changes. Are you sure you want to go back without saving?',
+                                confirmText: 'Discard',
+                                cancelText: 'Keep Editing',
+                                isDangerous: false,
                                 onConfirm: () => {
                                   // Restore original data
                                   if (originalVehicleData) {
@@ -7465,10 +7586,15 @@ const TakumiGarage = () => {
                           <>
                             <button
                               onClick={async () => {
+                                const projectsForVehicle = projects.filter(p => p.vehicle_id === viewingVehicle.id);
+                                const hasProjects = projectsForVehicle.length > 0;
+                                
                                 setConfirmDialog({
                                   isOpen: true,
                                   title: 'Delete Vehicle',
-                                  message: 'Are you sure you want to permanently delete this vehicle? This action cannot be undone.',
+                                  message: hasProjects 
+                                    ? `This vehicle has ${projectsForVehicle.length} project(s) linked to it. Deleting it will unlink these projects. This action cannot be undone.`
+                                    : 'Are you sure you want to permanently delete this vehicle? This action cannot be undone.',
                                   confirmText: 'Delete',
                                   onConfirm: async () => {
                                     await deleteVehicle(viewingVehicle.id);
