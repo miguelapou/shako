@@ -4492,11 +4492,14 @@ const TakumiGarage = () => {
             })}
           >
             <div 
-              className={`rounded-lg shadow-xl max-w-4xl w-full modal-content overflow-hidden transition-all duration-500 ease-in-out ${
+              className={`rounded-lg shadow-xl max-w-4xl w-full modal-content overflow-hidden transition-all duration-500 ease-in-out grid ${
                 isModalClosing ? 'modal-popup-exit' : 'modal-popup-enter'
-              } ${darkMode ? 'bg-gray-800' : 'bg-white'} ${
-                partDetailView === 'edit' || partDetailView === 'manage-vendors' ? 'max-h-[90vh]' : ''
-              }`}
+              } ${darkMode ? 'bg-gray-800' : 'bg-white'}`}
+              style={{
+                gridTemplateRows: partDetailView === 'detail' ? 'auto 1fr auto' : 'auto 1fr auto',
+                maxHeight: partDetailView === 'detail' ? '80vh' : '90vh',
+                transition: 'max-height 0.5s ease-in-out'
+              }}
               onClick={(e) => e.stopPropagation()}
             >
               <div className={`sticky top-0 border-b px-6 py-4 rounded-t-lg ${
