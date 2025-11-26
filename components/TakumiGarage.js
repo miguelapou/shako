@@ -1134,7 +1134,7 @@ const LinkedPartsSection = ({
   );
 };
 
-const LandCruiserTracker = () => {
+const TakumiGarage = () => {
   const [parts, setParts] = useState([]);
   const [projects, setProjects] = useState([]);
   const [vehicles, setVehicles] = useState([]);
@@ -7170,4 +7170,4 @@ const LandCruiserTracker = () => {
   );
 };
 
-export default LandCruiserTracker;
+export default TakumiGarage;
