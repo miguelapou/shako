@@ -4723,9 +4723,6 @@ const TakumiGarage = () => {
               {partDetailView === 'edit' && editingPart && (
               <div className="slide-in-right">
               <div className="p-6 modal-scrollable overflow-y-auto max-h-[calc(90vh-180px)]">
-                {/* TODO: Copy the complete edit form from the standalone Edit Part modal here */}
-                {/* For now, this will reuse the same editingPart state */}
-                {/* The form should include all fields: Part Name, Part Number, Vendor, Price, Shipping, Duties, Tracking, Status, Project */}
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div className="md:col-span-1">
                     <label className={`block text-sm font-medium mb-2 ${
@@ -4746,9 +4743,224 @@ const TakumiGarage = () => {
                       required
                     />
                   </div>
-                  <div className={`text-center py-8 ${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>
-                    <p className="text-sm">Full edit form will be integrated here</p>
-                    <p className="text-xs mt-2">Use standalone Edit Part modal for now</p>
+                  
+                  <div></div>
+                  
+                  <div>
+                    <label className={`block text-sm font-medium mb-2 ${
+                      darkMode ? 'text-gray-300' : 'text-gray-700'
+                    }`}>
+                      Part Number
+                    </label>
+                    <input
+                      type="text"
+                      value={editingPart.partNumber}
+                      onChange={(e) => setEditingPart({ ...editingPart, partNumber: e.target.value })}
+                      className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
+                        darkMode 
+                          ? 'bg-gray-700 border-gray-600 text-gray-100 placeholder-gray-400' 
+                          : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400'
+                      }`}
+                      placeholder="e.g., 12345-67890"
+                    />
+                  </div>
+                  
+                  <div>
+                    <label className={`block text-sm font-medium mb-2 ${
+                      darkMode ? 'text-gray-300' : 'text-gray-700'
+                    }`}>
+                      Price ($)
+                    </label>
+                    <input
+                      type="number"
+                      step="0.01"
+                      value={editingPart.price}
+                      onChange={(e) => setEditingPart({ ...editingPart, price: e.target.value })}
+                      className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none ${
+                        darkMode 
+                          ? 'bg-gray-700 border-gray-600 text-gray-100 placeholder-gray-400' 
+                          : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400'
+                      }`}
+                      placeholder="0.00"
+                    />
+                  </div>
+                  
+                  <div>
+                    <label className={`block text-sm font-medium mb-2 ${
+                      darkMode ? 'text-gray-300' : 'text-gray-700'
+                    }`}>
+                      Shipping ($)
+                    </label>
+                    <input
+                      type="number"
+                      step="0.01"
+                      value={editingPart.shipping}
+                      onChange={(e) => setEditingPart({ ...editingPart, shipping: e.target.value })}
+                      className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none ${
+                        darkMode 
+                          ? 'bg-gray-700 border-gray-600 text-gray-100 placeholder-gray-400' 
+                          : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400'
+                      }`}
+                      placeholder="0.00"
+                    />
+                  </div>
+                  
+                  <div>
+                    <label className={`block text-sm font-medium mb-2 ${
+                      darkMode ? 'text-gray-300' : 'text-gray-700'
+                    }`}>
+                      Import Duties ($)
+                    </label>
+                    <input
+                      type="number"
+                      step="0.01"
+                      value={editingPart.duties}
+                      onChange={(e) => setEditingPart({ ...editingPart, duties: e.target.value })}
+                      className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none ${
+                        darkMode 
+                          ? 'bg-gray-700 border-gray-600 text-gray-100 placeholder-gray-400' 
+                          : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400'
+                      }`}
+                      placeholder="0.00"
+                    />
+                  </div>
+                  
+                  <div>
+                    <label className={`block text-sm font-medium mb-2 ${
+                      darkMode ? 'text-gray-300' : 'text-gray-700'
+                    }`}>
+                      Tracking Number
+                    </label>
+                    <input
+                      type="text"
+                      value={editingPart.tracking}
+                      onChange={(e) => setEditingPart({ ...editingPart, tracking: e.target.value })}
+                      className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
+                        darkMode 
+                          ? 'bg-gray-700 border-gray-600 text-gray-100 placeholder-gray-400' 
+                          : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400'
+                      }`}
+                      placeholder="e.g., 1Z999AA10123456784"
+                    />
+                  </div>
+                  
+                  <div>
+                    <label className={`block text-sm font-medium mb-2 ${
+                      darkMode ? 'text-gray-300' : 'text-gray-700'
+                    }`}>
+                      Status
+                    </label>
+                    <select
+                      value={editingPart.status}
+                      onChange={(e) => setEditingPart({ ...editingPart, status: e.target.value })}
+                      className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent min-h-[42px] box-border ${
+                        darkMode 
+                          ? 'bg-gray-700 border-gray-600 text-gray-100' 
+                          : 'bg-white border-gray-300 text-gray-900'
+                      }`}
+                      style={{ width: '100%', WebkitAppearance: 'none', appearance: 'none', backgroundImage: `url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e")`, backgroundRepeat: 'no-repeat', backgroundPosition: 'right 1rem center', backgroundSize: '1.25em 1.25em', paddingRight: '2.5rem' }}
+                    >
+                      <option value="pending">Pending</option>
+                      <option value="purchased">Ordered</option>
+                      <option value="shipped">Shipped</option>
+                      <option value="delivered">Delivered</option>
+                    </select>
+                  </div>
+                  
+                  <div>
+                    <label className={`block text-sm font-medium mb-2 ${
+                      darkMode ? 'text-gray-300' : 'text-gray-700'
+                    }`}>
+                      Vendor
+                    </label>
+                    <VendorSelect 
+                      value={editingPart.vendor}
+                      onChange={(value) => setEditingPart({ ...editingPart, vendor: value })}
+                      darkMode={darkMode}
+                      uniqueVendors={uniqueVendors}
+                    />
+                  </div>
+
+                  <div>
+                    <label className={`block text-sm font-medium mb-2 ${
+                      darkMode ? 'text-gray-300' : 'text-gray-700'
+                    }`}>
+                      Project <span className={`text-xs font-normal ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>(optional)</span>
+                    </label>
+                    <select
+                      value={editingPart.projectId || ''}
+                      onChange={(e) => setEditingPart({ ...editingPart, projectId: e.target.value ? parseInt(e.target.value) : null })}
+                      className={`w-full px-4 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent appearance-none ${
+                        darkMode 
+                          ? 'bg-gray-700 border-gray-600 text-gray-100' 
+                          : 'bg-white border-gray-300 text-gray-900'
+                      }`}
+                    >
+                      <option value="">No Project</option>
+                      {projects.map(project => (
+                        <option key={project.id} value={project.id}>
+                          {project.name}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                  
+                  <div className={`md:col-span-2 border rounded-lg p-4 ${
+                    darkMode 
+                      ? 'bg-gray-700/50 border-gray-600' 
+                      : 'bg-gray-50 border-gray-200'
+                  }`}>
+                    <div className="space-y-2">
+                      <div className="flex items-center justify-between">
+                        <span className={`text-sm ${
+                          darkMode ? 'text-gray-300' : 'text-gray-700'
+                        }`}>Price:</span>
+                        <span className={`text-sm font-medium ${
+                          darkMode ? 'text-gray-200' : 'text-gray-800'
+                        }`}>
+                          ${(parseFloat(editingPart.price) || 0).toFixed(2)}
+                        </span>
+                      </div>
+                      
+                      {(parseFloat(editingPart.shipping) || 0) > 0 && (
+                        <div className="flex items-center justify-between">
+                          <span className={`text-sm ${
+                            darkMode ? 'text-gray-300' : 'text-gray-700'
+                          }`}>Shipping:</span>
+                          <span className={`text-sm font-medium ${
+                            darkMode ? 'text-gray-200' : 'text-gray-800'
+                          }`}>
+                            ${(parseFloat(editingPart.shipping) || 0).toFixed(2)}
+                          </span>
+                        </div>
+                      )}
+                      
+                      {(parseFloat(editingPart.duties) || 0) > 0 && (
+                        <div className="flex items-center justify-between">
+                          <span className={`text-sm ${
+                            darkMode ? 'text-gray-300' : 'text-gray-700'
+                          }`}>Import Duties:</span>
+                          <span className={`text-sm font-medium ${
+                            darkMode ? 'text-gray-200' : 'text-gray-800'
+                          }`}>
+                            ${(parseFloat(editingPart.duties) || 0).toFixed(2)}
+                          </span>
+                        </div>
+                      )}
+                      
+                      <div className={`flex items-center justify-between pt-2 border-t ${
+                        darkMode ? 'border-gray-600' : 'border-gray-300'
+                      }`}>
+                        <span className={`text-base font-semibold ${
+                          darkMode ? 'text-gray-200' : 'text-gray-800'
+                        }`}>Total:</span>
+                        <span className={`text-xl font-bold ${
+                          darkMode ? 'text-green-400' : 'text-green-600'
+                        }`}>
+                          ${((parseFloat(editingPart.price) || 0) + (parseFloat(editingPart.shipping) || 0) + (parseFloat(editingPart.duties) || 0)).toFixed(2)}
+                        </span>
+                      </div>
+                    </div>
                   </div>
                 </div>
               </div>
