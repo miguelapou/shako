@@ -6200,7 +6200,6 @@ const TakumiGarage = () => {
                       </div>
                     </div>
                   </div>
-                  </div>
                   <div className={`border-t ${
                     darkMode ? 'border-gray-700' : 'border-gray-200'
                   }`}></div>
