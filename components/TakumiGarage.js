@@ -4242,7 +4242,9 @@ const TakumiGarage = () => {
                   </div>
                 </div>
               </div>
+              )}
               {/* Edit Footer */}
+              {partDetailView === 'edit' && (
               <div className={`sticky bottom-0 border-t p-4 flex items-center justify-between ${
                 darkMode ? 'border-gray-700 bg-gray-800' : 'border-gray-200 bg-white'
               }`}>
@@ -4318,7 +4320,6 @@ const TakumiGarage = () => {
                     <span className="hidden sm:inline">Save Changes</span>
                   </button>
                 </div>
-              </div>
               </div>
               )}
 
