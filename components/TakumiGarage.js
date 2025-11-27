@@ -143,7 +143,10 @@ const ConfirmDialog = ({ isOpen, onClose, onConfirm, title, message, confirmText
       >
         {/* Header */}
         <div className={`px-6 py-4 border-b ${darkMode ? 'border-gray-700' : 'border-gray-200'}`}>
-          <h3 className={`text-lg font-semibold ${darkMode ? 'text-gray-100' : 'text-gray-900'}`}>
+          <h3 
+            className={`text-lg font-semibold ${darkMode ? 'text-gray-100' : 'text-gray-900'}`}
+            style={{ fontFamily: "'FoundationOne', 'Courier New', monospace" }}
+          >
             {title}
           </h3>
         </div>
@@ -6629,7 +6632,8 @@ const TakumiGarage = () => {
                           }}
                           className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium transition-colors flex items-center gap-2 text-sm"
                         >
-                          Save Changes
+                          <span className="sm:hidden">Save</span>
+                          <span className="hidden sm:inline">Save Changes</span>
                         </button>
                       </div>
                     ) : (
@@ -8508,7 +8512,14 @@ const TakumiGarage = () => {
                               : 'bg-blue-600 hover:bg-blue-700 text-white'
                           }`}
                         >
-                          {uploadingImage ? 'Saving...' : 'Save Changes'}
+                          {uploadingImage ? (
+                            'Saving...'
+                          ) : (
+                            <>
+                              <span className="sm:hidden">Save</span>
+                              <span className="hidden sm:inline">Save Changes</span>
+                            </>
+                          )}
                         </button>
                       </div>
                     ) : !vehicleModalProjectView ? (
