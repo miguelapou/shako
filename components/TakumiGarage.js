@@ -4969,16 +4969,8 @@ const TakumiGarage = () => {
                     </div>
                   )}
                   
-                  {/* Project (left) + Vehicle (right) on same line */}
+                  {/* Vehicle (left) + Project (right) on same line */}
                   <div className="flex items-center justify-between gap-3">
-                    <div className="flex items-center gap-2">
-                      <p className={`text-xs ${
-                        darkMode ? 'text-gray-400' : 'text-gray-600'
-                      }`}>Project:</p>
-                      <div onClick={(e) => e.stopPropagation()}>
-                        <ProjectDropdown part={part} />
-                      </div>
-                    </div>
                     {(() => {
                       const partProject = part.projectId ? projects.find(p => p.id === part.projectId) : null;
                       const vehicle = partProject?.vehicle_id ? vehicles.find(v => v.id === partProject.vehicle_id) : null;
@@ -5000,6 +4992,14 @@ const TakumiGarage = () => {
                         </div>
                       );
                     })()}
+                    <div className="flex items-center gap-2">
+                      <p className={`text-xs ${
+                        darkMode ? 'text-gray-400' : 'text-gray-600'
+                      }`}>Project:</p>
+                      <div onClick={(e) => e.stopPropagation()}>
+                        <ProjectDropdown part={part} />
+                      </div>
+                    </div>
                   </div>
                 </div>
 
