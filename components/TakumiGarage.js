@@ -1341,16 +1341,6 @@ const fontStyles = `
     -webkit-box-orient: vertical;
     overflow: hidden;
   }
-
-  /* Set body background to match app gradient - prevents white padding when modal opens */
-  body {
-    background: linear-gradient(to bottom right, rgb(248, 250, 252), rgb(226, 232, 240));
-  }
-  
-  /* Dark mode body background */
-  body.dark-mode {
-    background: linear-gradient(to bottom right, rgb(17, 24, 39), rgb(31, 41, 55));
-  }
 `;
 
 // ========================================
@@ -1707,15 +1697,6 @@ const TakumiGarage = () => {
     loadProjects();
     // Don't load vehicles on initial mount, only when tab is accessed
   }, []);
-
-  // Toggle dark-mode class on body for background gradient
-  useEffect(() => {
-    if (darkMode) {
-      document.body.classList.add('dark-mode');
-    } else {
-      document.body.classList.remove('dark-mode');
-    }
-  }, [darkMode]);
 
   // Load vehicles when the vehicles tab is accessed
   useEffect(() => {
