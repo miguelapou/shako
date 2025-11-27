@@ -4240,7 +4240,7 @@ const TakumiGarage = () => {
             <div className="grid grid-cols-2 gap-3 sm:gap-4">
               <div 
                 onClick={() => setStatusFilter(statusFilter === 'purchased' ? 'all' : 'purchased')}
-                className={`rounded-lg shadow-md p-3 sm:p-4 lg:p-6 border-l-4 border-yellow-500 relative overflow-hidden cursor-pointer transition-all duration-200 ${
+                className={`rounded-lg shadow-md p-3 sm:p-4 lg:p-6 border-l-4 border-yellow-500 relative overflow-hidden cursor-pointer transition-all duration-200 hover:shadow-lg hover:scale-[1.02] ${
                   darkMode ? 'bg-gray-800 hover:bg-gray-750' : 'bg-white hover:bg-gray-50'
                 } ${statusFilter === 'purchased' ? 'ring-2 ring-yellow-500 ring-offset-2' : ''}`}
               >
@@ -4257,7 +4257,7 @@ const TakumiGarage = () => {
 
               <div 
                 onClick={() => setStatusFilter(statusFilter === 'shipped' ? 'all' : 'shipped')}
-                className={`rounded-lg shadow-md p-3 sm:p-4 lg:p-6 border-l-4 border-blue-500 relative overflow-hidden cursor-pointer transition-all duration-200 ${
+                className={`rounded-lg shadow-md p-3 sm:p-4 lg:p-6 border-l-4 border-blue-500 relative overflow-hidden cursor-pointer transition-all duration-200 hover:shadow-lg hover:scale-[1.02] ${
                   darkMode ? 'bg-gray-800 hover:bg-gray-750' : 'bg-white hover:bg-gray-50'
                 } ${statusFilter === 'shipped' ? 'ring-2 ring-blue-500 ring-offset-2' : ''}`}
               >
@@ -4274,7 +4274,7 @@ const TakumiGarage = () => {
 
               <div 
                 onClick={() => setStatusFilter(statusFilter === 'delivered' ? 'all' : 'delivered')}
-                className={`rounded-lg shadow-md p-3 sm:p-4 lg:p-6 border-l-4 border-green-500 relative overflow-hidden cursor-pointer transition-all duration-200 ${
+                className={`rounded-lg shadow-md p-3 sm:p-4 lg:p-6 border-l-4 border-green-500 relative overflow-hidden cursor-pointer transition-all duration-200 hover:shadow-lg hover:scale-[1.02] ${
                   darkMode ? 'bg-gray-800 hover:bg-gray-750' : 'bg-white hover:bg-gray-50'
                 } ${statusFilter === 'delivered' ? 'ring-2 ring-green-500 ring-offset-2' : ''}`}
               >
