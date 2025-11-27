@@ -4112,8 +4112,8 @@ const TakumiGarage = () => {
                   );
                 })()}
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div className="md:col-span-1">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-12 md:mt-0">
+                  <div className="md:col-span-1 pr-20 md:pr-0">
                     <label className={`block text-sm font-medium mb-2 ${
                       darkMode ? 'text-gray-300' : 'text-gray-700'
                     }`}>
