@@ -1368,6 +1368,8 @@ const ProjectEditForm = ({
   getVendorColor,
   darkMode 
 }) => {
+  const [showVehicleDropdown, setShowVehicleDropdown] = useState(false);
+  
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
       {/* Left Column: Project Name, Priority/Vehicle, Budget */}
@@ -1423,22 +1425,91 @@ const ProjectEditForm = ({
                 <span>Vehicle</span>
               </div>
             </label>
-            <select
-              value={project.vehicle_id || ''}
-              onChange={(e) => onProjectChange({ ...project, vehicle_id: e.target.value ? parseInt(e.target.value) : null })}
-              className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent appearance-none ${
-                darkMode 
-                  ? 'bg-gray-700 border-gray-600 text-gray-100' 
-                  : 'bg-white border-gray-300 text-gray-900'
-              }`}
-            >
-              <option value="">No vehicle</option>
-              {vehicles.map(vehicle => (
-                <option key={vehicle.id} value={vehicle.id}>
-                  {vehicle.nickname || vehicle.name}
-                </option>
-              ))}
-            </select>
+            <div className="relative">
+              <button
+                type="button"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setShowVehicleDropdown(!showVehicleDropdown);
+                }}
+                className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm text-left flex items-center justify-between gap-2 ${
+                  darkMode 
+                    ? 'bg-gray-700 border-gray-600 text-gray-100' 
+                    : 'bg-white border-gray-300 text-gray-900'
+                }`}
+              >
+                <div className="flex items-center gap-2 flex-1 min-w-0">
+                  {project.vehicle_id ? (() => {
+                    const selectedVehicle = vehicles.find(v => v.id === project.vehicle_id);
+                    return selectedVehicle ? (
+                      <>
+                        <div 
+                          className="w-3 h-3 rounded-full border flex-shrink-0"
+                          style={{ 
+                            backgroundColor: selectedVehicle.color || '#3B82F6',
+                            borderColor: darkMode ? '#4B5563' : '#D1D5DB'
+                          }}
+                        />
+                        <span className="truncate">{selectedVehicle.nickname || selectedVehicle.name}</span>
+                      </>
+                    ) : 'No vehicle';
+                  })() : 'No vehicle'}
+                </div>
+                <ChevronDown className="w-4 h-4 flex-shrink-0" />
+              </button>
+              {showVehicleDropdown && (
+                <>
+                  <div 
+                    className="fixed inset-0 z-10"
+                    onClick={() => setShowVehicleDropdown(false)}
+                  />
+                  <div className={`absolute left-0 right-0 z-20 mt-1 rounded-lg border shadow-lg py-1 max-h-60 overflow-y-auto ${
+                    darkMode ? 'bg-gray-700 border-gray-600' : 'bg-white border-gray-300'
+                  }`}>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        onProjectChange({ ...project, vehicle_id: null });
+                        setShowVehicleDropdown(false);
+                      }}
+                      className={`w-full px-3 py-2 text-left text-sm flex items-center gap-2 ${
+                        !project.vehicle_id
+                          ? darkMode ? 'bg-blue-600 text-white' : 'bg-blue-600 text-white'
+                          : darkMode ? 'hover:bg-gray-600 text-gray-100' : 'hover:bg-gray-100 text-gray-900'
+                      }`}
+                    >
+                      No vehicle
+                    </button>
+                    {vehicles.map(vehicle => (
+                      <button
+                        key={vehicle.id}
+                        type="button"
+                        onClick={() => {
+                          onProjectChange({ ...project, vehicle_id: vehicle.id });
+                          setShowVehicleDropdown(false);
+                        }}
+                        className={`w-full px-3 py-2 text-left text-sm flex items-center gap-2 ${
+                          project.vehicle_id === vehicle.id
+                            ? darkMode ? 'bg-blue-600 text-white' : 'bg-blue-600 text-white'
+                            : darkMode ? 'hover:bg-gray-600 text-gray-100' : 'hover:bg-gray-100 text-gray-900'
+                        }`}
+                      >
+                        <div 
+                          className="w-3 h-3 rounded-full border flex-shrink-0"
+                          style={{ 
+                            backgroundColor: vehicle.color || '#3B82F6',
+                            borderColor: darkMode ? '#4B5563' : '#D1D5DB'
+                          }}
+                        />
+                        <span className="truncate">
+                          {vehicle.nickname ? `${vehicle.nickname} (${vehicle.name})` : `${vehicle.name}`}
+                        </span>
+                      </button>
+                    ))}
+                  </div>
+                </>
+              )}
+            </div>
           </div>
         </div>
 
@@ -3799,30 +3870,12 @@ const TakumiGarage = () => {
               <div className={`sticky top-0 border-b px-6 py-4 rounded-t-lg ${
                 darkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-200'
               }`} style={{ zIndex: 10 }}>
-                <div className="flex items-start justify-between gap-3">
-                  <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-3 flex-1 min-w-0">
-                    <h2 className={`text-2xl font-bold ${
-                      darkMode ? 'text-gray-100' : 'text-gray-800'
-                    }`} style={{ fontFamily: "'FoundationOne', 'Courier New', monospace" }}>
-                      {partDetailView === 'manage-vendors' ? 'Vendors' : (partDetailView === 'edit' ? 'Edit Part' : viewingPart.part)}
-                    </h2>
-                    {(() => {
-                      const partProject = viewingPart.projectId ? projects.find(p => p.id === viewingPart.projectId) : null;
-                      const vehicle = partProject?.vehicle_id ? vehicles.find(v => v.id === partProject.vehicle_id) : null;
-                      return vehicle && (
-                        <span 
-                          className={`inline-flex items-center px-2 py-1 rounded text-xs font-medium flex-shrink-0 ${
-                            darkMode ? 'bg-gray-700 text-gray-300' : 'bg-gray-100 text-gray-700'
-                          }`}
-                        >
-                          <Car className="w-3 h-3 mr-1" />
-                          <span style={{ color: vehicle.color || '#3B82F6' }}>
-                            {vehicle.nickname || vehicle.name}
-                          </span>
-                        </span>
-                      );
-                    })()}
-                  </div>
+                <div className="flex items-center justify-between">
+                  <h2 className={`text-2xl font-bold ${
+                    darkMode ? 'text-gray-100' : 'text-gray-800'
+                  }`} style={{ fontFamily: "'FoundationOne', 'Courier New', monospace" }}>
+                    {partDetailView === 'manage-vendors' ? 'Vendors' : (partDetailView === 'edit' ? 'Edit Part' : viewingPart.part)}
+                  </h2>
                   <button
                     onClick={() => handleCloseModal(() => {
                       setShowPartDetailModal(false);
@@ -3843,6 +3896,26 @@ const TakumiGarage = () => {
               {/* Detail View */}
               {partDetailView === 'detail' && (
               <div className="p-4 sm:p-6 modal-scrollable slide-in-left">
+                {/* Vehicle Badge - Top Right */}
+                {(() => {
+                  const partProject = viewingPart.projectId ? projects.find(p => p.id === viewingPart.projectId) : null;
+                  const vehicle = partProject?.vehicle_id ? vehicles.find(v => v.id === partProject.vehicle_id) : null;
+                  return vehicle && (
+                    <div className="flex justify-end mb-4">
+                      <span 
+                        className={`inline-flex items-center px-3 py-1.5 rounded text-sm font-medium border ${
+                          darkMode ? 'bg-gray-700 text-gray-300 border-gray-600' : 'bg-gray-100 text-gray-700 border-gray-300'
+                        }`}
+                      >
+                        <Car className="w-4 h-4 mr-1.5" />
+                        <span style={{ color: vehicle.color || '#3B82F6' }}>
+                          {vehicle.nickname || vehicle.name}
+                        </span>
+                      </span>
+                    </div>
+                  );
+                })()}
+
                 {/* Status Badge */}
                 <div className="mb-6">
                   <div className={`inline-flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium border ${getStatusColor(viewingPart)}`}>
@@ -4010,6 +4083,26 @@ const TakumiGarage = () => {
               {/* Edit View */}
               {partDetailView === 'edit' && editingPart && (
               <div className="p-6 modal-scrollable slide-in-right">
+                {/* Vehicle Badge - Top Right */}
+                {(() => {
+                  const partProject = editingPart.projectId ? projects.find(p => p.id === editingPart.projectId) : null;
+                  const vehicle = partProject?.vehicle_id ? vehicles.find(v => v.id === partProject.vehicle_id) : null;
+                  return vehicle && (
+                    <div className="flex justify-end mb-4">
+                      <span 
+                        className={`inline-flex items-center px-3 py-1.5 rounded text-sm font-medium border ${
+                          darkMode ? 'bg-gray-700 text-gray-300 border-gray-600' : 'bg-gray-100 text-gray-700 border-gray-300'
+                        }`}
+                      >
+                        <Car className="w-4 h-4 mr-1.5" />
+                        <span style={{ color: vehicle.color || '#3B82F6' }}>
+                          {vehicle.nickname || vehicle.name}
+                        </span>
+                      </span>
+                    </div>
+                  );
+                })()}
+
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div className="md:col-span-1">
                     <label className={`block text-sm font-medium mb-2 ${
@@ -5694,30 +5787,11 @@ const TakumiGarage = () => {
                     darkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-200'
                   }`}>
                     <div className="flex items-center justify-between gap-4">
-                      <div className="flex-1 min-w-0">
-                        <div className="flex items-center gap-2 flex-wrap">
-                          <h2 className={`text-2xl font-bold ${
-                            darkMode ? 'text-gray-100' : 'text-gray-800'
-                          }`} style={{ fontFamily: "'FoundationOne', 'Courier New', monospace" }}>
-                            {viewingProject.name}
-                          </h2>
-                          {(() => {
-                            const vehicle = viewingProject.vehicle_id ? vehicles.find(v => v.id === viewingProject.vehicle_id) : null;
-                            return vehicle && (
-                              <span 
-                                className={`inline-flex items-center px-2 py-1 rounded text-xs font-medium ${
-                                  darkMode ? 'bg-gray-700 text-gray-300' : 'bg-gray-100 text-gray-700'
-                                }`}
-                              >
-                                <Car className="w-3 h-3 mr-1 flex-shrink-0" />
-                                <span className="truncate" style={{ color: vehicle.color || '#3B82F6' }}>
-                                  {vehicle.nickname || vehicle.name}
-                                </span>
-                              </span>
-                            );
-                          })()}
-                        </div>
-                      </div>
+                      <h2 className={`text-2xl font-bold ${
+                        darkMode ? 'text-gray-100' : 'text-gray-800'
+                      }`} style={{ fontFamily: "'FoundationOne', 'Courier New', monospace" }}>
+                        {viewingProject.name}
+                      </h2>
                       <button
                         onClick={() => handleCloseModal(() => {
                           // Check for unsaved changes
@@ -5762,6 +5836,25 @@ const TakumiGarage = () => {
                       }`}
                     >
                       <div className="p-6 space-y-6 max-h-[calc(90vh-180px)] overflow-y-auto">
+                        {/* Vehicle Badge - Top Right */}
+                        {(() => {
+                          const vehicle = viewingProject.vehicle_id ? vehicles.find(v => v.id === viewingProject.vehicle_id) : null;
+                          return vehicle && (
+                            <div className="flex justify-end mb-4">
+                              <span 
+                                className={`inline-flex items-center px-3 py-1.5 rounded text-sm font-medium border ${
+                                  darkMode ? 'bg-gray-700 text-gray-300 border-gray-600' : 'bg-gray-100 text-gray-700 border-gray-300'
+                                }`}
+                              >
+                                <Car className="w-4 h-4 mr-1.5" />
+                                <span style={{ color: vehicle.color || '#3B82F6' }}>
+                                  {vehicle.nickname || vehicle.name}
+                                </span>
+                              </span>
+                            </div>
+                          );
+                        })()}
+
                         <ProjectDetailView
                           project={viewingProject}
                           parts={parts}
@@ -5800,6 +5893,25 @@ const TakumiGarage = () => {
                       }`}
                     >
                       <div className="p-6 space-y-6 max-h-[calc(90vh-180px)] overflow-y-auto">
+                        {/* Vehicle Badge - Top Right */}
+                        {(() => {
+                          const vehicle = viewingProject.vehicle_id ? vehicles.find(v => v.id === viewingProject.vehicle_id) : null;
+                          return vehicle && (
+                            <div className="flex justify-end mb-4">
+                              <span 
+                                className={`inline-flex items-center px-3 py-1.5 rounded text-sm font-medium border ${
+                                  darkMode ? 'bg-gray-700 text-gray-300 border-gray-600' : 'bg-gray-100 text-gray-700 border-gray-300'
+                                }`}
+                              >
+                                <Car className="w-4 h-4 mr-1.5" />
+                                <span style={{ color: vehicle.color || '#3B82F6' }}>
+                                  {vehicle.nickname || vehicle.name}
+                                </span>
+                              </span>
+                            </div>
+                          );
+                        })()}
+
                         <ProjectEditForm
                           project={viewingProject}
                           onProjectChange={setViewingProject}
