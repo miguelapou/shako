@@ -4939,14 +4939,15 @@ const TakumiGarage = () => {
                               <div className="flex items-center gap-2">
                                 <button
                                   onClick={() => setEditingVendor({ oldName: vendor, newName: vendor })}
-                                  className={`px-3 py-1.5 rounded-lg font-medium transition-colors text-sm flex items-center gap-1.5 ${
+                                  className={`px-2 sm:px-3 py-1.5 rounded-lg font-medium transition-colors text-sm flex items-center gap-1.5 ${
                                     darkMode 
                                       ? 'bg-gray-600 hover:bg-gray-500 text-gray-100' 
                                       : 'bg-gray-200 hover:bg-gray-300 text-gray-800'
                                   }`}
+                                  title="Rename vendor"
                                 >
                                   <Edit2 className="w-3.5 h-3.5" />
-                                  Rename
+                                  <span className="hidden sm:inline">Rename</span>
                                 </button>
                                 <button
                                   onClick={() => {
@@ -4958,14 +4959,15 @@ const TakumiGarage = () => {
                                       onConfirm: () => deleteVendor(vendor)
                                     });
                                   }}
-                                  className={`px-3 py-1.5 rounded-lg font-medium transition-colors text-sm flex items-center gap-1.5 ${
+                                  className={`px-2 sm:px-3 py-1.5 rounded-lg font-medium transition-colors text-sm flex items-center gap-1.5 ${
                                     darkMode
                                       ? 'bg-red-900/30 hover:bg-red-900/50 text-red-400 border border-red-700'
                                       : 'bg-red-50 hover:bg-red-100 text-red-600 border border-red-300'
                                   }`}
+                                  title="Delete vendor"
                                 >
                                   <Trash2 className="w-3.5 h-3.5" />
-                                  Delete
+                                  <span className="hidden sm:inline">Delete</span>
                                 </button>
                               </div>
                             </div>
