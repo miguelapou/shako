@@ -3842,7 +3842,7 @@ const TakumiGarage = () => {
 
               {/* Detail View */}
               {partDetailView === 'detail' && (
-              <div className="p-4 sm:p-6 modal-scrollable">
+              <div className="p-4 sm:p-6 modal-scrollable slide-in-left">
                 {/* Status Badge */}
                 <div className="mb-6">
                   <div className={`inline-flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium border ${getStatusColor(viewingPart)}`}>
@@ -4009,7 +4009,7 @@ const TakumiGarage = () => {
               )}
               {/* Edit View */}
               {partDetailView === 'edit' && editingPart && (
-              <div className="p-6 modal-scrollable">
+              <div className="p-6 modal-scrollable slide-in-right">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div className="md:col-span-1">
                     <label className={`block text-sm font-medium mb-2 ${
@@ -4335,7 +4335,7 @@ const TakumiGarage = () => {
 
               {/* Manage Vendors View */}
               {partDetailView === 'manage-vendors' && (
-              <div className="p-6 modal-scrollable">
+              <div className="p-6 modal-scrollable slide-in-right">
                 {uniqueVendors.length === 0 ? (
                   <div className={`text-center py-12 ${
                     darkMode ? 'text-gray-400' : 'text-gray-600'
