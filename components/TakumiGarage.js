@@ -1252,6 +1252,32 @@ const fontStyles = `
   .table-sorting tbody tr:nth-child(9) { animation-delay: 0.16s; }
   .table-sorting tbody tr:nth-child(10) { animation-delay: 0.18s; }
 
+  /* Project filtering animations */
+  @keyframes projectFilterFade {
+    0% {
+      opacity: 0;
+      transform: scale(0.95) translateY(-10px);
+    }
+    100% {
+      opacity: 1;
+      transform: scale(1) translateY(0);
+    }
+  }
+
+  .projects-filtering > div {
+    animation: projectFilterFade 0.5s ease-out;
+  }
+
+  .projects-filtering > div:nth-child(1) { animation-delay: 0s; }
+  .projects-filtering > div:nth-child(2) { animation-delay: 0.05s; }
+  .projects-filtering > div:nth-child(3) { animation-delay: 0.1s; }
+  .projects-filtering > div:nth-child(4) { animation-delay: 0.15s; }
+  .projects-filtering > div:nth-child(5) { animation-delay: 0.2s; }
+  .projects-filtering > div:nth-child(6) { animation-delay: 0.25s; }
+  .projects-filtering > div:nth-child(7) { animation-delay: 0.3s; }
+  .projects-filtering > div:nth-child(8) { animation-delay: 0.35s; }
+  .projects-filtering > div:nth-child(9) { animation-delay: 0.4s; }
+
   /* Garage Door Loading Spinner */
   .garage-spinner {
     width: 100px;
@@ -1689,6 +1715,7 @@ const TakumiGarage = () => {
 
   // Filter and sort states
   const [projectVehicleFilter, setProjectVehicleFilter] = useState('all'); // 'all' or vehicle ID
+  const [isFilteringProjects, setIsFilteringProjects] = useState(false);
   const [showVehicleFilterDropdown, setShowVehicleFilterDropdown] = useState(false);
 
   // Load parts and projects from Supabase on mount
@@ -3309,8 +3336,10 @@ const TakumiGarage = () => {
                       }`}>
                         <button
                           onClick={() => {
+                            setIsFilteringProjects(true);
                             setProjectVehicleFilter('all');
                             setShowVehicleFilterDropdown(false);
+                            setTimeout(() => setIsFilteringProjects(false), 600);
                           }}
                           className={`w-full px-3 py-2 text-left text-sm flex items-center gap-2 ${
                             projectVehicleFilter === 'all'
@@ -3324,8 +3353,10 @@ const TakumiGarage = () => {
                           <button
                             key={vehicle.id}
                             onClick={() => {
+                              setIsFilteringProjects(true);
                               setProjectVehicleFilter(String(vehicle.id));
                               setShowVehicleFilterDropdown(false);
+                              setTimeout(() => setIsFilteringProjects(false), 600);
                             }}
                             className={`w-full px-3 py-2 text-left text-sm flex items-center gap-2 ${
                               String(projectVehicleFilter) === String(vehicle.id)
@@ -5725,7 +5756,7 @@ const TakumiGarage = () => {
           <div className={previousTab === 'vehicles' ? 'slide-in-left' : 'slide-in-right'}>
           <>
             {/* Projects Grid */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div className={`grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 ${isFilteringProjects ? 'projects-filtering' : ''}`}>
               {projects
                 .filter(project => {
                   if (projectVehicleFilter === 'all') return true;
