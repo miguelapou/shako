@@ -3883,13 +3883,31 @@ const TakumiGarage = () => {
               <div className={`sticky top-0 border-b px-6 py-4 rounded-t-lg ${
                 darkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-200'
               }`} style={{ zIndex: 10 }}>
-                <div className="flex items-center justify-between">
+                <div className="flex items-center justify-between gap-3">
                   <h2 className={`text-2xl font-bold ${
                     darkMode ? 'text-gray-100' : 'text-gray-800'
                   }`} style={{ fontFamily: "'FoundationOne', 'Courier New', monospace" }}>
                     {partDetailView === 'manage-vendors' ? 'Vendors' : (partDetailView === 'edit' ? 'Edit Part' : viewingPart.part)}
                   </h2>
-                  <button
+                  <div className="flex items-center gap-3">
+                    {/* Vehicle Badge - Mobile only in edit view */}
+                    {partDetailView === 'edit' && (() => {
+                      const partProject = editingPart?.projectId ? projects.find(p => p.id === editingPart.projectId) : null;
+                      const vehicle = partProject?.vehicle_id ? vehicles.find(v => v.id === partProject.vehicle_id) : null;
+                      return vehicle && (
+                        <span 
+                          className={`md:hidden inline-flex items-center px-2 py-1 rounded text-xs font-medium border ${
+                            darkMode ? 'bg-gray-700 text-gray-300 border-gray-600' : 'bg-gray-100 text-gray-700 border-gray-300'
+                          }`}
+                        >
+                          <Car className="w-3 h-3 mr-1" />
+                          <span style={{ color: vehicle.color || '#3B82F6' }}>
+                            {vehicle.nickname || vehicle.name}
+                          </span>
+                        </span>
+                      );
+                    })()}
+                    <button
                     onClick={() => handleCloseModal(() => {
                       setShowPartDetailModal(false);
                       setViewingPart(null);
@@ -4092,12 +4110,12 @@ const TakumiGarage = () => {
               {/* Edit View */}
               {partDetailView === 'edit' && editingPart && (
               <div className="p-6 modal-scrollable slide-in-right relative">
-                {/* Vehicle Badge - Top Right (absolute positioning) */}
+                {/* Vehicle Badge - Desktop only in upper right */}
                 {(() => {
                   const partProject = editingPart.projectId ? projects.find(p => p.id === editingPart.projectId) : null;
                   const vehicle = partProject?.vehicle_id ? vehicles.find(v => v.id === partProject.vehicle_id) : null;
                   return vehicle && (
-                    <div className="absolute top-6 right-6 z-10">
+                    <div className="hidden md:block absolute top-6 right-6 z-10">
                       <span 
                         className={`inline-flex items-center px-2 py-1 rounded text-xs font-medium border ${
                           darkMode ? 'bg-gray-700 text-gray-300 border-gray-600' : 'bg-gray-100 text-gray-700 border-gray-300'
@@ -4112,7 +4130,7 @@ const TakumiGarage = () => {
                   );
                 })()}
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-12 md:mt-0">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div className="md:col-span-1">
                     <label className={`block text-sm font-medium mb-2 ${
                       darkMode ? 'text-gray-300' : 'text-gray-700'
