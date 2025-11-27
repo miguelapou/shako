@@ -1369,45 +1369,47 @@ const ProjectEditForm = ({
   darkMode 
 }) => {
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-      <div>
-        <label className={`block text-sm font-medium mb-2 ${
-          darkMode ? 'text-gray-300' : 'text-gray-700'
-        }`}>
-          Project Name
-        </label>
-        <input
-          type="text"
-          value={project.name}
-          onChange={(e) => onProjectChange({ ...project, name: e.target.value })}
-          className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
-            darkMode 
-              ? 'bg-gray-700 border-gray-600 text-gray-100' 
-              : 'bg-white border-gray-300 text-gray-900'
-          }`}
-        />
+    <div className="space-y-4">
+      {/* Project Name and Description Row */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div>
+          <label className={`block text-sm font-medium mb-2 ${
+            darkMode ? 'text-gray-300' : 'text-gray-700'
+          }`}>
+            Project Name
+          </label>
+          <input
+            type="text"
+            value={project.name}
+            onChange={(e) => onProjectChange({ ...project, name: e.target.value })}
+            className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
+              darkMode 
+                ? 'bg-gray-700 border-gray-600 text-gray-100' 
+                : 'bg-white border-gray-300 text-gray-900'
+            }`}
+          />
+        </div>
+
+        <div>
+          <label className={`block text-sm font-medium mb-2 ${
+            darkMode ? 'text-gray-300' : 'text-gray-700'
+          }`}>
+            Description
+          </label>
+          <textarea
+            value={project.description}
+            onChange={(e) => onProjectChange({ ...project, description: e.target.value })}
+            className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
+              darkMode 
+                ? 'bg-gray-700 border-gray-600 text-gray-100' 
+                : 'bg-white border-gray-300 text-gray-900'
+            }`}
+            rows="3"
+          />
+        </div>
       </div>
 
-      <div></div>
-
-      <div className="md:col-span-2">
-        <label className={`block text-sm font-medium mb-2 ${
-          darkMode ? 'text-gray-300' : 'text-gray-700'
-        }`}>
-          Description
-        </label>
-        <textarea
-          value={project.description}
-          onChange={(e) => onProjectChange({ ...project, description: e.target.value })}
-          className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
-            darkMode 
-              ? 'bg-gray-700 border-gray-600 text-gray-100' 
-              : 'bg-white border-gray-300 text-gray-900'
-          }`}
-          rows="3"
-        />
-      </div>
-
+      {/* Budget, Priority, and Vehicle Row */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         <div>
           <label className={`block text-sm font-medium mb-2 ${
@@ -1456,7 +1458,7 @@ const ProjectEditForm = ({
           }`}>
             <div className="flex items-center gap-2">
               <Car className="w-4 h-4" />
-              <span>Linked Vehicle</span>
+              <span>Vehicle</span>
             </div>
           </label>
           <select
@@ -6077,119 +6079,100 @@ const TakumiGarage = () => {
                   </div>
 
                   <div className="p-6 modal-scrollable">
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      <div>
-                        <label className={`block text-sm font-medium mb-2 ${
-                          darkMode ? 'text-gray-300' : 'text-gray-700'
-                        }`}>
-                          Project Name <span className="text-red-500">*</span>
-                        </label>
-                        <input
-                          type="text"
-                          value={newProject.name}
-                          onChange={(e) => setNewProject({ ...newProject, name: e.target.value })}
-                          className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
-                            darkMode 
-                              ? 'bg-gray-700 border-gray-600 text-gray-100 placeholder-gray-400' 
-                              : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400'
-                          }`}
-                          placeholder="e.g., Interior Restoration"
-                          required
-                        />
+                    <div className="space-y-4">
+                      {/* Project Name and Description Row */}
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                          <label className={`block text-sm font-medium mb-2 ${
+                            darkMode ? 'text-gray-300' : 'text-gray-700'
+                          }`}>
+                            Project Name <span className="text-red-500">*</span>
+                          </label>
+                          <input
+                            type="text"
+                            value={newProject.name}
+                            onChange={(e) => setNewProject({ ...newProject, name: e.target.value })}
+                            className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
+                              darkMode 
+                                ? 'bg-gray-700 border-gray-600 text-gray-100 placeholder-gray-400' 
+                                : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400'
+                            }`}
+                            placeholder="e.g., Interior Restoration"
+                            required
+                          />
+                        </div>
+
+                        <div>
+                          <label className={`block text-sm font-medium mb-2 ${
+                            darkMode ? 'text-gray-300' : 'text-gray-700'
+                          }`}>
+                            Description
+                          </label>
+                          <textarea
+                            value={newProject.description}
+                            onChange={(e) => setNewProject({ ...newProject, description: e.target.value })}
+                            className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
+                              darkMode 
+                                ? 'bg-gray-700 border-gray-600 text-gray-100 placeholder-gray-400' 
+                                : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400'
+                            }`}
+                            placeholder="Brief description of the project"
+                            rows="3"
+                          />
+                        </div>
                       </div>
 
-                      <div></div>
+                      {/* Budget, Priority, and Vehicle Row */}
+                      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <div>
+                          <label className={`block text-sm font-medium mb-2 ${
+                            darkMode ? 'text-gray-300' : 'text-gray-700'
+                          }`}>
+                            Budget ($)
+                          </label>
+                          <input
+                            type="number"
+                            step="0.01"
+                            value={newProject.budget}
+                            onChange={(e) => setNewProject({ ...newProject, budget: e.target.value })}
+                            className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none ${
+                              darkMode 
+                                ? 'bg-gray-700 border-gray-600 text-gray-100 placeholder-gray-400' 
+                                : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400'
+                            }`}
+                            placeholder="0.00"
+                          />
+                        </div>
 
-                      <div className="md:col-span-2">
-                        <label className={`block text-sm font-medium mb-2 ${
-                          darkMode ? 'text-gray-300' : 'text-gray-700'
-                        }`}>
-                          Description
-                        </label>
-                        <textarea
-                          value={newProject.description}
-                          onChange={(e) => setNewProject({ ...newProject, description: e.target.value })}
-                          className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
-                            darkMode 
-                              ? 'bg-gray-700 border-gray-600 text-gray-100 placeholder-gray-400' 
-                              : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400'
-                          }`}
-                          placeholder="Brief description of the project"
-                          rows="3"
-                        />
-                      </div>
+                        <div>
+                          <label className={`block text-sm font-medium mb-2 ${
+                            darkMode ? 'text-gray-300' : 'text-gray-700'
+                          }`}>
+                            Priority
+                          </label>
+                          <select
+                            value={newProject.priority}
+                            onChange={(e) => setNewProject({ ...newProject, priority: e.target.value })}
+                            className={`w-full px-4 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent appearance-none ${
+                              darkMode 
+                                ? 'bg-gray-700 border-gray-600 text-gray-100' 
+                                : 'bg-white border-gray-300 text-gray-900'
+                            }`}
+                          >
+                            <option value="not_set">Not Set</option>
+                            <option value="low">Low</option>
+                            <option value="medium">Medium</option>
+                            <option value="high">High</option>
+                          </select>
+                        </div>
 
-                      <div>
-                        <label className={`block text-sm font-medium mb-2 ${
-                          darkMode ? 'text-gray-300' : 'text-gray-700'
-                        }`}>
-                          Budget ($)
-                        </label>
-                        <input
-                          type="number"
-                          step="0.01"
-                          value={newProject.budget}
-                          onChange={(e) => setNewProject({ ...newProject, budget: e.target.value })}
-                          className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none ${
-                            darkMode 
-                              ? 'bg-gray-700 border-gray-600 text-gray-100 placeholder-gray-400' 
-                              : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400'
-                          }`}
-                          placeholder="0.00"
-                        />
-                      </div>
-
-                      <div>
-                        <label className={`block text-sm font-medium mb-2 ${
-                          darkMode ? 'text-gray-300' : 'text-gray-700'
-                        }`}>
-                          Priority
-                        </label>
-                        <select
-                          value={newProject.priority}
-                          onChange={(e) => setNewProject({ ...newProject, priority: e.target.value })}
-                          className={`w-full px-4 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent appearance-none ${
-                            darkMode 
-                              ? 'bg-gray-700 border-gray-600 text-gray-100' 
-                              : 'bg-white border-gray-300 text-gray-900'
-                          }`}
-                        >
-                          <option value="not_set">Not Set</option>
-                          <option value="low">Low</option>
-                          <option value="medium">Medium</option>
-                          <option value="high">High</option>
-                        </select>
-                      </div>
-
-                      <div>
-                        <label className={`block text-sm font-medium mb-2 ${
-                          darkMode ? 'text-gray-300' : 'text-gray-700'
-                        }`}>
-                          Status
-                        </label>
-                        <select
-                          value={newProject.status}
-                          onChange={(e) => setNewProject({ ...newProject, status: e.target.value })}
-                          className={`w-full px-4 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent appearance-none ${
-                            darkMode 
-                              ? 'bg-gray-700 border-gray-600 text-gray-100' 
-                              : 'bg-white border-gray-300 text-gray-900'
-                          }`}
-                        >
-                          <option value="planning">Planning</option>
-                          <option value="in_progress">In Progress</option>
-                          <option value="on_hold">On Hold</option>
-                          <option value="completed">Completed</option>
-                        </select>
-                      </div>
-
-                      <div>
+                        <div>
                         <label className={`block text-sm font-medium mb-2 ${
                           darkMode ? 'text-gray-300' : 'text-gray-700'
                         }`}>
                           <div className="flex items-center gap-2">
                             <Car className="w-4 h-4" />
-                            <span>Linked Vehicle</span>
+                            <span>Vehicle</span>
                           </div>
                         </label>
                         <select
