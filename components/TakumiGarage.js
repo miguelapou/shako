@@ -4186,41 +4186,41 @@ const TakumiGarage = () => {
                 darkMode ? 'border-gray-700 bg-gray-800' : 'border-gray-200 bg-white'
               }`}>
                 <button
-                  onClick={() => setPartModalView('manage-vendors')}
-                  className={`px-4 py-2 rounded-lg font-medium transition-colors flex items-center gap-2 text-sm border ${
+                  onClick={() => {
+                    setConfirmDialog({
+                      isOpen: true,
+                      title: 'Delete Part',
+                      message: 'Are you sure you want to delete this part? This action cannot be undone.',
+                      confirmText: 'Delete',
+                      onConfirm: () => {
+                        deletePart(editingPart.id);
+                        setShowEditModal(false);
+                  setPartModalView(null);
+                        setEditingPart(null);
+                        setOriginalPartData(null);
+                      }
+                    });
+                  }}
+                  className={`px-4 py-2 rounded-lg font-medium transition-colors flex items-center gap-2 text-sm ${
                     darkMode
-                      ? 'bg-gray-700 hover:bg-gray-600 text-gray-100 border-gray-600'
-                      : 'bg-gray-100 hover:bg-gray-200 text-gray-700 border-gray-300'
+                      ? 'bg-red-900/30 hover:bg-red-900/50 text-red-400 border border-red-700'
+                      : 'bg-red-50 hover:bg-red-100 text-red-600 border border-red-300'
                   }`}
                 >
-                  <Settings className="w-4 h-4" />
-                  Manage Vendors
+                  <Trash2 className="w-4 h-4" />
+                  Delete
                 </button>
                 <div className="flex items-center gap-2">
                   <button
-                    onClick={() => {
-                      setConfirmDialog({
-                        isOpen: true,
-                        title: 'Delete Part',
-                        message: 'Are you sure you want to delete this part? This action cannot be undone.',
-                        confirmText: 'Delete',
-                        onConfirm: () => {
-                          deletePart(editingPart.id);
-                          setShowEditModal(false);
-                    setPartModalView(null);
-                          setEditingPart(null);
-                          setOriginalPartData(null);
-                        }
-                      });
-                    }}
-                    className={`px-4 py-2 rounded-lg font-medium transition-colors flex items-center gap-2 text-sm mr-4 ${
+                    onClick={() => setPartModalView('manage-vendors')}
+                    className={`px-4 py-2 rounded-lg font-medium transition-colors flex items-center gap-2 text-sm border ${
                       darkMode
-                        ? 'bg-red-900/30 hover:bg-red-900/50 text-red-400 border border-red-700'
-                        : 'bg-red-50 hover:bg-red-100 text-red-600 border border-red-300'
+                        ? 'bg-gray-700 hover:bg-gray-600 text-gray-100 border-gray-600'
+                        : 'bg-gray-100 hover:bg-gray-200 text-gray-700 border-gray-300'
                     }`}
                   >
-                    <Trash2 className="w-4 h-4" />
-                    Delete
+                    <Settings className="w-4 h-4" />
+                    Vendors
                   </button>
                   <button
                     onClick={() => {
@@ -5050,7 +5050,7 @@ const TakumiGarage = () => {
                     }`}
                   >
                     <Settings className="w-4 h-4" />
-                    Manage Vendors
+                    Vendors
                   </button>
                 </div>
                 <button
