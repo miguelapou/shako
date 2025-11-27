@@ -3799,8 +3799,8 @@ const TakumiGarage = () => {
               <div className={`sticky top-0 border-b px-6 py-4 rounded-t-lg ${
                 darkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-200'
               }`} style={{ zIndex: 10 }}>
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-3">
+                <div className="flex items-start justify-between gap-3">
+                  <div className="flex items-center gap-3 flex-wrap min-w-0 flex-1">
                     <h2 className={`text-2xl font-bold ${
                       darkMode ? 'text-gray-100' : 'text-gray-800'
                     }`} style={{ fontFamily: "'FoundationOne', 'Courier New', monospace" }}>
@@ -3831,7 +3831,7 @@ const TakumiGarage = () => {
                       setEditingPart(null);
                       setOriginalPartData(null);
                     })}
-                    className={`transition-colors ${
+                    className={`transition-colors flex-shrink-0 ${
                       darkMode ? 'text-gray-400 hover:text-gray-300' : 'text-gray-400 hover:text-gray-600'
                     }`}
                   >
