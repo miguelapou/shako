@@ -1256,27 +1256,31 @@ const fontStyles = `
   @keyframes projectFilterFade {
     0% {
       opacity: 0;
-      transform: scale(0.95) translateY(-10px);
+      transform: translateY(20px);
     }
     100% {
       opacity: 1;
-      transform: scale(1) translateY(0);
+      transform: translateY(0);
     }
   }
 
   .projects-filtering > div {
-    animation: projectFilterFade 0.5s ease-out;
+    animation: projectFilterFade 0.4s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+    opacity: 0;
   }
 
   .projects-filtering > div:nth-child(1) { animation-delay: 0s; }
-  .projects-filtering > div:nth-child(2) { animation-delay: 0.05s; }
-  .projects-filtering > div:nth-child(3) { animation-delay: 0.1s; }
-  .projects-filtering > div:nth-child(4) { animation-delay: 0.15s; }
-  .projects-filtering > div:nth-child(5) { animation-delay: 0.2s; }
-  .projects-filtering > div:nth-child(6) { animation-delay: 0.25s; }
-  .projects-filtering > div:nth-child(7) { animation-delay: 0.3s; }
-  .projects-filtering > div:nth-child(8) { animation-delay: 0.35s; }
-  .projects-filtering > div:nth-child(9) { animation-delay: 0.4s; }
+  .projects-filtering > div:nth-child(2) { animation-delay: 0.04s; }
+  .projects-filtering > div:nth-child(3) { animation-delay: 0.08s; }
+  .projects-filtering > div:nth-child(4) { animation-delay: 0.12s; }
+  .projects-filtering > div:nth-child(5) { animation-delay: 0.16s; }
+  .projects-filtering > div:nth-child(6) { animation-delay: 0.2s; }
+  .projects-filtering > div:nth-child(7) { animation-delay: 0.24s; }
+  .projects-filtering > div:nth-child(8) { animation-delay: 0.28s; }
+  .projects-filtering > div:nth-child(9) { animation-delay: 0.32s; }
+  .projects-filtering > div:nth-child(10) { animation-delay: 0.36s; }
+  .projects-filtering > div:nth-child(11) { animation-delay: 0.4s; }
+  .projects-filtering > div:nth-child(12) { animation-delay: 0.44s; }
 
   /* Garage Door Loading Spinner */
   .garage-spinner {
@@ -3339,7 +3343,7 @@ const TakumiGarage = () => {
                             setIsFilteringProjects(true);
                             setProjectVehicleFilter('all');
                             setShowVehicleFilterDropdown(false);
-                            setTimeout(() => setIsFilteringProjects(false), 600);
+                            setTimeout(() => setIsFilteringProjects(false), 500);
                           }}
                           className={`w-full px-3 py-2 text-left text-sm flex items-center gap-2 ${
                             projectVehicleFilter === 'all'
@@ -3356,7 +3360,7 @@ const TakumiGarage = () => {
                               setIsFilteringProjects(true);
                               setProjectVehicleFilter(String(vehicle.id));
                               setShowVehicleFilterDropdown(false);
-                              setTimeout(() => setIsFilteringProjects(false), 600);
+                              setTimeout(() => setIsFilteringProjects(false), 500);
                             }}
                             className={`w-full px-3 py-2 text-left text-sm flex items-center gap-2 ${
                               String(projectVehicleFilter) === String(vehicle.id)
