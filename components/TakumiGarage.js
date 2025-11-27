@@ -3988,6 +3988,29 @@ const TakumiGarage = () => {
               </div>
               </div>
               )}
+
+              {/* Footer */}
+              {partDetailView === 'detail' && (
+              <div className={`sticky bottom-0 border-t p-4 flex justify-end ${
+                darkMode ? 'border-gray-700 bg-gray-800' : 'border-gray-200 bg-white'
+              }`}>
+                <button
+                  onClick={() => {
+                    const partData = {
+                      ...viewingPart,
+                      status: viewingPart.delivered ? 'delivered' : (viewingPart.shipped ? 'shipped' : (viewingPart.purchased ? 'purchased' : 'pending'))
+                    };
+                    setEditingPart(partData);
+                    setOriginalPartData({ ...partData });
+                    setPartDetailView('edit');
+                  }}
+                  className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium transition-colors flex items-center gap-2 text-sm"
+                >
+                  <Edit2 className="w-4 h-4" />
+                  Edit
+                </button>
+              </div>
+              )}
               {/* Edit View */}
               {partDetailView === 'edit' && editingPart && (
               <div className="slide-in-right">
@@ -4222,6 +4245,70 @@ const TakumiGarage = () => {
                   </div>
                 </div>
               </div>
+              </div>
+              {/* Edit Footer */}
+              <div className={`sticky bottom-0 border-t p-4 flex items-center justify-between ${
+                darkMode ? 'border-gray-700 bg-gray-800' : 'border-gray-200 bg-white'
+              }`}>
+                <div className="flex items-center gap-2">
+                  <button
+                    onClick={() => {
+                      setPartDetailView('detail');
+                      setEditingPart(null);
+                      setOriginalPartData(null);
+                    }}
+                    className={`px-4 py-2 rounded-lg font-medium transition-colors flex items-center justify-center text-sm border ${
+                      darkMode
+                        ? 'bg-gray-700 hover:bg-gray-600 text-gray-100 border-gray-600'
+                        : 'bg-gray-200 hover:bg-gray-300 text-gray-800 border-gray-300'
+                    }`}
+                  >
+                    <ChevronDown className="w-4 h-4 rotate-90" />
+                  </button>
+                  <button
+                    onClick={() => {
+                      setConfirmDialog({
+                        isOpen: true,
+                        title: 'Delete Part',
+                        message: 'Are you sure you want to delete this part? This action cannot be undone.',
+                        confirmText: 'Delete',
+                        onConfirm: async () => {
+                          await deletePart(viewingPart.id);
+                          setShowPartDetailModal(false);
+                          setViewingPart(null);
+                          setPartDetailView('detail');
+                          setEditingPart(null);
+                          setOriginalPartData(null);
+                        }
+                      });
+                    }}
+                    className={`px-4 py-2 rounded-lg font-medium transition-colors flex items-center gap-2 text-sm ${
+                      darkMode
+                        ? 'bg-red-900/30 hover:bg-red-900/50 text-red-400 border border-red-700'
+                        : 'bg-red-50 hover:bg-red-100 text-red-600 border border-red-300'
+                    }`}
+                  >
+                    <Trash2 className="w-4 h-4" />
+                    Delete
+                  </button>
+                </div>
+                <button
+                  onClick={async () => {
+                    await saveEditedPart();
+                    setPartDetailView('detail');
+                  }}
+                  disabled={!editingPart.part}
+                  className={`px-4 py-2 rounded-lg font-medium transition-colors text-sm ${
+                    !editingPart.part
+                      ? darkMode 
+                        ? 'bg-gray-700 text-gray-500 cursor-not-allowed'
+                        : 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                      : 'bg-blue-600 hover:bg-blue-700 text-white'
+                  }`}
+                >
+                  <span className="sm:hidden">Save</span>
+                  <span className="hidden sm:inline">Save Changes</span>
+                </button>
               </div>
               )}
 
