@@ -4245,7 +4245,6 @@ const TakumiGarage = () => {
                   </div>
                 </div>
               </div>
-              </div>
               {/* Edit Footer */}
               <div className={`sticky bottom-0 border-t p-4 flex items-center justify-between ${
                 darkMode ? 'border-gray-700 bg-gray-800' : 'border-gray-200 bg-white'
