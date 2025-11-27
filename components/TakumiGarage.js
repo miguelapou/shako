@@ -4309,6 +4309,7 @@ const TakumiGarage = () => {
                   <span className="hidden sm:inline">Save Changes</span>
                 </button>
               </div>
+              </div>
               )}
 
             </div>
