@@ -3800,8 +3800,8 @@ const TakumiGarage = () => {
                 darkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-200'
               }`} style={{ zIndex: 10 }}>
                 <div className="flex items-start justify-between gap-3">
-                  <div className="flex items-center gap-3 flex-wrap min-w-0 flex-1">
-                    <h2 className={`text-2xl font-bold ${
+                  <div className="flex items-center gap-3 flex-wrap flex-1 min-w-0">
+                    <h2 className={`text-2xl font-bold flex-shrink ${
                       darkMode ? 'text-gray-100' : 'text-gray-800'
                     }`} style={{ fontFamily: "'FoundationOne', 'Courier New', monospace" }}>
                       {partDetailView === 'manage-vendors' ? 'Vendors' : (partDetailView === 'edit' ? 'Edit Part' : viewingPart.part)}
@@ -3811,7 +3811,7 @@ const TakumiGarage = () => {
                       const vehicle = partProject?.vehicle_id ? vehicles.find(v => v.id === partProject.vehicle_id) : null;
                       return vehicle && (
                         <span 
-                          className={`inline-flex items-center px-2 py-1 rounded text-xs font-medium ${
+                          className={`inline-flex items-center px-2 py-1 rounded text-xs font-medium flex-shrink-0 ${
                             darkMode ? 'bg-gray-700 text-gray-300' : 'bg-gray-100 text-gray-700'
                           }`}
                         >
