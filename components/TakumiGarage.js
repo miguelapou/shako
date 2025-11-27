@@ -3752,12 +3752,6 @@ const TakumiGarage = () => {
                 />
                 <div className="flex gap-3 mt-6">
                   <button
-                    onClick={saveTrackingInfo}
-                    className="flex-1 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-medium transition-colors"
-                  >
-                    Save
-                  </button>
-                  <button
                     onClick={skipTrackingInfo}
                     className={`px-4 py-2 border rounded-lg font-medium transition-colors ${
                       darkMode 
@@ -3766,6 +3760,12 @@ const TakumiGarage = () => {
                     }`}
                   >
                     Skip
+                  </button>
+                  <button
+                    onClick={saveTrackingInfo}
+                    className="flex-1 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-medium transition-colors"
+                  >
+                    Save
                   </button>
                 </div>
               </div>
