@@ -4440,7 +4440,7 @@ const TakumiGarage = () => {
         {/* Parts Table */}
         {/* Desktop Table View - Hidden on mobile */}
         {filteredParts.length > 0 ? (
-        <div className={`hidden md:block rounded-lg shadow-md overflow-hidden ${
+        <div className={`hidden lg:block rounded-lg shadow-md overflow-hidden ${
           darkMode ? 'bg-gray-800' : 'bg-white'
         }`}>
           <div className="overflow-x-auto">
@@ -4695,7 +4695,7 @@ const TakumiGarage = () => {
 
         {/* Mobile Card View - Visible only on mobile */}
         {filteredParts.length > 0 ? (
-        <div className="md:hidden grid grid-cols-1 gap-4">
+        <div className="lg:hidden grid grid-cols-1 gap-4">
             {filteredParts.map((part) => (
               <div 
                 key={part.id}
@@ -4854,7 +4854,7 @@ const TakumiGarage = () => {
             ))}
           </div>
         ) : (
-          <div className={`md:hidden text-center py-16 rounded-lg ${
+          <div className={`lg:hidden text-center py-16 rounded-lg ${
             darkMode ? 'bg-gray-800' : 'bg-white'
           }`}>
             <Package className={`w-20 h-20 mx-auto mb-4 ${
