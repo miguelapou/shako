@@ -4411,13 +4411,14 @@ const TakumiGarage = () => {
                                 <>
                                   <button
                                     onClick={() => setEditingVendor({ oldName: vendor, newName: vendor })}
-                                    className={`p-2 rounded-lg transition-colors ${
+                                    className={`px-3 py-2 rounded-lg transition-colors flex items-center gap-2 ${
                                       darkMode
                                         ? 'bg-gray-800 hover:bg-gray-700 text-gray-400'
                                         : 'bg-gray-200 hover:bg-gray-300 text-gray-600'
                                     }`}
                                   >
                                     <Edit2 className="w-4 h-4" />
+                                    <span className="hidden sm:inline">Edit</span>
                                   </button>
                                   <button
                                     onClick={() => {
@@ -4429,13 +4430,14 @@ const TakumiGarage = () => {
                                         onConfirm: () => deleteVendor(vendor)
                                       });
                                     }}
-                                    className={`p-2 rounded-lg transition-colors ${
+                                    className={`px-3 py-2 rounded-lg transition-colors flex items-center gap-2 ${
                                       darkMode
                                         ? 'bg-red-900/30 hover:bg-red-900/50 text-red-400'
                                         : 'bg-red-50 hover:bg-red-100 text-red-600'
                                     }`}
                                   >
                                     <Trash2 className="w-4 h-4" />
+                                    <span className="hidden sm:inline">Delete</span>
                                   </button>
                                 </>
                               )}
