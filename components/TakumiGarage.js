@@ -3800,8 +3800,8 @@ const TakumiGarage = () => {
                 darkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-200'
               }`} style={{ zIndex: 10 }}>
                 <div className="flex items-start justify-between gap-3">
-                  <div className="flex items-center gap-3 flex-wrap flex-1 min-w-0">
-                    <h2 className={`text-2xl font-bold flex-shrink ${
+                  <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-3 flex-1 min-w-0">
+                    <h2 className={`text-2xl font-bold ${
                       darkMode ? 'text-gray-100' : 'text-gray-800'
                     }`} style={{ fontFamily: "'FoundationOne', 'Courier New', monospace" }}>
                       {partDetailView === 'manage-vendors' ? 'Vendors' : (partDetailView === 'edit' ? 'Edit Part' : viewingPart.part)}
