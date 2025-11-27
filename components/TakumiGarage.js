@@ -4944,10 +4944,10 @@ const TakumiGarage = () => {
                                       ? 'bg-gray-600 hover:bg-gray-500 text-gray-100' 
                                       : 'bg-gray-200 hover:bg-gray-300 text-gray-800'
                                   }`}
+                                  title="Rename vendor"
                                 >
                                   <Edit2 className="w-3.5 h-3.5" />
-                                  <span className="hidden sm:inline">Rename</span> className="w-3.5 h-3.5" />
-                                  Rename
+                                  <span className="hidden sm:inline">Rename</span>
                                 </button>
                                 <button
                                   onClick={() => {
@@ -4964,6 +4964,7 @@ const TakumiGarage = () => {
                                       ? 'bg-red-900/30 hover:bg-red-900/50 text-red-400 border border-red-700'
                                       : 'bg-red-50 hover:bg-red-100 text-red-600 border border-red-300'
                                   }`}
+                                  title="Delete vendor"
                                 >
                                   <Trash2 className="w-3.5 h-3.5" />
                                   <span className="hidden sm:inline">Delete</span>
