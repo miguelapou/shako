@@ -2546,8 +2546,6 @@ const TakumiGarage = () => {
         }
         return part;
       }));
-      setShowEditModal(false);
-                    setPartModalView(null);
       setEditingPart(null);
       setPartModalView(null);
     } catch (error) {
