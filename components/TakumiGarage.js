@@ -1768,16 +1768,9 @@ const TakumiGarage = () => {
       const activeTabElement = tabRefs.current[activeTab];
       if (activeTabElement) {
         const { offsetLeft, offsetWidth } = activeTabElement;
-        // For parts tab (rightmost): add right padding to prevent overflow on mobile
-        let leftOffset = offsetLeft;
-        let width = offsetWidth;
-        if (activeTab === 'parts') {
-          const rightPadding = 12;
-          width = offsetWidth - rightPadding;
-        }
         setUnderlineStyle({
-          left: leftOffset,
-          width: width
+          left: offsetLeft,
+          width: offsetWidth
         });
       }
     };
@@ -3434,7 +3427,7 @@ const TakumiGarage = () => {
             <button
               ref={(el) => (tabRefs.current['vehicles'] = el)}
               onClick={() => handleTabChange('vehicles')}
-              className={`flex items-center justify-center gap-2 flex-1 px-3 sm:px-6 py-3 font-medium transition-all relative ${
+              className={`flex items-center justify-center sm:justify-start gap-2 flex-1 sm:flex-initial px-3 sm:px-6 py-3 font-medium transition-all relative ${
                 activeTab === 'vehicles'
                   ? darkMode
                     ? 'text-blue-400'
@@ -3445,12 +3438,12 @@ const TakumiGarage = () => {
               }`}
             >
               <Car className="w-5 h-5" />
-              <span className="hidden xs:inline sm:inline">Vehicles</span>
+              <span className="text-sm sm:text-base">Vehicles</span>
             </button>
             <button
               ref={(el) => (tabRefs.current['projects'] = el)}
               onClick={() => handleTabChange('projects')}
-              className={`flex items-center justify-center gap-2 flex-1 px-3 sm:px-6 py-3 font-medium transition-all relative ${
+              className={`flex items-center justify-center sm:justify-start gap-2 flex-1 sm:flex-initial px-3 sm:px-6 py-3 font-medium transition-all relative ${
                 activeTab === 'projects'
                   ? darkMode
                     ? 'text-blue-400'
@@ -3461,12 +3454,12 @@ const TakumiGarage = () => {
               }`}
             >
               <Wrench className="w-5 h-5" />
-              <span className="hidden xs:inline sm:inline">Projects</span>
+              <span className="text-sm sm:text-base">Projects</span>
             </button>
             <button
               ref={(el) => (tabRefs.current['parts'] = el)}
               onClick={() => handleTabChange('parts')}
-              className={`flex items-center justify-center gap-2 flex-1 px-3 sm:px-6 py-3 font-medium transition-all relative ${
+              className={`flex items-center justify-center sm:justify-start gap-2 flex-1 sm:flex-initial px-3 sm:px-6 py-3 font-medium transition-all relative ${
                 activeTab === 'parts'
                   ? darkMode
                     ? 'text-blue-400'
@@ -3477,7 +3470,7 @@ const TakumiGarage = () => {
               }`}
             >
               <Package className="w-5 h-5" />
-              <span className="hidden xs:inline sm:inline">Parts</span>
+              <span className="text-sm sm:text-base">Parts</span>
             </button>
             {/* Animated underline */}
             <div
