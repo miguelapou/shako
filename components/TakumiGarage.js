@@ -77,19 +77,19 @@ const calculateProjectTotal = (projectId, parts) => {
 };
 
 // Dark mode utility functions for common class patterns
-const cardBg = (darkMode) => darkMode ? 'bg-gray-800' : 'bg-white';
-const secondaryBg = (darkMode) => darkMode ? 'bg-gray-700' : 'bg-gray-50';
-const primaryText = (darkMode) => darkMode ? 'text-gray-100' : 'text-gray-900';
-const secondaryText = (darkMode) => darkMode ? 'text-gray-400' : 'text-gray-600';
-const borderColor = (darkMode) => darkMode ? 'border-gray-700' : 'border-gray-200';
-const hoverBg = (darkMode) => darkMode ? 'hover:bg-gray-700' : 'hover:bg-gray-100';
+const cardBg = (darkMode) => darkMode ? 'bg-gray-800' : 'bg-slate-50';
+const secondaryBg = (darkMode) => darkMode ? 'bg-gray-700' : 'bg-slate-100';
+const primaryText = (darkMode) => darkMode ? 'text-gray-100' : 'text-slate-800';
+const secondaryText = (darkMode) => darkMode ? 'text-gray-400' : 'text-slate-600';
+const borderColor = (darkMode) => darkMode ? 'border-gray-700' : 'border-slate-200';
+const hoverBg = (darkMode) => darkMode ? 'hover:bg-gray-700' : 'hover:bg-slate-100';
 
 // Common input field classes
 const inputClasses = (darkMode, additionalClasses = '') => {
   const base = `w-full md:max-w-md px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${additionalClasses}`;
   const theme = darkMode 
     ? 'bg-gray-700 border-gray-600 text-gray-100 placeholder-gray-400' 
-    : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400';
+    : 'bg-white border-slate-300 text-slate-800 placeholder-slate-400';
   return `${base} ${theme}`;
 };
 
@@ -118,31 +118,31 @@ const ConfirmDialog = ({ isOpen, onClose, onConfirm, title, message, confirmText
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black bg-opacity-50 backdrop-blur-sm">
       <div 
         className={`w-full max-w-md rounded-xl shadow-2xl overflow-hidden transition-all ${
-          darkMode ? 'bg-gray-800 border border-gray-700' : 'bg-white border border-gray-200'
+          darkMode ? 'bg-gray-800 border border-gray-700' : 'bg-slate-50 border border-slate-200'
         }`}
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header */}
-        <div className={`px-6 py-4 border-b ${darkMode ? 'border-gray-700' : 'border-gray-200'}`}>
+        <div className={`px-6 py-4 border-b ${darkMode ? 'border-gray-700' : 'border-slate-200'}`}>
           <h3 
-            className={`text-lg font-semibold ${darkMode ? 'text-gray-100' : 'text-gray-900'}`}
+            className={`text-lg font-semibold ${darkMode ? 'text-gray-100' : 'text-slate-800'}`}
             style={{ fontFamily: "'FoundationOne', 'Courier New', monospace" }}
           >
             {title}
           </h3>
         </div>
         {/* Body */}
-        <div className={`px-6 py-4 ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>
+        <div className={`px-6 py-4 ${darkMode ? 'text-gray-300' : 'text-slate-700'}`}>
           <p>{message}</p>
         </div>
         {/* Footer */}
-        <div className={`px-6 py-4 flex justify-end gap-3 border-t ${darkMode ? 'border-gray-700' : 'border-gray-200'}`}>
+        <div className={`px-6 py-4 flex justify-end gap-3 border-t ${darkMode ? 'border-gray-700' : 'border-slate-200'}`}>
           <button
             onClick={onClose}
             className={`px-4 py-2 rounded-lg font-medium transition-colors ${
               darkMode
                 ? 'bg-gray-700 hover:bg-gray-600 text-gray-100'
-                : 'bg-gray-200 hover:bg-gray-300 text-gray-800'
+                : 'bg-slate-200 hover:bg-slate-300 text-slate-800'
             }`}
           >
             {cancelText}
@@ -3403,7 +3403,7 @@ const TakumiGarage = () => {
                 } ${
                   darkMode 
                     ? 'bg-gray-700 hover:bg-gray-600 text-yellow-300' 
-                    : 'bg-white hover:bg-gray-100 text-gray-700'
+                    : 'bg-slate-100 hover:bg-slate-200 text-slate-700'
                 }`}
                 title={darkMode ? 'Switch to Light Mode' : 'Switch to Dark Mode'}
               >
@@ -3428,7 +3428,7 @@ const TakumiGarage = () => {
 
         {/* Tab Navigation */}
         <div className={`mb-6 border-b ${
-          darkMode ? 'border-gray-700' : 'border-gray-200'
+          darkMode ? 'border-gray-700' : 'border-slate-200'
         }`}>
           <div className="flex relative">
             <button
@@ -3441,7 +3441,7 @@ const TakumiGarage = () => {
                     : 'text-blue-600'
                   : darkMode
                     ? 'text-gray-400 hover:text-gray-300'
-                    : 'text-gray-600 hover:text-gray-800'
+                    : 'text-slate-600 hover:text-slate-800'
               }`}
             >
               <Car className="w-5 h-5" />
@@ -3457,7 +3457,7 @@ const TakumiGarage = () => {
                     : 'text-blue-600'
                   : darkMode
                     ? 'text-gray-400 hover:text-gray-300'
-                    : 'text-gray-600 hover:text-gray-800'
+                    : 'text-slate-600 hover:text-slate-800'
               }`}
             >
               <Wrench className="w-5 h-5" />
@@ -3473,7 +3473,7 @@ const TakumiGarage = () => {
                     : 'text-blue-600'
                   : darkMode
                     ? 'text-gray-400 hover:text-gray-300'
-                    : 'text-gray-600 hover:text-gray-800'
+                    : 'text-slate-600 hover:text-slate-800'
               }`}
             >
               <Package className="w-5 h-5" />
