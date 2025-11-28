@@ -4392,7 +4392,7 @@ const TakumiGarage = () => {
                     }`}
                   >
                     <Trash2 className="w-4 h-4" />
-                    Delete
+                    <span className="hidden sm:inline">Delete</span>
                   </button>
                 </div>
                 <div className="flex items-center gap-2">
