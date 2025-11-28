@@ -5060,19 +5060,33 @@ const TakumiGarage = () => {
                     : 'bg-slate-100'
                 }`}
               >
-                {/* Card Header - Part Name and Status */}
-                <div className="flex items-center justify-between gap-3 mb-3">
+                {/* Card Header - Part Name and Vehicle Badge */}
+                <div className="flex items-start justify-between gap-3 mb-3">
                   <h3 className={`text-base font-bold flex-1 ${
                     darkMode ? 'text-gray-100' : 'text-slate-800'
                   }`}>
                     {part.part}
                   </h3>
-                  <div onClick={(e) => e.stopPropagation()}>
-                    <StatusDropdown part={part} />
-                  </div>
+                  {/* Vehicle Badge - Top Right */}
+                  {(() => {
+                    const partProject = part.projectId ? projects.find(p => p.id === part.projectId) : null;
+                    const vehicle = partProject?.vehicle_id ? vehicles.find(v => v.id === partProject.vehicle_id) : null;
+                    return vehicle && (
+                      <span 
+                        className={`inline-flex items-center px-2 py-0.5 rounded text-xs font-medium border ${
+                          darkMode ? 'bg-gray-700 text-gray-300 border-gray-600' : 'bg-gray-100 text-gray-700 border-gray-300'
+                        }`}
+                      >
+                        <Car className="w-3 h-3 mr-1" />
+                        <span style={{ color: vehicle.color || '#3B82F6' }}>
+                          {vehicle.nickname || vehicle.name}
+                        </span>
+                      </span>
+                    );
+                  })()}
                 </div>
 
-                {/* Vendor on its own line */}
+                {/* Vendor and Status Row */}
                 <div className="mb-3">
                   {part.vendor && (
                     <div className="flex items-center gap-2 mb-2">
@@ -5085,36 +5099,23 @@ const TakumiGarage = () => {
                     </div>
                   )}
                   
-                  {/* Vehicle (left) + Project (right) on same line */}
-                  <div className="flex items-center justify-between gap-3">
-                    {(() => {
-                      const partProject = part.projectId ? projects.find(p => p.id === part.projectId) : null;
-                      const vehicle = partProject?.vehicle_id ? vehicles.find(v => v.id === partProject.vehicle_id) : null;
-                      return vehicle && (
-                        <div className="flex items-center gap-2">
-                          <p className={`text-xs ${
-                            darkMode ? 'text-gray-400' : 'text-slate-600'
-                          }`}>Vehicle:</p>
-                          <span 
-                            className={`inline-flex items-center px-2 py-0.5 rounded text-xs font-medium border ${
-                              darkMode ? 'bg-gray-700 text-gray-300 border-gray-600' : 'bg-gray-100 text-gray-700 border-gray-300'
-                            }`}
-                          >
-                            <Car className="w-3 h-3 mr-1" />
-                            <span style={{ color: vehicle.color || '#3B82F6' }}>
-                              {vehicle.nickname || vehicle.name}
-                            </span>
-                          </span>
-                        </div>
-                      );
-                    })()}
-                    <div className="flex items-center gap-2">
-                      <p className={`text-xs ${
-                        darkMode ? 'text-gray-400' : 'text-slate-600'
-                      }`}>Project:</p>
-                      <div onClick={(e) => e.stopPropagation()}>
-                        <ProjectDropdown part={part} />
-                      </div>
+                  {/* Status Row */}
+                  <div className="flex items-center gap-2 mb-2">
+                    <p className={`text-xs ${
+                      darkMode ? 'text-gray-400' : 'text-slate-600'
+                    }`}>Status:</p>
+                    <div onClick={(e) => e.stopPropagation()}>
+                      <StatusDropdown part={part} />
+                    </div>
+                  </div>
+
+                  {/* Project Row */}
+                  <div className="flex items-center gap-2">
+                    <p className={`text-xs ${
+                      darkMode ? 'text-gray-400' : 'text-slate-600'
+                    }`}>Project:</p>
+                    <div onClick={(e) => e.stopPropagation()}>
+                      <ProjectDropdown part={part} />
                     </div>
                   </div>
                 </div>
