@@ -5230,7 +5230,7 @@ const TakumiGarage = () => {
                     <p className={`text-xs ${
                       darkMode ? 'text-gray-400' : 'text-slate-600'
                     }`}>total</p>
-                    <p className={`text-2xl font-bold ${
+                    <p className={`text-xl font-bold ${
                       darkMode ? 'text-gray-100' : 'text-slate-800'
                     }`}>${part.total.toFixed(2)}</p>
                   </div>
