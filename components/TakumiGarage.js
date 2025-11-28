@@ -1392,7 +1392,7 @@ const ProjectEditForm = ({
             className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
               darkMode 
                 ? 'bg-gray-700 border-gray-600 text-gray-100' 
-                : 'bg-white border-gray-300 text-gray-900'
+                : 'bg-slate-50 border-slate-300 text-slate-800'
             }`}
           />
         </div>
@@ -1411,7 +1411,7 @@ const ProjectEditForm = ({
               className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent appearance-none ${
                 darkMode 
                   ? 'bg-gray-700 border-gray-600 text-gray-100' 
-                  : 'bg-white border-gray-300 text-gray-900'
+                  : 'bg-slate-50 border-slate-300 text-slate-800'
               }`}
             >
               <option value="not_set">Not Set</option>
@@ -1440,7 +1440,7 @@ const ProjectEditForm = ({
                 className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm text-left flex items-center justify-between gap-2 ${
                   darkMode 
                     ? 'bg-gray-700 border-gray-600 text-gray-100' 
-                    : 'bg-white border-gray-300 text-gray-900'
+                    : 'bg-slate-50 border-slate-300 text-slate-800'
                 }`}
               >
                 <div className="flex items-center gap-2 flex-1 min-w-0">
@@ -1469,7 +1469,7 @@ const ProjectEditForm = ({
                     onClick={() => setShowVehicleDropdown(false)}
                   />
                   <div className={`absolute left-0 right-0 z-20 mt-1 rounded-lg border shadow-lg py-1 max-h-60 overflow-y-auto ${
-                    darkMode ? 'bg-gray-700 border-gray-600' : 'bg-white border-gray-300'
+                    darkMode ? 'bg-gray-700 border-gray-600' : 'bg-slate-50 border-slate-300'
                   }`}>
                     <button
                       type="button"
@@ -1534,7 +1534,7 @@ const ProjectEditForm = ({
               className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none ${
                 darkMode 
                   ? 'bg-gray-700 border-gray-600 text-gray-100' 
-                  : 'bg-white border-gray-300 text-gray-900'
+                  : 'bg-slate-50 border-slate-300 text-slate-800'
               }`}
             />
           </div>
@@ -1554,7 +1554,7 @@ const ProjectEditForm = ({
           className={`w-full h-[calc(100%-2rem)] px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none ${
             darkMode 
               ? 'bg-gray-700 border-gray-600 text-gray-100' 
-              : 'bg-white border-gray-300 text-gray-900'
+              : 'bg-slate-50 border-slate-300 text-slate-800'
           }`}
         />
       </div>
@@ -1655,7 +1655,7 @@ const VendorSelect = ({ value, onChange, darkMode, uniqueVendors }) => {
         className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent min-h-[42px] box-border ${
           darkMode 
             ? 'bg-gray-700 border-gray-600 text-gray-100' 
-            : 'bg-white border-gray-300 text-gray-900'
+            : 'bg-slate-50 border-slate-300 text-slate-800'
         }`}
         style={selectDropdownStyle}
       >
@@ -1677,7 +1677,7 @@ const VendorSelect = ({ value, onChange, darkMode, uniqueVendors }) => {
         className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
           darkMode 
             ? 'bg-gray-700 border-gray-600 text-gray-100 placeholder-gray-400' 
-            : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400'
+            : 'bg-slate-50 border-slate-300 text-slate-800 placeholder-slate-400'
         }`}
         placeholder="Enter new vendor name"
       />
@@ -3085,7 +3085,7 @@ const TakumiGarage = () => {
             />
             <div 
               className={`absolute left-0 ${dropdownPosition === 'top' ? 'bottom-full mb-1' : 'top-full mt-1'} rounded-lg shadow-lg border py-1 z-20 min-w-[140px] ${
-                darkMode ? 'bg-gray-800 border-gray-600' : 'bg-white border-gray-200'
+                darkMode ? 'bg-gray-800 border-gray-600' : 'bg-slate-50 border-slate-200'
               }`}
             >
               <button
@@ -3221,7 +3221,7 @@ const TakumiGarage = () => {
             />
             <div 
               className={`absolute left-0 ${dropdownPosition === 'top' ? 'bottom-full mb-1' : 'top-full mt-1'} rounded-lg shadow-lg border py-1 z-20 min-w-[180px] max-h-60 overflow-y-auto ${
-                darkMode ? 'bg-gray-800 border-gray-600' : 'bg-white border-gray-200'
+                darkMode ? 'bg-gray-800 border-gray-600' : 'bg-slate-50 border-slate-200'
               }`}
             >
               <button
@@ -3317,7 +3317,7 @@ const TakumiGarage = () => {
                     className={`px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm text-left flex items-center justify-between gap-2 ${
                       darkMode 
                         ? 'bg-gray-800 border-gray-600 text-gray-100' 
-                        : 'bg-white border-gray-300 text-gray-900'
+                        : 'bg-slate-100 border-slate-300 text-slate-800'
                     }`}
                   >
                     <div className="flex items-center gap-2">
@@ -3347,7 +3347,7 @@ const TakumiGarage = () => {
                         onClick={() => setShowVehicleFilterDropdown(false)}
                       />
                       <div className={`absolute right-0 z-20 mt-1 min-w-[240px] w-max rounded-lg border shadow-lg py-1 max-h-60 overflow-y-auto ${
-                        darkMode ? 'bg-gray-800 border-gray-600' : 'bg-white border-gray-300'
+                        darkMode ? 'bg-gray-800 border-gray-600' : 'bg-slate-50 border-slate-300'
                       }`}>
                         <button
                           onClick={() => {
@@ -3525,7 +3525,7 @@ const TakumiGarage = () => {
               onClick={(e) => e.stopPropagation()}
             >
               <div className={`sticky top-0 border-b px-6 py-4 flex items-center justify-between ${
-                darkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-200'
+                darkMode ? 'bg-gray-800 border-gray-700' : 'bg-slate-50 border-slate-200'
               }`}>
                 <h2 className={`text-2xl font-bold ${
                   darkMode ? 'text-gray-100' : 'text-gray-800'
@@ -3554,7 +3554,7 @@ const TakumiGarage = () => {
                       className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
                         darkMode 
                           ? 'bg-gray-700 border-gray-600 text-gray-100 placeholder-gray-400' 
-                          : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400'
+                          : 'bg-slate-50 border-slate-300 text-slate-800 placeholder-slate-400'
                       }`}
                       placeholder="e.g., Front Bumper"
                       required
@@ -3574,7 +3574,7 @@ const TakumiGarage = () => {
                       className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
                         darkMode 
                           ? 'bg-gray-700 border-gray-600 text-gray-100 placeholder-gray-400' 
-                          : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400'
+                          : 'bg-slate-50 border-slate-300 text-slate-800 placeholder-slate-400'
                       }`}
                       placeholder="e.g., 12345-67890"
                     />
@@ -3593,7 +3593,7 @@ const TakumiGarage = () => {
                       className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none ${
                         darkMode 
                           ? 'bg-gray-700 border-gray-600 text-gray-100 placeholder-gray-400' 
-                          : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400'
+                          : 'bg-slate-50 border-slate-300 text-slate-800 placeholder-slate-400'
                       }`}
                       placeholder="0.00"
                     />
@@ -3612,7 +3612,7 @@ const TakumiGarage = () => {
                       className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none ${
                         darkMode 
                           ? 'bg-gray-700 border-gray-600 text-gray-100 placeholder-gray-400' 
-                          : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400'
+                          : 'bg-slate-50 border-slate-300 text-slate-800 placeholder-slate-400'
                       }`}
                       placeholder="0.00"
                     />
@@ -3631,7 +3631,7 @@ const TakumiGarage = () => {
                       className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none ${
                         darkMode 
                           ? 'bg-gray-700 border-gray-600 text-gray-100 placeholder-gray-400' 
-                          : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400'
+                          : 'bg-slate-50 border-slate-300 text-slate-800 placeholder-slate-400'
                       }`}
                       placeholder="0.00"
                     />
@@ -3649,7 +3649,7 @@ const TakumiGarage = () => {
                       className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
                         darkMode 
                           ? 'bg-gray-700 border-gray-600 text-gray-100 placeholder-gray-400' 
-                          : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400'
+                          : 'bg-slate-50 border-slate-300 text-slate-800 placeholder-slate-400'
                       }`}
                       placeholder="e.g., FedEx, USPS"
                     />
@@ -3666,7 +3666,7 @@ const TakumiGarage = () => {
                       className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent min-h-[42px] box-border ${
                         darkMode 
                           ? 'bg-gray-700 border-gray-600 text-gray-100' 
-                          : 'bg-white border-gray-300 text-gray-900'
+                          : 'bg-slate-50 border-slate-300 text-slate-800'
                       }`}
                       style={selectDropdownStyle}
                     >
@@ -3702,7 +3702,7 @@ const TakumiGarage = () => {
                       className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent min-h-[42px] box-border ${
                         darkMode 
                           ? 'bg-gray-700 border-gray-600 text-gray-100' 
-                          : 'bg-white border-gray-300 text-gray-900'
+                          : 'bg-slate-50 border-slate-300 text-slate-800'
                       }`}
                       style={selectDropdownStyle}
                     >
@@ -3785,7 +3785,7 @@ const TakumiGarage = () => {
               onClick={(e) => e.stopPropagation()}
             >
               <div className={`border-b px-6 py-4 flex items-center justify-between rounded-t-lg ${
-                darkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-200'
+                darkMode ? 'bg-gray-800 border-gray-700' : 'bg-slate-50 border-slate-200'
               }`}>
                 <h2 className={`text-xl font-bold ${
                   darkMode ? 'text-gray-100' : 'text-gray-800'
@@ -3821,7 +3821,7 @@ const TakumiGarage = () => {
                   className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
                     darkMode 
                       ? 'bg-gray-700 border-gray-600 text-gray-100 placeholder-gray-400' 
-                      : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400'
+                      : 'bg-slate-50 border-slate-300 text-slate-800 placeholder-slate-400'
                   }`}
                   placeholder="e.g., 1Z999AA10123456784"
                   autoFocus
@@ -3875,7 +3875,7 @@ const TakumiGarage = () => {
               onClick={(e) => e.stopPropagation()}
             >
               <div className={`sticky top-0 border-b px-6 py-4 rounded-t-lg ${
-                darkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-200'
+                darkMode ? 'bg-gray-800 border-gray-700' : 'bg-slate-50 border-slate-200'
               }`} style={{ zIndex: 10 }}>
                 <div className="flex items-center justify-between gap-3">
                   <h2 className={`text-2xl font-bold ${
@@ -4138,7 +4138,7 @@ const TakumiGarage = () => {
                       className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
                         darkMode 
                           ? 'bg-gray-700 border-gray-600 text-gray-100 placeholder-gray-400' 
-                          : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400'
+                          : 'bg-slate-50 border-slate-300 text-slate-800 placeholder-slate-400'
                       }`}
                       placeholder="e.g., Front Bumper"
                       required
@@ -4158,7 +4158,7 @@ const TakumiGarage = () => {
                       className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
                         darkMode 
                           ? 'bg-gray-700 border-gray-600 text-gray-100 placeholder-gray-400' 
-                          : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400'
+                          : 'bg-slate-50 border-slate-300 text-slate-800 placeholder-slate-400'
                       }`}
                       placeholder="e.g., 12345-67890"
                     />
@@ -4177,7 +4177,7 @@ const TakumiGarage = () => {
                       className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none ${
                         darkMode 
                           ? 'bg-gray-700 border-gray-600 text-gray-100 placeholder-gray-400' 
-                          : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400'
+                          : 'bg-slate-50 border-slate-300 text-slate-800 placeholder-slate-400'
                       }`}
                       placeholder="0.00"
                     />
@@ -4196,7 +4196,7 @@ const TakumiGarage = () => {
                       className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none ${
                         darkMode 
                           ? 'bg-gray-700 border-gray-600 text-gray-100 placeholder-gray-400' 
-                          : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400'
+                          : 'bg-slate-50 border-slate-300 text-slate-800 placeholder-slate-400'
                       }`}
                       placeholder="0.00"
                     />
@@ -4215,7 +4215,7 @@ const TakumiGarage = () => {
                       className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none ${
                         darkMode 
                           ? 'bg-gray-700 border-gray-600 text-gray-100 placeholder-gray-400' 
-                          : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400'
+                          : 'bg-slate-50 border-slate-300 text-slate-800 placeholder-slate-400'
                       }`}
                       placeholder="0.00"
                     />
@@ -4233,7 +4233,7 @@ const TakumiGarage = () => {
                       className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
                         darkMode 
                           ? 'bg-gray-700 border-gray-600 text-gray-100 placeholder-gray-400' 
-                          : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400'
+                          : 'bg-slate-50 border-slate-300 text-slate-800 placeholder-slate-400'
                       }`}
                       placeholder="e.g., 1Z999AA10123456784"
                     />
@@ -4250,7 +4250,7 @@ const TakumiGarage = () => {
                       className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent min-h-[42px] box-border ${
                         darkMode 
                           ? 'bg-gray-700 border-gray-600 text-gray-100' 
-                          : 'bg-white border-gray-300 text-gray-900'
+                          : 'bg-slate-50 border-slate-300 text-slate-800'
                       }`}
                       style={selectDropdownStyle}
                     >
@@ -4286,7 +4286,7 @@ const TakumiGarage = () => {
                       className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent min-h-[42px] box-border ${
                         darkMode 
                           ? 'bg-gray-700 border-gray-600 text-gray-100' 
-                          : 'bg-white border-gray-300 text-gray-900'
+                          : 'bg-slate-50 border-slate-300 text-slate-800'
                       }`}
                       style={selectDropdownStyle}
                     >
@@ -4479,7 +4479,7 @@ const TakumiGarage = () => {
                                   className={`flex-1 px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
                                     darkMode 
                                       ? 'bg-gray-800 border-gray-600 text-gray-100' 
-                                      : 'bg-white border-gray-300 text-gray-900'
+                                      : 'bg-slate-50 border-slate-300 text-slate-800'
                                   }`}
                                   autoFocus
                                 />
@@ -4692,7 +4692,7 @@ const TakumiGarage = () => {
                   className={`w-full pl-10 pr-10 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
                     darkMode 
                       ? 'bg-gray-700 border-gray-600 text-gray-100 placeholder-gray-400' 
-                      : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400'
+                      : 'bg-slate-50 border-slate-300 text-slate-800 placeholder-slate-400'
                   }`}
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
@@ -4791,7 +4791,7 @@ const TakumiGarage = () => {
                 className={`w-full pl-10 pr-10 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
                   darkMode 
                     ? 'bg-gray-700 border-gray-600 text-gray-100 placeholder-gray-400' 
-                    : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400'
+                    : 'bg-slate-50 border-slate-300 text-slate-800 placeholder-slate-400'
                 }`}
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
@@ -5575,7 +5575,7 @@ const TakumiGarage = () => {
                   onClick={(e) => e.stopPropagation()}
                 >
                   <div className={`sticky top-0 border-b px-6 py-4 flex items-center justify-between ${
-                    darkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-200'
+                    darkMode ? 'bg-gray-800 border-gray-700' : 'bg-slate-50 border-slate-200'
                   }`}>
                     <h2 className={`text-2xl font-bold ${
                       darkMode ? 'text-gray-100' : 'text-gray-800'
@@ -5609,7 +5609,7 @@ const TakumiGarage = () => {
                             className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
                               darkMode 
                                 ? 'bg-gray-700 border-gray-600 text-gray-100 placeholder-gray-400' 
-                                : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400'
+                                : 'bg-slate-50 border-slate-300 text-slate-800 placeholder-slate-400'
                             }`}
                             placeholder="e.g., Interior Restoration"
                             required
@@ -5630,7 +5630,7 @@ const TakumiGarage = () => {
                               className={`w-full px-4 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent appearance-none ${
                                 darkMode 
                                   ? 'bg-gray-700 border-gray-600 text-gray-100' 
-                                  : 'bg-white border-gray-300 text-gray-900'
+                                  : 'bg-slate-50 border-slate-300 text-slate-800'
                               }`}
                             >
                               <option value="not_set">Not Set</option>
@@ -5655,7 +5655,7 @@ const TakumiGarage = () => {
                               className={`w-full px-4 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent appearance-none ${
                                 darkMode 
                                   ? 'bg-gray-700 border-gray-600 text-gray-100' 
-                                  : 'bg-white border-gray-300 text-gray-900'
+                                  : 'bg-slate-50 border-slate-300 text-slate-800'
                               }`}
                             >
                               <option value="">No vehicle</option>
@@ -5684,7 +5684,7 @@ const TakumiGarage = () => {
                               className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none ${
                                 darkMode 
                                   ? 'bg-gray-700 border-gray-600 text-gray-100 placeholder-gray-400' 
-                                  : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400'
+                                  : 'bg-slate-50 border-slate-300 text-slate-800 placeholder-slate-400'
                               }`}
                               placeholder="0.00"
                             />
@@ -5705,7 +5705,7 @@ const TakumiGarage = () => {
                           className={`w-full h-[calc(100%-2rem)] px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none ${
                             darkMode 
                               ? 'bg-gray-700 border-gray-600 text-gray-100 placeholder-gray-400' 
-                              : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400'
+                              : 'bg-slate-50 border-slate-300 text-slate-800 placeholder-slate-400'
                           }`}
                           placeholder="Brief description of the project"
                         />
@@ -5803,7 +5803,7 @@ const TakumiGarage = () => {
                 >
                   {/* Header */}
                   <div className={`sticky top-0 z-10 px-6 py-4 border-b ${
-                    darkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-200'
+                    darkMode ? 'bg-gray-800 border-gray-700' : 'bg-slate-50 border-slate-200'
                   }`}>
                     <div className="flex items-center justify-between gap-4">
                       <h2 className={`text-2xl font-bold ${
@@ -6290,7 +6290,7 @@ const TakumiGarage = () => {
                   onClick={(e) => e.stopPropagation()}
                 >
                   <div className={`sticky top-0 border-b px-6 py-4 flex items-center justify-between ${
-                    darkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-200'
+                    darkMode ? 'bg-gray-800 border-gray-700' : 'bg-slate-50 border-slate-200'
                   }`} style={{ zIndex: 10 }}>
                     <h2 className={`text-2xl font-bold ${
                       darkMode ? 'text-gray-100' : 'text-gray-800'
@@ -6358,7 +6358,7 @@ const TakumiGarage = () => {
                               className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
                                 darkMode 
                                   ? 'bg-gray-700 border-gray-600 text-gray-100 placeholder-gray-400' 
-                                  : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400'
+                                  : 'bg-slate-50 border-slate-300 text-slate-800 placeholder-slate-400'
                               }`}
                               placeholder=""
                               min="1900"
@@ -6380,7 +6380,7 @@ const TakumiGarage = () => {
                             className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
                               darkMode 
                                 ? 'bg-gray-700 border-gray-600 text-gray-100 placeholder-gray-400' 
-                                : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400'
+                                : 'bg-slate-50 border-slate-300 text-slate-800 placeholder-slate-400'
                             }`}
                             placeholder=""
                           />
@@ -6400,7 +6400,7 @@ const TakumiGarage = () => {
                               className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
                                 darkMode 
                                   ? 'bg-gray-700 border-gray-600 text-gray-100 placeholder-gray-400' 
-                                  : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400'
+                                  : 'bg-slate-50 border-slate-300 text-slate-800 placeholder-slate-400'
                               }`}
                               placeholder=""
                             />
@@ -6419,7 +6419,7 @@ const TakumiGarage = () => {
                               className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
                                 darkMode 
                                   ? 'bg-gray-700 border-gray-600 text-gray-100 placeholder-gray-400' 
-                                  : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400'
+                                  : 'bg-slate-50 border-slate-300 text-slate-800 placeholder-slate-400'
                               }`}
                               placeholder=""
                             />
@@ -6547,7 +6547,7 @@ const TakumiGarage = () => {
                               className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
                                 darkMode 
                                   ? 'bg-gray-700 border-gray-600 text-gray-100 placeholder-gray-400' 
-                                  : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400'
+                                  : 'bg-slate-50 border-slate-300 text-slate-800 placeholder-slate-400'
                               }`}
                               placeholder=""
                             />
@@ -6566,7 +6566,7 @@ const TakumiGarage = () => {
                               className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
                                 darkMode 
                                   ? 'bg-gray-700 border-gray-600 text-gray-100 placeholder-gray-400' 
-                                  : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400'
+                                  : 'bg-slate-50 border-slate-300 text-slate-800 placeholder-slate-400'
                               }`}
                               placeholder=""
                             />
@@ -6638,7 +6638,7 @@ const TakumiGarage = () => {
                               className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
                                 darkMode 
                                   ? 'bg-gray-700 border-gray-600 text-gray-100 placeholder-gray-400' 
-                                  : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400'
+                                  : 'bg-slate-50 border-slate-300 text-slate-800 placeholder-slate-400'
                               }`}
                               placeholder=""
                             />
@@ -6657,7 +6657,7 @@ const TakumiGarage = () => {
                               className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
                                 darkMode 
                                   ? 'bg-gray-700 border-gray-600 text-gray-100 placeholder-gray-400' 
-                                  : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400'
+                                  : 'bg-slate-50 border-slate-300 text-slate-800 placeholder-slate-400'
                               }`}
                               placeholder=""
                             />
@@ -6676,7 +6676,7 @@ const TakumiGarage = () => {
                               className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
                                 darkMode 
                                   ? 'bg-gray-700 border-gray-600 text-gray-100 placeholder-gray-400' 
-                                  : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400'
+                                  : 'bg-slate-50 border-slate-300 text-slate-800 placeholder-slate-400'
                               }`}
                               placeholder=""
                             />
@@ -6695,7 +6695,7 @@ const TakumiGarage = () => {
                               className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
                                 darkMode 
                                   ? 'bg-gray-700 border-gray-600 text-gray-100 placeholder-gray-400' 
-                                  : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400'
+                                  : 'bg-slate-50 border-slate-300 text-slate-800 placeholder-slate-400'
                               }`}
                               placeholder=""
                             />
@@ -6823,7 +6823,7 @@ const TakumiGarage = () => {
                 >
                   {/* Header */}
                   <div className={`sticky top-0 z-10 px-6 py-4 border-b flex items-center justify-between ${
-                    darkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-200'
+                    darkMode ? 'bg-gray-800 border-gray-700' : 'bg-slate-50 border-slate-200'
                   }`}>
                     <div className="flex items-center gap-3">
                       <h2 className={`text-2xl font-bold ${
@@ -7340,7 +7340,7 @@ const TakumiGarage = () => {
                                   className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
                                     darkMode 
                                       ? 'bg-gray-700 border-gray-600 text-gray-100 placeholder-gray-400' 
-                                      : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400'
+                                      : 'bg-slate-50 border-slate-300 text-slate-800 placeholder-slate-400'
                                   }`}
                                   placeholder=""
                                 />
@@ -7379,7 +7379,7 @@ const TakumiGarage = () => {
                                     className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
                                       darkMode 
                                         ? 'bg-gray-700 border-gray-600 text-gray-100 placeholder-gray-400' 
-                                        : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400'
+                                        : 'bg-slate-50 border-slate-300 text-slate-800 placeholder-slate-400'
                                     }`}
                                     placeholder=""
                                     min="1900"
@@ -7401,7 +7401,7 @@ const TakumiGarage = () => {
                                   className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
                                     darkMode 
                                       ? 'bg-gray-700 border-gray-600 text-gray-100 placeholder-gray-400' 
-                                      : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400'
+                                      : 'bg-slate-50 border-slate-300 text-slate-800 placeholder-slate-400'
                                   }`}
                                   placeholder=""
                                 />
@@ -7421,7 +7421,7 @@ const TakumiGarage = () => {
                                     className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
                                       darkMode 
                                         ? 'bg-gray-700 border-gray-600 text-gray-100 placeholder-gray-400' 
-                                        : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400'
+                                        : 'bg-slate-50 border-slate-300 text-slate-800 placeholder-slate-400'
                                     }`}
                                     placeholder=""
                                   />
@@ -7440,7 +7440,7 @@ const TakumiGarage = () => {
                                     className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
                                       darkMode 
                                         ? 'bg-gray-700 border-gray-600 text-gray-100 placeholder-gray-400' 
-                                        : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400'
+                                        : 'bg-slate-50 border-slate-300 text-slate-800 placeholder-slate-400'
                                     }`}
                                     placeholder=""
                                   />
@@ -7460,7 +7460,7 @@ const TakumiGarage = () => {
                                   className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
                                     darkMode 
                                       ? 'bg-gray-700 border-gray-600 text-gray-100 placeholder-gray-400' 
-                                      : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400'
+                                      : 'bg-slate-50 border-slate-300 text-slate-800 placeholder-slate-400'
                                   }`}
                                   placeholder=""
                                 />
@@ -7577,7 +7577,7 @@ const TakumiGarage = () => {
                                     className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
                                       darkMode 
                                         ? 'bg-gray-700 border-gray-600 text-gray-100 placeholder-gray-400' 
-                                        : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400'
+                                        : 'bg-slate-50 border-slate-300 text-slate-800 placeholder-slate-400'
                                     }`}
                                     placeholder=""
                                   />
@@ -7596,7 +7596,7 @@ const TakumiGarage = () => {
                                     className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
                                       darkMode 
                                         ? 'bg-gray-700 border-gray-600 text-gray-100 placeholder-gray-400' 
-                                        : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400'
+                                        : 'bg-slate-50 border-slate-300 text-slate-800 placeholder-slate-400'
                                     }`}
                                     placeholder=""
                                   />
@@ -7615,7 +7615,7 @@ const TakumiGarage = () => {
                                     className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
                                       darkMode 
                                         ? 'bg-gray-700 border-gray-600 text-gray-100 placeholder-gray-400' 
-                                        : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400'
+                                        : 'bg-slate-50 border-slate-300 text-slate-800 placeholder-slate-400'
                                     }`}
                                     placeholder=""
                                   />
@@ -7634,7 +7634,7 @@ const TakumiGarage = () => {
                                     className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
                                       darkMode 
                                         ? 'bg-gray-700 border-gray-600 text-gray-100 placeholder-gray-400' 
-                                        : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400'
+                                        : 'bg-slate-50 border-slate-300 text-slate-800 placeholder-slate-400'
                                     }`}
                                     placeholder=""
                                   />
@@ -7653,7 +7653,7 @@ const TakumiGarage = () => {
                                     className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
                                       darkMode 
                                         ? 'bg-gray-700 border-gray-600 text-gray-100 placeholder-gray-400' 
-                                        : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400'
+                                        : 'bg-slate-50 border-slate-300 text-slate-800 placeholder-slate-400'
                                     }`}
                                     placeholder=""
                                   />
@@ -7672,7 +7672,7 @@ const TakumiGarage = () => {
                                     className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
                                       darkMode 
                                         ? 'bg-gray-700 border-gray-600 text-gray-100 placeholder-gray-400' 
-                                        : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400'
+                                        : 'bg-slate-50 border-slate-300 text-slate-800 placeholder-slate-400'
                                     }`}
                                     placeholder=""
                                   />
@@ -7691,7 +7691,7 @@ const TakumiGarage = () => {
                                     className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
                                       darkMode 
                                         ? 'bg-gray-700 border-gray-600 text-gray-100 placeholder-gray-400' 
-                                        : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400'
+                                        : 'bg-slate-50 border-slate-300 text-slate-800 placeholder-slate-400'
                                     }`}
                                     placeholder=""
                                   />
