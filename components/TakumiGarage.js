@@ -7179,11 +7179,12 @@ const TakumiGarage = () => {
                                     }`}>
                                       {project.name}
                                     </h4>
-                                    <p className={`text-sm mb-3 line-clamp-3 flex-grow ${
+                                    <p className={`text-sm mb-3 line-clamp-3 ${
                                       project.description 
                                         ? (darkMode ? 'text-gray-400' : 'text-gray-600')
                                         : (darkMode ? 'text-gray-500 italic' : 'text-gray-500 italic')
-                                    }`}>
+                                    }`}
+                                    style={{ height: '4.5rem' }}>
                                       {project.description || 'No description added'}
                                     </p>
                                     <div className="flex flex-wrap gap-4 text-xs mt-auto">
