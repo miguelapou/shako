@@ -76,6 +76,14 @@ const calculateProjectTotal = (projectId, parts) => {
     .reduce((sum, part) => sum + (part.total || 0), 0);
 };
 
+// Dark mode utility functions for common class patterns
+const cardBg = (darkMode) => darkMode ? 'bg-gray-800' : 'bg-white';
+const secondaryBg = (darkMode) => darkMode ? 'bg-gray-700' : 'bg-gray-50';
+const primaryText = (darkMode) => darkMode ? 'text-gray-100' : 'text-gray-900';
+const secondaryText = (darkMode) => darkMode ? 'text-gray-400' : 'text-gray-600';
+const borderColor = (darkMode) => darkMode ? 'border-gray-700' : 'border-gray-200';
+const hoverBg = (darkMode) => darkMode ? 'hover:bg-gray-700' : 'hover:bg-gray-100';
+
 // Common input field classes
 const inputClasses = (darkMode, additionalClasses = '') => {
   const base = `w-full md:max-w-md px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${additionalClasses}`;
@@ -157,6 +165,20 @@ const ConfirmDialog = ({ isOpen, onClose, onConfirm, title, message, confirmText
     </div>
   );
 };
+
+// PrimaryButton - Reusable blue button component
+const PrimaryButton = ({ onClick, children, className = '', disabled = false, icon: Icon = null }) => (
+  <button
+    onClick={onClick}
+    disabled={disabled}
+    className={`px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium transition-colors flex items-center gap-2 text-sm ${
+      disabled ? 'opacity-50 cursor-not-allowed' : ''
+    } ${className}`}
+  >
+    {Icon && <Icon className="w-4 h-4" />}
+    {children}
+  </button>
+);
 
 // ProjectDetailView - Reusable component for displaying project details with todos and linked parts
 const ProjectDetailView = ({ 
@@ -405,12 +427,9 @@ const ProjectDetailView = ({
           </div>
 
           {/* Project Details Grid */}
-          <div className={`grid grid-cols-2 gap-4 p-4 rounded-lg ${
-            darkMode ? 'bg-gray-700' : 'bg-gray-50'
-          }`}>
+          <div className={`grid grid-cols-2 gap-4 p-4 rounded-lg ${secondaryBg(darkMode)}`}>
             <div>
-              <p className={`text-xs mb-1 ${
-                darkMode ? 'text-gray-400' : 'text-gray-600'
+              <p className={`text-xs mb-1 ${secondaryText(darkMode)}`}>
               }`}>Priority</p>
               <p className={`text-lg font-bold ${priorityColors[project.priority]}`}>
                 {project.priority?.toUpperCase()}
@@ -4074,11 +4093,10 @@ const TakumiGarage = () => {
                     setOriginalPartData({ ...partData });
                     setPartDetailView('edit');
                   }}
-                  className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium transition-colors flex items-center gap-2 text-sm"
+                  icon={Edit2}
                 >
-                  <Edit2 className="w-4 h-4" />
                   Edit
-                </button>
+                </PrimaryButton>
               </div>
               )}
               {/* Edit View */}
@@ -4573,10 +4591,9 @@ const TakumiGarage = () => {
                     setPartDetailView('edit');
                     setEditingVendor(null);
                   }}
-                  className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium transition-colors text-sm"
                 >
                   Done
-                </button>
+                </PrimaryButton>
               </div>
               )}
 
@@ -5265,7 +5282,7 @@ const TakumiGarage = () => {
                         : dragOverProject?.id === project.id
                           ? (darkMode ? 'ring-2 ring-blue-500' : 'ring-2 ring-blue-400')
                           : ''
-                    } ${darkMode ? 'bg-gray-800' : 'bg-white'}`}
+                    } ${cardBg(darkMode)}`}
                   >
                     {/* Drag Handle - Hidden on mobile */}
                     <div 
@@ -5311,9 +5328,7 @@ const TakumiGarage = () => {
                     <div className="mb-4 mt-8">
                       <div className="mb-2">
                         <div className="flex items-center gap-2 mb-2 flex-wrap">
-                          <h3 className={`text-xl font-bold ${
-                            darkMode ? 'text-gray-100' : 'text-gray-900'
-                          }`}>
+                          <h3 className={`text-xl font-bold ${primaryText(darkMode)}`}>
                             {project.name}
                           </h3>
                           {(() => {
@@ -5344,7 +5359,7 @@ const TakumiGarage = () => {
                     <div className="mb-4" style={{ height: '3.75rem' }}>
                       <p className={`text-sm line-clamp-3 overflow-hidden ${
                         project.description 
-                          ? (darkMode ? 'text-gray-400' : 'text-gray-600')
+                          ? secondaryText(darkMode)
                           : (darkMode ? 'text-gray-500 italic' : 'text-gray-500 italic')
                       }`}
                       style={{ display: '-webkit-box', WebkitLineClamp: 3, WebkitBoxOrient: 'vertical' }}>
@@ -6008,22 +6023,20 @@ const TakumiGarage = () => {
                             setOriginalProjectData({ ...updatedProject });
                             setProjectModalEditMode(false);
                           }}
-                          className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium transition-colors flex items-center gap-2 text-sm"
                         >
                           <span className="sm:hidden">Save</span>
                           <span className="hidden sm:inline">Save Changes</span>
-                        </button>
+                        </PrimaryButton>
                       </div>
                     ) : (
-                      <button
+                      <PrimaryButton
                         onClick={() => {
                           setProjectModalEditMode(true);
                         }}
-                        className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium transition-colors flex items-center gap-2 text-sm"
+                        icon={Edit2}
                       >
-                        <Edit2 className="w-3 h-3" />
                         Edit
-                      </button>
+                      </PrimaryButton>
                     )}
                   </div>
                 </div>
