@@ -5369,11 +5369,12 @@ const TakumiGarage = () => {
 
                     {/* Description */}
                     <div className="mb-4" style={{ height: '4.5rem' }}>
-                      <p className={`text-sm line-clamp-3 ${
+                      <p className={`text-sm line-clamp-3 overflow-hidden ${
                         project.description 
                           ? (darkMode ? 'text-gray-400' : 'text-gray-600')
                           : (darkMode ? 'text-gray-500 italic' : 'text-gray-500 italic')
-                      }`}>
+                      }`}
+                      style={{ display: '-webkit-box', WebkitLineClamp: 3, WebkitBoxOrient: 'vertical' }}>
                         {project.description || 'No description added'}
                       </p>
                     </div>
@@ -7179,12 +7180,12 @@ const TakumiGarage = () => {
                                     }`}>
                                       {project.name}
                                     </h4>
-                                    <p className={`text-sm mb-3 line-clamp-3 ${
+                                    <p className={`text-sm mb-3 line-clamp-3 overflow-hidden ${
                                       project.description 
                                         ? (darkMode ? 'text-gray-400' : 'text-gray-600')
                                         : (darkMode ? 'text-gray-500 italic' : 'text-gray-500 italic')
                                     }`}
-                                    style={{ height: '4.5rem' }}>
+                                    style={{ height: '4.5rem', display: '-webkit-box', WebkitLineClamp: 3, WebkitBoxOrient: 'vertical' }}>
                                       {project.description || 'No description added'}
                                     </p>
                                     <div className="flex flex-wrap gap-4 text-xs mt-auto">
