@@ -5164,7 +5164,7 @@ const TakumiGarage = () => {
                 </div>
 
                 {/* Tracking */}
-                <div onClick={(e) => e.stopPropagation()}>
+                <div className="inline-block" onClick={(e) => e.stopPropagation()}>
                   {part.tracking ? (
                     getTrackingUrl(part.tracking) ? (
                       <a
