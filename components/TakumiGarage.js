@@ -5119,46 +5119,59 @@ const TakumiGarage = () => {
                   </div>
                 </div>
 
-                {/* Price Breakdown - 4-column grid */}
-                <div className={`p-3 rounded-lg mb-3 ${
-                  darkMode ? 'bg-gray-700' : 'bg-gray-50'
-                }`}>
-                  <div className="grid grid-cols-4 gap-2">
-                    <div>
-                      <p className={`text-xs mb-0.5 ${
-                        darkMode ? 'text-gray-400' : 'text-slate-600'
-                      }`}>Price</p>
-                      <p className={`text-sm font-semibold ${
-                        darkMode ? 'text-gray-100' : 'text-slate-800'
-                      }`}>${part.price.toFixed(2)}</p>
-                    </div>
-                    {part.shipping > 0 && (
+                {/* Price - Simple total display on mobile, breakdown on desktop */}
+                <div className="mb-3">
+                  {/* Mobile: Just show total */}
+                  <div className="flex items-baseline gap-2 sm:hidden">
+                    <p className={`text-2xl font-bold ${
+                      darkMode ? 'text-gray-100' : 'text-slate-800'
+                    }`}>${part.total.toFixed(2)}</p>
+                    <p className={`text-xs ${
+                      darkMode ? 'text-gray-400' : 'text-slate-600'
+                    }`}>total</p>
+                  </div>
+                  
+                  {/* Desktop: Show full breakdown */}
+                  <div className={`hidden sm:block p-3 rounded-lg ${
+                    darkMode ? 'bg-gray-700' : 'bg-gray-50'
+                  }`}>
+                    <div className="grid grid-cols-4 gap-2">
                       <div>
                         <p className={`text-xs mb-0.5 ${
                           darkMode ? 'text-gray-400' : 'text-slate-600'
-                        }`}>Ship</p>
+                        }`}>Price</p>
                         <p className={`text-sm font-semibold ${
                           darkMode ? 'text-gray-100' : 'text-slate-800'
-                        }`}>${part.shipping.toFixed(2)}</p>
+                        }`}>${part.price.toFixed(2)}</p>
                       </div>
-                    )}
-                    {part.duties > 0 && (
+                      {part.shipping > 0 && (
+                        <div>
+                          <p className={`text-xs mb-0.5 ${
+                            darkMode ? 'text-gray-400' : 'text-slate-600'
+                          }`}>Ship</p>
+                          <p className={`text-sm font-semibold ${
+                            darkMode ? 'text-gray-100' : 'text-slate-800'
+                          }`}>${part.shipping.toFixed(2)}</p>
+                        </div>
+                      )}
+                      {part.duties > 0 && (
+                        <div>
+                          <p className={`text-xs mb-0.5 ${
+                            darkMode ? 'text-gray-400' : 'text-slate-600'
+                          }`}>Duties</p>
+                          <p className={`text-sm font-semibold ${
+                            darkMode ? 'text-gray-100' : 'text-slate-800'
+                          }`}>${part.duties.toFixed(2)}</p>
+                        </div>
+                      )}
                       <div>
                         <p className={`text-xs mb-0.5 ${
                           darkMode ? 'text-gray-400' : 'text-slate-600'
-                        }`}>Duties</p>
-                        <p className={`text-sm font-semibold ${
+                        }`}>Total</p>
+                        <p className={`text-base font-bold ${
                           darkMode ? 'text-gray-100' : 'text-slate-800'
-                        }`}>${part.duties.toFixed(2)}</p>
+                        }`}>${part.total.toFixed(2)}</p>
                       </div>
-                    )}
-                    <div>
-                      <p className={`text-xs mb-0.5 ${
-                        darkMode ? 'text-gray-400' : 'text-slate-600'
-                      }`}>Total</p>
-                      <p className={`text-base font-bold ${
-                        darkMode ? 'text-gray-100' : 'text-slate-800'
-                      }`}>${part.total.toFixed(2)}</p>
                     </div>
                   </div>
                 </div>
