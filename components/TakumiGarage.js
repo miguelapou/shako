@@ -5086,19 +5086,23 @@ const TakumiGarage = () => {
                   })()}
                 </div>
 
-                {/* Vendor and Status Row */}
+                {/* Vendor and Project Row */}
                 <div className="flex items-center justify-between gap-3 mb-3">
-                  {/* Vendor on Left */}
-                  {part.vendor && (
-                    <div className="flex items-center gap-2">
-                      <p className={`text-xs ${
-                        darkMode ? 'text-gray-400' : 'text-slate-600'
-                      }`}>Vendor:</p>
-                      <span className={`inline-block px-2 py-0.5 rounded-full text-xs font-medium ${getVendorColor(part.vendor)}`}>
-                        {part.vendor}
-                      </span>
-                    </div>
-                  )}
+                  {/* Vendor on Left (or empty space if no vendor) */}
+                  <div className="flex items-center gap-2">
+                    {part.vendor ? (
+                      <>
+                        <p className={`text-xs ${
+                          darkMode ? 'text-gray-400' : 'text-slate-600'
+                        }`}>Vendor:</p>
+                        <span className={`inline-block px-2 py-0.5 rounded-full text-xs font-medium ${getVendorColor(part.vendor)}`}>
+                          {part.vendor}
+                        </span>
+                      </>
+                    ) : (
+                      <div /> {/* Empty div to maintain space */}
+                    )}
+                  </div>
                   
                   {/* Project on Right (with label) */}
                   <div className="flex items-center gap-2">
