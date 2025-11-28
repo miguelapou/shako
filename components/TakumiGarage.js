@@ -4201,20 +4201,8 @@ const TakumiGarage = () => {
                     />
                   </div>
                   
-                  {/* Row 3: Vendor | Status | Shipping */}
-                  <div>
-                    <label className={`block text-sm font-medium mb-2 ${
-                      darkMode ? 'text-gray-300' : 'text-slate-700'
-                    }`}>
-                      Vendor
-                    </label>
-                    <VendorSelect 
-                      value={editingPart.vendor}
-                      onChange={(value) => setEditingPart({ ...editingPart, vendor: value })}
-                      darkMode={darkMode}
-                      uniqueVendors={uniqueVendors}
-                    />
-                  </div>
+                  {/* Row 3: empty | Status | Shipping */}
+                  <div></div>
                   <div>
                     <label className={`block text-sm font-medium mb-2 ${
                       darkMode ? 'text-gray-300' : 'text-slate-700'
@@ -4257,7 +4245,24 @@ const TakumiGarage = () => {
                     />
                   </div>
                   
-                  {/* Row 4: empty | Project | Duties */}
+                  {/* Row 4: Vendor | empty | empty */}
+                  <div>
+                    <label className={`block text-sm font-medium mb-2 ${
+                      darkMode ? 'text-gray-300' : 'text-slate-700'
+                    }`}>
+                      Vendor
+                    </label>
+                    <VendorSelect 
+                      value={editingPart.vendor}
+                      onChange={(value) => setEditingPart({ ...editingPart, vendor: value })}
+                      darkMode={darkMode}
+                      uniqueVendors={uniqueVendors}
+                    />
+                  </div>
+                  <div></div>
+                  <div></div>
+                  
+                  {/* Row 5: empty | Project | Duties */}
                   <div></div>
                   <div>
                     <label className={`block text-sm font-medium mb-2 ${
@@ -4303,7 +4308,7 @@ const TakumiGarage = () => {
                     />
                   </div>
 
-                  {/* Row 5: empty | empty | Price Breakdown Box */}
+                  {/* Row 6: empty | empty | Price Breakdown Box */}
                   <div></div>
                   <div></div>
                   <div className={`border rounded-lg p-4 ${
