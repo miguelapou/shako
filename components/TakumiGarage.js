@@ -430,7 +430,7 @@ const ProjectDetailView = ({
           <div className={`grid grid-cols-2 gap-4 p-4 rounded-lg ${secondaryBg(darkMode)}`}>
             <div>
               <p className={`text-xs mb-1 ${secondaryText(darkMode)}`}>
-              }`}>Priority</p>
+                Priority</p>
               <p className={`text-lg font-bold ${priorityColors[project.priority]}`}>
                 {project.priority?.toUpperCase()}
               </p>
@@ -4083,7 +4083,7 @@ const TakumiGarage = () => {
               <div className={`sticky bottom-0 border-t p-4 flex justify-end ${
                 darkMode ? 'border-gray-700 bg-gray-800' : 'border-gray-200 bg-white'
               }`}>
-                <button
+                <PrimaryButton
                   onClick={() => {
                     const partData = {
                       ...viewingPart,
