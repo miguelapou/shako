@@ -4202,20 +4202,29 @@ const TakumiGarage = () => {
                   </div>
                   
                   {/* Row 3: Vendor | Status | Shipping */}
-                  <div className="self-start">
+                  <div>
                     <label className={`block text-sm font-medium mb-2 ${
                       darkMode ? 'text-gray-300' : 'text-slate-700'
                     }`}>
                       Vendor
                     </label>
-                    <VendorSelect 
-                      value={editingPart.vendor}
-                      onChange={(value) => setEditingPart({ ...editingPart, vendor: value })}
-                      darkMode={darkMode}
-                      uniqueVendors={uniqueVendors}
-                    />
+                    <select
+                      value={uniqueVendors.includes(editingPart.vendor) ? editingPart.vendor : ''}
+                      onChange={(e) => setEditingPart({ ...editingPart, vendor: e.target.value })}
+                      className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent min-h-[42px] box-border ${
+                        darkMode 
+                          ? 'bg-gray-700 border-gray-600 text-gray-100' 
+                          : 'bg-slate-50 border-slate-300 text-slate-800'
+                      }`}
+                      style={selectDropdownStyle}
+                    >
+                      <option value="">Select a vendor...</option>
+                      {uniqueVendors.map(vendor => (
+                        <option key={vendor} value={vendor}>{vendor}</option>
+                      ))}
+                    </select>
                   </div>
-                  <div className="self-start">
+                  <div>
                     <label className={`block text-sm font-medium mb-2 ${
                       darkMode ? 'text-gray-300' : 'text-slate-700'
                     }`}>
@@ -4237,7 +4246,7 @@ const TakumiGarage = () => {
                       <option value="delivered">Delivered</option>
                     </select>
                   </div>
-                  <div className="self-start">
+                  <div>
                     <label className={`block text-sm font-medium mb-2 ${
                       darkMode ? 'text-gray-300' : 'text-slate-700'
                     }`}>
@@ -4257,8 +4266,26 @@ const TakumiGarage = () => {
                     />
                   </div>
                   
-                  {/* Row 4: empty | Project | Duties */}
-                  <div></div>
+                  {/* Row 4: Add Vendor Input | Project | Duties */}
+                  <div>
+                    <label className={`block text-sm font-medium mb-2 ${darkMode ? 'text-gray-300' : 'text-slate-700'}`}>
+                      Or add new vendor:
+                    </label>
+                    <input
+                      type="text"
+                      value={uniqueVendors.includes(editingPart.vendor) ? '' : editingPart.vendor}
+                      onChange={(e) => {
+                        const newValue = e.target.value;
+                        setEditingPart({ ...editingPart, vendor: newValue });
+                      }}
+                      className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
+                        darkMode 
+                          ? 'bg-gray-700 border-gray-600 text-gray-100 placeholder-gray-400' 
+                          : 'bg-slate-50 border-slate-300 text-slate-800 placeholder-slate-400'
+                      }`}
+                      placeholder="Enter new vendor name"
+                    />
+                  </div>
                   <div>
                     <label className={`block text-sm font-medium mb-2 ${
                       darkMode ? 'text-gray-300' : 'text-slate-700'
