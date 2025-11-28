@@ -5087,9 +5087,10 @@ const TakumiGarage = () => {
                 </div>
 
                 {/* Vendor and Status Row */}
-                <div className="mb-3">
+                <div className="flex items-center justify-between gap-3 mb-3">
+                  {/* Vendor on Left */}
                   {part.vendor && (
-                    <div className="flex items-center gap-2 mb-2">
+                    <div className="flex items-center gap-2">
                       <p className={`text-xs ${
                         darkMode ? 'text-gray-400' : 'text-slate-600'
                       }`}>Vendor:</p>
@@ -5099,37 +5100,28 @@ const TakumiGarage = () => {
                     </div>
                   )}
                   
-                  {/* Status Row */}
-                  <div className="flex items-center gap-2 mb-2">
-                    <p className={`text-xs ${
-                      darkMode ? 'text-gray-400' : 'text-slate-600'
-                    }`}>Status:</p>
-                    <div onClick={(e) => e.stopPropagation()}>
-                      <StatusDropdown part={part} />
-                    </div>
-                  </div>
-
-                  {/* Project Row */}
-                  <div className="flex items-center gap-2">
-                    <p className={`text-xs ${
-                      darkMode ? 'text-gray-400' : 'text-slate-600'
-                    }`}>Project:</p>
-                    <div onClick={(e) => e.stopPropagation()}>
-                      <ProjectDropdown part={part} />
-                    </div>
+                  {/* Status on Right (no label) */}
+                  <div onClick={(e) => e.stopPropagation()}>
+                    <StatusDropdown part={part} />
                   </div>
                 </div>
 
                 {/* Price - Simple total display on mobile, breakdown on desktop */}
                 <div className="mb-3">
-                  {/* Mobile: Just show total */}
-                  <div className="flex items-baseline gap-2 sm:hidden">
-                    <p className={`text-2xl font-bold ${
-                      darkMode ? 'text-gray-100' : 'text-slate-800'
-                    }`}>${part.total.toFixed(2)}</p>
-                    <p className={`text-xs ${
-                      darkMode ? 'text-gray-400' : 'text-slate-600'
-                    }`}>total</p>
+                  {/* Mobile: Total price with Project on right */}
+                  <div className="flex items-center justify-between gap-3 sm:hidden">
+                    <div className="flex items-baseline gap-2">
+                      <p className={`text-2xl font-bold ${
+                        darkMode ? 'text-gray-100' : 'text-slate-800'
+                      }`}>${part.total.toFixed(2)}</p>
+                      <p className={`text-xs ${
+                        darkMode ? 'text-gray-400' : 'text-slate-600'
+                      }`}>total</p>
+                    </div>
+                    {/* Project on Right */}
+                    <div onClick={(e) => e.stopPropagation()}>
+                      <ProjectDropdown part={part} />
+                    </div>
                   </div>
                   
                   {/* Desktop: Show full breakdown */}
