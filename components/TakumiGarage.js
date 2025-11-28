@@ -4120,7 +4120,7 @@ const TakumiGarage = () => {
                   );
                 })()}
 
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:items-start">
                   {/* Row 1: Part Name | empty | empty */}
                   <div>
                     <label className={`block text-sm font-medium mb-2 ${
