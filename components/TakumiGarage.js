@@ -5054,7 +5054,7 @@ const TakumiGarage = () => {
                   setViewingPart(part);
                   setShowPartDetailModal(true);
                 }}
-                className={`rounded-lg shadow-lg p-4 transition-all hover:shadow-xl cursor-pointer ${
+                className={`relative rounded-lg shadow-lg p-4 transition-all hover:shadow-xl cursor-pointer ${
                   darkMode 
                     ? 'bg-gray-800' 
                     : 'bg-slate-100'
@@ -5178,6 +5178,11 @@ const TakumiGarage = () => {
                   </div>
                 </div>
 
+                {/* Divider */}
+                <div className={`my-3 border-t ${
+                  darkMode ? 'border-gray-700' : 'border-slate-200'
+                }`}></div>
+
                 {/* Tracking */}
                 <div className="inline-block" onClick={(e) => e.stopPropagation()}>
                   {part.tracking ? (
@@ -5209,9 +5214,9 @@ const TakumiGarage = () => {
                     </span>
                   )}
                 </div>
-                {/* Part Number - Bottom Right Corner */}
+                {/* Part Number - Bottom Right Corner (Fixed Position) */}
                 {part.partNumber && part.partNumber !== '-' && (
-                  <div className="flex justify-end mt-2">
+                  <div className="absolute bottom-2 right-2">
                     <p className={`text-[10px] font-mono ${
                       darkMode ? 'text-gray-500' : 'text-gray-400'
                     }`}>{part.partNumber}</p>
