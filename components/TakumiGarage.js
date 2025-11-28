@@ -5229,7 +5229,7 @@ const TakumiGarage = () => {
                   <div className="flex items-baseline gap-1">
                     <p className={`text-xs ${
                       darkMode ? 'text-gray-400' : 'text-slate-600'
-                    }`}>total</p>
+                    }`}>Total:</p>
                     <p className={`text-xl font-bold ${
                       darkMode ? 'text-gray-100' : 'text-slate-800'
                     }`}>${part.total.toFixed(2)}</p>
