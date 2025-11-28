@@ -3947,7 +3947,7 @@ const TakumiGarage = () => {
                   }`}>
                     <h3 className={`text-lg font-semibold mb-4 ${
                       darkMode ? 'text-gray-200' : 'text-gray-800'
-                    }`}>Part Information</h3>
+                    }`}>Part Info</h3>
                     <div className="space-y-4">
                       {viewingPart.partNumber && viewingPart.partNumber !== '-' && (
                         <div>
@@ -4120,8 +4120,9 @@ const TakumiGarage = () => {
                   );
                 })()}
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div className="md:col-span-1">
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  {/* Part Name - Single Column */}
+                  <div>
                     <label className={`block text-sm font-medium mb-2 ${
                       darkMode ? 'text-gray-300' : 'text-slate-700'
                     }`}>
@@ -4140,7 +4141,12 @@ const TakumiGarage = () => {
                       required
                     />
                   </div>
+                  
+                  {/* Empty columns to keep part name on its own row */}
                   <div></div>
+                  <div></div>
+                  
+                  {/* Part Number */}
                   <div>
                     <label className={`block text-sm font-medium mb-2 ${
                       darkMode ? 'text-gray-300' : 'text-slate-700'
