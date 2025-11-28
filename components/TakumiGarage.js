@@ -3396,17 +3396,19 @@ const TakumiGarage = () => {
                   )}
                 </div>
               )}
-              <button
-                onClick={() => setDarkMode(!darkMode)}
-                className={`p-2 sm:p-3 rounded-lg shadow-md transition-colors ${
-                  darkMode 
-                    ? 'bg-gray-700 hover:bg-gray-600 text-yellow-300' 
-                    : 'bg-white hover:bg-gray-100 text-gray-700'
-                }`}
-                title={darkMode ? 'Switch to Light Mode' : 'Switch to Dark Mode'}
-              >
-                {darkMode ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
-              </button>
+              {activeTab === 'vehicles' && (
+                <button
+                  onClick={() => setDarkMode(!darkMode)}
+                  className={`p-2 sm:p-3 rounded-lg shadow-md transition-colors ${
+                    darkMode 
+                      ? 'bg-gray-700 hover:bg-gray-600 text-yellow-300' 
+                      : 'bg-white hover:bg-gray-100 text-gray-700'
+                  }`}
+                  title={darkMode ? 'Switch to Light Mode' : 'Switch to Dark Mode'}
+                >
+                  {darkMode ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
+                </button>
+              )}
               <button
                 onClick={() => {
                   if (activeTab === 'parts') setShowAddModal(true);
