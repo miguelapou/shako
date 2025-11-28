@@ -3434,7 +3434,7 @@ const TakumiGarage = () => {
             <button
               ref={(el) => (tabRefs.current['vehicles'] = el)}
               onClick={() => handleTabChange('vehicles')}
-              className={`flex items-center gap-2 px-6 py-3 font-medium transition-all relative ${
+              className={`flex items-center justify-center gap-2 flex-1 px-3 sm:px-6 py-3 font-medium transition-all relative ${
                 activeTab === 'vehicles'
                   ? darkMode
                     ? 'text-blue-400'
@@ -3445,12 +3445,12 @@ const TakumiGarage = () => {
               }`}
             >
               <Car className="w-5 h-5" />
-              <span>Vehicles</span>
+              <span className="hidden xs:inline sm:inline">Vehicles</span>
             </button>
             <button
               ref={(el) => (tabRefs.current['projects'] = el)}
               onClick={() => handleTabChange('projects')}
-              className={`flex items-center gap-2 px-6 py-3 font-medium transition-all relative ${
+              className={`flex items-center justify-center gap-2 flex-1 px-3 sm:px-6 py-3 font-medium transition-all relative ${
                 activeTab === 'projects'
                   ? darkMode
                     ? 'text-blue-400'
@@ -3461,12 +3461,12 @@ const TakumiGarage = () => {
               }`}
             >
               <Wrench className="w-5 h-5" />
-              <span>Projects</span>
+              <span className="hidden xs:inline sm:inline">Projects</span>
             </button>
             <button
               ref={(el) => (tabRefs.current['parts'] = el)}
               onClick={() => handleTabChange('parts')}
-              className={`flex items-center gap-2 pl-5 pr-7 py-3 font-medium transition-all relative ${
+              className={`flex items-center justify-center gap-2 flex-1 px-3 sm:px-6 py-3 font-medium transition-all relative ${
                 activeTab === 'parts'
                   ? darkMode
                     ? 'text-blue-400'
@@ -3477,7 +3477,7 @@ const TakumiGarage = () => {
               }`}
             >
               <Package className="w-5 h-5" />
-              <span>Parts</span>
+              <span className="hidden xs:inline sm:inline">Parts</span>
             </button>
             {/* Animated underline */}
             <div
