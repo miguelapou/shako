@@ -3959,31 +3959,34 @@ const TakumiGarage = () => {
                           }`}>{viewingPart.partNumber}</p>
                         </div>
                       )}
-                      {viewingPart.vendor && (
-                        <div>
-                          <p className={`text-sm font-medium mb-2 ${
-                            darkMode ? 'text-gray-400' : 'text-slate-600'
-                          }`}>Vendor</p>
-                          <span className={`inline-block px-3 py-1 rounded-full text-sm font-medium ${getVendorColor(viewingPart.vendor)}`}>
-                            {viewingPart.vendor}
-                          </span>
-                        </div>
-                      )}
-                      {viewingPart.projectId && (() => {
-                        const project = projects.find(p => p.id === viewingPart.projectId);
-                        return project && (
+                      {/* Vendor and Project on same row */}
+                      <div className="grid grid-cols-2 gap-4">
+                        {viewingPart.vendor && (
                           <div>
                             <p className={`text-sm font-medium mb-2 ${
                               darkMode ? 'text-gray-400' : 'text-slate-600'
-                            }`}>Project</p>
-                            <span className={`inline-block px-3 py-1 rounded-full text-sm font-medium ${
-                              darkMode ? 'bg-blue-900/30 text-blue-200 border border-blue-700' : 'bg-blue-50 text-blue-800 border border-blue-200'
-                            }`}>
-                              {project.name}
+                            }`}>Vendor</p>
+                            <span className={`inline-block px-3 py-1 rounded-full text-sm font-medium ${getVendorColor(viewingPart.vendor)}`}>
+                              {viewingPart.vendor}
                             </span>
                           </div>
-                        );
-                      })()}
+                        )}
+                        {viewingPart.projectId && (() => {
+                          const project = projects.find(p => p.id === viewingPart.projectId);
+                          return project && (
+                            <div>
+                              <p className={`text-sm font-medium mb-2 ${
+                                darkMode ? 'text-gray-400' : 'text-slate-600'
+                              }`}>Project</p>
+                              <span className={`inline-block px-3 py-1 rounded-full text-sm font-medium ${
+                                darkMode ? 'bg-blue-900/30 text-blue-200 border border-blue-700' : 'bg-blue-50 text-blue-800 border border-blue-200'
+                              }`}>
+                                {project.name}
+                              </span>
+                            </div>
+                          );
+                        })()}
+                      </div>
                     </div>
                   </div>
 
@@ -4682,7 +4685,7 @@ const TakumiGarage = () => {
                 <input
                   type="text"
                   placeholder="Search parts..."
-                  className={`w-full pl-10 pr-10 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
+                  className={`w-full pl-10 pr-10 py-2 border rounded-lg outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
                     darkMode 
                       ? 'bg-gray-700 border-gray-600 text-gray-100 placeholder-gray-400' 
                       : 'bg-slate-50 border-slate-300 text-slate-800 placeholder-slate-400'
@@ -4781,7 +4784,7 @@ const TakumiGarage = () => {
               <input
                 type="text"
                 placeholder="Search parts..."
-                className={`w-full pl-10 pr-10 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
+                className={`w-full pl-10 pr-10 py-2 border rounded-lg outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
                   darkMode 
                     ? 'bg-gray-700 border-gray-600 text-gray-100 placeholder-gray-400' 
                     : 'bg-slate-50 border-slate-300 text-slate-800 placeholder-slate-400'
