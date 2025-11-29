@@ -3220,9 +3220,13 @@ const TakumiGarage = () => {
               }}
             />
             <div 
-              className={`absolute left-0 ${dropdownPosition === 'top' ? 'bottom-full mb-1' : 'top-full mt-1'} rounded-lg shadow-lg border py-1 z-20 min-w-[180px] max-h-60 overflow-y-auto ${
+              className={`absolute left-0 ${dropdownPosition === 'top' ? 'bottom-full mb-1' : 'top-full mt-1'} rounded-lg shadow-lg border py-1 z-20 min-w-[180px] max-h-60 overflow-y-auto scrollbar-hide ${
                 darkMode ? 'bg-gray-800 border-gray-600' : 'bg-slate-50 border-slate-200'
               }`}
+              style={{
+                scrollbarWidth: 'none',
+                msOverflowStyle: 'none'
+              }}
             >
               <button
                 onClick={(e) => {
@@ -3294,7 +3298,11 @@ const TakumiGarage = () => {
         ? 'bg-gradient-to-br from-gray-900 to-gray-800 dark-scrollbar' 
         : 'bg-gradient-to-br from-slate-200 to-slate-300'
     }`}>
-      <style>{fontStyles}</style>
+      <style>{fontStyles}{`
+        .scrollbar-hide::-webkit-scrollbar {
+          display: none;
+        }
+      `}</style>
       <div className="max-w-7xl mx-auto">
         {/* Header */}
         <div className="mb-6 sm:mb-8">
@@ -4681,7 +4689,7 @@ const TakumiGarage = () => {
                 <div>
                   <p className={`text-xs sm:text-sm mb-1 sm:mb-2 lg:mb-3 ${
                     darkMode ? 'text-gray-400' : 'text-slate-600'
-                  }`}>Order Placed</p>
+                  }`}>Ordered</p>
                   <p className={`text-xl sm:text-2xl lg:text-2xl font-bold truncate ${
                     darkMode ? 'text-gray-100' : 'text-gray-800'
                   }`}>{stats.purchased}</p>
@@ -4698,7 +4706,7 @@ const TakumiGarage = () => {
                 <div>
                   <p className={`text-xs sm:text-sm mb-1 sm:mb-2 lg:mb-3 ${
                     darkMode ? 'text-gray-400' : 'text-slate-600'
-                  }`}>In Transit</p>
+                  }`}>Shipped</p>
                   <p className={`text-xl sm:text-2xl lg:text-2xl font-bold truncate ${
                     darkMode ? 'text-gray-100' : 'text-gray-800'
                   }`}>{stats.shipped}</p>
@@ -4774,17 +4782,17 @@ const TakumiGarage = () => {
 
           {/* Cost Breakdown - order-2 on mobile, full column width on medium+ */}
           <div className="order-2 md:order-none">
-            <div className={`rounded-lg shadow-md p-4 sm:p-6 ${
+            <div className={`rounded-lg shadow-md p-3 sm:p-6 ${
               darkMode ? 'bg-gray-800' : 'bg-slate-100'
             }`}>
-            <h3 className={`text-base sm:text-lg font-semibold mb-4 flex items-center gap-2 ${
+            <h3 className={`text-base sm:text-lg font-semibold mb-2 sm:mb-4 flex items-center gap-2 ${
               darkMode ? 'text-gray-100' : 'text-gray-800'
             }`}>
               <TrendingUp className="w-4 h-4 sm:w-5 sm:h-5" />
               Cost Breakdown
             </h3>
-            <div className="grid grid-cols-1 gap-4">
-              <div className={`flex items-center justify-between py-2 border-b ${
+            <div className="grid grid-cols-1 gap-2 sm:gap-4">
+              <div className={`flex items-center justify-between py-1.5 sm:py-2 border-b ${
                 darkMode ? 'border-gray-700' : 'border-gray-100'
               }`}>
                 <p className={`text-xs sm:text-sm ${
@@ -4794,7 +4802,7 @@ const TakumiGarage = () => {
                   darkMode ? 'text-gray-100' : 'text-gray-800'
                 }`}>${stats.totalPrice.toFixed(2)}</p>
               </div>
-              <div className={`flex items-center justify-between py-2 border-b ${
+              <div className={`flex items-center justify-between py-1.5 sm:py-2 border-b ${
                 darkMode ? 'border-gray-700' : 'border-gray-100'
               }`}>
                 <p className={`text-xs sm:text-sm ${
@@ -4804,7 +4812,7 @@ const TakumiGarage = () => {
                   darkMode ? 'text-gray-100' : 'text-gray-800'
                 }`}>${stats.totalShipping.toFixed(2)}</p>
               </div>
-              <div className={`flex items-center justify-between py-2 border-b ${
+              <div className={`flex items-center justify-between py-1.5 sm:py-2 border-b ${
                 darkMode ? 'border-gray-700' : 'border-gray-100'
               }`}>
                 <p className={`text-xs sm:text-sm ${
@@ -4814,8 +4822,8 @@ const TakumiGarage = () => {
                   darkMode ? 'text-gray-100' : 'text-gray-800'
                 }`}>${stats.totalDuties.toFixed(2)}</p>
               </div>
-              <div className="pt-2">
-                <p className={`text-sm mb-2 ${
+              <div className="pt-1.5 sm:pt-2">
+                <p className={`text-sm mb-1.5 sm:mb-2 ${
                   darkMode ? 'text-gray-400' : 'text-slate-600'
                 }`}>Progress</p>
                 <div className="flex items-center gap-2">
