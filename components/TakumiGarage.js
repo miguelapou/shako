@@ -5772,12 +5772,16 @@ const TakumiGarage = () => {
                 onClick={() => handleCloseModal(() => setShowAddProjectModal(false))}
               >
                 <div 
-                  className={`rounded-lg shadow-xl max-w-4xl w-full max-h-[90vh] modal-content ${
+                  className={`rounded-lg shadow-xl max-w-4xl w-full overflow-hidden modal-content grid ${
                     isModalClosing ? 'modal-popup-exit' : 'modal-popup-enter'
                   } ${darkMode ? 'bg-gray-800' : 'bg-slate-100'}`}
+                  style={{
+                    gridTemplateRows: 'auto 1fr auto',
+                    maxHeight: '90vh'
+                  }}
                   onClick={(e) => e.stopPropagation()}
                 >
-                  <div className={`sticky top-0 border-b px-6 py-4 flex items-center justify-between ${
+                  <div className={`sticky top-0 z-10 px-6 py-4 border-b flex items-center justify-between ${
                     darkMode ? 'bg-gray-800 border-gray-700' : 'bg-slate-50 border-slate-200'
                   }`}>
                     <h2 className={`text-2xl font-bold ${
@@ -5795,7 +5799,7 @@ const TakumiGarage = () => {
                     </button>
                   </div>
 
-                  <div className="p-6 modal-scrollable">
+                  <div className="p-6 overflow-y-auto">
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       {/* Left Column: Project Name, Priority/Vehicle, Budget */}
                       <div className="space-y-4">
@@ -5984,10 +5988,10 @@ const TakumiGarage = () => {
                       </div>
                     </div>
                   </div>
-                  <div className={`border-t ${
+                  
+                  <div className={`p-6 border-t ${
                     darkMode ? 'border-gray-700' : 'border-slate-200'
-                  }`}></div>
-                  <div className="p-6">
+                  }`}>
                     <div className="flex gap-3">
                       <button
                         onClick={() => setShowAddProjectModal(false)}
