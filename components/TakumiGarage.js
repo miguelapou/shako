@@ -1716,6 +1716,7 @@ const TakumiGarage = () => {
   const [newVehicle, setNewVehicle] = useState({
     nickname: '',
     name: '',
+    make: '',
     year: '',
     license_plate: '',
     vin: '',
@@ -6428,13 +6429,13 @@ const TakumiGarage = () => {
                     <h3 className={`text-xl font-bold mb-1 ${
                       darkMode ? 'text-gray-100' : 'text-slate-800'
                     }`}>
-                      {vehicle.nickname || (vehicle.year ? `${vehicle.year} ` : '') + vehicle.name}
+                      {vehicle.nickname || [vehicle.year, vehicle.make, vehicle.name].filter(Boolean).join(' ')}
                     </h3>
                     {vehicle.nickname && (
                       <p className={`text-sm mb-2 ${
                         darkMode ? 'text-gray-400' : 'text-slate-600'
                       }`}>
-                        {vehicle.year ? `${vehicle.year} ` : ''}{vehicle.name}
+                        {[vehicle.year, vehicle.make, vehicle.name].filter(Boolean).join(' ')}
                       </p>
                     )}
                     {!vehicle.archived && (
@@ -6647,23 +6648,44 @@ const TakumiGarage = () => {
                           </div>
                         </div>
 
-                        <div>
-                          <label className={`block text-sm font-medium mb-2 ${
-                            darkMode ? 'text-gray-300' : 'text-slate-700'
-                          }`}>
-                            Vehicle Name
-                          </label>
-                          <input
-                            type="text"
-                            value={newVehicle.name}
-                            onChange={(e) => setNewVehicle({ ...newVehicle, name: e.target.value })}
-                            className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
-                              darkMode 
-                                ? 'bg-gray-700 border-gray-600 text-gray-100 placeholder-gray-400' 
-                                : 'bg-slate-50 border-slate-300 text-slate-800 placeholder-slate-400'
-                            }`}
-                            placeholder=""
-                          />
+                        <div className="grid grid-cols-2 gap-4">
+                          <div>
+                            <label className={`block text-sm font-medium mb-2 ${
+                              darkMode ? 'text-gray-300' : 'text-slate-700'
+                            }`}>
+                              Make
+                            </label>
+                            <input
+                              type="text"
+                              value={newVehicle.make}
+                              onChange={(e) => setNewVehicle({ ...newVehicle, make: e.target.value })}
+                              className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
+                                darkMode 
+                                  ? 'bg-gray-700 border-gray-600 text-gray-100 placeholder-gray-400' 
+                                  : 'bg-slate-50 border-slate-300 text-slate-800 placeholder-slate-400'
+                              }`}
+                              placeholder=""
+                            />
+                          </div>
+                          
+                          <div>
+                            <label className={`block text-sm font-medium mb-2 ${
+                              darkMode ? 'text-gray-300' : 'text-slate-700'
+                            }`}>
+                              Model
+                            </label>
+                            <input
+                              type="text"
+                              value={newVehicle.name}
+                              onChange={(e) => setNewVehicle({ ...newVehicle, name: e.target.value })}
+                              className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
+                                darkMode 
+                                  ? 'bg-gray-700 border-gray-600 text-gray-100 placeholder-gray-400' 
+                                  : 'bg-slate-50 border-slate-300 text-slate-800 placeholder-slate-400'
+                              }`}
+                              placeholder=""
+                            />
+                          </div>
                         </div>
 
                         <div className="grid grid-cols-2 gap-4">
@@ -7022,6 +7044,7 @@ const TakumiGarage = () => {
                           setNewVehicle({
                             nickname: '',
                             name: '',
+                            make: '',
                             year: '',
                             license_plate: '',
                             vin: '',
@@ -7671,23 +7694,44 @@ const TakumiGarage = () => {
                                 </div>
                               </div>
 
-                              <div>
-                                <label className={`block text-sm font-medium mb-2 ${
-                                  darkMode ? 'text-gray-300' : 'text-slate-700'
-                                }`}>
-                                  Vehicle Name
-                                </label>
-                                <input
-                                  type="text"
-                                  value={viewingVehicle.name}
-                                  onChange={(e) => setViewingVehicle({ ...viewingVehicle, name: e.target.value })}
-                                  className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
-                                    darkMode 
-                                      ? 'bg-gray-700 border-gray-600 text-gray-100 placeholder-gray-400' 
-                                      : 'bg-slate-50 border-slate-300 text-slate-800 placeholder-slate-400'
-                                  }`}
-                                  placeholder=""
-                                />
+                              <div className="grid grid-cols-2 gap-4">
+                                <div>
+                                  <label className={`block text-sm font-medium mb-2 ${
+                                    darkMode ? 'text-gray-300' : 'text-slate-700'
+                                  }`}>
+                                    Make
+                                  </label>
+                                  <input
+                                    type="text"
+                                    value={viewingVehicle.make || ''}
+                                    onChange={(e) => setViewingVehicle({ ...viewingVehicle, make: e.target.value })}
+                                    className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
+                                      darkMode 
+                                        ? 'bg-gray-700 border-gray-600 text-gray-100 placeholder-gray-400' 
+                                        : 'bg-slate-50 border-slate-300 text-slate-800 placeholder-slate-400'
+                                    }`}
+                                    placeholder=""
+                                  />
+                                </div>
+                                
+                                <div>
+                                  <label className={`block text-sm font-medium mb-2 ${
+                                    darkMode ? 'text-gray-300' : 'text-slate-700'
+                                  }`}>
+                                    Model
+                                  </label>
+                                  <input
+                                    type="text"
+                                    value={viewingVehicle.name}
+                                    onChange={(e) => setViewingVehicle({ ...viewingVehicle, name: e.target.value })}
+                                    className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
+                                      darkMode 
+                                        ? 'bg-gray-700 border-gray-600 text-gray-100 placeholder-gray-400' 
+                                        : 'bg-slate-50 border-slate-300 text-slate-800 placeholder-slate-400'
+                                    }`}
+                                    placeholder=""
+                                  />
+                                </div>
                               </div>
 
                               <div className="grid grid-cols-2 gap-4">
