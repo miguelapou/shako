@@ -4688,10 +4688,13 @@ const TakumiGarage = () => {
           <div className="space-y-4 order-1 md:order-none">
             <div className="grid grid-cols-2 gap-3 sm:gap-4">
               <div 
-                onClick={() => setStatusFilter(statusFilter === 'purchased' ? 'all' : 'purchased')}
+                onClick={() => {
+                  setStatusFilter(statusFilter === 'purchased' ? 'all' : 'purchased');
+                  setDeliveredFilter('all');
+                }}
                 className={`rounded-lg shadow-md p-3 sm:p-4 lg:p-4 border-l-4 border-yellow-500 relative overflow-hidden cursor-pointer transition-all duration-200 hover:shadow-lg hover:scale-[1.02] ${
                   darkMode ? 'bg-gray-800 hover:bg-gray-750' : 'bg-white hover:bg-gray-50'
-                } ${statusFilter === 'purchased' ? 'ring-2 ring-yellow-500 ring-offset-2' : ''}`}
+                } ${statusFilter === 'purchased' ? 'ring-2 ring-yellow-500' : ''}`}
               >
                 <ShoppingCart className="w-6 h-6 sm:w-8 sm:h-8 text-yellow-500 opacity-20 absolute top-2 sm:top-4 right-2 sm:right-4" />
                 <div>
@@ -4705,10 +4708,13 @@ const TakumiGarage = () => {
               </div>
 
               <div 
-                onClick={() => setStatusFilter(statusFilter === 'shipped' ? 'all' : 'shipped')}
+                onClick={() => {
+                  setStatusFilter(statusFilter === 'shipped' ? 'all' : 'shipped');
+                  setDeliveredFilter('all');
+                }}
                 className={`rounded-lg shadow-md p-3 sm:p-4 lg:p-4 border-l-4 border-blue-500 relative overflow-hidden cursor-pointer transition-all duration-200 hover:shadow-lg hover:scale-[1.02] ${
                   darkMode ? 'bg-gray-800 hover:bg-gray-750' : 'bg-white hover:bg-gray-50'
-                } ${statusFilter === 'shipped' ? 'ring-2 ring-blue-500 ring-offset-2' : ''}`}
+                } ${statusFilter === 'shipped' ? 'ring-2 ring-blue-500' : ''}`}
               >
                 <Truck className="w-6 h-6 sm:w-8 sm:h-8 text-blue-500 opacity-20 absolute top-2 sm:top-4 right-2 sm:right-4" />
                 <div>
@@ -4728,6 +4734,7 @@ const TakumiGarage = () => {
                     prev === 'all' ? 'only' : 
                     prev === 'only' ? 'hide' : 'all'
                   );
+                  setStatusFilter('all');
                 }}
                 className={`rounded-lg shadow-md p-3 sm:p-4 lg:p-4 border-l-4 ${
                   deliveredFilter === 'hide' ? 'border-red-500' : 'border-green-500'
@@ -4735,7 +4742,7 @@ const TakumiGarage = () => {
                   deliveredFilter === 'hide' 
                     ? (darkMode ? 'bg-gray-900' : 'bg-gray-300') 
                     : (darkMode ? 'bg-gray-800 hover:bg-gray-750' : 'bg-white hover:bg-gray-50')
-                } ${deliveredFilter !== 'all' ? `ring-2 ${deliveredFilter === 'hide' ? 'ring-red-500' : 'ring-green-500'} ring-offset-2` : ''}`}
+                } ${deliveredFilter !== 'all' ? `ring-2 ${deliveredFilter === 'hide' ? 'ring-red-500' : 'ring-green-500'}` : ''}`}
               >
                 <CheckCircle className={`w-6 h-6 sm:w-8 sm:h-8 ${
                   deliveredFilter === 'hide' ? 'text-red-500' : 'text-green-500'
