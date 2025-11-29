@@ -5777,6 +5777,7 @@ const TakumiGarage = () => {
                   } ${darkMode ? 'bg-gray-800' : 'bg-slate-100'}`}
                   style={{
                     gridTemplateRows: 'auto 1fr auto',
+                    minHeight: '70vh',
                     maxHeight: '90vh'
                   }}
                   onClick={(e) => e.stopPropagation()}
