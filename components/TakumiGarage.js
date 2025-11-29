@@ -3034,23 +3034,12 @@ const TakumiGarage = () => {
     const [isPositioned, setIsPositioned] = useState(false);
     useEffect(() => {
       if (isOpen && buttonRef.current) {
-        // Calculate position immediately when opening
         const rect = buttonRef.current.getBoundingClientRect();
-        const dropdownHeight = 180; // Height of 4-item dropdown
-        const viewportHeight = window.innerHeight;
-        const spaceBelow = viewportHeight - rect.bottom - 20; // Add margin
-        const spaceAbove = rect.top - 20; // Add margin
+        const dropdownHeight = 200; // Height of 4-item dropdown with padding
+        const spaceBelow = window.innerHeight - rect.bottom;
         
-        // Switch to top if there's more space above OR if we're in top third of viewport
-        const isInTopThird = rect.top < (viewportHeight / 3);
-        
-        if ((spaceBelow < dropdownHeight && spaceAbove >= dropdownHeight) || 
-            (isInTopThird && spaceAbove >= dropdownHeight)) {
-          setDropdownPosition('top');
-        } else {
-          setDropdownPosition('bottom');
-        }
-        // Mark as positioned to show the dropdown
+        // Simple: open upward if not enough space below
+        setDropdownPosition(spaceBelow < dropdownHeight ? 'top' : 'bottom');
         setIsPositioned(true);
       } else {
         setIsPositioned(false);
@@ -3166,27 +3155,16 @@ const TakumiGarage = () => {
     };
     useEffect(() => {
       if (isOpen && buttonRef.current) {
-        // Calculate position immediately when opening
         const rect = buttonRef.current.getBoundingClientRect();
         // Calculate dropdown height based on number of projects
         const itemHeight = 40;
-        const maxVisibleItems = 6; // max-h-60 = 240px / 40px per item
-        const actualItems = Math.min(projects.length + 1, maxVisibleItems); // +1 for "None" option
-        const dropdownHeight = actualItems * itemHeight;
-        const viewportHeight = window.innerHeight;
-        const spaceBelow = viewportHeight - rect.bottom - 20; // Add margin
-        const spaceAbove = rect.top - 20; // Add margin
+        const maxVisibleItems = 6;
+        const actualItems = Math.min(projects.length + 1, maxVisibleItems);
+        const dropdownHeight = actualItems * itemHeight + 20; // Add padding
+        const spaceBelow = window.innerHeight - rect.bottom;
         
-        // Switch to top if there's more space above OR if we're in top third of viewport
-        const isInTopThird = rect.top < (viewportHeight / 3);
-        
-        if ((spaceBelow < dropdownHeight && spaceAbove >= dropdownHeight) || 
-            (isInTopThird && spaceAbove >= dropdownHeight)) {
-          setDropdownPosition('top');
-        } else {
-          setDropdownPosition('bottom');
-        }
-        // Mark as positioned to show the dropdown
+        // Simple: open upward if not enough space below
+        setDropdownPosition(spaceBelow < dropdownHeight ? 'top' : 'bottom');
         setIsPositioned(true);
       } else {
         setIsPositioned(false);
