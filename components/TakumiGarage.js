@@ -2303,6 +2303,7 @@ const TakumiGarage = () => {
     status: 'planning',
     vehicle_id: null
   });
+  const [showAddProjectVehicleDropdown, setShowAddProjectVehicleDropdown] = useState(false);
   const [darkMode, setDarkMode] = useState(false); // Always start with false to match SSR
   const [darkModeInitialized, setDarkModeInitialized] = useState(false);
   const [mounted, setMounted] = useState(false);
@@ -5640,7 +5641,9 @@ const TakumiGarage = () => {
                           Priority:
                         </span>
                         <span className={`text-sm font-bold ${priorityColors[project.priority]}`}>
-                          {project.priority?.replace(/_/g, ' ').toUpperCase()}
+                          {project.priority === 'not_set' 
+                            ? 'Not set' 
+                            : project.priority?.charAt(0).toUpperCase() + project.priority?.slice(1)}
                         </span>
                       </div>
                     </div>
@@ -5849,22 +5852,91 @@ const TakumiGarage = () => {
                                 <span>Vehicle</span>
                               </div>
                             </label>
-                            <select
-                              value={newProject.vehicle_id || ''}
-                              onChange={(e) => setNewProject({ ...newProject, vehicle_id: e.target.value ? parseInt(e.target.value) : null })}
-                              className={`w-full px-4 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent appearance-none ${
-                                darkMode 
-                                  ? 'bg-gray-700 border-gray-600 text-gray-100' 
-                                  : 'bg-slate-50 border-slate-300 text-slate-800'
-                              }`}
-                            >
-                              <option value="">No vehicle</option>
-                              {vehicles.map(vehicle => (
-                                <option key={vehicle.id} value={vehicle.id}>
-                                  {vehicle.nickname || vehicle.name}
-                                </option>
-                              ))}
-                            </select>
+                            <div className="relative">
+                              <button
+                                type="button"
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  setShowAddProjectVehicleDropdown(!showAddProjectVehicleDropdown);
+                                }}
+                                className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm text-left flex items-center justify-between gap-2 ${
+                                  darkMode 
+                                    ? 'bg-gray-700 border-gray-600 text-gray-100' 
+                                    : 'bg-slate-50 border-slate-300 text-slate-800'
+                                }`}
+                              >
+                                <div className="flex items-center gap-2 flex-1 min-w-0">
+                                  {newProject.vehicle_id ? (() => {
+                                    const selectedVehicle = vehicles.find(v => v.id === newProject.vehicle_id);
+                                    return selectedVehicle ? (
+                                      <>
+                                        <div 
+                                          className="w-3 h-3 rounded-full border flex-shrink-0"
+                                          style={{ 
+                                            backgroundColor: selectedVehicle.color || '#3B82F6',
+                                            borderColor: darkMode ? '#4B5563' : '#D1D5DB'
+                                          }}
+                                        />
+                                        <span className="truncate">{selectedVehicle.nickname || selectedVehicle.name}</span>
+                                      </>
+                                    ) : 'No vehicle';
+                                  })() : 'No vehicle'}
+                                </div>
+                                <ChevronDown className="w-4 h-4 flex-shrink-0" />
+                              </button>
+                              {showAddProjectVehicleDropdown && (
+                                <>
+                                  <div 
+                                    className="fixed inset-0 z-10"
+                                    onClick={() => setShowAddProjectVehicleDropdown(false)}
+                                  />
+                                  <div className={`absolute left-0 right-0 z-20 mt-1 rounded-lg border shadow-lg py-1 max-h-60 overflow-y-auto ${
+                                    darkMode ? 'bg-gray-700 border-gray-600' : 'bg-slate-50 border-slate-300'
+                                  }`}>
+                                    <button
+                                      type="button"
+                                      onClick={() => {
+                                        setNewProject({ ...newProject, vehicle_id: null });
+                                        setShowAddProjectVehicleDropdown(false);
+                                      }}
+                                      className={`w-full px-3 py-2 text-left text-sm flex items-center gap-2 ${
+                                        !newProject.vehicle_id
+                                          ? darkMode ? 'bg-blue-600 text-white' : 'bg-blue-600 text-white'
+                                          : darkMode ? 'hover:bg-gray-600 text-gray-100' : 'hover:bg-gray-100 text-gray-900'
+                                      }`}
+                                    >
+                                      No vehicle
+                                    </button>
+                                    {vehicles.map(vehicle => (
+                                      <button
+                                        key={vehicle.id}
+                                        type="button"
+                                        onClick={() => {
+                                          setNewProject({ ...newProject, vehicle_id: vehicle.id });
+                                          setShowAddProjectVehicleDropdown(false);
+                                        }}
+                                        className={`w-full px-3 py-2 text-left text-sm flex items-center gap-2 ${
+                                          newProject.vehicle_id === vehicle.id
+                                            ? darkMode ? 'bg-blue-600 text-white' : 'bg-blue-600 text-white'
+                                            : darkMode ? 'hover:bg-gray-600 text-gray-100' : 'hover:bg-gray-100 text-gray-900'
+                                        }`}
+                                      >
+                                        <div 
+                                          className="w-3 h-3 rounded-full border flex-shrink-0"
+                                          style={{ 
+                                            backgroundColor: vehicle.color || '#3B82F6',
+                                            borderColor: darkMode ? '#4B5563' : '#D1D5DB'
+                                          }}
+                                        />
+                                        <span className="truncate">
+                                          {vehicle.nickname ? `${vehicle.nickname} (${vehicle.name})` : `${vehicle.name}`}
+                                        </span>
+                                      </button>
+                                    ))}
+                                  </div>
+                                </>
+                              )}
+                            </div>
                           </div>
                         </div>
 
