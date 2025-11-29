@@ -5782,7 +5782,8 @@ const TakumiGarage = () => {
                   }}
                   onClick={(e) => e.stopPropagation()}
                 >
-                  <div className={`sticky top-0 z-10 px-6 py-4 border-b flex items-center justify-between ${
+                  {/* Header */}
+                  <div className={`px-6 py-4 border-b flex items-center justify-between ${
                     darkMode ? 'bg-gray-800 border-gray-700' : 'bg-slate-50 border-slate-200'
                   }`}>
                     <h2 className={`text-2xl font-bold ${
@@ -5800,6 +5801,7 @@ const TakumiGarage = () => {
                     </button>
                   </div>
 
+                  {/* Content - takes flexible space */}
                   <div className="p-6 overflow-y-auto" style={{ minHeight: 0 }}>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       {/* Left Column: Project Name, Priority/Vehicle, Budget */}
@@ -5990,7 +5992,8 @@ const TakumiGarage = () => {
                     </div>
                   </div>
                   
-                  <div className={`p-6 border-t ${
+                  {/* Footer - natural height only */}
+                  <div className={`p-6 border-t self-end ${
                     darkMode ? 'border-gray-700' : 'border-slate-200'
                   }`}>
                     <div className="flex gap-3">
