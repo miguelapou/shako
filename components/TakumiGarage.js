@@ -2578,6 +2578,7 @@ const TakumiGarage = () => {
       purchased: { delivered: false, shipped: false, purchased: true },
       pending: { delivered: false, shipped: false, purchased: false }
     };
+    
     try {
       // Update in database
       const { error } = await supabase
@@ -4185,8 +4186,8 @@ const TakumiGarage = () => {
                     />
                   </div>
 
-                  {/* Vendor Dropdown - order 4 on mobile */}
-                  <div className="order-4 md:order-none">
+                  {/* Vendor Dropdown - order 6 on mobile */}
+                  <div className="order-6 md:order-none">
                     <label className={`block text-sm font-medium mb-2 ${
                       darkMode ? 'text-gray-300' : 'text-slate-700'
                     }`}>
@@ -4209,8 +4210,8 @@ const TakumiGarage = () => {
                     </select>
                   </div>
 
-                  {/* Add New Vendor - order 5 on mobile, directly under vendor */}
-                  <div className="order-5 md:order-none">
+                  {/* Add New Vendor - order 7 on mobile, directly under vendor */}
+                  <div className="order-7 md:order-none">
                     <label className={`block text-sm font-medium mb-2 ${darkMode ? 'text-gray-300' : 'text-slate-700'}`}>
                       Or add new vendor:
                     </label>
@@ -4230,8 +4231,8 @@ const TakumiGarage = () => {
                     />
                   </div>
 
-                  {/* Status - order 6 on mobile */}
-                  <div className="order-6 md:order-none">
+                  {/* Status - order 4 on mobile */}
+                  <div className="order-4 md:order-none">
                     <label className={`block text-sm font-medium mb-2 ${
                       darkMode ? 'text-gray-300' : 'text-slate-700'
                     }`}>
@@ -4254,8 +4255,8 @@ const TakumiGarage = () => {
                     </select>
                   </div>
 
-                  {/* Project - order 7 on mobile */}
-                  <div className="order-7 md:order-none">
+                  {/* Project - order 5 on mobile */}
+                  <div className="order-5 md:order-none">
                     <label className={`block text-sm font-medium mb-2 ${
                       darkMode ? 'text-gray-300' : 'text-slate-700'
                     }`}>
@@ -4343,8 +4344,8 @@ const TakumiGarage = () => {
                     />
                   </div>
 
-                  {/* Price Breakdown Box - order 11 on mobile */}
-                  <div className={`order-11 md:order-none border rounded-lg p-4 ${
+                  {/* Price Breakdown Box - order 11 on mobile, bottom-aligned on desktop */}
+                  <div className={`order-11 md:order-none md:self-end border rounded-lg p-4 ${
                     darkMode 
                       ? 'bg-gray-700/50 border-gray-600' 
                       : 'bg-gray-50 border-gray-200'
