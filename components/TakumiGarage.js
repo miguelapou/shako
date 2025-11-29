@@ -5981,7 +5981,7 @@ const TakumiGarage = () => {
                         <textarea
                           value={newProject.description}
                           onChange={(e) => setNewProject({ ...newProject, description: e.target.value })}
-                          className={`w-full h-[calc(100%-2rem)] px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none ${
+                          className={`w-full h-48 px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none ${
                             darkMode 
                               ? 'bg-gray-700 border-gray-600 text-gray-100 placeholder-gray-400' 
                               : 'bg-slate-50 border-slate-300 text-slate-800 placeholder-slate-400'
