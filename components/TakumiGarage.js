@@ -6517,7 +6517,7 @@ const TakumiGarage = () => {
                     {vehicle.archived && vehicle.vin && (
                       <div className="mt-2">
                         <span className={`inline-block px-3 py-1 rounded-full text-xs font-mono ${
-                          darkMode ? 'bg-gray-700 text-gray-300' : 'bg-gray-100 text-gray-700'
+                          darkMode ? 'bg-gray-700 text-gray-300' : 'bg-gray-200 text-gray-900'
                         }`}>
                           VIN: {vehicle.vin}
                         </span>
@@ -7214,6 +7214,16 @@ const TakumiGarage = () => {
                                 }`}>{viewingVehicle.year}</p>
                               </div>
                             )}
+                            {viewingVehicle.make && (
+                              <div>
+                                <p className={`text-sm font-medium mb-1 ${
+                                  darkMode ? 'text-gray-400' : 'text-slate-600'
+                                }`}>Make</p>
+                                <p className={`text-base ${
+                                  darkMode ? 'text-gray-100' : 'text-slate-800'
+                                }`}>{viewingVehicle.make}</p>
+                              </div>
+                            )}
                             {viewingVehicle.name && (
                               <div>
                                 <p className={`text-sm font-medium mb-1 ${
@@ -7244,20 +7254,23 @@ const TakumiGarage = () => {
                                   darkMode ? 'text-gray-400' : 'text-slate-600'
                                 }`}>VIN</p>
                                 <span className={`inline-block px-3 py-1 rounded-full text-xs font-mono ${
-                                  darkMode ? 'bg-gray-800 text-gray-300' : 'bg-gray-100 text-gray-700'
+                                  darkMode ? 'bg-gray-800 text-gray-300' : 'bg-gray-200 text-gray-900'
                                 }`}>
                                   {viewingVehicle.vin}
                                 </span>
                               </div>
                             )}
+                            {viewingVehicle.insurance_policy && (
+                              <div>
+                                <p className={`text-sm font-medium mb-1 ${
+                                  darkMode ? 'text-gray-400' : 'text-slate-600'
+                                }`}>Insurance Policy</p>
+                                <p className={`text-base ${
+                                  darkMode ? 'text-gray-100' : 'text-slate-800'
+                                }`}>{viewingVehicle.insurance_policy}</p>
+                              </div>
+                            )}
                           </div>
-                          {viewingVehicle.insurance_policy && (
-                            <div className="col-span-2">
-                              <p className={`text-sm font-medium mb-1 ${
-                                darkMode ? 'text-gray-400' : 'text-slate-600'
-                              }`}>Insurance Policy</p>
-                              <p className={`text-base ${
-                                darkMode ? 'text-gray-100' : 'text-slate-800'
                               }`}>{viewingVehicle.insurance_policy}</p>
                             </div>
                           )}
