@@ -3038,12 +3038,14 @@ const TakumiGarage = () => {
         const rect = buttonRef.current.getBoundingClientRect();
         const dropdownHeight = 180; // Height of 4-item dropdown
         const viewportHeight = window.innerHeight;
-        const headerHeight = 80; // Account for sticky header
-        const tableFooterHeight = 70; // Account for "Showing X of Y parts" footer
-        const spaceBelow = viewportHeight - rect.bottom - tableFooterHeight;
-        const spaceAbove = rect.top - headerHeight; // Account for header
-        // Prefer bottom, but switch to top if not enough space below AND enough space above
-        if (spaceBelow < dropdownHeight && spaceAbove >= dropdownHeight) {
+        const spaceBelow = viewportHeight - rect.bottom - 20; // Add margin
+        const spaceAbove = rect.top - 20; // Add margin
+        
+        // Switch to top if there's more space above OR if we're in top third of viewport
+        const isInTopThird = rect.top < (viewportHeight / 3);
+        
+        if ((spaceBelow < dropdownHeight && spaceAbove >= dropdownHeight) || 
+            (isInTopThird && spaceAbove >= dropdownHeight)) {
           setDropdownPosition('top');
         } else {
           setDropdownPosition('bottom');
@@ -3172,12 +3174,14 @@ const TakumiGarage = () => {
         const actualItems = Math.min(projects.length + 1, maxVisibleItems); // +1 for "None" option
         const dropdownHeight = actualItems * itemHeight;
         const viewportHeight = window.innerHeight;
-        const headerHeight = 80; // Account for sticky header
-        const tableFooterHeight = 70; // Account for "Showing X of Y parts" footer
-        const spaceBelow = viewportHeight - rect.bottom - tableFooterHeight;
-        const spaceAbove = rect.top - headerHeight; // Account for header
-        // Prefer bottom, but switch to top if not enough space below AND enough space above
-        if (spaceBelow < dropdownHeight && spaceAbove >= dropdownHeight) {
+        const spaceBelow = viewportHeight - rect.bottom - 20; // Add margin
+        const spaceAbove = rect.top - 20; // Add margin
+        
+        // Switch to top if there's more space above OR if we're in top third of viewport
+        const isInTopThird = rect.top < (viewportHeight / 3);
+        
+        if ((spaceBelow < dropdownHeight && spaceAbove >= dropdownHeight) || 
+            (isInTopThird && spaceAbove >= dropdownHeight)) {
           setDropdownPosition('top');
         } else {
           setDropdownPosition('bottom');
