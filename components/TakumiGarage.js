@@ -5777,7 +5777,6 @@ const TakumiGarage = () => {
                   } ${darkMode ? 'bg-gray-800' : 'bg-slate-100'}`}
                   style={{
                     gridTemplateRows: 'auto 1fr auto',
-                    minHeight: '70vh',
                     maxHeight: '90vh'
                   }}
                   onClick={(e) => e.stopPropagation()}
@@ -5993,7 +5992,7 @@ const TakumiGarage = () => {
                   </div>
                   
                   {/* Footer - natural height only */}
-                  <div className={`p-6 border-t self-end ${
+                  <div className={`p-6 border-t ${
                     darkMode ? 'border-gray-700' : 'border-slate-200'
                   }`}>
                     <div className="flex gap-3">
