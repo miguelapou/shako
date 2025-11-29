@@ -4730,7 +4730,7 @@ const TakumiGarage = () => {
                   setStatusFilter(statusFilter === 'purchased' ? 'all' : 'purchased');
                   setDeliveredFilter('all');
                 }}
-                className={`rounded-lg shadow-md p-5 sm:p-6 lg:p-8 border-l-4 border-yellow-500 relative overflow-hidden cursor-pointer transition-all duration-200 hover:shadow-lg hover:scale-[1.02] ${
+                className={`rounded-lg shadow-md p-6 sm:p-7 lg:p-10 border-l-4 border-yellow-500 relative overflow-hidden cursor-pointer transition-all duration-200 hover:shadow-lg hover:scale-[1.02] ${
                   darkMode ? 'bg-gray-800 hover:bg-gray-750' : 'bg-white hover:bg-gray-50'
                 } ${statusFilter === 'purchased' ? 'ring-2 ring-yellow-500' : ''}`}
               >
@@ -4739,7 +4739,7 @@ const TakumiGarage = () => {
                   <p className={`text-xs sm:text-sm mb-1 sm:mb-2 lg:mb-3 ${
                     darkMode ? 'text-gray-400' : 'text-slate-600'
                   }`}>Ordered</p>
-                  <p className={`text-xl sm:text-2xl lg:text-2xl font-bold truncate ${
+                  <p className={`text-2xl sm:text-3xl lg:text-3xl font-bold truncate ${
                     darkMode ? 'text-gray-100' : 'text-gray-800'
                   }`}>{stats.purchased}</p>
                 </div>
@@ -4750,7 +4750,7 @@ const TakumiGarage = () => {
                   setStatusFilter(statusFilter === 'shipped' ? 'all' : 'shipped');
                   setDeliveredFilter('all');
                 }}
-                className={`rounded-lg shadow-md p-5 sm:p-6 lg:p-8 border-l-4 border-blue-500 relative overflow-hidden cursor-pointer transition-all duration-200 hover:shadow-lg hover:scale-[1.02] ${
+                className={`rounded-lg shadow-md p-6 sm:p-7 lg:p-10 border-l-4 border-blue-500 relative overflow-hidden cursor-pointer transition-all duration-200 hover:shadow-lg hover:scale-[1.02] ${
                   darkMode ? 'bg-gray-800 hover:bg-gray-750' : 'bg-white hover:bg-gray-50'
                 } ${statusFilter === 'shipped' ? 'ring-2 ring-blue-500' : ''}`}
               >
@@ -4759,7 +4759,7 @@ const TakumiGarage = () => {
                   <p className={`text-xs sm:text-sm mb-1 sm:mb-2 lg:mb-3 ${
                     darkMode ? 'text-gray-400' : 'text-slate-600'
                   }`}>Shipped</p>
-                  <p className={`text-xl sm:text-2xl lg:text-2xl font-bold truncate ${
+                  <p className={`text-2xl sm:text-3xl lg:text-3xl font-bold truncate ${
                     darkMode ? 'text-gray-100' : 'text-gray-800'
                   }`}>{stats.shipped}</p>
                 </div>
@@ -4774,7 +4774,7 @@ const TakumiGarage = () => {
                   );
                   setStatusFilter('all');
                 }}
-                className={`rounded-lg shadow-md p-5 sm:p-6 lg:p-8 border-l-4 ${
+                className={`rounded-lg shadow-md p-6 sm:p-7 lg:p-10 border-l-4 ${
                   deliveredFilter === 'hide' ? 'border-red-500' : 'border-green-500'
                 } relative overflow-hidden cursor-pointer transition-all duration-200 hover:shadow-lg hover:scale-[1.02] ${
                   deliveredFilter === 'hide' 
@@ -4789,14 +4789,14 @@ const TakumiGarage = () => {
                   <p className={`text-xs sm:text-sm mb-1 sm:mb-2 lg:mb-3 ${
                     darkMode ? 'text-gray-400' : 'text-slate-600'
                   }`}>Delivered</p>
-                  <p className={`text-xl sm:text-2xl lg:text-2xl font-bold truncate ${
+                  <p className={`text-2xl sm:text-3xl lg:text-3xl font-bold truncate ${
                     darkMode ? 'text-gray-100' : 'text-gray-800'
                   }`}>{stats.delivered}</p>
                 </div>
               </div>
 
               <div 
-                className={`rounded-lg shadow-md p-5 sm:p-6 lg:p-8 border-l-4 border-purple-500 relative overflow-hidden ${
+                className={`rounded-lg shadow-md p-6 sm:p-7 lg:p-10 border-l-4 border-purple-500 relative overflow-hidden ${
                   darkMode ? 'bg-gray-800' : 'bg-slate-100'
                 }`}
                 title={`Exact: $${stats.totalCost.toFixed(2)}`}
@@ -4806,7 +4806,7 @@ const TakumiGarage = () => {
                   <p className={`text-xs sm:text-sm mb-1 sm:mb-2 lg:mb-3 ${
                     darkMode ? 'text-gray-400' : 'text-slate-600'
                   }`}>Total Spent</p>
-                  <p className={`text-lg sm:text-2xl lg:text-2xl font-bold truncate ${
+                  <p className={`text-2xl sm:text-3xl lg:text-3xl font-bold truncate ${
                     darkMode ? 'text-gray-100' : 'text-gray-800'
                   }`}>${Math.round(stats.totalCost)}</p>
                 </div>
