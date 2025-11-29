@@ -7202,75 +7202,78 @@ const TakumiGarage = () => {
                         }`}>
                           Basic Info
                         </h3>
-                        <div className="grid grid-cols-2 gap-4">
-                          <div className="space-y-4">
-                            {viewingVehicle.year && (
-                              <div>
-                                <p className={`text-sm font-medium mb-1 ${
-                                  darkMode ? 'text-gray-400' : 'text-slate-600'
-                                }`}>Year</p>
-                                <p className={`text-base ${
-                                  darkMode ? 'text-gray-100' : 'text-slate-800'
-                                }`}>{viewingVehicle.year}</p>
-                              </div>
-                            )}
-                            {viewingVehicle.make && (
-                              <div>
-                                <p className={`text-sm font-medium mb-1 ${
-                                  darkMode ? 'text-gray-400' : 'text-slate-600'
-                                }`}>Make</p>
-                                <p className={`text-base ${
-                                  darkMode ? 'text-gray-100' : 'text-slate-800'
-                                }`}>{viewingVehicle.make}</p>
-                              </div>
-                            )}
-                            {viewingVehicle.name && (
-                              <div>
-                                <p className={`text-sm font-medium mb-1 ${
-                                  darkMode ? 'text-gray-400' : 'text-slate-600'
-                                }`}>Model</p>
-                                <p className={`text-base ${
-                                  darkMode ? 'text-gray-100' : 'text-slate-800'
-                                }`}>{viewingVehicle.name}</p>
-                              </div>
-                            )}
-                          </div>
-                          <div className="space-y-4">
-                            {viewingVehicle.license_plate && (
-                              <div>
-                                <p className={`text-sm font-medium mb-2 ${
-                                  darkMode ? 'text-gray-400' : 'text-slate-600'
-                                }`}>License Plate</p>
-                                <span className={`inline-block px-3 py-1 rounded text-sm font-medium ${
-                                  darkMode ? 'bg-blue-600 text-blue-100' : 'bg-blue-100 text-blue-800'
-                                }`}>
-                                  {viewingVehicle.license_plate}
-                                </span>
-                              </div>
-                            )}
-                            {viewingVehicle.vin && (
-                              <div>
-                                <p className={`text-sm font-medium mb-2 ${
-                                  darkMode ? 'text-gray-400' : 'text-slate-600'
-                                }`}>VIN</p>
-                                <span className={`inline-block px-3 py-1 rounded-full text-xs font-mono ${
-                                  darkMode ? 'bg-gray-800 text-gray-300' : 'bg-gray-200 text-gray-900'
-                                }`}>
-                                  {viewingVehicle.vin}
-                                </span>
-                              </div>
-                            )}
-                            {viewingVehicle.insurance_policy && (
-                              <div>
-                                <p className={`text-sm font-medium mb-1 ${
-                                  darkMode ? 'text-gray-400' : 'text-slate-600'
-                                }`}>Insurance Policy</p>
-                                <p className={`text-base ${
-                                  darkMode ? 'text-gray-100' : 'text-slate-800'
-                                }`}>{viewingVehicle.insurance_policy}</p>
-                              </div>
-                            )}
-                          </div>
+                        <div className="grid grid-cols-2 gap-x-6 gap-y-4">
+                          {/* Row 1: Year */}
+                          {viewingVehicle.year && (
+                            <div>
+                              <p className={`text-sm font-medium mb-1 ${
+                                darkMode ? 'text-gray-400' : 'text-slate-600'
+                              }`}>Year</p>
+                              <p className={`text-base ${
+                                darkMode ? 'text-gray-100' : 'text-slate-800'
+                              }`}>{viewingVehicle.year}</p>
+                            </div>
+                          )}
+                          {/* Row 1: License Plate */}
+                          {viewingVehicle.license_plate && (
+                            <div>
+                              <p className={`text-sm font-medium mb-2 ${
+                                darkMode ? 'text-gray-400' : 'text-slate-600'
+                              }`}>License Plate</p>
+                              <span className={`inline-block px-3 py-1 rounded text-sm font-medium ${
+                                darkMode ? 'bg-blue-600 text-blue-100' : 'bg-blue-100 text-blue-800'
+                              }`}>
+                                {viewingVehicle.license_plate}
+                              </span>
+                            </div>
+                          )}
+                          {/* Row 2: Make */}
+                          {viewingVehicle.make && (
+                            <div>
+                              <p className={`text-sm font-medium mb-1 ${
+                                darkMode ? 'text-gray-400' : 'text-slate-600'
+                              }`}>Make</p>
+                              <p className={`text-base ${
+                                darkMode ? 'text-gray-100' : 'text-slate-800'
+                              }`}>{viewingVehicle.make}</p>
+                            </div>
+                          )}
+                          {/* Row 2: VIN */}
+                          {viewingVehicle.vin && (
+                            <div>
+                              <p className={`text-sm font-medium mb-2 ${
+                                darkMode ? 'text-gray-400' : 'text-slate-600'
+                              }`}>VIN</p>
+                              <span className={`inline-block px-3 py-1 rounded-full text-xs font-mono ${
+                                darkMode ? 'bg-gray-800 text-gray-300' : 'bg-gray-200 text-gray-900'
+                              }`}>
+                                {viewingVehicle.vin}
+                              </span>
+                            </div>
+                          )}
+                          {/* Row 3: Model */}
+                          {viewingVehicle.name && (
+                            <div>
+                              <p className={`text-sm font-medium mb-1 ${
+                                darkMode ? 'text-gray-400' : 'text-slate-600'
+                              }`}>Model</p>
+                              <p className={`text-base ${
+                                darkMode ? 'text-gray-100' : 'text-slate-800'
+                              }`}>{viewingVehicle.name}</p>
+                            </div>
+                          )}
+                          {/* Row 3: Insurance Policy */}
+                          {viewingVehicle.insurance_policy && (
+                            <div>
+                              <p className={`text-sm font-medium mb-1 ${
+                                darkMode ? 'text-gray-400' : 'text-slate-600'
+                              }`}>Insurance Policy</p>
+                              <p className={`text-base ${
+                                darkMode ? 'text-gray-100' : 'text-slate-800'
+                              }`}>{viewingVehicle.insurance_policy}</p>
+                            </div>
+                          )}
+                        </div>
                           {/* Total Spent on Linked Projects */}
                           {(() => {
                             const vehicleProjects = projects.filter(p => p.vehicle_id === viewingVehicle.id);
