@@ -4730,7 +4730,7 @@ const TakumiGarage = () => {
                   setStatusFilter(statusFilter === 'purchased' ? 'all' : 'purchased');
                   setDeliveredFilter('all');
                 }}
-                className={`rounded-lg shadow-md p-3 sm:p-4 lg:p-4 border-l-4 border-yellow-500 relative overflow-hidden cursor-pointer transition-all duration-200 hover:shadow-lg hover:scale-[1.02] ${
+                className={`rounded-lg shadow-md p-4 sm:p-5 lg:p-6 border-l-4 border-yellow-500 relative overflow-hidden cursor-pointer transition-all duration-200 hover:shadow-lg hover:scale-[1.02] ${
                   darkMode ? 'bg-gray-800 hover:bg-gray-750' : 'bg-white hover:bg-gray-50'
                 } ${statusFilter === 'purchased' ? 'ring-2 ring-yellow-500' : ''}`}
               >
@@ -4750,7 +4750,7 @@ const TakumiGarage = () => {
                   setStatusFilter(statusFilter === 'shipped' ? 'all' : 'shipped');
                   setDeliveredFilter('all');
                 }}
-                className={`rounded-lg shadow-md p-3 sm:p-4 lg:p-4 border-l-4 border-blue-500 relative overflow-hidden cursor-pointer transition-all duration-200 hover:shadow-lg hover:scale-[1.02] ${
+                className={`rounded-lg shadow-md p-4 sm:p-5 lg:p-6 border-l-4 border-blue-500 relative overflow-hidden cursor-pointer transition-all duration-200 hover:shadow-lg hover:scale-[1.02] ${
                   darkMode ? 'bg-gray-800 hover:bg-gray-750' : 'bg-white hover:bg-gray-50'
                 } ${statusFilter === 'shipped' ? 'ring-2 ring-blue-500' : ''}`}
               >
@@ -4774,7 +4774,7 @@ const TakumiGarage = () => {
                   );
                   setStatusFilter('all');
                 }}
-                className={`rounded-lg shadow-md p-3 sm:p-4 lg:p-4 border-l-4 ${
+                className={`rounded-lg shadow-md p-4 sm:p-5 lg:p-6 border-l-4 ${
                   deliveredFilter === 'hide' ? 'border-red-500' : 'border-green-500'
                 } relative overflow-hidden cursor-pointer transition-all duration-200 hover:shadow-lg hover:scale-[1.02] ${
                   deliveredFilter === 'hide' 
@@ -4796,7 +4796,7 @@ const TakumiGarage = () => {
               </div>
 
               <div 
-                className={`rounded-lg shadow-md p-3 sm:p-4 lg:p-4 border-l-4 border-purple-500 relative overflow-hidden ${
+                className={`rounded-lg shadow-md p-4 sm:p-5 lg:p-6 border-l-4 border-purple-500 relative overflow-hidden ${
                   darkMode ? 'bg-gray-800' : 'bg-slate-100'
                 }`}
                 title={`Exact: $${stats.totalCost.toFixed(2)}`}
