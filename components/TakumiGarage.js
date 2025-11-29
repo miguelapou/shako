@@ -4522,7 +4522,7 @@ const TakumiGarage = () => {
                                   type="text"
                                   value={editingVendor.newName}
                                   onChange={(e) => setEditingVendor({ ...editingVendor, newName: e.target.value })}
-                                  className={`flex-1 px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
+                                  className={`w-1/2 px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
                                     darkMode 
                                       ? 'bg-gray-800 border-gray-600 text-gray-100' 
                                       : 'bg-slate-50 border-slate-300 text-slate-800'
@@ -6670,12 +6670,12 @@ const TakumiGarage = () => {
                             <label className={`block text-sm font-medium mb-2 ${
                               darkMode ? 'text-gray-300' : 'text-slate-700'
                             }`}>
-                              Air Filter
+                              Oil Type
                             </label>
                             <input
                               type="text"
-                              value={newVehicle.air_filter}
-                              onChange={(e) => setNewVehicle({ ...newVehicle, air_filter: e.target.value })}
+                              value={newVehicle.oil_type}
+                              onChange={(e) => setNewVehicle({ ...newVehicle, oil_type: e.target.value })}
                               className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
                                 darkMode 
                                   ? 'bg-gray-700 border-gray-600 text-gray-100 placeholder-gray-400' 
@@ -6742,12 +6742,12 @@ const TakumiGarage = () => {
                             <label className={`block text-sm font-medium mb-2 ${
                               darkMode ? 'text-gray-300' : 'text-slate-700'
                             }`}>
-                              Oil Type
+                              Air Filter
                             </label>
                             <input
                               type="text"
-                              value={newVehicle.oil_type}
-                              onChange={(e) => setNewVehicle({ ...newVehicle, oil_type: e.target.value })}
+                              value={newVehicle.air_filter}
+                              onChange={(e) => setNewVehicle({ ...newVehicle, air_filter: e.target.value })}
                               className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
                                 darkMode 
                                   ? 'bg-gray-700 border-gray-600 text-gray-100 placeholder-gray-400' 
@@ -7144,6 +7144,7 @@ const TakumiGarage = () => {
                       </h3>
                       {(viewingVehicle.fuel_filter || viewingVehicle.air_filter || viewingVehicle.oil_filter || viewingVehicle.oil_type || viewingVehicle.oil_capacity || viewingVehicle.oil_brand || viewingVehicle.drain_plug || viewingVehicle.battery) ? (
                         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                          {/* Row 1: Fuel Filter, Air Filter, Oil Filter, Oil Type */}
                           {viewingVehicle.fuel_filter && (
                             <div>
                               <p className={`text-sm font-medium mb-1 ${
@@ -7184,6 +7185,28 @@ const TakumiGarage = () => {
                               }`}>{viewingVehicle.oil_type}</p>
                             </div>
                           )}
+                          
+                          {/* Row 2: Battery Type, Drain Plug, Oil Capacity, Oil Brand */}
+                          {viewingVehicle.battery && (
+                            <div>
+                              <p className={`text-sm font-medium mb-1 ${
+                                darkMode ? 'text-gray-400' : 'text-slate-600'
+                              }`}>Battery Type</p>
+                              <p className={`text-base ${
+                                darkMode ? 'text-gray-100' : 'text-slate-800'
+                              }`}>{viewingVehicle.battery}</p>
+                            </div>
+                          )}
+                          {viewingVehicle.drain_plug && (
+                            <div>
+                              <p className={`text-sm font-medium mb-1 ${
+                                darkMode ? 'text-gray-400' : 'text-slate-600'
+                              }`}>Drain Plug</p>
+                              <p className={`text-base ${
+                                darkMode ? 'text-gray-100' : 'text-slate-800'
+                              }`}>{viewingVehicle.drain_plug}</p>
+                            </div>
+                          )}
                           {viewingVehicle.oil_capacity && (
                             <div>
                               <p className={`text-sm font-medium mb-1 ${
@@ -7202,26 +7225,6 @@ const TakumiGarage = () => {
                               <p className={`text-base ${
                                 darkMode ? 'text-gray-100' : 'text-slate-800'
                               }`}>{viewingVehicle.oil_brand}</p>
-                            </div>
-                          )}
-                          {viewingVehicle.drain_plug && (
-                            <div>
-                              <p className={`text-sm font-medium mb-1 ${
-                                darkMode ? 'text-gray-400' : 'text-slate-600'
-                              }`}>Drain Plug</p>
-                              <p className={`text-base ${
-                                darkMode ? 'text-gray-100' : 'text-slate-800'
-                              }`}>{viewingVehicle.drain_plug}</p>
-                            </div>
-                          )}
-                          {viewingVehicle.battery && (
-                            <div>
-                              <p className={`text-sm font-medium mb-1 ${
-                                darkMode ? 'text-gray-400' : 'text-slate-600'
-                              }`}>Battery Type</p>
-                              <p className={`text-base ${
-                                darkMode ? 'text-gray-100' : 'text-slate-800'
-                              }`}>{viewingVehicle.battery}</p>
                             </div>
                           )}
                         </div>
