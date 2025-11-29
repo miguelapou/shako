@@ -4661,7 +4661,7 @@ const TakumiGarage = () => {
           <div className="slide-in-left">
           <>
         {/* Statistics and Cost Breakdown - Side by Side */}
-        <div className="flex flex-col md:grid md:grid-cols-[3fr_5fr] gap-6 mb-6">
+        <div className="flex flex-col md:grid md:grid-cols-2 gap-6 mb-6">
           {/* Statistics Cards - order-1 on mobile, contains search on desktop */}
           <div className="space-y-4 order-1 md:order-none">
             <div className="grid grid-cols-2 gap-3 sm:gap-4">
@@ -4766,8 +4766,8 @@ const TakumiGarage = () => {
 
           </div>
 
-          {/* Cost Breakdown - order-2 on mobile, half width on medium+ */}
-          <div className="order-2 md:order-none md:w-1/2">
+          {/* Cost Breakdown - order-2 on mobile, full column width on medium+ */}
+          <div className="order-2 md:order-none">
             <div className={`rounded-lg shadow-md p-4 sm:p-6 ${
               darkMode ? 'bg-gray-800' : 'bg-slate-100'
             }`}>
