@@ -1704,6 +1704,7 @@ const TakumiGarage = () => {
   // Refs for tab underline animation
   const tabRefs = useRef({});
   const [underlineStyle, setUnderlineStyle] = useState({ left: 0, width: 0 });
+  const [hoverTab, setHoverTab] = useState(null);
 
   // Vehicle modal states
   const [showAddVehicleModal, setShowAddVehicleModal] = useState(false);
@@ -3450,7 +3451,9 @@ const TakumiGarage = () => {
             <button
               ref={(el) => (tabRefs.current['vehicles'] = el)}
               onClick={() => handleTabChange('vehicles')}
-              className={`flex items-center justify-center sm:justify-start gap-2 flex-1 sm:flex-initial px-3 sm:px-6 py-3 font-medium transition-all relative ${
+              onMouseEnter={() => setHoverTab('vehicles')}
+              onMouseLeave={() => setHoverTab(null)}
+              className={`flex items-center justify-center sm:justify-start gap-2 flex-1 sm:flex-initial px-3 sm:px-6 py-3 font-medium transition-all relative z-10 ${
                 activeTab === 'vehicles'
                   ? darkMode
                     ? 'text-blue-400'
@@ -3466,7 +3469,9 @@ const TakumiGarage = () => {
             <button
               ref={(el) => (tabRefs.current['projects'] = el)}
               onClick={() => handleTabChange('projects')}
-              className={`flex items-center justify-center sm:justify-start gap-2 flex-1 sm:flex-initial px-3 sm:px-6 py-3 font-medium transition-all relative ${
+              onMouseEnter={() => setHoverTab('projects')}
+              onMouseLeave={() => setHoverTab(null)}
+              className={`flex items-center justify-center sm:justify-start gap-2 flex-1 sm:flex-initial px-3 sm:px-6 py-3 font-medium transition-all relative z-10 ${
                 activeTab === 'projects'
                   ? darkMode
                     ? 'text-blue-400'
@@ -3482,7 +3487,9 @@ const TakumiGarage = () => {
             <button
               ref={(el) => (tabRefs.current['parts'] = el)}
               onClick={() => handleTabChange('parts')}
-              className={`flex items-center justify-center sm:justify-start gap-2 flex-1 sm:flex-initial px-3 sm:px-6 py-3 font-medium transition-all relative ${
+              onMouseEnter={() => setHoverTab('parts')}
+              onMouseLeave={() => setHoverTab(null)}
+              className={`flex items-center justify-center sm:justify-start gap-2 flex-1 sm:flex-initial px-3 sm:px-6 py-3 font-medium transition-all relative z-10 ${
                 activeTab === 'parts'
                   ? darkMode
                     ? 'text-blue-400'
@@ -3495,9 +3502,21 @@ const TakumiGarage = () => {
               <Package className="w-5 h-5" />
               <span className="text-sm sm:text-base">Parts</span>
             </button>
+            {/* Animated hover background */}
+            {hoverTab && tabRefs.current[hoverTab] && (
+              <div
+                className={`absolute top-0 bottom-0 rounded-t-lg transition-all duration-300 ease-out ${
+                  darkMode ? 'bg-gray-700/50' : 'bg-slate-200/50'
+                }`}
+                style={{
+                  left: `${tabRefs.current[hoverTab].offsetLeft}px`,
+                  width: `${tabRefs.current[hoverTab].offsetWidth}px`
+                }}
+              />
+            )}
             {/* Animated underline */}
             <div
-              className={`absolute bottom-0 h-0.5 transition-all duration-300 ease-out ${
+              className={`absolute bottom-0 h-0.5 transition-all duration-300 ease-out z-10 ${
                 darkMode ? 'bg-blue-400' : 'bg-blue-600'
               }`}
               style={{
