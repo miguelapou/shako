@@ -2248,6 +2248,7 @@ const TakumiGarage = () => {
   };
 
   const [searchTerm, setSearchTerm] = useState('');
+  const [deliveredFilter, setDeliveredFilter] = useState('all'); // 'all', 'only', 'hide'
   const [statusFilter, setStatusFilter] = useState('all');
   const [vendorFilter, setVendorFilter] = useState('all');
   const [sortBy, setSortBy] = useState('status');
@@ -2828,7 +2829,11 @@ const TakumiGarage = () => {
                              (statusFilter === 'purchased' && part.purchased && !part.shipped) ||
                              (statusFilter === 'pending' && !part.purchased);
         const matchesVendor = vendorFilter === 'all' || part.vendor === vendorFilter;
-        return matchesSearch && matchesStatus && matchesVendor;
+        const matchesDeliveredFilter = 
+          deliveredFilter === 'all' ? true :
+          deliveredFilter === 'only' ? part.delivered :
+          deliveredFilter === 'hide' ? !part.delivered : true;
+        return matchesSearch && matchesStatus && matchesVendor && matchesDeliveredFilter;
       })
       .sort((a, b) => {
         let aVal, bVal;
@@ -2872,7 +2877,7 @@ const TakumiGarage = () => {
         }
       });
     return sorted;
-  }, [parts, searchTerm, statusFilter, vendorFilter, sortBy, sortOrder, projects, vehicles]);
+  }, [parts, searchTerm, statusFilter, vendorFilter, sortBy, sortOrder, projects, vehicles, deliveredFilter]);
 
   // Get unique vendors from existing parts for the dropdown
   const uniqueVendors = useMemo(() => {
@@ -4717,12 +4722,24 @@ const TakumiGarage = () => {
               </div>
 
               <div 
-                onClick={() => setStatusFilter(statusFilter === 'delivered' ? 'all' : 'delivered')}
-                className={`rounded-lg shadow-md p-3 sm:p-4 lg:p-4 border-l-4 border-green-500 relative overflow-hidden cursor-pointer transition-all duration-200 hover:shadow-lg hover:scale-[1.02] ${
-                  darkMode ? 'bg-gray-800 hover:bg-gray-750' : 'bg-white hover:bg-gray-50'
-                } ${statusFilter === 'delivered' ? 'ring-2 ring-green-500 ring-offset-2' : ''}`}
+                onClick={() => {
+                  // Cycle through: all -> only -> hide -> all
+                  setDeliveredFilter(prev => 
+                    prev === 'all' ? 'only' : 
+                    prev === 'only' ? 'hide' : 'all'
+                  );
+                }}
+                className={`rounded-lg shadow-md p-3 sm:p-4 lg:p-4 border-l-4 ${
+                  deliveredFilter === 'hide' ? 'border-red-500' : 'border-green-500'
+                } relative overflow-hidden cursor-pointer transition-all duration-200 hover:shadow-lg hover:scale-[1.02] ${
+                  deliveredFilter === 'hide' 
+                    ? (darkMode ? 'bg-gray-900' : 'bg-gray-300') 
+                    : (darkMode ? 'bg-gray-800 hover:bg-gray-750' : 'bg-white hover:bg-gray-50')
+                } ${deliveredFilter !== 'all' ? `ring-2 ${deliveredFilter === 'hide' ? 'ring-red-500' : 'ring-green-500'} ring-offset-2` : ''}`}
               >
-                <CheckCircle className="w-6 h-6 sm:w-8 sm:h-8 text-green-500 opacity-20 absolute top-2 sm:top-4 right-2 sm:right-4" />
+                <CheckCircle className={`w-6 h-6 sm:w-8 sm:h-8 ${
+                  deliveredFilter === 'hide' ? 'text-red-500' : 'text-green-500'
+                } opacity-20 absolute top-2 sm:top-4 right-2 sm:right-4`} />
                 <div>
                   <p className={`text-xs sm:text-sm mb-1 sm:mb-2 lg:mb-3 ${
                     darkMode ? 'text-gray-400' : 'text-slate-600'
@@ -4785,48 +4802,48 @@ const TakumiGarage = () => {
 
           {/* Cost Breakdown - order-2 on mobile, full column width on medium+ */}
           <div className="order-2 md:order-none">
-            <div className={`rounded-lg shadow-md p-3 sm:p-6 ${
+            <div className={`rounded-lg shadow-md p-3 md:p-4 h-full flex flex-col ${
               darkMode ? 'bg-gray-800' : 'bg-slate-100'
             }`}>
-            <h3 className={`text-base sm:text-lg font-semibold mb-2 sm:mb-4 flex items-center gap-2 ${
+            <h3 className={`text-base font-semibold mb-2 md:mb-3 flex items-center gap-2 ${
               darkMode ? 'text-gray-100' : 'text-gray-800'
             }`}>
-              <TrendingUp className="w-4 h-4 sm:w-5 sm:h-5" />
+              <TrendingUp className="w-4 h-4 md:w-5 md:h-5" />
               Cost Breakdown
             </h3>
-            <div className="grid grid-cols-1 gap-2 sm:gap-4">
-              <div className={`flex items-center justify-between py-1.5 sm:py-2 border-b ${
+            <div className="grid grid-cols-1 gap-2 md:gap-2.5 flex-1">
+              <div className={`flex items-center justify-between py-1.5 md:py-2 border-b ${
                 darkMode ? 'border-gray-700' : 'border-gray-100'
               }`}>
-                <p className={`text-xs sm:text-sm ${
+                <p className={`text-xs md:text-sm ${
                   darkMode ? 'text-gray-400' : 'text-slate-600'
                 }`}>Parts</p>
-                <p className={`text-base sm:text-xl font-semibold truncate ${
+                <p className={`text-base md:text-lg font-semibold truncate ${
                   darkMode ? 'text-gray-100' : 'text-gray-800'
                 }`}>${stats.totalPrice.toFixed(2)}</p>
               </div>
-              <div className={`flex items-center justify-between py-1.5 sm:py-2 border-b ${
+              <div className={`flex items-center justify-between py-1.5 md:py-2 border-b ${
                 darkMode ? 'border-gray-700' : 'border-gray-100'
               }`}>
-                <p className={`text-xs sm:text-sm ${
+                <p className={`text-xs md:text-sm ${
                   darkMode ? 'text-gray-400' : 'text-slate-600'
                 }`}>Shipping</p>
-                <p className={`text-base sm:text-xl font-semibold truncate ${
+                <p className={`text-base md:text-lg font-semibold truncate ${
                   darkMode ? 'text-gray-100' : 'text-gray-800'
                 }`}>${stats.totalShipping.toFixed(2)}</p>
               </div>
-              <div className={`flex items-center justify-between py-1.5 sm:py-2 border-b ${
+              <div className={`flex items-center justify-between py-1.5 md:py-2 border-b ${
                 darkMode ? 'border-gray-700' : 'border-gray-100'
               }`}>
-                <p className={`text-xs sm:text-sm ${
+                <p className={`text-xs md:text-sm ${
                   darkMode ? 'text-gray-400' : 'text-slate-600'
                 }`}>Import Duties</p>
-                <p className={`text-base sm:text-xl font-semibold truncate ${
+                <p className={`text-base md:text-lg font-semibold truncate ${
                   darkMode ? 'text-gray-100' : 'text-gray-800'
                 }`}>${stats.totalDuties.toFixed(2)}</p>
               </div>
-              <div className="pt-1.5 sm:pt-2">
-                <p className={`text-sm mb-1.5 sm:mb-2 ${
+              <div className="pt-1.5 md:pt-2 mt-auto">
+                <p className={`text-xs md:text-sm mb-1.5 ${
                   darkMode ? 'text-gray-400' : 'text-slate-600'
                 }`}>Progress</p>
                 <div className="flex items-center gap-2">
@@ -4838,7 +4855,7 @@ const TakumiGarage = () => {
                       style={{ width: `${(stats.delivered / stats.total) * 100}%` }}
                     />
                   </div>
-                  <span className={`text-sm font-semibold ${
+                  <span className={`text-xs md:text-sm font-semibold ${
                     darkMode ? 'text-gray-300' : 'text-slate-700'
                   }`}>
                     {Math.round((stats.delivered / stats.total) * 100)}%
@@ -4849,7 +4866,7 @@ const TakumiGarage = () => {
           </div>
           </div>
 
-          {/* Search Box - Mobile only (order-3, shows after cost breakdown) */}
+          {/* Search Box - Mobile only */}
           <div className={`md:hidden rounded-lg shadow-md p-3 order-3 ${
             darkMode ? 'bg-gray-800' : 'bg-slate-100'
           }`}>
