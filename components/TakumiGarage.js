@@ -3070,7 +3070,7 @@ const TakumiGarage = () => {
               }}
             />
             <div 
-              className={`absolute left-0 ${dropdownPosition === 'top' ? 'bottom-full mb-1' : 'top-full mt-1'} rounded-lg shadow-lg border py-1 z-20 min-w-[140px] ${
+              className={`absolute left-0 ${dropdownPosition === 'top' ? 'bottom-full mb-1' : 'top-full mt-1'} rounded-lg shadow-lg border py-1 z-50 min-w-[140px] ${
                 darkMode ? 'bg-gray-800 border-gray-600' : 'bg-slate-50 border-slate-200'
               }`}
             >
@@ -3198,7 +3198,7 @@ const TakumiGarage = () => {
               }}
             />
             <div 
-              className={`absolute left-0 ${dropdownPosition === 'top' ? 'bottom-full mb-1' : 'top-full mt-1'} rounded-lg shadow-lg border py-1 z-20 min-w-[180px] max-h-60 overflow-y-auto scrollbar-hide ${
+              className={`absolute right-0 md:left-0 md:right-auto ${dropdownPosition === 'top' ? 'bottom-full mb-1' : 'top-full mt-1'} rounded-lg shadow-lg border py-1 z-50 min-w-[180px] max-h-60 overflow-y-auto scrollbar-hide ${
                 darkMode ? 'bg-gray-800 border-gray-600' : 'bg-slate-50 border-slate-200'
               }`}
               style={{
@@ -4775,7 +4775,7 @@ const TakumiGarage = () => {
               }`}>
                 <p className={`text-xs sm:text-sm ${
                   darkMode ? 'text-gray-400' : 'text-slate-600'
-                }`}>Parts Cost</p>
+                }`}>Parts</p>
                 <p className={`text-base sm:text-xl font-semibold truncate ${
                   darkMode ? 'text-gray-100' : 'text-gray-800'
                 }`}>${stats.totalPrice.toFixed(2)}</p>
@@ -4861,10 +4861,10 @@ const TakumiGarage = () => {
         {/* Parts Table */}
         {/* Desktop Table View - Hidden on mobile */}
         {filteredParts.length > 0 ? (
-        <div className={`hidden lg:block rounded-lg shadow-md overflow-hidden ${
+        <div className={`hidden lg:block rounded-lg shadow-md ${
           darkMode ? 'bg-gray-800' : 'bg-slate-100'
         }`}>
-          <div className="overflow-x-auto">
+          <div className="overflow-x-auto overflow-y-visible rounded-lg">
             <table className={`w-full ${isSorting ? 'table-sorting' : ''}`}>
               <thead className={`border-b ${
                 darkMode ? 'bg-gray-700 border-gray-600' : 'bg-slate-100 border-slate-200'
