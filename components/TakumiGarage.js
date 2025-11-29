@@ -4398,7 +4398,6 @@ const TakumiGarage = () => {
                         </div>
                       </div>
                     </div>
-                  </div>
                 </div>
               </div>
               )}
