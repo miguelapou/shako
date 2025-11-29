@@ -7271,9 +7271,6 @@ const TakumiGarage = () => {
                               </div>
                             )}
                           </div>
-                              }`}>{viewingVehicle.insurance_policy}</p>
-                            </div>
-                          )}
                           {/* Total Spent on Linked Projects */}
                           {(() => {
                             const vehicleProjects = projects.filter(p => p.vehicle_id === viewingVehicle.id);
