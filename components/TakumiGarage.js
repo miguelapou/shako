@@ -432,9 +432,7 @@ const ProjectDetailView = ({
               <p className={`text-xs mb-1 ${secondaryText(darkMode)}`}>
                 Priority</p>
               <p className={`text-lg font-bold ${priorityColors[project.priority]}`}>
-                {project.priority === 'not_set' 
-                  ? 'Not set' 
-                  : project.priority?.charAt(0).toUpperCase() + project.priority?.slice(1)}
+                {project.priority?.replace(/_/g, ' ').toUpperCase()}
               </p>
             </div>
             <div>
@@ -5646,9 +5644,7 @@ const TakumiGarage = () => {
                           Priority:
                         </span>
                         <span className={`text-sm font-bold ${priorityColors[project.priority]}`}>
-                          {project.priority === 'not_set' 
-                            ? 'Not set' 
-                            : project.priority?.charAt(0).toUpperCase() + project.priority?.slice(1)}
+                          {project.priority?.replace(/_/g, ' ').toUpperCase()}
                         </span>
                       </div>
                     </div>
