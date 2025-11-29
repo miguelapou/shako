@@ -4283,8 +4283,8 @@ const TakumiGarage = () => {
 
                   {/* RIGHT COLUMN - Price fields */}
                   <div className="order-2 md:order-none flex flex-col gap-4">
-                    {/* Empty space to align with Part Name on left */}
-                    <div className="hidden md:block"></div>
+                    {/* Empty space to align with Part Name on left - matches label + input height */}
+                    <div className="hidden md:block h-[74px]"></div>
                     
                     {/* Price */}
                     <div>
