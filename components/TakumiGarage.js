@@ -4850,48 +4850,48 @@ const TakumiGarage = () => {
 
           {/* Cost Breakdown - order-2 on mobile, full column width on medium+ */}
           <div className="order-2 md:order-none">
-            <div className={`rounded-lg shadow-md p-3 md:p-4 h-full flex flex-col ${
+            <div className={`rounded-lg shadow-md p-3 h-full flex flex-col ${
               darkMode ? 'bg-gray-800' : 'bg-slate-100'
             }`}>
-            <h3 className={`text-base font-semibold mb-2 md:mb-3 flex items-center gap-2 ${
+            <h3 className={`text-sm md:text-base font-semibold mb-2 flex items-center gap-2 ${
               darkMode ? 'text-gray-100' : 'text-gray-800'
             }`}>
-              <TrendingUp className="w-4 h-4 md:w-5 md:h-5" />
+              <TrendingUp className="w-4 h-4" />
               Cost Breakdown
             </h3>
-            <div className="grid grid-cols-1 gap-2 md:gap-2.5 flex-1">
-              <div className={`flex items-center justify-between py-1.5 md:py-2 border-b ${
+            <div className="grid grid-cols-1 gap-1 md:gap-1.5 flex-1">
+              <div className={`flex items-center justify-between py-1 md:py-1.5 border-b ${
                 darkMode ? 'border-gray-700' : 'border-gray-100'
               }`}>
-                <p className={`text-xs md:text-sm ${
+                <p className={`text-xs ${
                   darkMode ? 'text-gray-400' : 'text-slate-600'
                 }`}>Parts</p>
-                <p className={`text-base md:text-lg font-semibold truncate ${
+                <p className={`text-sm md:text-base font-semibold truncate ${
                   darkMode ? 'text-gray-100' : 'text-gray-800'
                 }`}>${stats.totalPrice.toFixed(2)}</p>
               </div>
-              <div className={`flex items-center justify-between py-1.5 md:py-2 border-b ${
+              <div className={`flex items-center justify-between py-1 md:py-1.5 border-b ${
                 darkMode ? 'border-gray-700' : 'border-gray-100'
               }`}>
-                <p className={`text-xs md:text-sm ${
+                <p className={`text-xs ${
                   darkMode ? 'text-gray-400' : 'text-slate-600'
                 }`}>Shipping</p>
-                <p className={`text-base md:text-lg font-semibold truncate ${
+                <p className={`text-sm md:text-base font-semibold truncate ${
                   darkMode ? 'text-gray-100' : 'text-gray-800'
                 }`}>${stats.totalShipping.toFixed(2)}</p>
               </div>
-              <div className={`flex items-center justify-between py-1.5 md:py-2 border-b ${
+              <div className={`flex items-center justify-between py-1 md:py-1.5 border-b ${
                 darkMode ? 'border-gray-700' : 'border-gray-100'
               }`}>
-                <p className={`text-xs md:text-sm ${
+                <p className={`text-xs ${
                   darkMode ? 'text-gray-400' : 'text-slate-600'
                 }`}>Import Duties</p>
-                <p className={`text-base md:text-lg font-semibold truncate ${
+                <p className={`text-sm md:text-base font-semibold truncate ${
                   darkMode ? 'text-gray-100' : 'text-gray-800'
                 }`}>${stats.totalDuties.toFixed(2)}</p>
               </div>
-              <div className="pt-1.5 md:pt-2 mt-auto">
-                <p className={`text-xs md:text-sm mb-1.5 ${
+              <div className="pt-1 md:pt-1.5 mt-auto">
+                <p className={`text-xs mb-1 ${
                   darkMode ? 'text-gray-400' : 'text-slate-600'
                 }`}>Progress</p>
                 <div className="flex items-center gap-2">
@@ -4903,7 +4903,7 @@ const TakumiGarage = () => {
                       style={{ width: `${(stats.delivered / stats.total) * 100}%` }}
                     />
                   </div>
-                  <span className={`text-xs md:text-sm font-semibold ${
+                  <span className={`text-xs font-semibold ${
                     darkMode ? 'text-gray-300' : 'text-slate-700'
                   }`}>
                     {Math.round((stats.delivered / stats.total) * 100)}%
