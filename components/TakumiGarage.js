@@ -3038,9 +3038,10 @@ const TakumiGarage = () => {
         const rect = buttonRef.current.getBoundingClientRect();
         const dropdownHeight = 180; // Height of 4-item dropdown
         const viewportHeight = window.innerHeight;
+        const headerHeight = 80; // Account for sticky header
         const tableFooterHeight = 70; // Account for "Showing X of Y parts" footer
-        const spaceBelow = viewportHeight - rect.bottom - tableFooterHeight; // Include footer in calculation
-        const spaceAbove = rect.top - 10; // 10px margin
+        const spaceBelow = viewportHeight - rect.bottom - tableFooterHeight;
+        const spaceAbove = rect.top - headerHeight; // Account for header
         // Prefer bottom, but switch to top if not enough space below AND enough space above
         if (spaceBelow < dropdownHeight && spaceAbove >= dropdownHeight) {
           setDropdownPosition('top');
@@ -3171,9 +3172,10 @@ const TakumiGarage = () => {
         const actualItems = Math.min(projects.length + 1, maxVisibleItems); // +1 for "None" option
         const dropdownHeight = actualItems * itemHeight;
         const viewportHeight = window.innerHeight;
+        const headerHeight = 80; // Account for sticky header
         const tableFooterHeight = 70; // Account for "Showing X of Y parts" footer
-        const spaceBelow = viewportHeight - rect.bottom - tableFooterHeight; // Include footer in calculation
-        const spaceAbove = rect.top - 10; // 10px margin
+        const spaceBelow = viewportHeight - rect.bottom - tableFooterHeight;
+        const spaceAbove = rect.top - headerHeight; // Account for header
         // Prefer bottom, but switch to top if not enough space below AND enough space above
         if (spaceBelow < dropdownHeight && spaceAbove >= dropdownHeight) {
           setDropdownPosition('top');
@@ -4676,7 +4678,7 @@ const TakumiGarage = () => {
                   <p className={`text-xs sm:text-sm mb-1 sm:mb-2 lg:mb-3 ${
                     darkMode ? 'text-gray-400' : 'text-slate-600'
                   }`}>Order Placed</p>
-                  <p className={`text-xl sm:text-2xl lg:text-3xl font-bold truncate ${
+                  <p className={`text-xl sm:text-2xl lg:text-2xl font-bold truncate ${
                     darkMode ? 'text-gray-100' : 'text-gray-800'
                   }`}>{stats.purchased}</p>
                 </div>
@@ -4693,7 +4695,7 @@ const TakumiGarage = () => {
                   <p className={`text-xs sm:text-sm mb-1 sm:mb-2 lg:mb-3 ${
                     darkMode ? 'text-gray-400' : 'text-slate-600'
                   }`}>In Transit</p>
-                  <p className={`text-xl sm:text-2xl lg:text-3xl font-bold truncate ${
+                  <p className={`text-xl sm:text-2xl lg:text-2xl font-bold truncate ${
                     darkMode ? 'text-gray-100' : 'text-gray-800'
                   }`}>{stats.shipped}</p>
                 </div>
@@ -4710,7 +4712,7 @@ const TakumiGarage = () => {
                   <p className={`text-xs sm:text-sm mb-1 sm:mb-2 lg:mb-3 ${
                     darkMode ? 'text-gray-400' : 'text-slate-600'
                   }`}>Delivered</p>
-                  <p className={`text-xl sm:text-2xl lg:text-3xl font-bold truncate ${
+                  <p className={`text-xl sm:text-2xl lg:text-2xl font-bold truncate ${
                     darkMode ? 'text-gray-100' : 'text-gray-800'
                   }`}>{stats.delivered}</p>
                 </div>
@@ -4724,7 +4726,7 @@ const TakumiGarage = () => {
                   <p className={`text-xs sm:text-sm mb-1 sm:mb-2 lg:mb-3 ${
                     darkMode ? 'text-gray-400' : 'text-slate-600'
                   }`}>Total Spent</p>
-                  <p className={`text-lg sm:text-2xl lg:text-3xl font-bold truncate ${
+                  <p className={`text-lg sm:text-2xl lg:text-2xl font-bold truncate ${
                     darkMode ? 'text-gray-100' : 'text-gray-800'
                   }`}>${stats.totalCost.toFixed(2)}</p>
                 </div>
