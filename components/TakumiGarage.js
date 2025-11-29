@@ -1777,9 +1777,27 @@ const TakumiGarage = () => {
     };
 
     // Small delay to ensure DOM is ready
-    const timer = setTimeout(updateUnderline, 0);
+    const timer = setTimeout(updateUnderline, 100);
     return () => clearTimeout(timer);
   }, [activeTab]);
+
+  // Initial underline position on mount
+  useEffect(() => {
+    const updateUnderline = () => {
+      const activeTabElement = tabRefs.current[activeTab];
+      if (activeTabElement) {
+        const { offsetLeft, offsetWidth } = activeTabElement;
+        setUnderlineStyle({
+          left: offsetLeft,
+          width: offsetWidth
+        });
+      }
+    };
+    
+    // Delay to ensure refs are populated
+    const timer = setTimeout(updateUnderline, 100);
+    return () => clearTimeout(timer);
+  }, []);
 
   const loadParts = async () => {
     try {
