@@ -6773,7 +6773,7 @@ const TakumiGarage = () => {
                     >
                       {/* Drag Handle - Hidden on mobile */}
                       <div 
-                        draggable
+                        draggable="true"
                         onDragStart={(e) => {
                           e.stopPropagation();
                           handleVehicleDragStart(e, vehicle);
@@ -6783,7 +6783,7 @@ const TakumiGarage = () => {
                           }
                         }}
                         onDragEnd={handleVehicleDragEnd}
-                        className={`absolute top-2 left-2 cursor-grab active:cursor-grabbing hidden md:block z-10 ${
+                        className={`absolute top-2 left-2 cursor-grab active:cursor-grabbing hidden md:block z-10 pointer-events-auto ${
                           darkMode ? 'text-gray-400 hover:text-gray-300' : 'text-gray-500 hover:text-gray-700'
                         }`}
                       >
