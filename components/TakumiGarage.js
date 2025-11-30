@@ -4850,10 +4850,10 @@ const TakumiGarage = () => {
           <div className="slide-in-left">
           <>
         {/* Statistics and Cost Breakdown - Side by Side */}
-        <div className="flex flex-col md:grid md:grid-cols-2 lg:grid-cols-[1.5fr_1fr] gap-6 mb-6">
+        <div className="flex flex-col lg:grid lg:grid-cols-[1.5fr_1fr] gap-6 mb-6">
           {/* Statistics Cards - 3 column grid on mobile */}
-          <div className="space-y-4 md:space-y-0 order-1 md:order-none md:flex md:flex-col md:gap-4 md:h-full md:justify-between">
-            <div className="grid grid-cols-3 md:grid-cols-3 lg:grid-cols-3 gap-3 sm:gap-4 md:flex-shrink-0">
+          <div className="space-y-4 lg:space-y-0 order-1 lg:order-none lg:flex lg:flex-col lg:gap-4 lg:h-full lg:justify-between">
+            <div className="grid grid-cols-3 gap-3 sm:gap-4 lg:flex-shrink-0">
               <div 
                 onClick={() => {
                   setStatusFilter(statusFilter === 'purchased' ? 'all' : 'purchased');
@@ -4925,8 +4925,8 @@ const TakumiGarage = () => {
               </div>
             </div>
 
-            {/* Search Box - Shows in left column on medium+ screens */}
-            <div className={`hidden md:block rounded-lg shadow-md p-3 md:flex-shrink-0 ${
+            {/* Search Box - Shows in left column on large screens */}
+            <div className={`hidden lg:block rounded-lg shadow-md p-3 lg:flex-shrink-0 ${
               darkMode ? 'bg-gray-800' : 'bg-slate-100'
             }`}>
               <div className="relative">
@@ -4960,12 +4960,12 @@ const TakumiGarage = () => {
 
           </div>
 
-          {/* Cost Breakdown - order-2 on mobile, full column width on medium+ */}
-          <div className="order-2 md:order-none">
+          {/* Cost Breakdown - order-2 on mobile, full column width on large screens */}
+          <div className="order-2 lg:order-none">
             <div className={`rounded-lg shadow-md p-3 pb-2 h-full flex flex-col ${
               darkMode ? 'bg-gray-800' : 'bg-slate-100'
             }`}>
-            <h3 className={`text-sm md:text-base font-semibold mb-2 flex items-center gap-2 ${
+            <h3 className={`text-sm font-semibold mb-2 flex items-center gap-2 ${
               darkMode ? 'text-gray-100' : 'text-gray-800'
             }`}>
               <TrendingUp className="w-4 h-4" />
@@ -4973,7 +4973,7 @@ const TakumiGarage = () => {
             </h3>
             <div className="flex gap-4 flex-1">
               {/* Circular Progress - Desktop Only */}
-              <div className="hidden md:flex items-center justify-center">
+              <div className="hidden lg:flex items-center justify-center">
                 <div className="relative w-24 h-24">
                   <svg className="w-24 h-24 transform -rotate-90">
                     <circle
@@ -5060,7 +5060,7 @@ const TakumiGarage = () => {
                 </div>
                 
                 {/* Mobile Progress Bar */}
-                <div className="pt-1 md:pt-1.5 mt-auto md:hidden">
+                <div className="pt-1 md:pt-1.5 mt-auto lg:hidden">
                   <p className={`text-xs mb-1 ${
                     darkMode ? 'text-gray-400' : 'text-slate-600'
                   }`}>Progress</p>
