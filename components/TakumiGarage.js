@@ -4962,7 +4962,7 @@ const TakumiGarage = () => {
 
           {/* Cost Breakdown - order-2 on mobile, full column width on medium+ */}
           <div className="order-2 md:order-none">
-            <div className={`rounded-lg shadow-md p-3 h-full flex flex-col ${
+            <div className={`rounded-lg shadow-md p-3 pb-2 h-full flex flex-col ${
               darkMode ? 'bg-gray-800' : 'bg-slate-100'
             }`}>
             <h3 className={`text-sm md:text-base font-semibold mb-2 flex items-center gap-2 ${
@@ -5007,8 +5007,8 @@ const TakumiGarage = () => {
               </div>
 
               {/* Line Items */}
-              <div className="grid grid-cols-1 gap-1 md:gap-1.5 flex-1">
-                <div className={`flex items-center justify-between py-1 md:py-1.5`}>
+              <div className="grid grid-cols-1 gap-0.5 md:gap-0.5 flex-1">
+                <div className={`flex items-center justify-between py-0.5 md:py-1`}>
                   <p className={`text-xs ${
                     darkMode ? 'text-gray-400' : 'text-slate-600'
                   }`}>Parts</p>
@@ -5020,7 +5020,7 @@ const TakumiGarage = () => {
                     darkMode={darkMode}
                   />
                 </div>
-                <div className={`flex items-center justify-between py-1 md:py-1.5`}>
+                <div className={`flex items-center justify-between py-0.5 md:py-1`}>
                   <p className={`text-xs ${
                     darkMode ? 'text-gray-400' : 'text-slate-600'
                   }`}>Shipping</p>
@@ -5032,7 +5032,7 @@ const TakumiGarage = () => {
                     darkMode={darkMode}
                   />
                 </div>
-                <div className={`flex items-center justify-between py-1 md:py-1.5 border-b ${
+                <div className={`flex items-center justify-between py-0.5 md:py-1 border-b ${
                   darkMode ? 'border-gray-700' : 'border-gray-100'
                 }`}>
                   <p className={`text-xs ${
@@ -5172,7 +5172,7 @@ const TakumiGarage = () => {
                   </th>
                   <th 
                     onClick={() => handleSort('vehicle')}
-                    className={`px-6 py-4 text-center text-xs font-semibold uppercase tracking-wider cursor-pointer transition-colors ${
+                    className={`hidden xl:table-cell px-6 py-4 text-center text-xs font-semibold uppercase tracking-wider cursor-pointer transition-colors ${
                       darkMode ? 'text-gray-300 hover:bg-gray-600' : 'text-slate-700 hover:bg-slate-200'
                     }`}
                   >
@@ -5252,7 +5252,7 @@ const TakumiGarage = () => {
                     <td className="px-6 py-4 text-center">
                       <ProjectDropdown part={part} />
                     </td>
-                    <td className="px-6 py-4 text-center">
+                    <td className="hidden xl:table-cell px-6 py-4 text-center">
                       {(() => {
                         const partProject = part.projectId ? projects.find(p => p.id === part.projectId) : null;
                         const vehicle = partProject?.vehicle_id ? vehicles.find(v => v.id === partProject.vehicle_id) : null;
