@@ -1666,6 +1666,19 @@ const LinkedPartsSection = ({
   );
 };
 
+// PriceDisplay Component - displays price with smaller decimal portion
+const PriceDisplay = ({ amount, className = '', darkMode }) => {
+  const formattedAmount = amount.toFixed(2);
+  const [dollars, cents] = formattedAmount.split('.');
+  
+  return (
+    <span className={className}>
+      ${dollars}
+      <span className="text-[0.7em]">.{cents}</span>
+    </span>
+  );
+};
+
 // VendorSelect Component - moved outside to prevent recreation on every render
 const VendorSelect = ({ value, onChange, darkMode, uniqueVendors }) => {
   return (
@@ -4895,9 +4908,13 @@ const TakumiGarage = () => {
                 <p className={`text-xs ${
                   darkMode ? 'text-gray-400' : 'text-slate-600'
                 }`}>Parts</p>
-                <p className={`text-sm md:text-base font-semibold truncate ${
-                  darkMode ? 'text-gray-100' : 'text-gray-800'
-                }`}>${stats.totalPrice.toFixed(2)}</p>
+                <PriceDisplay 
+                  amount={stats.totalPrice}
+                  className={`text-sm md:text-base font-semibold truncate ${
+                    darkMode ? 'text-gray-100' : 'text-gray-800'
+                  }`}
+                  darkMode={darkMode}
+                />
               </div>
               <div className={`flex items-center justify-between py-1 md:py-1.5 border-b ${
                 darkMode ? 'border-gray-700' : 'border-gray-100'
@@ -4905,9 +4922,13 @@ const TakumiGarage = () => {
                 <p className={`text-xs ${
                   darkMode ? 'text-gray-400' : 'text-slate-600'
                 }`}>Shipping</p>
-                <p className={`text-sm md:text-base font-semibold truncate ${
-                  darkMode ? 'text-gray-100' : 'text-gray-800'
-                }`}>${stats.totalShipping.toFixed(2)}</p>
+                <PriceDisplay 
+                  amount={stats.totalShipping}
+                  className={`text-sm md:text-base font-semibold truncate ${
+                    darkMode ? 'text-gray-100' : 'text-gray-800'
+                  }`}
+                  darkMode={darkMode}
+                />
               </div>
               <div className={`flex items-center justify-between py-1 md:py-1.5 border-b ${
                 darkMode ? 'border-gray-700' : 'border-gray-100'
@@ -4915,9 +4936,13 @@ const TakumiGarage = () => {
                 <p className={`text-xs ${
                   darkMode ? 'text-gray-400' : 'text-slate-600'
                 }`}>Import Duties</p>
-                <p className={`text-sm md:text-base font-semibold truncate ${
-                  darkMode ? 'text-gray-100' : 'text-gray-800'
-                }`}>${stats.totalDuties.toFixed(2)}</p>
+                <PriceDisplay 
+                  amount={stats.totalDuties}
+                  className={`text-sm md:text-base font-semibold truncate ${
+                    darkMode ? 'text-gray-100' : 'text-gray-800'
+                  }`}
+                  darkMode={darkMode}
+                />
               </div>
               <div className="pt-1 md:pt-1.5 mt-auto">
                 <p className={`text-xs mb-1 ${
