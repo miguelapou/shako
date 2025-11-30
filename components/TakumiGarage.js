@@ -1468,9 +1468,14 @@ const ProjectEditForm = ({
                     className="fixed inset-0 z-10"
                     onClick={() => setShowVehicleDropdown(false)}
                   />
-                  <div className={`absolute left-0 right-0 z-20 mt-1 rounded-lg border shadow-lg py-1 max-h-60 overflow-y-auto ${
-                    darkMode ? 'bg-gray-700 border-gray-600' : 'bg-slate-50 border-slate-300'
-                  }`}>
+                  <div 
+                    className={`absolute left-0 z-20 mt-1 rounded-lg border shadow-lg py-1 max-h-60 overflow-y-auto vehicle-dropdown-scroll ${
+                      darkMode ? 'bg-gray-700 border-gray-600' : 'bg-slate-50 border-slate-300'
+                    }`}
+                    style={{
+                      minWidth: '200px'
+                    }}
+                  >
                     <button
                       type="button"
                       onClick={() => {
@@ -1574,9 +1579,6 @@ const LinkedPartsSection = ({
   setConfirmDialog
 }) => {
   const linkedParts = parts.filter(part => part.projectId === projectId);
-  if (linkedParts.length === 0) {
-    return null;
-  }
 
   return (
     <div className={`mt-6 pt-6 border-t ${
@@ -1590,57 +1592,66 @@ const LinkedPartsSection = ({
           <span>Linked Parts ({linkedParts.length})</span>
         </div>
       </h3>
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 md:max-h-[540px] overflow-y-auto pr-2">
-        {linkedParts.map((part) => (
-          <div 
-            key={part.id}
-            className={`p-3 rounded-lg border flex items-center justify-between gap-3 ${
-              darkMode ? 'bg-gray-700 border-gray-600' : 'bg-gray-50 border-gray-200'
-            }`}
-          >
-            <div className="flex-1 min-w-0">
-              <h4 className={`font-medium truncate ${
-                darkMode ? 'text-gray-100' : 'text-slate-800'
-              }`}>
-                {part.part}
-              </h4>
-              <div className="flex items-center gap-2 mt-1 flex-wrap">
-                {part.vendor && (
-                  <span className={`inline-block px-2 py-0.5 rounded-full text-xs font-medium ${getVendorColor(part.vendor)}`}>
-                    {part.vendor}
-                  </span>
-                )}
-                <span className={`text-sm font-bold ${
-                  darkMode ? 'text-gray-200' : 'text-gray-900'
-                }`}>
-                  ${part.total.toFixed(2)}
-                </span>
-              </div>
-            </div>
-            <button
-              onClick={() => {
-                setConfirmDialog({
-                  isOpen: true,
-                  title: 'Unlink Part',
-                  message: `Are you sure you want to unlink "${part.part}" from this project?`,
-                  confirmText: 'Unlink',
-                  onConfirm: () => {
-                    unlinkPartFromProject(part.id);
-                  }
-                });
-              }}
-              className={`flex-shrink-0 px-3 py-1.5 rounded-lg text-sm font-medium transition-colors border ${
-                darkMode 
-                  ? 'text-gray-400 hover:text-red-400 hover:bg-gray-600 border-gray-600 hover:border-red-500' 
-                  : 'text-gray-600 hover:text-red-600 hover:bg-red-50 border-gray-300 hover:border-red-300'
+      {linkedParts.length === 0 ? (
+        <div className={`text-center py-8 rounded-lg border ${
+          darkMode ? 'bg-gray-700/30 border-gray-600 text-gray-400' : 'bg-gray-50 border-gray-200 text-gray-500'
+        }`}>
+          <Package className="w-12 h-12 mx-auto mb-2 opacity-40" />
+          <p className="text-sm">No parts linked</p>
+        </div>
+      ) : (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 md:max-h-[540px] overflow-y-auto pr-2">
+          {linkedParts.map((part) => (
+            <div 
+              key={part.id}
+              className={`p-3 rounded-lg border flex items-center justify-between gap-3 ${
+                darkMode ? 'bg-gray-700 border-gray-600' : 'bg-gray-50 border-gray-200'
               }`}
-              title="Unlink from project"
             >
-              Unlink
-            </button>
-          </div>
-        ))}
-      </div>
+              <div className="flex-1 min-w-0">
+                <h4 className={`font-medium truncate ${
+                  darkMode ? 'text-gray-100' : 'text-slate-800'
+                }`}>
+                  {part.part}
+                </h4>
+                <div className="flex items-center gap-2 mt-1 flex-wrap">
+                  {part.vendor && (
+                    <span className={`inline-block px-2 py-0.5 rounded-full text-xs font-medium ${getVendorColor(part.vendor)}`}>
+                      {part.vendor}
+                    </span>
+                  )}
+                  <span className={`text-sm font-bold ${
+                    darkMode ? 'text-gray-200' : 'text-gray-900'
+                  }`}>
+                    ${part.total.toFixed(2)}
+                  </span>
+                </div>
+              </div>
+              <button
+                onClick={() => {
+                  setConfirmDialog({
+                    isOpen: true,
+                    title: 'Unlink Part',
+                    message: `Are you sure you want to unlink "${part.part}" from this project?`,
+                    confirmText: 'Unlink',
+                    onConfirm: () => {
+                      unlinkPartFromProject(part.id);
+                    }
+                  });
+                }}
+                className={`flex-shrink-0 px-3 py-1.5 rounded-lg text-sm font-medium transition-colors border ${
+                  darkMode 
+                    ? 'text-gray-400 hover:text-red-400 hover:bg-gray-600 border-gray-600 hover:border-red-500' 
+                    : 'text-gray-600 hover:text-red-600 hover:bg-red-50 border-gray-300 hover:border-red-300'
+                }`}
+                title="Unlink from project"
+              >
+                Unlink
+              </button>
+            </div>
+          ))}
+        </div>
+      )}
     </div>
   );
 };
@@ -3330,6 +3341,13 @@ const TakumiGarage = () => {
       <style>{fontStyles}{`
         .scrollbar-hide::-webkit-scrollbar {
           display: none;
+        }
+        .vehicle-dropdown-scroll::-webkit-scrollbar {
+          display: none;
+        }
+        .vehicle-dropdown-scroll {
+          scrollbar-width: none;
+          -ms-overflow-style: none;
         }
       `}</style>
       <div className="max-w-7xl mx-auto">
@@ -8277,6 +8295,12 @@ const TakumiGarage = () => {
                 </div>
               </div>
             )}
+          </>
+          </div>
+        )}
+
+        </>
+        )}
       </div>
       {/* Confirmation Dialog */}
       <ConfirmDialog
