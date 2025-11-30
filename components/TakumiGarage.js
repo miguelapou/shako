@@ -4851,9 +4851,9 @@ const TakumiGarage = () => {
           <>
         {/* Statistics and Cost Breakdown - Side by Side */}
         <div className="flex flex-col md:grid md:grid-cols-2 lg:grid-cols-[2fr_1fr] gap-6 mb-6">
-          {/* Statistics Cards - order-1 on mobile, contains search on desktop */}
+          {/* Statistics Cards - 3 column grid on mobile */}
           <div className="space-y-4 md:space-y-0 order-1 md:order-none md:flex md:flex-col md:gap-4 md:h-full md:justify-between">
-            <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 md:flex-shrink-0">
+            <div className="grid grid-cols-3 md:grid-cols-3 lg:grid-cols-3 gap-3 sm:gap-4 md:flex-shrink-0">
               <div 
                 onClick={() => {
                   setStatusFilter(statusFilter === 'purchased' ? 'all' : 'purchased');
@@ -4923,26 +4923,6 @@ const TakumiGarage = () => {
                   }`}>{stats.delivered}</p>
                 </div>
               </div>
-
-              <div 
-                className={`rounded-lg shadow-md p-3 sm:p-4 lg:p-4 border-l-4 border-purple-500 relative overflow-hidden ${
-                  darkMode ? 'bg-gray-800' : 'bg-slate-100'
-                }`}
-              >
-                <BadgeDollarSign className="w-6 h-6 sm:w-8 sm:h-8 text-purple-500 opacity-20 absolute top-2 sm:top-4 right-2 sm:right-4" />
-                <div>
-                  <p className={`text-xs sm:text-sm mb-1 sm:mb-2 lg:mb-3 ${
-                    darkMode ? 'text-gray-400' : 'text-slate-600'
-                  }`}>Total Spent</p>
-                  <PriceDisplay 
-                    amount={stats.totalCost}
-                    className={`text-lg sm:text-2xl lg:text-2xl font-bold truncate ${
-                      darkMode ? 'text-gray-100' : 'text-gray-800'
-                    }`}
-                    darkMode={darkMode}
-                  />
-                </div>
-              </div>
             </div>
 
             {/* Search Box - Shows in left column on medium+ screens */}
@@ -4991,67 +4971,120 @@ const TakumiGarage = () => {
               <TrendingUp className="w-4 h-4" />
               Cost Breakdown
             </h3>
-            <div className="grid grid-cols-1 gap-1 md:gap-1.5 flex-1">
-              <div className={`flex items-center justify-between py-1 md:py-1.5 border-b ${
-                darkMode ? 'border-gray-700' : 'border-gray-100'
-              }`}>
-                <p className={`text-xs ${
-                  darkMode ? 'text-gray-400' : 'text-slate-600'
-                }`}>Parts</p>
-                <PriceDisplay 
-                  amount={stats.totalPrice}
-                  className={`text-sm md:text-base font-semibold truncate ${
-                    darkMode ? 'text-gray-100' : 'text-gray-800'
-                  }`}
-                  darkMode={darkMode}
-                />
-              </div>
-              <div className={`flex items-center justify-between py-1 md:py-1.5 border-b ${
-                darkMode ? 'border-gray-700' : 'border-gray-100'
-              }`}>
-                <p className={`text-xs ${
-                  darkMode ? 'text-gray-400' : 'text-slate-600'
-                }`}>Shipping</p>
-                <PriceDisplay 
-                  amount={stats.totalShipping}
-                  className={`text-sm md:text-base font-semibold truncate ${
-                    darkMode ? 'text-gray-100' : 'text-gray-800'
-                  }`}
-                  darkMode={darkMode}
-                />
-              </div>
-              <div className={`flex items-center justify-between py-1 md:py-1.5 border-b ${
-                darkMode ? 'border-gray-700' : 'border-gray-100'
-              }`}>
-                <p className={`text-xs ${
-                  darkMode ? 'text-gray-400' : 'text-slate-600'
-                }`}>Import Duties</p>
-                <PriceDisplay 
-                  amount={stats.totalDuties}
-                  className={`text-sm md:text-base font-semibold truncate ${
-                    darkMode ? 'text-gray-100' : 'text-gray-800'
-                  }`}
-                  darkMode={darkMode}
-                />
-              </div>
-              <div className="pt-1 md:pt-1.5 mt-auto">
-                <p className={`text-xs mb-1 ${
-                  darkMode ? 'text-gray-400' : 'text-slate-600'
-                }`}>Progress</p>
-                <div className="flex items-center gap-2">
-                  <div className={`flex-1 rounded-full h-2 ${
-                    darkMode ? 'bg-gray-700' : 'bg-gray-200'
-                  }`}>
-                    <div 
-                      className="bg-green-500 h-2 rounded-full transition-all duration-500"
-                      style={{ width: `${(stats.delivered / stats.total) * 100}%` }}
+            <div className="flex gap-4 flex-1">
+              {/* Circular Progress - Desktop Only */}
+              <div className="hidden md:flex items-center justify-center">
+                <div className="relative w-24 h-24">
+                  <svg className="w-24 h-24 transform -rotate-90">
+                    <circle
+                      cx="48"
+                      cy="48"
+                      r="40"
+                      stroke="currentColor"
+                      strokeWidth="8"
+                      fill="none"
+                      className={darkMode ? 'text-gray-700' : 'text-gray-200'}
                     />
+                    <circle
+                      cx="48"
+                      cy="48"
+                      r="40"
+                      stroke="currentColor"
+                      strokeWidth="8"
+                      fill="none"
+                      strokeDasharray={`${2 * Math.PI * 40}`}
+                      strokeDashoffset={`${2 * Math.PI * 40 * (1 - (stats.delivered / stats.total))}`}
+                      className="text-green-500 transition-all duration-500"
+                      strokeLinecap="round"
+                    />
+                  </svg>
+                  <div className="absolute inset-0 flex items-center justify-center">
+                    <span className={`text-lg font-bold ${darkMode ? 'text-gray-100' : 'text-gray-800'}`}>
+                      {Math.round((stats.delivered / stats.total) * 100)}%
+                    </span>
                   </div>
-                  <span className={`text-xs font-semibold ${
+                </div>
+              </div>
+
+              {/* Line Items */}
+              <div className="grid grid-cols-1 gap-1 md:gap-1.5 flex-1">
+                <div className={`flex items-center justify-between py-1 md:py-1.5 border-b ${
+                  darkMode ? 'border-gray-700' : 'border-gray-100'
+                }`}>
+                  <p className={`text-xs ${
+                    darkMode ? 'text-gray-400' : 'text-slate-600'
+                  }`}>Parts</p>
+                  <PriceDisplay 
+                    amount={stats.totalPrice}
+                    className={`text-sm md:text-base font-semibold truncate ${
+                      darkMode ? 'text-gray-100' : 'text-gray-800'
+                    }`}
+                    darkMode={darkMode}
+                  />
+                </div>
+                <div className={`flex items-center justify-between py-1 md:py-1.5 border-b ${
+                  darkMode ? 'border-gray-700' : 'border-gray-100'
+                }`}>
+                  <p className={`text-xs ${
+                    darkMode ? 'text-gray-400' : 'text-slate-600'
+                  }`}>Shipping</p>
+                  <PriceDisplay 
+                    amount={stats.totalShipping}
+                    className={`text-sm md:text-base font-semibold truncate ${
+                      darkMode ? 'text-gray-100' : 'text-gray-800'
+                    }`}
+                    darkMode={darkMode}
+                  />
+                </div>
+                <div className={`flex items-center justify-between py-1 md:py-1.5 border-b ${
+                  darkMode ? 'border-gray-700' : 'border-gray-100'
+                }`}>
+                  <p className={`text-xs ${
+                    darkMode ? 'text-gray-400' : 'text-slate-600'
+                  }`}>Import Duties</p>
+                  <PriceDisplay 
+                    amount={stats.totalDuties}
+                    className={`text-sm md:text-base font-semibold truncate ${
+                      darkMode ? 'text-gray-100' : 'text-gray-800'
+                    }`}
+                    darkMode={darkMode}
+                  />
+                </div>
+                <div className={`flex items-center justify-between py-1 md:py-1.5 border-b ${
+                  darkMode ? 'border-gray-700' : 'border-gray-100'
+                }`}>
+                  <p className={`text-xs font-semibold ${
                     darkMode ? 'text-gray-300' : 'text-slate-700'
-                  }`}>
-                    {Math.round((stats.delivered / stats.total) * 100)}%
-                  </span>
+                  }`}>Total</p>
+                  <PriceDisplay 
+                    amount={stats.totalCost}
+                    className={`text-sm md:text-base font-bold truncate ${
+                      darkMode ? 'text-gray-100' : 'text-gray-800'
+                    }`}
+                    darkMode={darkMode}
+                  />
+                </div>
+                
+                {/* Mobile Progress Bar */}
+                <div className="pt-1 md:pt-1.5 mt-auto md:hidden">
+                  <p className={`text-xs mb-1 ${
+                    darkMode ? 'text-gray-400' : 'text-slate-600'
+                  }`}>Progress</p>
+                  <div className="flex items-center gap-2">
+                    <div className={`flex-1 rounded-full h-2 ${
+                      darkMode ? 'bg-gray-700' : 'bg-gray-200'
+                    }`}>
+                      <div 
+                        className="bg-green-500 h-2 rounded-full transition-all duration-500"
+                        style={{ width: `${(stats.delivered / stats.total) * 100}%` }}
+                      />
+                    </div>
+                    <span className={`text-xs font-semibold ${
+                      darkMode ? 'text-gray-300' : 'text-slate-700'
+                    }`}>
+                      {Math.round((stats.delivered / stats.total) * 100)}%
+                    </span>
+                  </div>
                 </div>
               </div>
             </div>
