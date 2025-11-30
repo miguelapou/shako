@@ -402,7 +402,7 @@ const ProjectDetailView = ({
               <span className={`text-sm font-medium ${
                 darkMode ? 'text-gray-300' : 'text-slate-700'
               }`}>
-                ${linkedPartsTotal.toFixed(2)} / ${project.budget?.toFixed(2) || '0.00'}
+                ${linkedPartsTotal.toFixed(2)} / ${Math.round(project.budget || 0)}
               </span>
               <span className={`text-sm font-bold ${
                 darkMode ? 'text-gray-200' : 'text-gray-900'
@@ -5428,9 +5428,13 @@ const TakumiGarage = () => {
                     <p className={`text-xs ${
                       darkMode ? 'text-gray-400' : 'text-slate-600'
                     }`}>Total:</p>
-                    <p className={`text-xl font-bold ${
-                      darkMode ? 'text-gray-100' : 'text-slate-800'
-                    }`}>${part.total.toFixed(2)}</p>
+                    <PriceDisplay 
+                      amount={part.total}
+                      className={`text-xl font-bold ${
+                        darkMode ? 'text-gray-100' : 'text-slate-800'
+                      }`}
+                      darkMode={darkMode}
+                    />
                   </div>
                 </div>
 
@@ -5684,7 +5688,7 @@ const TakumiGarage = () => {
                         <p className={`text-lg font-bold ${
                           darkMode ? 'text-gray-100' : 'text-slate-800'
                         }`}>
-                          ${project.budget?.toFixed(2) || '0.00'}
+                          ${Math.round(project.budget || 0)}
                         </p>
                       </div>
                     </div>
@@ -7347,7 +7351,7 @@ const TakumiGarage = () => {
                                     }`}>Total Budget</p>
                                     <p className={`text-2xl font-bold ${
                                       darkMode ? 'text-gray-100' : 'text-slate-800'
-                                    }`}>${totalBudget.toFixed(2)}</p>
+                                    }`}>${Math.round(totalBudget)}</p>
                                   </div>
                                 </div>
                                 <div className={`flex items-center gap-4 mt-2 text-xs ${
