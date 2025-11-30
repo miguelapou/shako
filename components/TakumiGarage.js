@@ -6774,7 +6774,7 @@ const TakumiGarage = () => {
                     </p>
                   </div>
                 )}
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
                   {vehicles.filter(v => v.archived).map((vehicle) => (
                     <div
                       key={vehicle.id}
@@ -6787,7 +6787,7 @@ const TakumiGarage = () => {
                         setOriginalVehicleData({ ...vehicle }); // Save original data for unsaved changes check
                         setShowVehicleDetailModal(true);
                       }}
-                      className={`relative rounded-lg shadow-lg pt-3 pb-3 px-6 transition-all duration-200 hover:shadow-2xl hover:scale-[1.03] cursor-pointer border-t-4 ${
+                      className={`relative rounded-lg shadow-lg pt-2 pb-2 px-3 transition-all duration-200 hover:shadow-2xl hover:scale-[1.03] cursor-pointer border-t-4 ${
                         draggedVehicle?.id === vehicle.id 
                           ? 'ring-2 ring-blue-500 ring-offset-2' 
                           : dragOverVehicle?.id === vehicle.id
@@ -6810,15 +6810,15 @@ const TakumiGarage = () => {
                           }
                         }}
                         onDragEnd={handleVehicleDragEnd}
-                        className={`absolute top-2 left-2 cursor-grab active:cursor-grabbing hidden md:block ${
+                        className={`absolute top-1 left-1 cursor-grab active:cursor-grabbing hidden md:block ${
                           darkMode ? 'text-gray-500 hover:text-gray-400' : 'text-gray-400 hover:text-gray-600'
                         }`}
                       >
-                        <GripVertical className="w-5 h-5" />
+                        <GripVertical className="w-4 h-4" />
                       </div>
 
                       {/* Edit Button - Top Right */}
-                      <div className="absolute top-2 right-2">
+                      <div className="absolute top-1 right-1">
                         <button
                           onClick={(e) => {
                             e.stopPropagation();
@@ -6827,27 +6827,27 @@ const TakumiGarage = () => {
                             setVehicleModalEditMode('vehicle');
                             setShowVehicleDetailModal(true);
                           }}
-                          className={`p-2 rounded-md transition-colors ${
+                          className={`p-1 rounded-md transition-colors ${
                             darkMode ? 'hover:bg-gray-700 text-gray-500 hover:text-blue-400' : 'hover:bg-gray-100 text-gray-500 hover:text-blue-600'
                           }`}
                           title="Edit vehicle"
                         >
-                          <Edit2 className="w-5 h-5" />
+                          <Edit2 className="w-4 h-4" />
                         </button>
                       </div>
 
                       {/* Vehicle Image */}
                       {vehicle.image_url && (
-                        <div className="mb-4 mt-10 relative">
+                        <div className="mb-2 mt-8 relative">
                           <img 
                             src={vehicle.image_url} 
                             alt={vehicle.name}
-                            className={`w-full h-48 object-cover rounded-lg border grayscale opacity-40 ${
+                            className={`w-full h-32 object-cover rounded-lg border grayscale opacity-40 ${
                               darkMode ? 'bg-gray-700 border-gray-600' : 'bg-gray-200 border-gray-300'
                             }`}
                           />
                           <div className="absolute inset-0 flex items-center justify-center">
-                            <span className={`text-2xl font-bold px-6 py-2 rounded-lg ${
+                            <span className={`text-lg font-bold px-4 py-1 rounded-lg ${
                               darkMode 
                                 ? 'bg-gray-900/80 text-gray-300 border-2 border-gray-600' 
                                 : 'bg-white/80 text-gray-700 border-2 border-gray-400'
@@ -6859,27 +6859,18 @@ const TakumiGarage = () => {
                       )}
 
                       {/* Vehicle Header */}
-                      <div className={`mb-4 ${vehicle.image_url ? 'mt-4' : 'mt-8'}`}>
-                        <h3 className={`text-xl font-bold mb-1 ${
+                      <div className={`mb-2 ${vehicle.image_url ? 'mt-2' : 'mt-8'}`}>
+                        <h3 className={`text-base font-bold mb-1 ${
                           darkMode ? 'text-gray-100' : 'text-slate-800'
                         }`}>
                           {vehicle.nickname || [vehicle.year, vehicle.make, vehicle.name].filter(Boolean).join(' ')}
                         </h3>
                         {vehicle.nickname && (
-                          <p className={`text-sm mb-2 ${
+                          <p className={`text-xs ${
                             darkMode ? 'text-gray-400' : 'text-slate-600'
                           }`}>
                             {[vehicle.year, vehicle.make, vehicle.name].filter(Boolean).join(' ')}
                           </p>
-                        )}
-                        {vehicle.vin && (
-                          <div className="mt-2">
-                            <span className={`inline-block px-3 py-1 rounded-full text-xs font-mono ${
-                              darkMode ? 'bg-gray-700 text-gray-300' : 'bg-gray-200 text-gray-900'
-                            }`}>
-                              VIN: {vehicle.vin}
-                            </span>
-                          </div>
                         )}
                       </div>
                     </div>
