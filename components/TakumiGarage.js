@@ -2243,6 +2243,45 @@ const TakumiGarage = () => {
       return;
     }
 
+    // Check if the drag would change archive status
+    const draggedIsArchived = draggedVehicle.archived || false;
+    const targetIsArchived = targetVehicle.archived || false;
+
+    if (draggedIsArchived !== targetIsArchived) {
+      // Show confirmation dialog for archive/unarchive
+      setConfirmDialog({
+        isOpen: true,
+        title: draggedIsArchived ? 'Unarchive Vehicle' : 'Archive Vehicle',
+        message: draggedIsArchived 
+          ? `Are you sure you want to unarchive "${draggedVehicle.nickname || draggedVehicle.name}"?` 
+          : `Are you sure you want to archive "${draggedVehicle.nickname || draggedVehicle.name}"? It will still be visible but with limited information.`,
+        confirmText: draggedIsArchived ? 'Unarchive' : 'Archive',
+        isDangerous: false,
+        onConfirm: async () => {
+          // Update the vehicle's archived status
+          const updates = { archived: !draggedIsArchived };
+          if (!draggedIsArchived) {
+            // Archiving: set display_order to max + 1
+            const maxOrder = Math.max(...vehicles.map(v => v.display_order || 0), 0);
+            updates.display_order = maxOrder + 1;
+          }
+          await updateVehicle(draggedVehicle.id, updates);
+          
+          // Reload vehicles to reflect the change
+          await loadVehicles();
+          
+          setDraggedVehicle(null);
+          setDragOverVehicle(null);
+        }
+      });
+      
+      // Clear drag state but don't reorder
+      setDraggedVehicle(null);
+      setDragOverVehicle(null);
+      return;
+    }
+
+    // Normal reordering within same section
     const draggedIndex = vehicles.findIndex(v => v.id === draggedVehicle.id);
     const targetIndex = vehicles.findIndex(v => v.id === targetVehicle.id);
 
@@ -6673,13 +6712,16 @@ const TakumiGarage = () => {
                           <img 
                             src={vehicle.image_url} 
                             alt={vehicle.name}
-                            className="w-full h-48 object-cover rounded-lg"
+                            className={`w-full h-48 object-cover rounded-lg border grayscale opacity-40 ${
+                              darkMode ? 'bg-gray-700 border-gray-600' : 'bg-gray-200 border-gray-300'
+                            }`}
                           />
-                          {/* Archived Badge Overlay */}
-                          <div className="absolute top-2 left-2">
-                            <span className={`inline-block px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wide ${
-                              darkMode ? 'bg-gray-900/80 text-gray-300' : 'bg-white/80 text-gray-700'
-                            }`}>
+                          <div className="absolute inset-0 flex items-center justify-center">
+                            <span className={`text-2xl font-bold px-6 py-2 rounded-lg ${
+                              darkMode 
+                                ? 'bg-gray-900/80 text-gray-300 border-2 border-gray-600' 
+                                : 'bg-white/80 text-gray-700 border-2 border-gray-400'
+                            }`} style={{ fontFamily: "'FoundationOne', 'Courier New', monospace" }}>
                               ARCHIVED
                             </span>
                           </div>
