@@ -4850,25 +4850,25 @@ const TakumiGarage = () => {
           <div className="slide-in-left">
           <>
         {/* Statistics and Cost Breakdown - Side by Side */}
-        <div className="flex flex-col lg:grid lg:grid-cols-[1.5fr_1fr] gap-6 mb-6">
+        <div className="flex flex-col md:grid md:grid-cols-[1.5fr_1fr] gap-6 mb-6">
           {/* Statistics Cards - 3 column grid on mobile */}
-          <div className="space-y-4 lg:space-y-0 order-1 lg:order-none lg:flex lg:flex-col lg:gap-4 lg:h-full lg:justify-between">
-            <div className="grid grid-cols-3 gap-3 sm:gap-4 lg:flex-shrink-0">
+          <div className="space-y-4 md:space-y-0 order-1 md:order-none md:flex md:flex-col md:gap-4 md:h-full md:justify-between">
+            <div className="grid grid-cols-3 gap-3 sm:gap-4 md:flex-shrink-0">
               <div 
                 onClick={() => {
                   setStatusFilter(statusFilter === 'purchased' ? 'all' : 'purchased');
                   setDeliveredFilter('all');
                 }}
-                className={`rounded-lg shadow-md p-3 sm:p-4 lg:p-4 border-l-4 border-yellow-500 relative overflow-hidden cursor-pointer transition-all duration-200 hover:shadow-lg hover:scale-[1.02] ${
+                className={`rounded-lg shadow-md p-3 sm:p-4 md:p-4 border-l-4 border-yellow-500 relative overflow-hidden cursor-pointer transition-all duration-200 hover:shadow-lg hover:scale-[1.02] ${
                   darkMode ? 'bg-gray-800 hover:bg-gray-750' : 'bg-white hover:bg-gray-50'
                 } ${statusFilter === 'purchased' ? 'ring-2 ring-yellow-500' : ''}`}
               >
                 <ShoppingCart className="w-6 h-6 sm:w-8 sm:h-8 text-yellow-500 opacity-20 absolute top-2 sm:top-4 right-2 sm:right-4" />
                 <div>
-                  <p className={`text-xs sm:text-sm mb-1 sm:mb-2 lg:mb-3 ${
+                  <p className={`text-xs sm:text-sm mb-1 sm:mb-2 md:mb-3 ${
                     darkMode ? 'text-gray-400' : 'text-slate-600'
                   }`}>Ordered</p>
-                  <p className={`text-xl sm:text-2xl lg:text-2xl font-bold truncate ${
+                  <p className={`text-xl sm:text-2xl md:text-2xl font-bold truncate ${
                     darkMode ? 'text-gray-100' : 'text-gray-800'
                   }`}>{stats.purchased}</p>
                 </div>
@@ -4879,16 +4879,16 @@ const TakumiGarage = () => {
                   setStatusFilter(statusFilter === 'shipped' ? 'all' : 'shipped');
                   setDeliveredFilter('all');
                 }}
-                className={`rounded-lg shadow-md p-3 sm:p-4 lg:p-4 border-l-4 border-blue-500 relative overflow-hidden cursor-pointer transition-all duration-200 hover:shadow-lg hover:scale-[1.02] ${
+                className={`rounded-lg shadow-md p-3 sm:p-4 md:p-4 border-l-4 border-blue-500 relative overflow-hidden cursor-pointer transition-all duration-200 hover:shadow-lg hover:scale-[1.02] ${
                   darkMode ? 'bg-gray-800 hover:bg-gray-750' : 'bg-white hover:bg-gray-50'
                 } ${statusFilter === 'shipped' ? 'ring-2 ring-blue-500' : ''}`}
               >
                 <Truck className="w-6 h-6 sm:w-8 sm:h-8 text-blue-500 opacity-20 absolute top-2 sm:top-4 right-2 sm:right-4" />
                 <div>
-                  <p className={`text-xs sm:text-sm mb-1 sm:mb-2 lg:mb-3 ${
+                  <p className={`text-xs sm:text-sm mb-1 sm:mb-2 md:mb-3 ${
                     darkMode ? 'text-gray-400' : 'text-slate-600'
                   }`}>Shipped</p>
-                  <p className={`text-xl sm:text-2xl lg:text-2xl font-bold truncate ${
+                  <p className={`text-xl sm:text-2xl md:text-2xl font-bold truncate ${
                     darkMode ? 'text-gray-100' : 'text-gray-800'
                   }`}>{stats.shipped}</p>
                 </div>
@@ -4903,7 +4903,7 @@ const TakumiGarage = () => {
                   );
                   setStatusFilter('all');
                 }}
-                className={`rounded-lg shadow-md p-3 sm:p-4 lg:p-4 border-l-4 ${
+                className={`rounded-lg shadow-md p-3 sm:p-4 md:p-4 border-l-4 ${
                   deliveredFilter === 'hide' ? 'border-red-500' : 'border-green-500'
                 } relative overflow-hidden cursor-pointer transition-all duration-200 hover:shadow-lg hover:scale-[1.02] ${
                   deliveredFilter === 'hide' 
@@ -4915,18 +4915,18 @@ const TakumiGarage = () => {
                   deliveredFilter === 'hide' ? 'text-red-500' : 'text-green-500'
                 } opacity-20 absolute top-2 sm:top-4 right-2 sm:right-4`} />
                 <div>
-                  <p className={`text-xs sm:text-sm mb-1 sm:mb-2 lg:mb-3 ${
+                  <p className={`text-xs sm:text-sm mb-1 sm:mb-2 md:mb-3 ${
                     darkMode ? 'text-gray-400' : 'text-slate-600'
                   }`}>Delivered</p>
-                  <p className={`text-xl sm:text-2xl lg:text-2xl font-bold truncate ${
+                  <p className={`text-xl sm:text-2xl md:text-2xl font-bold truncate ${
                     darkMode ? 'text-gray-100' : 'text-gray-800'
                   }`}>{stats.delivered}</p>
                 </div>
               </div>
             </div>
 
-            {/* Search Box - Shows in left column on large screens */}
-            <div className={`hidden lg:block rounded-lg shadow-md p-3 lg:flex-shrink-0 ${
+            {/* Search Box - Shows in left column on medium+ screens */}
+            <div className={`hidden md:block rounded-lg shadow-md p-3 md:flex-shrink-0 ${
               darkMode ? 'bg-gray-800' : 'bg-slate-100'
             }`}>
               <div className="relative">
@@ -4960,8 +4960,8 @@ const TakumiGarage = () => {
 
           </div>
 
-          {/* Cost Breakdown - order-2 on mobile, full column width on large screens */}
-          <div className="order-2 lg:order-none">
+          {/* Cost Breakdown - order-2 on mobile, full column width on medium+ screens */}
+          <div className="order-2 md:order-none">
             <div className={`rounded-lg shadow-md p-3 pb-2 h-full flex flex-col ${
               darkMode ? 'bg-gray-800' : 'bg-slate-100'
             }`}>
@@ -4973,7 +4973,7 @@ const TakumiGarage = () => {
             </h3>
             <div className="flex gap-4 flex-1">
               {/* Circular Progress - Desktop Only */}
-              <div className="hidden lg:flex items-center justify-center">
+              <div className="hidden md:flex items-center justify-center">
                 <div className="relative w-24 h-24">
                   <svg className="w-24 h-24 transform -rotate-90">
                     <circle
@@ -5060,7 +5060,7 @@ const TakumiGarage = () => {
                 </div>
                 
                 {/* Mobile Progress Bar */}
-                <div className="pt-1 md:pt-1.5 mt-auto lg:hidden">
+                <div className="pt-1 md:pt-1.5 mt-auto md:hidden">
                   <p className={`text-xs mb-1 ${
                     darkMode ? 'text-gray-400' : 'text-slate-600'
                   }`}>Progress</p>
