@@ -6773,20 +6773,20 @@ const TakumiGarage = () => {
                     >
                       {/* Drag Handle - Hidden on mobile */}
                       <div 
-                        draggable="true"
-                        onMouseDown={(e) => e.stopPropagation()}
-                        onClick={(e) => e.stopPropagation()}
+                        draggable
                         onDragStart={(e) => {
                           e.stopPropagation();
                           handleVehicleDragStart(e, vehicle);
+                          // Set the entire card as the drag image, positioned at top-left
                           const card = e.currentTarget.closest('[data-vehicle-id]');
                           if (card) {
+                            // Position the drag image so cursor is at the grip icon location (top-left area)
                             e.dataTransfer.setDragImage(card, 20, 20);
                           }
                         }}
                         onDragEnd={handleVehicleDragEnd}
-                        className={`absolute top-2 left-2 cursor-grab active:cursor-grabbing hidden md:block z-10 pointer-events-auto ${
-                          darkMode ? 'text-gray-400 hover:text-gray-300' : 'text-gray-500 hover:text-gray-700'
+                        className={`absolute top-2 left-2 cursor-grab active:cursor-grabbing hidden md:block ${
+                          darkMode ? 'text-gray-500 hover:text-gray-400' : 'text-gray-400 hover:text-gray-600'
                         }`}
                       >
                         <GripVertical className="w-5 h-5" />
