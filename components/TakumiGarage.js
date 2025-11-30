@@ -1028,11 +1028,13 @@ const ProjectDetailView = ({
       )}
 
       {linkedParts.length === 0 && (
-        <div className={`text-center py-8 rounded-lg border ${
-          darkMode ? 'bg-gray-700/30 border-gray-600 text-gray-400' : 'bg-gray-50 border-gray-200 text-gray-500'
-        }`}>
-          <Package className="w-12 h-12 mx-auto mb-2 opacity-40" />
-          <p className="text-sm">
+        <div className="text-center py-8">
+          <Package className={`w-12 h-12 mx-auto mb-2 opacity-40 ${
+            darkMode ? 'text-gray-400' : 'text-gray-500'
+          }`} />
+          <p className={`text-sm ${
+            darkMode ? 'text-gray-400' : 'text-gray-500'
+          }`}>
             No parts linked
           </p>
         </div>
@@ -5702,11 +5704,13 @@ const TakumiGarage = () => {
                               )}
                             </div>
                           ) : (
-                            <div className={`text-center py-3 rounded-lg border ${
-                              darkMode ? 'bg-gray-700/30 border-gray-600 text-gray-400' : 'bg-gray-50 border-gray-200 text-gray-500'
-                            }`}>
-                              <Package className="w-8 h-8 mx-auto mb-1.5 opacity-40" />
-                              <p className="text-xs">
+                            <div className="text-center py-3">
+                              <Package className={`w-8 h-8 mx-auto mb-1.5 opacity-40 ${
+                                darkMode ? 'text-gray-400' : 'text-gray-500'
+                              }`} />
+                              <p className={`text-xs ${
+                                darkMode ? 'text-gray-400' : 'text-gray-500'
+                              }`}>
                                 No parts linked
                               </p>
                             </div>
@@ -6506,11 +6510,13 @@ const TakumiGarage = () => {
                                   )}
                                 </div>
                               ) : (
-                                <div className={`text-center py-4 rounded-lg border ${
-                                  darkMode ? 'bg-gray-700/30 border-gray-600 text-gray-400' : 'bg-gray-50 border-gray-200 text-gray-500'
-                                }`}>
-                                  <Wrench className="w-8 h-8 mx-auto mb-2 opacity-40" />
-                                  <p className="text-xs">
+                                <div className="text-center py-4">
+                                  <Wrench className={`w-8 h-8 mx-auto mb-2 opacity-40 ${
+                                    darkMode ? 'text-gray-400' : 'text-gray-500'
+                                  }`} />
+                                  <p className={`text-xs ${
+                                    darkMode ? 'text-gray-400' : 'text-gray-500'
+                                  }`}>
                                     No projects linked
                                   </p>
                                 </div>
