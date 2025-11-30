@@ -3514,14 +3514,15 @@ const TakumiGarage = () => {
               onClick={() => handleTabChange('vehicles')}
               onMouseEnter={() => setHoverTab('vehicles')}
               onMouseLeave={() => setHoverTab(null)}
+              onTouchStart={() => setHoverTab(null)}
               className={`flex items-center justify-center sm:justify-start gap-2 flex-1 sm:flex-initial px-3 sm:px-6 py-3 font-medium transition-all relative z-10 ${
                 activeTab === 'vehicles'
                   ? darkMode
                     ? 'text-blue-400'
                     : 'text-blue-600'
                   : darkMode
-                    ? 'text-gray-400 hover:text-gray-300'
-                    : 'text-slate-600 hover:text-slate-800'
+                    ? 'text-gray-400 [@media(hover:hover)]:hover:text-gray-300'
+                    : 'text-slate-600 [@media(hover:hover)]:hover:text-slate-800'
               }`}
             >
               <Car className="w-5 h-5" />
@@ -3532,14 +3533,15 @@ const TakumiGarage = () => {
               onClick={() => handleTabChange('projects')}
               onMouseEnter={() => setHoverTab('projects')}
               onMouseLeave={() => setHoverTab(null)}
+              onTouchStart={() => setHoverTab(null)}
               className={`flex items-center justify-center sm:justify-start gap-2 flex-1 sm:flex-initial px-3 sm:px-6 py-3 font-medium transition-all relative z-10 ${
                 activeTab === 'projects'
                   ? darkMode
                     ? 'text-blue-400'
                     : 'text-blue-600'
                   : darkMode
-                    ? 'text-gray-400 hover:text-gray-300'
-                    : 'text-slate-600 hover:text-slate-800'
+                    ? 'text-gray-400 [@media(hover:hover)]:hover:text-gray-300'
+                    : 'text-slate-600 [@media(hover:hover)]:hover:text-slate-800'
               }`}
             >
               <Wrench className="w-5 h-5" />
@@ -3550,14 +3552,15 @@ const TakumiGarage = () => {
               onClick={() => handleTabChange('parts')}
               onMouseEnter={() => setHoverTab('parts')}
               onMouseLeave={() => setHoverTab(null)}
+              onTouchStart={() => setHoverTab(null)}
               className={`flex items-center justify-center sm:justify-start gap-2 flex-1 sm:flex-initial px-3 sm:px-6 py-3 font-medium transition-all relative z-10 ${
                 activeTab === 'parts'
                   ? darkMode
                     ? 'text-blue-400'
                     : 'text-blue-600'
                   : darkMode
-                    ? 'text-gray-400 hover:text-gray-300'
-                    : 'text-slate-600 hover:text-slate-800'
+                    ? 'text-gray-400 [@media(hover:hover)]:hover:text-gray-300'
+                    : 'text-slate-600 [@media(hover:hover)]:hover:text-slate-800'
               }`}
             >
               <Package className="w-5 h-5" />
