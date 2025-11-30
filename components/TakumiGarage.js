@@ -4752,8 +4752,8 @@ const TakumiGarage = () => {
         {/* Statistics and Cost Breakdown - Side by Side */}
         <div className="flex flex-col md:grid md:grid-cols-2 lg:grid-cols-[2fr_1fr] gap-6 mb-6">
           {/* Statistics Cards - order-1 on mobile, contains search on desktop */}
-          <div className="space-y-4 md:space-y-0 order-1 md:order-none md:flex md:flex-col md:gap-4 md:h-full">
-            <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
+          <div className="space-y-4 md:space-y-0 order-1 md:order-none md:flex md:flex-col md:gap-4 md:h-full md:justify-between">
+            <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 md:flex-shrink-0">
               <div 
                 onClick={() => {
                   setStatusFilter(statusFilter === 'purchased' ? 'all' : 'purchased');
@@ -4843,7 +4843,7 @@ const TakumiGarage = () => {
             </div>
 
             {/* Search Box - Shows in left column on medium+ screens */}
-            <div className={`hidden md:block rounded-lg shadow-md p-3 md:mt-auto ${
+            <div className={`hidden md:block rounded-lg shadow-md p-3 md:flex-shrink-0 ${
               darkMode ? 'bg-gray-800' : 'bg-slate-100'
             }`}>
               <div className="relative">
