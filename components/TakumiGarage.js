@@ -6400,9 +6400,9 @@ const TakumiGarage = () => {
         {activeTab === 'vehicles' && (
           <div className="slide-in-right">
           <>
-            {/* Vehicles Grid */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 auto-rows-fr">
-              {vehicles.map((vehicle) => (
+            {/* Active Vehicles Grid */}
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {vehicles.filter(v => !v.archived).map((vehicle) => (
                 <div
                   key={vehicle.id}
                   data-vehicle-id={vehicle.id}
@@ -6414,7 +6414,7 @@ const TakumiGarage = () => {
                     setOriginalVehicleData({ ...vehicle }); // Save original data for unsaved changes check
                     setShowVehicleDetailModal(true);
                   }}
-                  className={`relative rounded-lg shadow-lg pt-3 pb-4 px-6 transition-all duration-200 hover:shadow-2xl hover:scale-[1.03] cursor-pointer border-t-4 flex flex-col ${
+                  className={`relative rounded-lg shadow-lg pt-3 ${vehicle.archived ? 'pb-3' : 'pb-4'} px-6 transition-all duration-200 hover:shadow-2xl hover:scale-[1.03] cursor-pointer border-t-4 ${
                     draggedVehicle?.id === vehicle.id 
                       ? 'ring-2 ring-blue-500 ring-offset-2' 
                       : dragOverVehicle?.id === vehicle.id
@@ -6594,6 +6594,127 @@ const TakumiGarage = () => {
                 </div>
               ))}
             </div>
+
+            {/* Archived Vehicles Section */}
+            {vehicles.filter(v => v.archived).length > 0 && (
+              <>
+                <div className={`my-8 border-t ${
+                  darkMode ? 'border-gray-700' : 'border-slate-300'
+                }`}>
+                  <h2 className={`text-lg font-semibold mt-8 mb-6 ${
+                    darkMode ? 'text-gray-300' : 'text-slate-700'
+                  }`}>
+                    Archived Vehicles
+                  </h2>
+                </div>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                  {vehicles.filter(v => v.archived).map((vehicle) => (
+                    <div
+                      key={vehicle.id}
+                      data-vehicle-id={vehicle.id}
+                      onDragOver={(e) => handleVehicleDragOver(e, vehicle)}
+                      onDragLeave={handleVehicleDragLeave}
+                      onDrop={(e) => handleVehicleDrop(e, vehicle)}
+                      onClick={() => {
+                        setViewingVehicle(vehicle);
+                        setOriginalVehicleData({ ...vehicle }); // Save original data for unsaved changes check
+                        setShowVehicleDetailModal(true);
+                      }}
+                      className={`relative rounded-lg shadow-lg pt-3 pb-3 px-6 transition-all duration-200 hover:shadow-2xl hover:scale-[1.03] cursor-pointer border-t-4 ${
+                        draggedVehicle?.id === vehicle.id 
+                          ? 'ring-2 ring-blue-500 ring-offset-2' 
+                          : dragOverVehicle?.id === vehicle.id
+                            ? (darkMode ? 'ring-2 ring-blue-500' : 'ring-2 ring-blue-400')
+                            : ''
+                      } ${darkMode ? 'bg-gray-800' : 'bg-slate-100'}`}
+                      style={{ borderTopColor: getMutedColor(vehicle.color, darkMode) }}
+                    >
+                      {/* Drag Handle - Hidden on mobile */}
+                      <div 
+                        draggable
+                        onDragStart={(e) => {
+                          e.stopPropagation();
+                          handleVehicleDragStart(e, vehicle);
+                          const card = e.currentTarget.closest('[data-vehicle-id]');
+                          if (card) {
+                            e.dataTransfer.setDragImage(card, 20, 20);
+                          }
+                        }}
+                        onDragEnd={handleVehicleDragEnd}
+                        className={`absolute top-2 left-2 cursor-grab active:cursor-grabbing hidden md:block ${
+                          darkMode ? 'text-gray-500 hover:text-gray-400' : 'text-gray-400 hover:text-gray-600'
+                        }`}
+                      >
+                        <GripVertical className="w-5 h-5" />
+                      </div>
+
+                      {/* Edit Button - Top Right */}
+                      <div className="absolute top-2 right-2">
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setViewingVehicle(vehicle);
+                            setOriginalVehicleData({ ...vehicle }); // Save original data for unsaved changes check
+                            setVehicleModalEditMode('vehicle');
+                            setShowVehicleDetailModal(true);
+                          }}
+                          className={`p-2 rounded-md transition-colors ${
+                            darkMode ? 'hover:bg-gray-700 text-gray-500 hover:text-blue-400' : 'hover:bg-gray-100 text-gray-500 hover:text-blue-600'
+                          }`}
+                          title="Edit vehicle"
+                        >
+                          <Edit2 className="w-5 h-5" />
+                        </button>
+                      </div>
+
+                      {/* Vehicle Image */}
+                      {vehicle.image_url && (
+                        <div className="mb-4 mt-10 relative">
+                          <img 
+                            src={vehicle.image_url} 
+                            alt={vehicle.name}
+                            className="w-full h-48 object-cover rounded-lg"
+                          />
+                          {/* Archived Badge Overlay */}
+                          <div className="absolute top-2 left-2">
+                            <span className={`inline-block px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wide ${
+                              darkMode ? 'bg-gray-900/80 text-gray-300' : 'bg-white/80 text-gray-700'
+                            }`}>
+                              ARCHIVED
+                            </span>
+                          </div>
+                        </div>
+                      )}
+
+                      {/* Vehicle Header */}
+                      <div className={`mb-4 ${vehicle.image_url ? 'mt-4' : 'mt-8'}`}>
+                        <h3 className={`text-xl font-bold mb-1 ${
+                          darkMode ? 'text-gray-100' : 'text-slate-800'
+                        }`}>
+                          {vehicle.nickname || [vehicle.year, vehicle.make, vehicle.name].filter(Boolean).join(' ')}
+                        </h3>
+                        {vehicle.nickname && (
+                          <p className={`text-sm mb-2 ${
+                            darkMode ? 'text-gray-400' : 'text-slate-600'
+                          }`}>
+                            {[vehicle.year, vehicle.make, vehicle.name].filter(Boolean).join(' ')}
+                          </p>
+                        )}
+                        {vehicle.vin && (
+                          <div className="mt-2">
+                            <span className={`inline-block px-3 py-1 rounded-full text-xs font-mono ${
+                              darkMode ? 'bg-gray-700 text-gray-300' : 'bg-gray-200 text-gray-900'
+                            }`}>
+                              VIN: {vehicle.vin}
+                            </span>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </>
+            )}
 
             {/* Empty State */}
             {vehicles.length === 0 && (
