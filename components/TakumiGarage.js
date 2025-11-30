@@ -6064,9 +6064,13 @@ const TakumiGarage = () => {
                                     className="fixed inset-0 z-10"
                                     onClick={() => setShowAddProjectVehicleDropdown(false)}
                                   />
-                                  <div className={`absolute left-0 right-0 z-20 mt-1 rounded-lg border shadow-lg py-1 max-h-60 overflow-y-auto ${
+                                  <div className={`absolute right-0 md:left-0 z-20 mt-1 rounded-lg border shadow-lg py-1 max-h-60 overflow-y-auto ${
                                     darkMode ? 'bg-gray-700 border-gray-600' : 'bg-slate-50 border-slate-300'
-                                  }`}>
+                                  }`}
+                                  style={{
+                                    minWidth: '200px'
+                                  }}
+                                  >
                                     <button
                                       type="button"
                                       onClick={() => {
