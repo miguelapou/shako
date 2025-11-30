@@ -8281,6 +8281,10 @@ const TakumiGarage = () => {
               </div>
             )}
           </>
+          </div>
+        )}
+
+        </>
         )}
       </div>
       {/* Confirmation Dialog */}
