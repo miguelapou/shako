@@ -6673,41 +6673,51 @@ const TakumiGarage = () => {
               ))}
             </div>
 
-            {/* Archive Drop Zone - appears when dragging an active vehicle */}
-            {draggedVehicle && !draggedVehicle.archived && (
-              <div
-                onDragOver={(e) => {
-                  e.preventDefault();
-                  setDragOverArchiveZone(true);
-                }}
-                onDragLeave={() => setDragOverArchiveZone(false)}
-                onDrop={(e) => {
-                  e.preventDefault();
-                  handleArchiveZoneDrop(true);
-                }}
-                className={`mt-6 p-6 rounded-lg border-2 border-dashed transition-all ${
-                  dragOverArchiveZone
-                    ? darkMode
-                      ? 'border-blue-500 bg-blue-500/10'
-                      : 'border-blue-600 bg-blue-100/50'
-                    : darkMode
-                      ? 'border-gray-600 bg-gray-800/50'
-                      : 'border-gray-300 bg-gray-100/50'
-                }`}
-              >
-                <p className={`text-center text-sm ${
-                  dragOverArchiveZone
-                    ? darkMode ? 'text-blue-400' : 'text-blue-600'
-                    : darkMode ? 'text-gray-400' : 'text-gray-600'
-                }`}>
-                  Drop here to archive
-                </p>
-              </div>
-            )}
-
             {/* Archived Vehicles Section */}
             {vehicles.filter(v => v.archived).length > 0 && (
               <>
+                <div className={`my-8 border-t ${
+                  darkMode ? 'border-gray-700' : 'border-slate-300'
+                }`}>
+                  <h2 className={`text-lg font-semibold mt-8 mb-6 ${
+                    darkMode ? 'text-gray-300' : 'text-slate-700'
+                  }`}>
+                    Archived Vehicles
+                  </h2>
+                </div>
+
+                {/* Archive Drop Zone - appears when dragging an active vehicle */}
+                {draggedVehicle && !draggedVehicle.archived && (
+                  <div
+                    onDragOver={(e) => {
+                      e.preventDefault();
+                      setDragOverArchiveZone(true);
+                    }}
+                    onDragLeave={() => setDragOverArchiveZone(false)}
+                    onDrop={(e) => {
+                      e.preventDefault();
+                      handleArchiveZoneDrop(true);
+                    }}
+                    className={`hidden md:block mb-6 p-6 rounded-lg border-2 border-dashed transition-all ${
+                      dragOverArchiveZone
+                        ? darkMode
+                          ? 'border-blue-500 bg-blue-500/10'
+                          : 'border-blue-600 bg-blue-100/50'
+                        : darkMode
+                          ? 'border-gray-600 bg-gray-800/50'
+                          : 'border-gray-300 bg-gray-100/50'
+                    }`}
+                  >
+                    <p className={`text-center text-sm ${
+                      dragOverArchiveZone
+                        ? darkMode ? 'text-blue-400' : 'text-blue-600'
+                        : darkMode ? 'text-gray-400' : 'text-gray-600'
+                    }`}>
+                      Drop here to archive
+                    </p>
+                  </div>
+                )}
+
                 {/* Unarchive Drop Zone - appears when dragging an archived vehicle */}
                 {draggedVehicle && draggedVehicle.archived && (
                   <div
@@ -6720,7 +6730,7 @@ const TakumiGarage = () => {
                       e.preventDefault();
                       handleArchiveZoneDrop(false);
                     }}
-                    className={`mb-6 p-6 rounded-lg border-2 border-dashed transition-all ${
+                    className={`hidden md:block mb-6 p-6 rounded-lg border-2 border-dashed transition-all ${
                       dragOverArchiveZone
                         ? darkMode
                           ? 'border-green-500 bg-green-500/10'
@@ -6739,15 +6749,6 @@ const TakumiGarage = () => {
                     </p>
                   </div>
                 )}
-                <div className={`my-8 border-t ${
-                  darkMode ? 'border-gray-700' : 'border-slate-300'
-                }`}>
-                  <h2 className={`text-lg font-semibold mt-8 mb-6 ${
-                    darkMode ? 'text-gray-300' : 'text-slate-700'
-                  }`}>
-                    Archived Vehicles
-                  </h2>
-                </div>
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                   {vehicles.filter(v => v.archived).map((vehicle) => (
                     <div
