@@ -6783,8 +6783,8 @@ const TakumiGarage = () => {
                           }
                         }}
                         onDragEnd={handleVehicleDragEnd}
-                        className={`absolute top-2 left-2 cursor-grab active:cursor-grabbing hidden md:block ${
-                          darkMode ? 'text-gray-500 hover:text-gray-400' : 'text-gray-400 hover:text-gray-600'
+                        className={`absolute top-2 left-2 cursor-grab active:cursor-grabbing hidden md:block z-10 ${
+                          darkMode ? 'text-gray-400 hover:text-gray-300' : 'text-gray-500 hover:text-gray-700'
                         }`}
                       >
                         <GripVertical className="w-5 h-5" />
