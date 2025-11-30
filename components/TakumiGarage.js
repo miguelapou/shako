@@ -5882,7 +5882,28 @@ const TakumiGarage = () => {
               })}
             </div>
 
-            {/* Empty State */}
+            {/* Empty State - Vehicle has no projects */}
+            {projectVehicleFilter !== 'all' && projects.filter(project => String(project.vehicle_id) === String(projectVehicleFilter)).length === 0 && (
+              <div className={`text-center py-12 rounded-lg ${
+                darkMode ? 'bg-gray-800' : 'bg-slate-100'
+              }`}>
+                <Car className={`w-16 h-16 mx-auto mb-4 opacity-40 ${
+                  darkMode ? 'text-gray-600' : 'text-gray-400'
+                }`} />
+                <h3 className={`text-xl font-semibold mb-2 ${
+                  darkMode ? 'text-gray-300' : 'text-slate-700'
+                }`}>
+                  Selected vehicle has no linked projects
+                </h3>
+                <p className={`${
+                  darkMode ? 'text-gray-400' : 'text-slate-600'
+                }`}>
+                  Create a project or link an existing one to this vehicle
+                </p>
+              </div>
+            )}
+
+            {/* Empty State - No projects at all */}
             {projects.length === 0 && (
               <div className={`text-center py-12 rounded-lg ${
                 darkMode ? 'bg-gray-800' : 'bg-slate-100'
