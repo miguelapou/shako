@@ -6401,7 +6401,7 @@ const TakumiGarage = () => {
           <div className="slide-in-right">
           <>
             {/* Vehicles Grid */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 auto-rows-fr">
               {vehicles.map((vehicle) => (
                 <div
                   key={vehicle.id}
@@ -6414,7 +6414,7 @@ const TakumiGarage = () => {
                     setOriginalVehicleData({ ...vehicle }); // Save original data for unsaved changes check
                     setShowVehicleDetailModal(true);
                   }}
-                  className={`relative rounded-lg shadow-lg pt-3 pb-6 px-6 transition-all duration-200 hover:shadow-2xl hover:scale-[1.03] cursor-pointer border-t-4 ${
+                  className={`relative rounded-lg shadow-lg pt-3 pb-4 px-6 transition-all duration-200 hover:shadow-2xl hover:scale-[1.03] cursor-pointer border-t-4 flex flex-col ${
                     draggedVehicle?.id === vehicle.id 
                       ? 'ring-2 ring-blue-500 ring-offset-2' 
                       : dragOverVehicle?.id === vehicle.id
@@ -6555,11 +6555,13 @@ const TakumiGarage = () => {
                                     </span>
                                   ))}
                                   {vehicleProjects.length > 4 && (
-                                    <span className={`inline-flex items-center px-2 py-1 rounded text-xs ${
-                                      darkMode ? 'text-gray-500' : 'text-gray-600'
-                                    }`}>
-                                      +{vehicleProjects.length - 4} more
-                                    </span>
+                                    <div className="w-full text-center">
+                                      <span className={`inline-flex items-center px-2 py-1 rounded text-xs ${
+                                        darkMode ? 'text-gray-500' : 'text-gray-600'
+                                      }`}>
+                                        +{vehicleProjects.length - 4} more
+                                      </span>
+                                    </div>
                                   )}
                                 </div>
                               ) : (
