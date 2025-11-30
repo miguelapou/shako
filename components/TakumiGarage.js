@@ -7214,6 +7214,16 @@ const TakumiGarage = () => {
                                 }`}>{viewingVehicle.year}</p>
                               </div>
                             )}
+                            {viewingVehicle.make && (
+                              <div>
+                                <p className={`text-sm font-medium mb-1 ${
+                                  darkMode ? 'text-gray-400' : 'text-slate-600'
+                                }`}>Make</p>
+                                <p className={`text-base ${
+                                  darkMode ? 'text-gray-100' : 'text-slate-800'
+                                }`}>{viewingVehicle.make}</p>
+                              </div>
+                            )}
                             {viewingVehicle.name && (
                               <div>
                                 <p className={`text-sm font-medium mb-1 ${
@@ -7250,17 +7260,17 @@ const TakumiGarage = () => {
                                 </span>
                               </div>
                             )}
+                            {viewingVehicle.insurance_policy && (
+                              <div>
+                                <p className={`text-sm font-medium mb-1 ${
+                                  darkMode ? 'text-gray-400' : 'text-slate-600'
+                                }`}>Insurance Policy</p>
+                                <p className={`text-base ${
+                                  darkMode ? 'text-gray-100' : 'text-slate-800'
+                                }`}>{viewingVehicle.insurance_policy}</p>
+                              </div>
+                            )}
                           </div>
-                          {viewingVehicle.insurance_policy && (
-                            <div className="col-span-2">
-                              <p className={`text-sm font-medium mb-1 ${
-                                darkMode ? 'text-gray-400' : 'text-slate-600'
-                              }`}>Insurance Policy</p>
-                              <p className={`text-base ${
-                                darkMode ? 'text-gray-100' : 'text-slate-800'
-                              }`}>{viewingVehicle.insurance_policy}</p>
-                            </div>
-                          )}
                           {/* Total Spent on Linked Projects */}
                           {(() => {
                             const vehicleProjects = projects.filter(p => p.vehicle_id === viewingVehicle.id);
