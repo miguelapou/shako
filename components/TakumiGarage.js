@@ -1739,6 +1739,12 @@ const TakumiGarage = () => {
   const tabRefs = useRef({});
   const [underlineStyle, setUnderlineStyle] = useState({ left: 0, width: 0 });
   const [hoverTab, setHoverTab] = useState(null);
+  const [isTouchDevice, setIsTouchDevice] = useState(false);
+
+  // Detect touch device on mount
+  useEffect(() => {
+    setIsTouchDevice('ontouchstart' in window || navigator.maxTouchPoints > 0);
+  }, []);
 
   // Vehicle modal states
   const [showAddVehicleModal, setShowAddVehicleModal] = useState(false);
@@ -3512,8 +3518,8 @@ const TakumiGarage = () => {
             <button
               ref={(el) => (tabRefs.current['vehicles'] = el)}
               onClick={() => handleTabChange('vehicles')}
-              onMouseEnter={() => setHoverTab('vehicles')}
-              onMouseLeave={() => setHoverTab(null)}
+              onMouseEnter={() => !isTouchDevice && setHoverTab('vehicles')}
+              onMouseLeave={() => !isTouchDevice && setHoverTab(null)}
               onTouchStart={() => setHoverTab(null)}
               className={`flex items-center justify-center sm:justify-start gap-2 flex-1 sm:flex-initial px-3 sm:px-6 py-3 font-medium transition-all relative z-10 ${
                 activeTab === 'vehicles'
@@ -3531,8 +3537,8 @@ const TakumiGarage = () => {
             <button
               ref={(el) => (tabRefs.current['projects'] = el)}
               onClick={() => handleTabChange('projects')}
-              onMouseEnter={() => setHoverTab('projects')}
-              onMouseLeave={() => setHoverTab(null)}
+              onMouseEnter={() => !isTouchDevice && setHoverTab('projects')}
+              onMouseLeave={() => !isTouchDevice && setHoverTab(null)}
               onTouchStart={() => setHoverTab(null)}
               className={`flex items-center justify-center sm:justify-start gap-2 flex-1 sm:flex-initial px-3 sm:px-6 py-3 font-medium transition-all relative z-10 ${
                 activeTab === 'projects'
@@ -3550,8 +3556,8 @@ const TakumiGarage = () => {
             <button
               ref={(el) => (tabRefs.current['parts'] = el)}
               onClick={() => handleTabChange('parts')}
-              onMouseEnter={() => setHoverTab('parts')}
-              onMouseLeave={() => setHoverTab(null)}
+              onMouseEnter={() => !isTouchDevice && setHoverTab('parts')}
+              onMouseLeave={() => !isTouchDevice && setHoverTab(null)}
               onTouchStart={() => setHoverTab(null)}
               className={`flex items-center justify-center sm:justify-start gap-2 flex-1 sm:flex-initial px-3 sm:px-6 py-3 font-medium transition-all relative z-10 ${
                 activeTab === 'parts'
