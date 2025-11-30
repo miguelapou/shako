@@ -3372,12 +3372,6 @@ const TakumiGarage = () => {
           scrollbar-width: none;
           -ms-overflow-style: none;
         }
-        /* Disable hover effects on touch devices */
-        @media (hover: none) {
-          .tab-button:hover {
-            color: inherit !important;
-          }
-        }
       `}</style>
       <div className="max-w-7xl mx-auto">
         {/* Header */}
@@ -3521,14 +3515,14 @@ const TakumiGarage = () => {
               onMouseEnter={() => setHoverTab('vehicles')}
               onMouseLeave={() => setHoverTab(null)}
               onTouchStart={() => setHoverTab(null)}
-              className={`tab-button flex items-center justify-center sm:justify-start gap-2 flex-1 sm:flex-initial px-3 sm:px-6 py-3 font-medium transition-all relative z-10 ${
+              className={`flex items-center justify-center sm:justify-start gap-2 flex-1 sm:flex-initial px-3 sm:px-6 py-3 font-medium transition-all relative z-10 ${
                 activeTab === 'vehicles'
                   ? darkMode
                     ? 'text-blue-400'
                     : 'text-blue-600'
                   : darkMode
-                    ? 'text-gray-400 hover:text-gray-300'
-                    : 'text-slate-600 hover:text-slate-800'
+                    ? 'text-gray-400'
+                    : 'text-slate-600'
               }`}
             >
               <Car className="w-5 h-5" />
@@ -3540,14 +3534,14 @@ const TakumiGarage = () => {
               onMouseEnter={() => setHoverTab('projects')}
               onMouseLeave={() => setHoverTab(null)}
               onTouchStart={() => setHoverTab(null)}
-              className={`tab-button flex items-center justify-center sm:justify-start gap-2 flex-1 sm:flex-initial px-3 sm:px-6 py-3 font-medium transition-all relative z-10 ${
+              className={`flex items-center justify-center sm:justify-start gap-2 flex-1 sm:flex-initial px-3 sm:px-6 py-3 font-medium transition-all relative z-10 ${
                 activeTab === 'projects'
                   ? darkMode
                     ? 'text-blue-400'
                     : 'text-blue-600'
                   : darkMode
-                    ? 'text-gray-400 hover:text-gray-300'
-                    : 'text-slate-600 hover:text-slate-800'
+                    ? 'text-gray-400'
+                    : 'text-slate-600'
               }`}
             >
               <Wrench className="w-5 h-5" />
@@ -3559,14 +3553,14 @@ const TakumiGarage = () => {
               onMouseEnter={() => setHoverTab('parts')}
               onMouseLeave={() => setHoverTab(null)}
               onTouchStart={() => setHoverTab(null)}
-              className={`tab-button flex items-center justify-center sm:justify-start gap-2 flex-1 sm:flex-initial px-3 sm:px-6 py-3 font-medium transition-all relative z-10 ${
+              className={`flex items-center justify-center sm:justify-start gap-2 flex-1 sm:flex-initial px-3 sm:px-6 py-3 font-medium transition-all relative z-10 ${
                 activeTab === 'parts'
                   ? darkMode
                     ? 'text-blue-400'
                     : 'text-blue-600'
                   : darkMode
-                    ? 'text-gray-400 hover:text-gray-300'
-                    : 'text-slate-600 hover:text-slate-800'
+                    ? 'text-gray-400'
+                    : 'text-slate-600'
               }`}
             >
               <Package className="w-5 h-5" />
