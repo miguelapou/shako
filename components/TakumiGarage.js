@@ -8280,7 +8280,6 @@ const TakumiGarage = () => {
                 </div>
               </div>
             )}
-      </div>
       {/* Confirmation Dialog */}
       <ConfirmDialog
         isOpen={confirmDialog.isOpen}
