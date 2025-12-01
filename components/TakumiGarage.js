@@ -6800,7 +6800,7 @@ const TakumiGarage = () => {
                   <h2 className={`text-lg font-semibold mt-8 mb-6 ${
                     darkMode ? 'text-gray-300' : 'text-slate-700'
                   }`}>
-                    Archived Vehicles
+                    Archive
                   </h2>
                 </div>
 
