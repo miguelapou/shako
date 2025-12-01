@@ -402,7 +402,7 @@ const ProjectDetailView = ({
               <span className={`text-sm font-medium ${
                 darkMode ? 'text-gray-300' : 'text-slate-700'
               }`}>
-                ${linkedPartsTotal.toFixed(2)} / ${Math.round(project.budget || 0)}
+                ${linkedPartsTotal.toFixed(2)} / ${project.budget?.toFixed(2) || '0.00'}
               </span>
               <span className={`text-sm font-bold ${
                 darkMode ? 'text-gray-200' : 'text-gray-900'
@@ -1028,27 +1028,17 @@ const ProjectDetailView = ({
       )}
 
       {linkedParts.length === 0 && (
-        <div className={`pt-6 border-t ${
-          darkMode ? 'border-gray-700' : 'border-slate-200'
+        <div className={`text-center py-8 rounded-lg ${
+          darkMode ? 'bg-gray-700' : 'bg-gray-50'
         }`}>
-          <h3 className={`text-lg font-semibold mb-3 ${
-            darkMode ? 'text-gray-200' : 'text-gray-800'
+          <Package className={`w-12 h-12 mx-auto mb-3 ${
+            darkMode ? 'text-gray-600' : 'text-gray-400'
+          }`} />
+          <p className={`text-sm ${
+            darkMode ? 'text-gray-400' : 'text-slate-600'
           }`}>
-            <div className="flex items-center gap-2">
-              <Package className="w-5 h-5" />
-              <span>Linked Parts (0)</span>
-            </div>
-          </h3>
-          <div className="text-center py-8">
-            <Package className={`w-12 h-12 mx-auto mb-2 opacity-40 ${
-              darkMode ? 'text-gray-400' : 'text-gray-500'
-            }`} />
-            <p className={`text-sm ${
-              darkMode ? 'text-gray-400' : 'text-gray-500'
-            }`}>
-              No parts linked
-            </p>
-          </div>
+            No parts linked to this project yet
+          </p>
         </div>
       )}
       {/* Confirmation Dialog */}
@@ -1478,14 +1468,9 @@ const ProjectEditForm = ({
                     className="fixed inset-0 z-10"
                     onClick={() => setShowVehicleDropdown(false)}
                   />
-                  <div 
-                    className={`absolute right-0 md:left-0 z-20 mt-1 rounded-lg border shadow-lg py-1 max-h-60 overflow-y-auto vehicle-dropdown-scroll ${
-                      darkMode ? 'bg-gray-700 border-gray-600' : 'bg-slate-50 border-slate-300'
-                    }`}
-                    style={{
-                      minWidth: '200px'
-                    }}
-                  >
+                  <div className={`absolute left-0 right-0 z-20 mt-1 rounded-lg border shadow-lg py-1 max-h-60 overflow-y-auto ${
+                    darkMode ? 'bg-gray-700 border-gray-600' : 'bg-slate-50 border-slate-300'
+                  }`}>
                     <button
                       type="button"
                       onClick={() => {
@@ -1589,6 +1574,9 @@ const LinkedPartsSection = ({
   setConfirmDialog
 }) => {
   const linkedParts = parts.filter(part => part.projectId === projectId);
+  if (linkedParts.length === 0) {
+    return null;
+  }
 
   return (
     <div className={`mt-6 pt-6 border-t ${
@@ -1602,80 +1590,58 @@ const LinkedPartsSection = ({
           <span>Linked Parts ({linkedParts.length})</span>
         </div>
       </h3>
-      {linkedParts.length === 0 ? (
-        <div className={`text-center py-8 rounded-lg border ${
-          darkMode ? 'bg-gray-700/30 border-gray-600 text-gray-400' : 'bg-gray-50 border-gray-200 text-gray-500'
-        }`}>
-          <Package className="w-12 h-12 mx-auto mb-2 opacity-40" />
-          <p className="text-sm">No parts linked</p>
-        </div>
-      ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 md:max-h-[540px] overflow-y-auto pr-2">
-          {linkedParts.map((part) => (
-            <div 
-              key={part.id}
-              className={`p-3 rounded-lg border flex items-center justify-between gap-3 ${
-                darkMode ? 'bg-gray-700 border-gray-600' : 'bg-gray-50 border-gray-200'
-              }`}
-            >
-              <div className="flex-1 min-w-0">
-                <h4 className={`font-medium truncate ${
-                  darkMode ? 'text-gray-100' : 'text-slate-800'
-                }`}>
-                  {part.part}
-                </h4>
-                <div className="flex items-center gap-2 mt-1 flex-wrap">
-                  {part.vendor && (
-                    <span className={`inline-block px-2 py-0.5 rounded-full text-xs font-medium ${getVendorColor(part.vendor)}`}>
-                      {part.vendor}
-                    </span>
-                  )}
-                  <span className={`text-sm font-bold ${
-                    darkMode ? 'text-gray-200' : 'text-gray-900'
-                  }`}>
-                    ${part.total.toFixed(2)}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 md:max-h-[540px] overflow-y-auto pr-2">
+        {linkedParts.map((part) => (
+          <div 
+            key={part.id}
+            className={`p-3 rounded-lg border flex items-center justify-between gap-3 ${
+              darkMode ? 'bg-gray-700 border-gray-600' : 'bg-gray-50 border-gray-200'
+            }`}
+          >
+            <div className="flex-1 min-w-0">
+              <h4 className={`font-medium truncate ${
+                darkMode ? 'text-gray-100' : 'text-slate-800'
+              }`}>
+                {part.part}
+              </h4>
+              <div className="flex items-center gap-2 mt-1 flex-wrap">
+                {part.vendor && (
+                  <span className={`inline-block px-2 py-0.5 rounded-full text-xs font-medium ${getVendorColor(part.vendor)}`}>
+                    {part.vendor}
                   </span>
-                </div>
+                )}
+                <span className={`text-sm font-bold ${
+                  darkMode ? 'text-gray-200' : 'text-gray-900'
+                }`}>
+                  ${part.total.toFixed(2)}
+                </span>
               </div>
-              <button
-                onClick={() => {
-                  setConfirmDialog({
-                    isOpen: true,
-                    title: 'Unlink Part',
-                    message: `Are you sure you want to unlink "${part.part}" from this project?`,
-                    confirmText: 'Unlink',
-                    onConfirm: () => {
-                      unlinkPartFromProject(part.id);
-                    }
-                  });
-                }}
-                className={`flex-shrink-0 px-3 py-1.5 rounded-lg text-sm font-medium transition-colors border ${
-                  darkMode 
-                    ? 'text-gray-400 hover:text-red-400 hover:bg-gray-600 border-gray-600 hover:border-red-500' 
-                    : 'text-gray-600 hover:text-red-600 hover:bg-red-50 border-gray-300 hover:border-red-300'
-                }`}
-                title="Unlink from project"
-              >
-                Unlink
-              </button>
             </div>
-          ))}
-        </div>
-      )}
+            <button
+              onClick={() => {
+                setConfirmDialog({
+                  isOpen: true,
+                  title: 'Unlink Part',
+                  message: `Are you sure you want to unlink "${part.part}" from this project?`,
+                  confirmText: 'Unlink',
+                  onConfirm: () => {
+                    unlinkPartFromProject(part.id);
+                  }
+                });
+              }}
+              className={`flex-shrink-0 px-3 py-1.5 rounded-lg text-sm font-medium transition-colors border ${
+                darkMode 
+                  ? 'text-gray-400 hover:text-red-400 hover:bg-gray-600 border-gray-600 hover:border-red-500' 
+                  : 'text-gray-600 hover:text-red-600 hover:bg-red-50 border-gray-300 hover:border-red-300'
+              }`}
+              title="Unlink from project"
+            >
+              Unlink
+            </button>
+          </div>
+        ))}
+      </div>
     </div>
-  );
-};
-
-// PriceDisplay Component - displays price with smaller decimal portion
-const PriceDisplay = ({ amount, className = '', darkMode }) => {
-  const formattedAmount = amount.toFixed(2);
-  const [dollars, cents] = formattedAmount.split('.');
-  
-  return (
-    <span className={className}>
-      ${dollars}
-      <span className="text-[0.7em]">.{cents}</span>
-    </span>
   );
 };
 
@@ -1720,7 +1686,6 @@ const VendorSelect = ({ value, onChange, darkMode, uniqueVendors }) => {
 };
 
 const TakumiGarage = () => {
-  console.log('=== COMPONENT RENDER ===');
   const [parts, setParts] = useState([]);
   const [projects, setProjects] = useState([]);
   const [vehicles, setVehicles] = useState([]);
@@ -1731,7 +1696,6 @@ const TakumiGarage = () => {
   const [dragOverProject, setDragOverProject] = useState(null);
   const [draggedVehicle, setDraggedVehicle] = useState(null);
   const [dragOverVehicle, setDragOverVehicle] = useState(null);
-  const [dragOverArchiveZone, setDragOverArchiveZone] = useState(false);
 
   // Track if we're transitioning between modals to prevent scroll jumping
   const isTransitioningModals = useRef(false);
@@ -1741,12 +1705,6 @@ const TakumiGarage = () => {
   const tabRefs = useRef({});
   const [underlineStyle, setUnderlineStyle] = useState({ left: 0, width: 0 });
   const [hoverTab, setHoverTab] = useState(null);
-  const [isTouchDevice, setIsTouchDevice] = useState(false);
-
-  // Detect touch device on mount
-  useEffect(() => {
-    setIsTouchDevice('ontouchstart' in window || navigator.maxTouchPoints > 0);
-  }, []);
 
   // Vehicle modal states
   const [showAddVehicleModal, setShowAddVehicleModal] = useState(false);
@@ -2228,7 +2186,7 @@ const TakumiGarage = () => {
   const handleVehicleDragOver = (e, vehicle) => {
     e.preventDefault();
     e.dataTransfer.dropEffect = 'move';
-    if (draggedVehicle && draggedVehicle.id !== vehicle.id && dragOverVehicle?.id !== vehicle.id) {
+    if (draggedVehicle && draggedVehicle.id !== vehicle.id) {
       setDragOverVehicle(vehicle);
     }
   };
@@ -2245,45 +2203,6 @@ const TakumiGarage = () => {
       return;
     }
 
-    // Check if the drag would change archive status
-    const draggedIsArchived = draggedVehicle.archived || false;
-    const targetIsArchived = targetVehicle.archived || false;
-
-    if (draggedIsArchived !== targetIsArchived) {
-      // Show confirmation dialog for archive/unarchive
-      setConfirmDialog({
-        isOpen: true,
-        title: draggedIsArchived ? 'Unarchive Vehicle' : 'Archive Vehicle',
-        message: draggedIsArchived 
-          ? `Are you sure you want to unarchive "${draggedVehicle.nickname || draggedVehicle.name}"?` 
-          : `Are you sure you want to archive "${draggedVehicle.nickname || draggedVehicle.name}"? It will still be visible but with limited information.`,
-        confirmText: draggedIsArchived ? 'Unarchive' : 'Archive',
-        isDangerous: false,
-        onConfirm: async () => {
-          // Update the vehicle's archived status
-          const updates = { archived: !draggedIsArchived };
-          if (!draggedIsArchived) {
-            // Archiving: set display_order to max + 1
-            const maxOrder = Math.max(...vehicles.map(v => v.display_order || 0), 0);
-            updates.display_order = maxOrder + 1;
-          }
-          await updateVehicle(draggedVehicle.id, updates);
-          
-          // Reload vehicles to reflect the change
-          await loadVehicles();
-          
-          setDraggedVehicle(null);
-          setDragOverVehicle(null);
-        }
-      });
-      
-      // Clear drag state but don't reorder
-      setDraggedVehicle(null);
-      setDragOverVehicle(null);
-      return;
-    }
-
-    // Normal reordering within same section
     const draggedIndex = vehicles.findIndex(v => v.id === draggedVehicle.id);
     const targetIndex = vehicles.findIndex(v => v.id === targetVehicle.id);
 
@@ -2302,44 +2221,6 @@ const TakumiGarage = () => {
   const handleVehicleDragEnd = () => {
     setDraggedVehicle(null);
     setDragOverVehicle(null);
-    setDragOverArchiveZone(false);
-  };
-
-  const handleArchiveZoneDrop = (shouldArchive) => {
-    if (!draggedVehicle) return;
-
-    const draggedIsArchived = draggedVehicle.archived || false;
-    
-    // If already in the correct state, do nothing
-    if (draggedIsArchived === shouldArchive) {
-      setDraggedVehicle(null);
-      setDragOverArchiveZone(false);
-      return;
-    }
-
-    // Show confirmation dialog
-    setConfirmDialog({
-      isOpen: true,
-      title: shouldArchive ? 'Archive Vehicle' : 'Unarchive Vehicle',
-      message: shouldArchive 
-        ? `Are you sure you want to archive "${draggedVehicle.nickname || draggedVehicle.name}"? It will still be visible but with limited information.`
-        : `Are you sure you want to unarchive "${draggedVehicle.nickname || draggedVehicle.name}"?`,
-      confirmText: shouldArchive ? 'Archive' : 'Unarchive',
-      isDangerous: false,
-      onConfirm: async () => {
-        const updates = { archived: shouldArchive };
-        if (shouldArchive) {
-          // Archiving: set display_order to max + 1
-          const maxOrder = Math.max(...vehicles.map(v => v.display_order || 0), 0);
-          updates.display_order = maxOrder + 1;
-        }
-        await updateVehicle(draggedVehicle.id, updates);
-        await loadVehicles();
-      }
-    });
-
-    setDraggedVehicle(null);
-    setDragOverArchiveZone(false);
   };
 
   // Tab change handler to track animation direction
@@ -3450,49 +3331,18 @@ const TakumiGarage = () => {
         .scrollbar-hide::-webkit-scrollbar {
           display: none;
         }
-        .vehicle-dropdown-scroll::-webkit-scrollbar {
-          display: none;
-        }
-        .vehicle-dropdown-scroll {
-          scrollbar-width: none;
-          -ms-overflow-style: none;
-        }
-        
-        /* Custom 800px breakpoint */
-        .hidden-below-800 {
-          display: none;
-        }
-        @media (min-width: 800px) {
-          .hidden-below-800 {
-            display: block;
-          }
-          .flex-below-800 {
-            display: flex;
-          }
-          .grid-below-800 {
-            display: grid;
-          }
-        }
-        .show-below-800 {
-          display: block;
-        }
-        @media (min-width: 800px) {
-          .show-below-800 {
-            display: none;
-          }
-        }
       `}</style>
       <div className="max-w-7xl mx-auto">
         {/* Header */}
-        <div className="mb-3 sm:mb-4 min-h-[52px] sm:min-h-[60px]">
-          <div className="flex items-center justify-between">
+        <div className="mb-6 sm:mb-8">
+          <div className="flex items-start justify-between">
             <div className="flex items-center gap-3">
               <img src="/icon.png" alt="Takumi Garage" className="w-8 h-8 sm:w-10 sm:h-10 lg:w-12 lg:h-12" />
               <h1 className={`text-2xl sm:text-3xl lg:text-4xl font-bold ${
                 darkMode ? 'text-gray-100' : 'text-slate-800'
               }`} style={{ fontFamily: "'FoundationOne', 'Courier New', monospace" }}>TAKUMI GARAGE</h1>
             </div>
-            <div className="flex items-center gap-2 sm:gap-3 min-h-[44px]">
+            <div className="flex items-center gap-2 sm:gap-3">
               {/* Vehicle Filter - Only visible on Projects tab */}
               {activeTab === 'projects' && (
                 <div className="relative">
@@ -3621,17 +3471,16 @@ const TakumiGarage = () => {
             <button
               ref={(el) => (tabRefs.current['vehicles'] = el)}
               onClick={() => handleTabChange('vehicles')}
-              onMouseEnter={() => !isTouchDevice && setHoverTab('vehicles')}
-              onMouseLeave={() => !isTouchDevice && setHoverTab(null)}
-              onTouchStart={() => setHoverTab(null)}
+              onMouseEnter={() => setHoverTab('vehicles')}
+              onMouseLeave={() => setHoverTab(null)}
               className={`flex items-center justify-center sm:justify-start gap-2 flex-1 sm:flex-initial px-3 sm:px-6 py-3 font-medium transition-all relative z-10 ${
                 activeTab === 'vehicles'
                   ? darkMode
                     ? 'text-blue-400'
                     : 'text-blue-600'
                   : darkMode
-                    ? 'text-gray-400'
-                    : 'text-slate-600'
+                    ? 'text-gray-400 hover:text-gray-300'
+                    : 'text-slate-600 hover:text-slate-800'
               }`}
             >
               <Car className="w-5 h-5" />
@@ -3640,17 +3489,16 @@ const TakumiGarage = () => {
             <button
               ref={(el) => (tabRefs.current['projects'] = el)}
               onClick={() => handleTabChange('projects')}
-              onMouseEnter={() => !isTouchDevice && setHoverTab('projects')}
-              onMouseLeave={() => !isTouchDevice && setHoverTab(null)}
-              onTouchStart={() => setHoverTab(null)}
+              onMouseEnter={() => setHoverTab('projects')}
+              onMouseLeave={() => setHoverTab(null)}
               className={`flex items-center justify-center sm:justify-start gap-2 flex-1 sm:flex-initial px-3 sm:px-6 py-3 font-medium transition-all relative z-10 ${
                 activeTab === 'projects'
                   ? darkMode
                     ? 'text-blue-400'
                     : 'text-blue-600'
                   : darkMode
-                    ? 'text-gray-400'
-                    : 'text-slate-600'
+                    ? 'text-gray-400 hover:text-gray-300'
+                    : 'text-slate-600 hover:text-slate-800'
               }`}
             >
               <Wrench className="w-5 h-5" />
@@ -3659,17 +3507,16 @@ const TakumiGarage = () => {
             <button
               ref={(el) => (tabRefs.current['parts'] = el)}
               onClick={() => handleTabChange('parts')}
-              onMouseEnter={() => !isTouchDevice && setHoverTab('parts')}
-              onMouseLeave={() => !isTouchDevice && setHoverTab(null)}
-              onTouchStart={() => setHoverTab(null)}
+              onMouseEnter={() => setHoverTab('parts')}
+              onMouseLeave={() => setHoverTab(null)}
               className={`flex items-center justify-center sm:justify-start gap-2 flex-1 sm:flex-initial px-3 sm:px-6 py-3 font-medium transition-all relative z-10 ${
                 activeTab === 'parts'
                   ? darkMode
                     ? 'text-blue-400'
                     : 'text-blue-600'
                   : darkMode
-                    ? 'text-gray-400'
-                    : 'text-slate-600'
+                    ? 'text-gray-400 hover:text-gray-300'
+                    : 'text-slate-600 hover:text-slate-800'
               }`}
             >
               <Package className="w-5 h-5" />
@@ -4875,60 +4722,25 @@ const TakumiGarage = () => {
           <div className="slide-in-left">
           <>
         {/* Statistics and Cost Breakdown - Side by Side */}
-        <div className="flex flex-col gap-6 mb-6 stats-container-800">
-          <style>{`
-            @media (min-width: 800px) {
-              .stats-container-800 {
-                display: grid !important;
-                grid-template-columns: 1.5fr 1fr !important;
-              }
-              .stats-cards-800 {
-                display: flex !important;
-                flex-direction: column !important;
-                gap: 1rem !important;
-                height: 100% !important;
-                justify-content: space-between !important;
-                order: 0 !important;
-              }
-              .stats-cards-800 > div:first-child {
-                flex-shrink: 0 !important;
-              }
-              .stats-cards-800 .space-y-4 {
-                margin-top: 0 !important;
-                margin-bottom: 0 !important;
-              }
-              .cost-breakdown-800 {
-                order: 0 !important;
-              }
-              .search-box-800 {
-                display: block !important;
-              }
-              .circular-progress-800 {
-                display: flex !important;
-              }
-              .mobile-progress-800 {
-                display: none !important;
-              }
-            }
-          `}</style>
-          {/* Statistics Cards - 3 column grid on mobile */}
-          <div className="space-y-4 order-1 stats-cards-800">
-            <div className="grid grid-cols-3 gap-3 sm:gap-4">
+        <div className="flex flex-col md:grid md:grid-cols-2 lg:grid-cols-[2fr_1fr] gap-6 mb-6">
+          {/* Statistics Cards - order-1 on mobile, contains search on desktop */}
+          <div className="space-y-4 order-1 md:order-none md:flex md:flex-col">
+            <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
               <div 
                 onClick={() => {
                   setStatusFilter(statusFilter === 'purchased' ? 'all' : 'purchased');
                   setDeliveredFilter('all');
                 }}
-                className={`rounded-lg shadow-md p-3 sm:p-4 md:p-4 border-l-4 border-yellow-500 relative overflow-hidden cursor-pointer transition-all duration-200 hover:shadow-lg hover:scale-[1.02] ${
+                className={`rounded-lg shadow-md p-3 sm:p-4 lg:p-4 border-l-4 border-yellow-500 relative overflow-hidden cursor-pointer transition-all duration-200 hover:shadow-lg hover:scale-[1.02] ${
                   darkMode ? 'bg-gray-800 hover:bg-gray-750' : 'bg-white hover:bg-gray-50'
                 } ${statusFilter === 'purchased' ? 'ring-2 ring-yellow-500' : ''}`}
               >
                 <ShoppingCart className="w-6 h-6 sm:w-8 sm:h-8 text-yellow-500 opacity-20 absolute top-2 sm:top-4 right-2 sm:right-4" />
                 <div>
-                  <p className={`text-xs sm:text-sm mb-1 sm:mb-2 md:mb-3 ${
+                  <p className={`text-xs sm:text-sm mb-1 sm:mb-2 lg:mb-3 ${
                     darkMode ? 'text-gray-400' : 'text-slate-600'
                   }`}>Ordered</p>
-                  <p className={`text-xl sm:text-2xl md:text-2xl font-bold truncate ${
+                  <p className={`text-xl sm:text-2xl lg:text-2xl font-bold truncate ${
                     darkMode ? 'text-gray-100' : 'text-gray-800'
                   }`}>{stats.purchased}</p>
                 </div>
@@ -4939,16 +4751,16 @@ const TakumiGarage = () => {
                   setStatusFilter(statusFilter === 'shipped' ? 'all' : 'shipped');
                   setDeliveredFilter('all');
                 }}
-                className={`rounded-lg shadow-md p-3 sm:p-4 md:p-4 border-l-4 border-blue-500 relative overflow-hidden cursor-pointer transition-all duration-200 hover:shadow-lg hover:scale-[1.02] ${
+                className={`rounded-lg shadow-md p-3 sm:p-4 lg:p-4 border-l-4 border-blue-500 relative overflow-hidden cursor-pointer transition-all duration-200 hover:shadow-lg hover:scale-[1.02] ${
                   darkMode ? 'bg-gray-800 hover:bg-gray-750' : 'bg-white hover:bg-gray-50'
                 } ${statusFilter === 'shipped' ? 'ring-2 ring-blue-500' : ''}`}
               >
                 <Truck className="w-6 h-6 sm:w-8 sm:h-8 text-blue-500 opacity-20 absolute top-2 sm:top-4 right-2 sm:right-4" />
                 <div>
-                  <p className={`text-xs sm:text-sm mb-1 sm:mb-2 md:mb-3 ${
+                  <p className={`text-xs sm:text-sm mb-1 sm:mb-2 lg:mb-3 ${
                     darkMode ? 'text-gray-400' : 'text-slate-600'
                   }`}>Shipped</p>
-                  <p className={`text-xl sm:text-2xl md:text-2xl font-bold truncate ${
+                  <p className={`text-xl sm:text-2xl lg:text-2xl font-bold truncate ${
                     darkMode ? 'text-gray-100' : 'text-gray-800'
                   }`}>{stats.shipped}</p>
                 </div>
@@ -4963,7 +4775,7 @@ const TakumiGarage = () => {
                   );
                   setStatusFilter('all');
                 }}
-                className={`rounded-lg shadow-md p-3 sm:p-4 md:p-4 border-l-4 ${
+                className={`rounded-lg shadow-md p-3 sm:p-4 lg:p-4 border-l-4 ${
                   deliveredFilter === 'hide' ? 'border-red-500' : 'border-green-500'
                 } relative overflow-hidden cursor-pointer transition-all duration-200 hover:shadow-lg hover:scale-[1.02] ${
                   deliveredFilter === 'hide' 
@@ -4975,18 +4787,35 @@ const TakumiGarage = () => {
                   deliveredFilter === 'hide' ? 'text-red-500' : 'text-green-500'
                 } opacity-20 absolute top-2 sm:top-4 right-2 sm:right-4`} />
                 <div>
-                  <p className={`text-xs sm:text-sm mb-1 sm:mb-2 md:mb-3 ${
+                  <p className={`text-xs sm:text-sm mb-1 sm:mb-2 lg:mb-3 ${
                     darkMode ? 'text-gray-400' : 'text-slate-600'
                   }`}>Delivered</p>
-                  <p className={`text-xl sm:text-2xl md:text-2xl font-bold truncate ${
+                  <p className={`text-xl sm:text-2xl lg:text-2xl font-bold truncate ${
                     darkMode ? 'text-gray-100' : 'text-gray-800'
                   }`}>{stats.delivered}</p>
                 </div>
               </div>
+
+              <div 
+                className={`rounded-lg shadow-md p-3 sm:p-4 lg:p-4 border-l-4 border-purple-500 relative overflow-hidden ${
+                  darkMode ? 'bg-gray-800' : 'bg-slate-100'
+                }`}
+                title={`Exact: $${stats.totalCost.toFixed(2)}`}
+              >
+                <BadgeDollarSign className="w-6 h-6 sm:w-8 sm:h-8 text-purple-500 opacity-20 absolute top-2 sm:top-4 right-2 sm:right-4" />
+                <div>
+                  <p className={`text-xs sm:text-sm mb-1 sm:mb-2 lg:mb-3 ${
+                    darkMode ? 'text-gray-400' : 'text-slate-600'
+                  }`}>Total Spent</p>
+                  <p className={`text-lg sm:text-2xl lg:text-2xl font-bold truncate ${
+                    darkMode ? 'text-gray-100' : 'text-gray-800'
+                  }`}>${Math.round(stats.totalCost)}</p>
+                </div>
+              </div>
             </div>
 
-            {/* Search Box - Shows in left column at 800px+ */}
-            <div className={`hidden search-box-800 rounded-lg shadow-md p-3 ${
+            {/* Search Box - Shows in left column on medium+ screens */}
+            <div className={`hidden md:block rounded-lg shadow-md p-3 md:mt-auto ${
               darkMode ? 'bg-gray-800' : 'bg-slate-100'
             }`}>
               <div className="relative">
@@ -5020,125 +4849,66 @@ const TakumiGarage = () => {
 
           </div>
 
-          {/* Cost Breakdown - order-2 on mobile, full column width at 800px+ */}
-          <div className="order-2 cost-breakdown-800">
-            <div className={`rounded-lg shadow-md p-3 pb-2 h-full flex flex-col ${
+          {/* Cost Breakdown - order-2 on mobile, full column width on medium+ */}
+          <div className="order-2 md:order-none">
+            <div className={`rounded-lg shadow-md p-3 h-full flex flex-col ${
               darkMode ? 'bg-gray-800' : 'bg-slate-100'
             }`}>
-            <h3 className={`text-sm font-semibold mb-2 flex items-center gap-2 ${
+            <h3 className={`text-sm md:text-base font-semibold mb-2 flex items-center gap-2 ${
               darkMode ? 'text-gray-100' : 'text-gray-800'
             }`}>
               <TrendingUp className="w-4 h-4" />
               Cost Breakdown
             </h3>
-            <div className="flex gap-4 flex-1">
-              {/* Circular Progress - Desktop Only */}
-              <div className="hidden circular-progress-800 items-center justify-center">
-                <div className="relative w-24 h-24">
-                  <svg className="w-24 h-24 transform -rotate-90">
-                    <circle
-                      cx="48"
-                      cy="48"
-                      r="40"
-                      stroke="currentColor"
-                      strokeWidth="8"
-                      fill="none"
-                      className={darkMode ? 'text-gray-700' : 'text-gray-200'}
-                    />
-                    <circle
-                      cx="48"
-                      cy="48"
-                      r="40"
-                      stroke="currentColor"
-                      strokeWidth="8"
-                      fill="none"
-                      strokeDasharray={`${2 * Math.PI * 40}`}
-                      strokeDashoffset={`${2 * Math.PI * 40 * (1 - (stats.delivered / stats.total))}`}
-                      className="text-green-500 transition-all duration-500"
-                      strokeLinecap="round"
-                    />
-                  </svg>
-                  <div className="absolute inset-0 flex items-center justify-center">
-                    <span className={`text-lg font-bold ${darkMode ? 'text-gray-100' : 'text-gray-800'}`}>
-                      {Math.round((stats.delivered / stats.total) * 100)}%
-                    </span>
-                  </div>
-                </div>
+            <div className="grid grid-cols-1 gap-1 md:gap-1.5 flex-1">
+              <div className={`flex items-center justify-between py-1 md:py-1.5 border-b ${
+                darkMode ? 'border-gray-700' : 'border-gray-100'
+              }`}>
+                <p className={`text-xs ${
+                  darkMode ? 'text-gray-400' : 'text-slate-600'
+                }`}>Parts</p>
+                <p className={`text-sm md:text-base font-semibold truncate ${
+                  darkMode ? 'text-gray-100' : 'text-gray-800'
+                }`}>${stats.totalPrice.toFixed(2)}</p>
               </div>
-
-              {/* Line Items */}
-              <div className="grid grid-cols-1 gap-0.5 flex-1">
-                <div className={`flex items-center justify-between py-0.5`}>
-                  <p className={`text-xs ${
-                    darkMode ? 'text-gray-400' : 'text-slate-600'
-                  }`}>Parts</p>
-                  <PriceDisplay 
-                    amount={stats.totalPrice}
-                    className={`text-sm font-semibold truncate ${
-                      darkMode ? 'text-gray-100' : 'text-gray-800'
-                    }`}
-                    darkMode={darkMode}
-                  />
-                </div>
-                <div className={`flex items-center justify-between py-0.5`}>
-                  <p className={`text-xs ${
-                    darkMode ? 'text-gray-400' : 'text-slate-600'
-                  }`}>Shipping</p>
-                  <PriceDisplay 
-                    amount={stats.totalShipping}
-                    className={`text-sm font-semibold truncate ${
-                      darkMode ? 'text-gray-100' : 'text-gray-800'
-                    }`}
-                    darkMode={darkMode}
-                  />
-                </div>
-                <div className={`flex items-center justify-between py-0.5 border-b ${
-                  darkMode ? 'border-gray-700' : 'border-gray-100'
-                }`}>
-                  <p className={`text-xs ${
-                    darkMode ? 'text-gray-400' : 'text-slate-600'
-                  }`}>Import Duties</p>
-                  <PriceDisplay 
-                    amount={stats.totalDuties}
-                    className={`text-sm font-semibold truncate ${
-                      darkMode ? 'text-gray-100' : 'text-gray-800'
-                    }`}
-                    darkMode={darkMode}
-                  />
-                </div>
-                <div className={`flex items-center justify-between`}>
-                  <p className={`text-sm font-bold ${
-                    darkMode ? 'text-gray-200' : 'text-slate-800'
-                  }`}>Total</p>
-                  <PriceDisplay 
-                    amount={stats.totalCost}
-                    className={`text-base font-bold truncate ${
-                      darkMode ? 'text-gray-100' : 'text-gray-800'
-                    }`}
-                    darkMode={darkMode}
-                  />
-                </div>
-                
-                {/* Mobile Progress Bar */}
-                <div className="pt-1 md:pt-1.5 mt-auto mobile-progress-800">
-                  <p className={`text-xs mb-1 ${
-                    darkMode ? 'text-gray-400' : 'text-slate-600'
-                  }`}>Progress</p>
-                  <div className="flex items-center gap-2">
-                    <div className={`flex-1 rounded-full h-2 ${
-                      darkMode ? 'bg-gray-700' : 'bg-gray-200'
-                    }`}>
-                      <div 
-                        className="bg-green-500 h-2 rounded-full transition-all duration-500"
-                        style={{ width: `${(stats.delivered / stats.total) * 100}%` }}
-                      />
-                    </div>
-                    <span className={`text-xs font-semibold ${
-                      darkMode ? 'text-gray-300' : 'text-slate-700'
-                    }`}>
-                      {Math.round((stats.delivered / stats.total) * 100)}%
-                    </span>
+              <div className={`flex items-center justify-between py-1 md:py-1.5 border-b ${
+                darkMode ? 'border-gray-700' : 'border-gray-100'
+              }`}>
+                <p className={`text-xs ${
+                  darkMode ? 'text-gray-400' : 'text-slate-600'
+                }`}>Shipping</p>
+                <p className={`text-sm md:text-base font-semibold truncate ${
+                  darkMode ? 'text-gray-100' : 'text-gray-800'
+                }`}>${stats.totalShipping.toFixed(2)}</p>
+              </div>
+              <div className={`flex items-center justify-between py-1 md:py-1.5 border-b ${
+                darkMode ? 'border-gray-700' : 'border-gray-100'
+              }`}>
+                <p className={`text-xs ${
+                  darkMode ? 'text-gray-400' : 'text-slate-600'
+                }`}>Import Duties</p>
+                <p className={`text-sm md:text-base font-semibold truncate ${
+                  darkMode ? 'text-gray-100' : 'text-gray-800'
+                }`}>${stats.totalDuties.toFixed(2)}</p>
+              </div>
+              <div className="pt-1 md:pt-1.5 mt-auto">
+                <p className={`text-xs mb-1 ${
+                  darkMode ? 'text-gray-400' : 'text-slate-600'
+                }`}>Progress</p>
+                <div className="flex items-center gap-2">
+                  <div className={`flex-1 rounded-full h-2 ${
+                    darkMode ? 'bg-gray-700' : 'bg-gray-200'
+                  }`}>
+                    <div 
+                      className="bg-green-500 h-2 rounded-full transition-all duration-500"
+                      style={{ width: `${(stats.delivered / stats.total) * 100}%` }}
+                    />
                   </div>
+                  <span className={`text-xs font-semibold ${
+                    darkMode ? 'text-gray-300' : 'text-slate-700'
+                  }`}>
+                    {Math.round((stats.delivered / stats.total) * 100)}%
+                  </span>
                 </div>
               </div>
             </div>
@@ -5180,9 +4950,9 @@ const TakumiGarage = () => {
         </div>
 
         {/* Parts Table */}
-        {/* Desktop Table View - Hidden below 800px */}
+        {/* Desktop Table View - Hidden on mobile */}
         {filteredParts.length > 0 ? (
-        <div className={`hidden-below-800 rounded-lg shadow-md ${
+        <div className={`hidden lg:block rounded-lg shadow-md ${
           darkMode ? 'bg-gray-800' : 'bg-slate-100'
         }`}>
           <div className="overflow-x-auto overflow-y-visible rounded-lg">
@@ -5232,7 +5002,7 @@ const TakumiGarage = () => {
                   </th>
                   <th 
                     onClick={() => handleSort('vehicle')}
-                    className={`hidden xl:table-cell px-6 py-4 text-center text-xs font-semibold uppercase tracking-wider cursor-pointer transition-colors ${
+                    className={`px-6 py-4 text-center text-xs font-semibold uppercase tracking-wider cursor-pointer transition-colors ${
                       darkMode ? 'text-gray-300 hover:bg-gray-600' : 'text-slate-700 hover:bg-slate-200'
                     }`}
                   >
@@ -5312,7 +5082,7 @@ const TakumiGarage = () => {
                     <td className="px-6 py-4 text-center">
                       <ProjectDropdown part={part} />
                     </td>
-                    <td className="hidden xl:table-cell px-6 py-4 text-center">
+                    <td className="px-6 py-4 text-center">
                       {(() => {
                         const partProject = part.projectId ? projects.find(p => p.id === part.projectId) : null;
                         const vehicle = partProject?.vehicle_id ? vehicles.find(v => v.id === partProject.vehicle_id) : null;
@@ -5389,7 +5159,7 @@ const TakumiGarage = () => {
           </div>
         </div>
         ) : (
-          <div className={`hidden-below-800 text-center py-16 rounded-lg ${
+          <div className={`hidden md:block text-center py-16 rounded-lg ${
             darkMode ? 'bg-gray-800' : 'bg-slate-100'
           }`}>
             <Package className={`w-20 h-20 mx-auto mb-4 ${
@@ -5419,9 +5189,9 @@ const TakumiGarage = () => {
           </div>
         )}
 
-        {/* Mobile Card View - Visible only below 800px */}
+        {/* Mobile Card View - Visible only on mobile */}
         {filteredParts.length > 0 ? (
-        <div className="show-below-800 grid grid-cols-1 gap-4">
+        <div className="lg:hidden grid grid-cols-1 gap-4">
             {filteredParts.map((part) => (
               <div 
                 key={part.id}
@@ -5605,13 +5375,9 @@ const TakumiGarage = () => {
                     <p className={`text-xs ${
                       darkMode ? 'text-gray-400' : 'text-slate-600'
                     }`}>Total:</p>
-                    <PriceDisplay 
-                      amount={part.total}
-                      className={`text-xl font-bold ${
-                        darkMode ? 'text-gray-100' : 'text-slate-800'
-                      }`}
-                      darkMode={darkMode}
-                    />
+                    <p className={`text-xl font-bold ${
+                      darkMode ? 'text-gray-100' : 'text-slate-800'
+                    }`}>${part.total.toFixed(2)}</p>
                   </div>
                 </div>
 
@@ -5652,7 +5418,7 @@ const TakumiGarage = () => {
             ))}
           </div>
         ) : (
-          <div className={`show-below-800 text-center py-16 rounded-lg ${
+          <div className={`lg:hidden text-center py-16 rounded-lg ${
             darkMode ? 'bg-gray-800' : 'bg-slate-100'
           }`}>
             <Package className={`w-20 h-20 mx-auto mb-4 ${
@@ -5768,32 +5534,32 @@ const TakumiGarage = () => {
                     {/* Project Header */}
                     <div className="mb-4 mt-8">
                       <div className="mb-2">
-                        <h3 className={`text-xl font-bold ${primaryText(darkMode)}`}>
-                          {project.name}
-                        </h3>
-                      </div>
-                      <div className="flex items-center justify-between gap-2">
-                        <span className={`inline-block px-3 py-1 rounded-full text-sm font-medium ${
-                          statusColors[project.status]
-                        }`}>
-                          {project.status.replace('_', ' ').toUpperCase()}
-                        </span>
-                        {(() => {
-                          const vehicle = project.vehicle_id ? vehicles.find(v => v.id === project.vehicle_id) : null;
-                          return vehicle && (
-                            <span 
-                              className={`inline-flex items-center px-2 py-1 rounded text-xs font-medium border ${
-                                darkMode ? 'bg-gray-700 text-gray-300 border-gray-600' : 'bg-gray-100 text-gray-700 border-gray-300'
-                              }`}
-                            >
-                              <Car className="w-3 h-3 mr-1" />
-                              <span style={{ color: vehicle.color || '#3B82F6' }}>
-                                {vehicle.nickname || vehicle.name}
+                        <div className="flex items-center gap-2 mb-2 flex-wrap">
+                          <h3 className={`text-xl font-bold ${primaryText(darkMode)}`}>
+                            {project.name}
+                          </h3>
+                          {(() => {
+                            const vehicle = project.vehicle_id ? vehicles.find(v => v.id === project.vehicle_id) : null;
+                            return vehicle && (
+                              <span 
+                                className={`inline-flex items-center px-2 py-1 rounded text-xs font-medium border ${
+                                  darkMode ? 'bg-gray-700 text-gray-300 border-gray-600' : 'bg-gray-100 text-gray-700 border-gray-300'
+                                }`}
+                              >
+                                <Car className="w-3 h-3 mr-1" />
+                                <span style={{ color: vehicle.color || '#3B82F6' }}>
+                                  {vehicle.nickname || vehicle.name}
+                                </span>
                               </span>
-                            </span>
-                          );
-                        })()}
+                            );
+                          })()}
+                        </div>
                       </div>
+                      <span className={`inline-block px-3 py-1 rounded-full text-sm font-medium ${
+                        statusColors[project.status]
+                      }`}>
+                        {project.status.replace('_', ' ').toUpperCase()}
+                      </span>
                     </div>
 
                     {/* Description */}
@@ -5865,7 +5631,7 @@ const TakumiGarage = () => {
                         <p className={`text-lg font-bold ${
                           darkMode ? 'text-gray-100' : 'text-slate-800'
                         }`}>
-                          ${Math.round(project.budget || 0)}
+                          ${project.budget?.toFixed(2) || '0.00'}
                         </p>
                       </div>
                     </div>
@@ -5922,12 +5688,14 @@ const TakumiGarage = () => {
                               )}
                             </div>
                           ) : (
-                            <div className="text-center py-3">
-                              <Package className={`w-8 h-8 mx-auto mb-1.5 opacity-40 ${
-                                darkMode ? 'text-gray-400' : 'text-gray-500'
+                            <div className={`text-center py-3 rounded-lg ${
+                              darkMode ? 'bg-gray-700' : 'bg-gray-50'
+                            }`}>
+                              <Package className={`w-8 h-8 mx-auto mb-1.5 ${
+                                darkMode ? 'text-gray-600' : 'text-gray-400'
                               }`} />
                               <p className={`text-xs ${
-                                darkMode ? 'text-gray-400' : 'text-gray-500'
+                                darkMode ? 'text-gray-400' : 'text-slate-600'
                               }`}>
                                 No parts linked
                               </p>
@@ -5969,28 +5737,7 @@ const TakumiGarage = () => {
               })}
             </div>
 
-            {/* Empty State - Vehicle has no projects */}
-            {projectVehicleFilter !== 'all' && projects.filter(project => String(project.vehicle_id) === String(projectVehicleFilter)).length === 0 && (
-              <div className={`text-center py-12 rounded-lg ${
-                darkMode ? 'bg-gray-800' : 'bg-slate-100'
-              }`}>
-                <Car className={`w-16 h-16 mx-auto mb-4 opacity-40 ${
-                  darkMode ? 'text-gray-600' : 'text-gray-400'
-                }`} />
-                <h3 className={`text-xl font-semibold mb-2 ${
-                  darkMode ? 'text-gray-300' : 'text-slate-700'
-                }`}>
-                  Selected vehicle has no linked projects
-                </h3>
-                <p className={`${
-                  darkMode ? 'text-gray-400' : 'text-slate-600'
-                }`}>
-                  Create a project or link an existing one to this vehicle
-                </p>
-              </div>
-            )}
-
-            {/* Empty State - No projects at all */}
+            {/* Empty State */}
             {projects.length === 0 && (
               <div className={`text-center py-12 rounded-lg ${
                 darkMode ? 'bg-gray-800' : 'bg-slate-100'
@@ -6151,13 +5898,9 @@ const TakumiGarage = () => {
                                     className="fixed inset-0 z-10"
                                     onClick={() => setShowAddProjectVehicleDropdown(false)}
                                   />
-                                  <div className={`absolute right-0 md:left-0 z-20 mt-1 rounded-lg border shadow-lg py-1 max-h-60 overflow-y-auto ${
+                                  <div className={`absolute left-0 right-0 z-20 mt-1 rounded-lg border shadow-lg py-1 max-h-60 overflow-y-auto ${
                                     darkMode ? 'bg-gray-700 border-gray-600' : 'bg-slate-50 border-slate-300'
-                                  }`}
-                                  style={{
-                                    minWidth: '200px'
-                                  }}
-                                  >
+                                  }`}>
                                     <button
                                       type="button"
                                       onClick={() => {
@@ -6590,12 +6333,9 @@ const TakumiGarage = () => {
         {activeTab === 'vehicles' && (
           <div className="slide-in-right">
           <>
-            {/* Active Vehicles Grid */}
+            {/* Vehicles Grid */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {vehicles.filter(v => !v.archived).map((vehicle) => {
-                console.log('render card', vehicle.id, vehicle.nickname || vehicle.name);
-                const borderColor = getMutedColor(vehicle.color, darkMode);
-                return (
+              {vehicles.map((vehicle) => (
                 <div
                   key={vehicle.id}
                   data-vehicle-id={vehicle.id}
@@ -6607,14 +6347,14 @@ const TakumiGarage = () => {
                     setOriginalVehicleData({ ...vehicle }); // Save original data for unsaved changes check
                     setShowVehicleDetailModal(true);
                   }}
-                  className={`relative rounded-lg shadow-lg pt-3 ${vehicle.archived ? 'pb-3' : 'pb-4'} px-6 transition-all duration-200 hover:shadow-2xl hover:scale-[1.03] cursor-pointer border-t-4 ${
+                  className={`relative rounded-lg shadow-lg pt-3 pb-6 px-6 transition-all duration-200 hover:shadow-2xl hover:scale-[1.03] cursor-pointer border-t-4 ${
                     draggedVehicle?.id === vehicle.id 
                       ? 'ring-2 ring-blue-500 ring-offset-2' 
                       : dragOverVehicle?.id === vehicle.id
                         ? (darkMode ? 'ring-2 ring-blue-500' : 'ring-2 ring-blue-400')
                         : ''
                   } ${darkMode ? 'bg-gray-800' : 'bg-slate-100'}`}
-                  style={{ borderTopColor: borderColor }}
+                  style={{ borderTopColor: getMutedColor(vehicle.color, darkMode) }}
                 >
                   {/* Drag Handle - Hidden on mobile */}
                   <div 
@@ -6669,7 +6409,6 @@ const TakumiGarage = () => {
                             ? 'grayscale opacity-40' 
                             : ''
                         } ${darkMode ? 'bg-gray-700 border-gray-600' : 'bg-gray-200 border-gray-300'}`}
-                        onLoad={() => console.log('render image', vehicle.id, vehicle.nickname || vehicle.name)}
                       />
                       {vehicle.archived && (
                         <div className="absolute inset-0 flex items-center justify-center">
@@ -6749,24 +6488,24 @@ const TakumiGarage = () => {
                                     </span>
                                   ))}
                                   {vehicleProjects.length > 4 && (
-                                    <div className="w-full text-center">
-                                      <span className={`inline-flex items-center px-2 py-1 rounded text-xs ${
-                                        darkMode ? 'text-gray-500' : 'text-gray-600'
-                                      }`}>
-                                        +{vehicleProjects.length - 4} more
-                                      </span>
-                                    </div>
+                                    <span className={`inline-flex items-center px-2 py-1 rounded text-xs ${
+                                      darkMode ? 'text-gray-500' : 'text-gray-600'
+                                    }`}>
+                                      +{vehicleProjects.length - 4} more
+                                    </span>
                                   )}
                                 </div>
                               ) : (
-                                <div className="text-center py-4">
-                                  <Wrench className={`w-8 h-8 mx-auto mb-2 opacity-40 ${
-                                    darkMode ? 'text-gray-400' : 'text-gray-500'
+                                <div className={`text-center py-4 rounded-lg ${
+                                  darkMode ? 'bg-gray-750' : 'bg-gray-50'
+                                }`}>
+                                  <Wrench className={`w-8 h-8 mx-auto mb-2 ${
+                                    darkMode ? 'text-gray-600' : 'text-gray-400'
                                   }`} />
                                   <p className={`text-xs ${
-                                    darkMode ? 'text-gray-400' : 'text-gray-500'
+                                    darkMode ? 'text-gray-500' : 'text-gray-500'
                                   }`}>
-                                    No projects linked
+                                    No current projects
                                   </p>
                                 </div>
                               )}
@@ -6786,190 +6525,8 @@ const TakumiGarage = () => {
                     )}
                   </div>
                 </div>
-              );
-              })}
+              ))}
             </div>
-
-            {/* Archived Vehicles Section */}
-            {vehicles.filter(v => v.archived).length > 0 && (
-              <>
-                <div className={`my-8 border-t ${
-                  darkMode ? 'border-gray-700' : 'border-slate-300'
-                }`}>
-                  <h2 className={`text-lg font-semibold mt-8 mb-6 ${
-                    darkMode ? 'text-gray-300' : 'text-slate-700'
-                  }`}>
-                    Archived Vehicles
-                  </h2>
-                </div>
-
-                {/* Archive Drop Zone - appears when dragging an active vehicle */}
-                {draggedVehicle && !draggedVehicle.archived && (
-                  <div
-                    onDragOver={(e) => {
-                      e.preventDefault();
-                      setDragOverArchiveZone(true);
-                    }}
-                    onDragLeave={() => setDragOverArchiveZone(false)}
-                    onDrop={(e) => {
-                      e.preventDefault();
-                      handleArchiveZoneDrop(true);
-                    }}
-                    className={`hidden md:block mb-6 p-6 rounded-lg border-2 border-dashed transition-all ${
-                      dragOverArchiveZone
-                        ? darkMode
-                          ? 'border-blue-500 bg-blue-500/10'
-                          : 'border-blue-600 bg-blue-100/50'
-                        : darkMode
-                          ? 'border-gray-600 bg-gray-800/50'
-                          : 'border-gray-300 bg-gray-100/50'
-                    }`}
-                  >
-                    <p className={`text-center text-sm ${
-                      dragOverArchiveZone
-                        ? darkMode ? 'text-blue-400' : 'text-blue-600'
-                        : darkMode ? 'text-gray-400' : 'text-gray-600'
-                    }`}>
-                      Drop here to archive
-                    </p>
-                  </div>
-                )}
-
-                {/* Unarchive Drop Zone - appears when dragging an archived vehicle */}
-                {draggedVehicle && draggedVehicle.archived && (
-                  <div
-                    onDragOver={(e) => {
-                      e.preventDefault();
-                      setDragOverArchiveZone(true);
-                    }}
-                    onDragLeave={() => setDragOverArchiveZone(false)}
-                    onDrop={(e) => {
-                      e.preventDefault();
-                      handleArchiveZoneDrop(false);
-                    }}
-                    className={`hidden md:block mb-6 p-6 rounded-lg border-2 border-dashed transition-all ${
-                      dragOverArchiveZone
-                        ? darkMode
-                          ? 'border-green-500 bg-green-500/10'
-                          : 'border-green-600 bg-green-100/50'
-                        : darkMode
-                          ? 'border-gray-600 bg-gray-800/50'
-                          : 'border-gray-300 bg-gray-100/50'
-                    }`}
-                  >
-                    <p className={`text-center text-sm ${
-                      dragOverArchiveZone
-                        ? darkMode ? 'text-green-400' : 'text-green-600'
-                        : darkMode ? 'text-gray-400' : 'text-gray-600'
-                    }`}>
-                      Drop here to unarchive
-                    </p>
-                  </div>
-                )}
-                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-                  {vehicles.filter(v => v.archived).map((vehicle) => (
-                    <div
-                      key={vehicle.id}
-                      data-vehicle-id={vehicle.id}
-                      onDragOver={(e) => handleVehicleDragOver(e, vehicle)}
-                      onDragLeave={handleVehicleDragLeave}
-                      onDrop={(e) => handleVehicleDrop(e, vehicle)}
-                      onClick={() => {
-                        setViewingVehicle(vehicle);
-                        setOriginalVehicleData({ ...vehicle }); // Save original data for unsaved changes check
-                        setShowVehicleDetailModal(true);
-                      }}
-                      className={`relative rounded-lg shadow-lg pt-2 pb-2 px-3 transition-all duration-200 hover:shadow-2xl hover:scale-[1.03] cursor-pointer border-t-4 ${
-                        draggedVehicle?.id === vehicle.id 
-                          ? 'ring-2 ring-blue-500 ring-offset-2' 
-                          : dragOverVehicle?.id === vehicle.id
-                            ? (darkMode ? 'ring-2 ring-blue-500' : 'ring-2 ring-blue-400')
-                            : ''
-                      } ${darkMode ? 'bg-gray-800' : 'bg-slate-100'}`}
-                      style={{ borderTopColor: getMutedColor(vehicle.color, darkMode) }}
-                    >
-                      {/* Drag Handle - Hidden on mobile */}
-                      <div 
-                        draggable
-                        onDragStart={(e) => {
-                          e.stopPropagation();
-                          handleVehicleDragStart(e, vehicle);
-                          // Set the entire card as the drag image, positioned at top-left
-                          const card = e.currentTarget.closest('[data-vehicle-id]');
-                          if (card) {
-                            // Position the drag image so cursor is at the grip icon location (top-left area)
-                            e.dataTransfer.setDragImage(card, 20, 20);
-                          }
-                        }}
-                        onDragEnd={handleVehicleDragEnd}
-                        className={`absolute top-1 left-1 cursor-grab active:cursor-grabbing hidden md:block ${
-                          darkMode ? 'text-gray-500 hover:text-gray-400' : 'text-gray-400 hover:text-gray-600'
-                        }`}
-                      >
-                        <GripVertical className="w-4 h-4" />
-                      </div>
-
-                      {/* Edit Button - Top Right */}
-                      <div className="absolute top-1 right-1">
-                        <button
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            setViewingVehicle(vehicle);
-                            setOriginalVehicleData({ ...vehicle }); // Save original data for unsaved changes check
-                            setVehicleModalEditMode('vehicle');
-                            setShowVehicleDetailModal(true);
-                          }}
-                          className={`p-1 rounded-md transition-colors ${
-                            darkMode ? 'hover:bg-gray-700 text-gray-500 hover:text-blue-400' : 'hover:bg-gray-100 text-gray-500 hover:text-blue-600'
-                          }`}
-                          title="Edit vehicle"
-                        >
-                          <Edit2 className="w-4 h-4" />
-                        </button>
-                      </div>
-
-                      {/* Vehicle Image */}
-                      {vehicle.image_url && (
-                        <div className="mb-2 mt-8 relative">
-                          <img 
-                            src={vehicle.image_url} 
-                            alt={vehicle.name}
-                            className={`w-full h-32 object-cover rounded-lg border grayscale opacity-40 ${
-                              darkMode ? 'bg-gray-700 border-gray-600' : 'bg-gray-200 border-gray-300'
-                            }`}
-                          />
-                          <div className="absolute inset-0 flex items-center justify-center">
-                            <span className={`text-lg font-bold px-4 py-1 rounded-lg ${
-                              darkMode 
-                                ? 'bg-gray-900/80 text-gray-300 border-2 border-gray-600' 
-                                : 'bg-white/80 text-gray-700 border-2 border-gray-400'
-                            }`} style={{ fontFamily: "'FoundationOne', 'Courier New', monospace" }}>
-                              ARCHIVED
-                            </span>
-                          </div>
-                        </div>
-                      )}
-
-                      {/* Vehicle Header */}
-                      <div className={`mb-2 ${vehicle.image_url ? 'mt-2' : 'mt-8'}`}>
-                        <h3 className={`text-base font-bold mb-1 ${
-                          darkMode ? 'text-gray-100' : 'text-slate-800'
-                        }`}>
-                          {vehicle.nickname || [vehicle.year, vehicle.make, vehicle.name].filter(Boolean).join(' ')}
-                        </h3>
-                        {vehicle.nickname && (
-                          <p className={`text-xs ${
-                            darkMode ? 'text-gray-400' : 'text-slate-600'
-                          }`}>
-                            {[vehicle.year, vehicle.make, vehicle.name].filter(Boolean).join(' ')}
-                          </p>
-                        )}
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </>
-            )}
 
             {/* Empty State */}
             {vehicles.length === 0 && (
@@ -7267,17 +6824,18 @@ const TakumiGarage = () => {
                       </div>
                     </div>
 
-                    {/* Maintenance Section - Full Width */}
-                    <div className="mt-6">
+                    {/* Full Width Sections Below */}
+                    {/* Half Width Sections Below */}
+                    <div className="mt-6 grid grid-cols-1 md:grid-cols-2 gap-6">
                       <div className={`pt-4 border-t ${
                         darkMode ? 'border-gray-700' : 'border-slate-200'
                       }`}>
                         <h3 className={`text-lg font-semibold mb-3 ${
                           darkMode ? 'text-gray-200' : 'text-gray-800'
                         }`}>
-                          Maintenance
+                          Filters
                         </h3>
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div className="space-y-4">
                           <div>
                             <label className={`block text-sm font-medium mb-2 ${
                               darkMode ? 'text-gray-300' : 'text-slate-700'
@@ -7288,7 +6846,11 @@ const TakumiGarage = () => {
                               type="text"
                               value={newVehicle.fuel_filter}
                               onChange={(e) => setNewVehicle({ ...newVehicle, fuel_filter: e.target.value })}
-                              className={inputClasses(darkMode)}
+                              className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
+                                darkMode 
+                                  ? 'bg-gray-700 border-gray-600 text-gray-100 placeholder-gray-400' 
+                                  : 'bg-slate-50 border-slate-300 text-slate-800 placeholder-slate-400'
+                              }`}
                               placeholder=""
                             />
                           </div>
@@ -7297,32 +6859,59 @@ const TakumiGarage = () => {
                             <label className={`block text-sm font-medium mb-2 ${
                               darkMode ? 'text-gray-300' : 'text-slate-700'
                             }`}>
-                              Air Filter
+                              Oil Type
                             </label>
                             <input
                               type="text"
-                              value={newVehicle.air_filter}
-                              onChange={(e) => setNewVehicle({ ...newVehicle, air_filter: e.target.value })}
-                              className={inputClasses(darkMode)}
+                              value={newVehicle.oil_type}
+                              onChange={(e) => setNewVehicle({ ...newVehicle, oil_type: e.target.value })}
+                              className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
+                                darkMode 
+                                  ? 'bg-gray-700 border-gray-600 text-gray-100 placeholder-gray-400' 
+                                  : 'bg-slate-50 border-slate-300 text-slate-800 placeholder-slate-400'
+                              }`}
                               placeholder=""
                             />
                           </div>
+                        </div>
+                      </div>
 
-                          <div>
-                            <label className={`block text-sm font-medium mb-2 ${
-                              darkMode ? 'text-gray-300' : 'text-slate-700'
-                            }`}>
-                              Battery Type
-                            </label>
-                            <input
-                              type="text"
-                              value={newVehicle.battery}
-                              onChange={(e) => setNewVehicle({ ...newVehicle, battery: e.target.value })}
-                              className={inputClasses(darkMode)}
-                              placeholder=""
-                            />
-                          </div>
+                      <div className={`pt-4 border-t ${
+                        darkMode ? 'border-gray-700' : 'border-slate-200'
+                      }`}>
+                        <h3 className={`text-lg font-semibold mb-3 ${
+                          darkMode ? 'text-gray-200' : 'text-gray-800'
+                        }`}>
+                          Battery
+                        </h3>
+                        <div>
+                          <label className={`block text-sm font-medium mb-2 ${
+                            darkMode ? 'text-gray-300' : 'text-slate-700'
+                          }`}>
+                            Battery Type
+                          </label>
+                          <input
+                            type="text"
+                            value={newVehicle.battery}
+                            onChange={(e) => setNewVehicle({ ...newVehicle, battery: e.target.value })}
+                            className={inputClasses(darkMode)}
+                            placeholder=""
+                          />
+                        </div>
+                      </div>
+                    </div>
 
+                    {/* Oil Info Section - Full Width */}
+                    <div className="mt-6">
+                      <div className={`pt-4 border-t ${
+                        darkMode ? 'border-gray-700' : 'border-slate-200'
+                      }`}>
+                        <h3 className={`text-lg font-semibold mb-3 ${
+                          darkMode ? 'text-gray-200' : 'text-gray-800'
+                        }`}>
+                          Oil Info
+                        </h3>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                           <div>
                             <label className={`block text-sm font-medium mb-2 ${
                               darkMode ? 'text-gray-300' : 'text-slate-700'
@@ -7342,13 +6931,17 @@ const TakumiGarage = () => {
                             <label className={`block text-sm font-medium mb-2 ${
                               darkMode ? 'text-gray-300' : 'text-slate-700'
                             }`}>
-                              Oil Capacity
+                              Air Filter
                             </label>
                             <input
                               type="text"
-                              value={newVehicle.oil_capacity}
-                              onChange={(e) => setNewVehicle({ ...newVehicle, oil_capacity: e.target.value })}
-                              className={inputClasses(darkMode)}
+                              value={newVehicle.air_filter}
+                              onChange={(e) => setNewVehicle({ ...newVehicle, air_filter: e.target.value })}
+                              className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
+                                darkMode 
+                                  ? 'bg-gray-700 border-gray-600 text-gray-100 placeholder-gray-400' 
+                                  : 'bg-slate-50 border-slate-300 text-slate-800 placeholder-slate-400'
+                              }`}
                               placeholder=""
                             />
                           </div>
@@ -7357,13 +6950,17 @@ const TakumiGarage = () => {
                             <label className={`block text-sm font-medium mb-2 ${
                               darkMode ? 'text-gray-300' : 'text-slate-700'
                             }`}>
-                              Oil Type
+                              Oil Capacity
                             </label>
                             <input
                               type="text"
-                              value={newVehicle.oil_type}
-                              onChange={(e) => setNewVehicle({ ...newVehicle, oil_type: e.target.value })}
-                              className={inputClasses(darkMode)}
+                              value={newVehicle.oil_capacity}
+                              onChange={(e) => setNewVehicle({ ...newVehicle, oil_capacity: e.target.value })}
+                              className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
+                                darkMode 
+                                  ? 'bg-gray-700 border-gray-600 text-gray-100 placeholder-gray-400' 
+                                  : 'bg-slate-50 border-slate-300 text-slate-800 placeholder-slate-400'
+                              }`}
                               placeholder=""
                             />
                           </div>
@@ -7378,7 +6975,11 @@ const TakumiGarage = () => {
                               type="text"
                               value={newVehicle.oil_brand}
                               onChange={(e) => setNewVehicle({ ...newVehicle, oil_brand: e.target.value })}
-                              className={inputClasses(darkMode)}
+                              className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
+                                darkMode 
+                                  ? 'bg-gray-700 border-gray-600 text-gray-100 placeholder-gray-400' 
+                                  : 'bg-slate-50 border-slate-300 text-slate-800 placeholder-slate-400'
+                              }`}
                               placeholder=""
                             />
                           </div>
@@ -7393,7 +6994,11 @@ const TakumiGarage = () => {
                               type="text"
                               value={newVehicle.drain_plug}
                               onChange={(e) => setNewVehicle({ ...newVehicle, drain_plug: e.target.value })}
-                              className={inputClasses(darkMode)}
+                              className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
+                                darkMode 
+                                  ? 'bg-gray-700 border-gray-600 text-gray-100 placeholder-gray-400' 
+                                  : 'bg-slate-50 border-slate-300 text-slate-800 placeholder-slate-400'
+                              }`}
                               placeholder=""
                             />
                           </div>
@@ -7585,7 +7190,7 @@ const TakumiGarage = () => {
                           : 'relative opacity-100'
                       }`}
                     >
-                      <div className="p-6 pb-12 space-y-6 max-h-[calc(90vh-164px)] overflow-y-auto">
+                      <div className="p-6 space-y-6 max-h-[calc(90vh-164px)] overflow-y-auto">
                     {/* Top Section: Image and Basic Info side by side */}
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                       {/* Basic Info Card - Half width on desktop, two column layout - appears second on mobile */}
@@ -7693,7 +7298,7 @@ const TakumiGarage = () => {
                                     }`}>Total Budget</p>
                                     <p className={`text-2xl font-bold ${
                                       darkMode ? 'text-gray-100' : 'text-slate-800'
-                                    }`}>${Math.round(totalBudget)}</p>
+                                    }`}>${totalBudget.toFixed(2)}</p>
                                   </div>
                                 </div>
                                 <div className={`flex items-center gap-4 mt-2 text-xs ${
@@ -7739,7 +7344,7 @@ const TakumiGarage = () => {
                       </h3>
                       {(viewingVehicle.fuel_filter || viewingVehicle.air_filter || viewingVehicle.oil_filter || viewingVehicle.oil_type || viewingVehicle.oil_capacity || viewingVehicle.oil_brand || viewingVehicle.drain_plug || viewingVehicle.battery) ? (
                         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-                          {/* Mobile order: fuel filter, air filter, battery, oil filter, oil capacity, oil type, oil brand, drain plug */}
+                          {/* Row 1: Fuel Filter, Air Filter, Oil Filter, Oil Type */}
                           {viewingVehicle.fuel_filter && (
                             <div>
                               <p className={`text-sm font-medium mb-1 ${
@@ -7760,16 +7365,6 @@ const TakumiGarage = () => {
                               }`}>{viewingVehicle.air_filter}</p>
                             </div>
                           )}
-                          {viewingVehicle.battery && (
-                            <div>
-                              <p className={`text-sm font-medium mb-1 ${
-                                darkMode ? 'text-gray-400' : 'text-slate-600'
-                              }`}>Battery Type</p>
-                              <p className={`text-base ${
-                                darkMode ? 'text-gray-100' : 'text-slate-800'
-                              }`}>{viewingVehicle.battery}</p>
-                            </div>
-                          )}
                           {viewingVehicle.oil_filter && (
                             <div>
                               <p className={`text-sm font-medium mb-1 ${
@@ -7778,16 +7373,6 @@ const TakumiGarage = () => {
                               <p className={`text-base ${
                                 darkMode ? 'text-gray-100' : 'text-slate-800'
                               }`}>{viewingVehicle.oil_filter}</p>
-                            </div>
-                          )}
-                          {viewingVehicle.oil_capacity && (
-                            <div>
-                              <p className={`text-sm font-medium mb-1 ${
-                                darkMode ? 'text-gray-400' : 'text-slate-600'
-                              }`}>Oil Capacity</p>
-                              <p className={`text-base ${
-                                darkMode ? 'text-gray-100' : 'text-slate-800'
-                              }`}>{viewingVehicle.oil_capacity}</p>
                             </div>
                           )}
                           {viewingVehicle.oil_type && (
@@ -7800,14 +7385,16 @@ const TakumiGarage = () => {
                               }`}>{viewingVehicle.oil_type}</p>
                             </div>
                           )}
-                          {viewingVehicle.oil_brand && (
+                          
+                          {/* Row 2: Battery Type, Drain Plug, Oil Capacity, Oil Brand */}
+                          {viewingVehicle.battery && (
                             <div>
                               <p className={`text-sm font-medium mb-1 ${
                                 darkMode ? 'text-gray-400' : 'text-slate-600'
-                              }`}>Oil Brand</p>
+                              }`}>Battery Type</p>
                               <p className={`text-base ${
                                 darkMode ? 'text-gray-100' : 'text-slate-800'
-                              }`}>{viewingVehicle.oil_brand}</p>
+                              }`}>{viewingVehicle.battery}</p>
                             </div>
                           )}
                           {viewingVehicle.drain_plug && (
@@ -7818,6 +7405,26 @@ const TakumiGarage = () => {
                               <p className={`text-base ${
                                 darkMode ? 'text-gray-100' : 'text-slate-800'
                               }`}>{viewingVehicle.drain_plug}</p>
+                            </div>
+                          )}
+                          {viewingVehicle.oil_capacity && (
+                            <div>
+                              <p className={`text-sm font-medium mb-1 ${
+                                darkMode ? 'text-gray-400' : 'text-slate-600'
+                              }`}>Oil Capacity</p>
+                              <p className={`text-base ${
+                                darkMode ? 'text-gray-100' : 'text-slate-800'
+                              }`}>{viewingVehicle.oil_capacity}</p>
+                            </div>
+                          )}
+                          {viewingVehicle.oil_brand && (
+                            <div>
+                              <p className={`text-sm font-medium mb-1 ${
+                                darkMode ? 'text-gray-400' : 'text-slate-600'
+                              }`}>Oil Brand</p>
+                              <p className={`text-base ${
+                                darkMode ? 'text-gray-100' : 'text-slate-800'
+                              }`}>{viewingVehicle.oil_brand}</p>
                             </div>
                           )}
                         </div>
@@ -7932,12 +7539,16 @@ const TakumiGarage = () => {
                               })}
                             </div>
                           ) : (
-                            <div className={`text-center py-8 rounded-lg border ${
-                              darkMode ? 'bg-gray-700/30 border-gray-600 text-gray-400' : 'bg-gray-50 border-gray-200 text-gray-500'
+                            <div className={`text-center py-8 rounded-lg ${
+                              darkMode ? 'bg-gray-700' : 'bg-gray-50'
                             }`}>
-                              <Wrench className="w-12 h-12 mx-auto mb-2 opacity-40" />
-                              <p className="text-sm">
-                                No projects linked
+                              <Wrench className={`w-12 h-12 mx-auto mb-3 ${
+                                darkMode ? 'text-gray-600' : 'text-gray-400'
+                              }`} />
+                              <p className={`text-sm ${
+                                darkMode ? 'text-gray-400' : 'text-slate-600'
+                              }`}>
+                                No projects linked to this vehicle yet
                               </p>
                             </div>
                           )}
