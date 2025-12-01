@@ -1720,6 +1720,7 @@ const VendorSelect = ({ value, onChange, darkMode, uniqueVendors }) => {
 };
 
 const TakumiGarage = () => {
+  console.log('=== COMPONENT RENDER ===');
   const [parts, setParts] = useState([]);
   const [projects, setProjects] = useState([]);
   const [vehicles, setVehicles] = useState([]);
@@ -6593,6 +6594,7 @@ const TakumiGarage = () => {
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {vehicles.filter(v => !v.archived).map((vehicle) => {
                 console.log('render card', vehicle.id, vehicle.nickname || vehicle.name);
+                const borderColor = getMutedColor(vehicle.color, darkMode);
                 return (
                 <div
                   key={vehicle.id}
@@ -6612,7 +6614,7 @@ const TakumiGarage = () => {
                         ? (darkMode ? 'ring-2 ring-blue-500' : 'ring-2 ring-blue-400')
                         : ''
                   } ${darkMode ? 'bg-gray-800' : 'bg-slate-100'}`}
-                  style={{ borderTopColor: getMutedColor(vehicle.color, darkMode) }}
+                  style={{ borderTopColor: borderColor }}
                 >
                   {/* Drag Handle - Hidden on mobile */}
                   <div 
