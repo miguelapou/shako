@@ -1250,6 +1250,20 @@ const fontStyles = `
   .table-sorting tbody tr:nth-child(9) { animation-delay: 0.16s; }
   .table-sorting tbody tr:nth-child(10) { animation-delay: 0.18s; }
 
+  /* Table filtering animations */
+  @keyframes tableFadeIn {
+    0% {
+      opacity: 0;
+    }
+    100% {
+      opacity: 1;
+    }
+  }
+
+  .table-filtering tbody tr {
+    animation: tableFadeIn 0.3s ease-out;
+  }
+
   /* Project filtering animations */
   @keyframes projectFilterFade {
     0% {
@@ -2393,6 +2407,7 @@ const TakumiGarage = () => {
   const [sortBy, setSortBy] = useState('status');
   const [sortOrder, setSortOrder] = useState('asc');
   const [isSorting, setIsSorting] = useState(false);
+  const [isFiltering, setIsFiltering] = useState(false);
   const [openDropdown, setOpenDropdown] = useState(null);
   const [showAddModal, setShowAddModal] = useState(false);
   const [showTrackingModal, setShowTrackingModal] = useState(false);
@@ -4914,10 +4929,12 @@ const TakumiGarage = () => {
           {/* Statistics Cards - 3 column grid on mobile */}
           <div className="space-y-4 order-1 stats-cards-800">
             <div className="grid grid-cols-3 gap-3 sm:gap-4">
-              <div 
+              <div
                 onClick={() => {
+                  setIsFiltering(true);
                   setStatusFilter(statusFilter === 'purchased' ? 'all' : 'purchased');
                   setDeliveredFilter('all');
+                  setTimeout(() => setIsFiltering(false), 300);
                 }}
                 className={`rounded-lg shadow-md p-3 sm:p-4 md:p-4 border-l-4 border-yellow-500 relative overflow-hidden cursor-pointer transition-all duration-200 hover:shadow-lg hover:scale-[1.02] ${
                   darkMode ? 'bg-gray-800 hover:bg-gray-750' : 'bg-white hover:bg-gray-50'
@@ -4934,10 +4951,12 @@ const TakumiGarage = () => {
                 </div>
               </div>
 
-              <div 
+              <div
                 onClick={() => {
+                  setIsFiltering(true);
                   setStatusFilter(statusFilter === 'shipped' ? 'all' : 'shipped');
                   setDeliveredFilter('all');
+                  setTimeout(() => setIsFiltering(false), 300);
                 }}
                 className={`rounded-lg shadow-md p-3 sm:p-4 md:p-4 border-l-4 border-blue-500 relative overflow-hidden cursor-pointer transition-all duration-200 hover:shadow-lg hover:scale-[1.02] ${
                   darkMode ? 'bg-gray-800 hover:bg-gray-750' : 'bg-white hover:bg-gray-50'
@@ -4954,20 +4973,22 @@ const TakumiGarage = () => {
                 </div>
               </div>
 
-              <div 
+              <div
                 onClick={() => {
                   // Cycle through: all -> only -> hide -> all
-                  setDeliveredFilter(prev => 
-                    prev === 'all' ? 'only' : 
+                  setIsFiltering(true);
+                  setDeliveredFilter(prev =>
+                    prev === 'all' ? 'only' :
                     prev === 'only' ? 'hide' : 'all'
                   );
                   setStatusFilter('all');
+                  setTimeout(() => setIsFiltering(false), 300);
                 }}
                 className={`rounded-lg shadow-md p-3 sm:p-4 md:p-4 border-l-4 ${
                   deliveredFilter === 'hide' ? 'border-red-500' : 'border-green-500'
                 } relative overflow-hidden cursor-pointer transition-all duration-200 hover:shadow-lg hover:scale-[1.02] ${
-                  deliveredFilter === 'hide' 
-                    ? (darkMode ? 'bg-gray-900' : 'bg-gray-300') 
+                  deliveredFilter === 'hide'
+                    ? (darkMode ? 'bg-gray-900' : 'bg-gray-300')
                     : (darkMode ? 'bg-gray-800 hover:bg-gray-750' : 'bg-white hover:bg-gray-50')
                 } ${deliveredFilter !== 'all' ? `ring-2 ${deliveredFilter === 'hide' ? 'ring-red-500' : 'ring-green-500'}` : ''}`}
               >
@@ -5186,7 +5207,7 @@ const TakumiGarage = () => {
           darkMode ? 'bg-gray-800' : 'bg-slate-100'
         }`}>
           <div className="overflow-x-auto overflow-y-visible rounded-lg">
-            <table className={`w-full ${isSorting ? 'table-sorting' : ''}`}>
+            <table className={`w-full ${isSorting ? 'table-sorting' : ''} ${isFiltering ? 'table-filtering' : ''}`}>
               <thead className={`border-b ${
                 darkMode ? 'bg-gray-700 border-gray-600' : 'bg-slate-100 border-slate-200'
               }`}>
