@@ -2227,7 +2227,7 @@ const TakumiGarage = () => {
   const handleVehicleDragOver = (e, vehicle) => {
     e.preventDefault();
     e.dataTransfer.dropEffect = 'move';
-    if (draggedVehicle && draggedVehicle.id !== vehicle.id) {
+    if (draggedVehicle && draggedVehicle.id !== vehicle.id && dragOverVehicle?.id !== vehicle.id) {
       setDragOverVehicle(vehicle);
     }
   };
@@ -3455,6 +3455,30 @@ const TakumiGarage = () => {
         .vehicle-dropdown-scroll {
           scrollbar-width: none;
           -ms-overflow-style: none;
+        }
+        
+        /* Custom 800px breakpoint */
+        .hidden-below-800 {
+          display: none;
+        }
+        @media (min-width: 800px) {
+          .hidden-below-800 {
+            display: block;
+          }
+          .flex-below-800 {
+            display: flex;
+          }
+          .grid-below-800 {
+            display: grid;
+          }
+        }
+        .show-below-800 {
+          display: block;
+        }
+        @media (min-width: 800px) {
+          .show-below-800 {
+            display: none;
+          }
         }
       `}</style>
       <div className="max-w-7xl mx-auto">
@@ -4850,10 +4874,45 @@ const TakumiGarage = () => {
           <div className="slide-in-left">
           <>
         {/* Statistics and Cost Breakdown - Side by Side */}
-        <div className="flex flex-col md:grid md:grid-cols-[1.5fr_1fr] gap-6 mb-6">
+        <div className="flex flex-col gap-6 mb-6 stats-container-800">
+          <style>{`
+            @media (min-width: 800px) {
+              .stats-container-800 {
+                display: grid !important;
+                grid-template-columns: 1.5fr 1fr !important;
+              }
+              .stats-cards-800 {
+                display: flex !important;
+                flex-direction: column !important;
+                gap: 1rem !important;
+                height: 100% !important;
+                justify-content: space-between !important;
+                order: 0 !important;
+              }
+              .stats-cards-800 > div:first-child {
+                flex-shrink: 0 !important;
+              }
+              .stats-cards-800 .space-y-4 {
+                margin-top: 0 !important;
+                margin-bottom: 0 !important;
+              }
+              .cost-breakdown-800 {
+                order: 0 !important;
+              }
+              .search-box-800 {
+                display: block !important;
+              }
+              .circular-progress-800 {
+                display: flex !important;
+              }
+              .mobile-progress-800 {
+                display: none !important;
+              }
+            }
+          `}</style>
           {/* Statistics Cards - 3 column grid on mobile */}
-          <div className="space-y-4 md:space-y-0 order-1 md:order-none md:flex md:flex-col md:gap-4 md:h-full md:justify-between">
-            <div className="grid grid-cols-3 gap-3 sm:gap-4 md:flex-shrink-0">
+          <div className="space-y-4 order-1 stats-cards-800">
+            <div className="grid grid-cols-3 gap-3 sm:gap-4">
               <div 
                 onClick={() => {
                   setStatusFilter(statusFilter === 'purchased' ? 'all' : 'purchased');
@@ -4925,8 +4984,8 @@ const TakumiGarage = () => {
               </div>
             </div>
 
-            {/* Search Box - Shows in left column on medium+ screens */}
-            <div className={`hidden md:block rounded-lg shadow-md p-3 md:flex-shrink-0 ${
+            {/* Search Box - Shows in left column at 800px+ */}
+            <div className={`hidden search-box-800 rounded-lg shadow-md p-3 ${
               darkMode ? 'bg-gray-800' : 'bg-slate-100'
             }`}>
               <div className="relative">
@@ -4960,8 +5019,8 @@ const TakumiGarage = () => {
 
           </div>
 
-          {/* Cost Breakdown - order-2 on mobile, full column width on medium+ screens */}
-          <div className="order-2 md:order-none">
+          {/* Cost Breakdown - order-2 on mobile, full column width at 800px+ */}
+          <div className="order-2 cost-breakdown-800">
             <div className={`rounded-lg shadow-md p-3 pb-2 h-full flex flex-col ${
               darkMode ? 'bg-gray-800' : 'bg-slate-100'
             }`}>
@@ -4973,7 +5032,7 @@ const TakumiGarage = () => {
             </h3>
             <div className="flex gap-4 flex-1">
               {/* Circular Progress - Desktop Only */}
-              <div className="hidden md:flex items-center justify-center">
+              <div className="hidden circular-progress-800 items-center justify-center">
                 <div className="relative w-24 h-24">
                   <svg className="w-24 h-24 transform -rotate-90">
                     <circle
@@ -5060,7 +5119,7 @@ const TakumiGarage = () => {
                 </div>
                 
                 {/* Mobile Progress Bar */}
-                <div className="pt-1 md:pt-1.5 mt-auto md:hidden">
+                <div className="pt-1 md:pt-1.5 mt-auto mobile-progress-800">
                   <p className={`text-xs mb-1 ${
                     darkMode ? 'text-gray-400' : 'text-slate-600'
                   }`}>Progress</p>
@@ -5120,9 +5179,9 @@ const TakumiGarage = () => {
         </div>
 
         {/* Parts Table */}
-        {/* Desktop Table View - Hidden on mobile */}
+        {/* Desktop Table View - Hidden below 800px */}
         {filteredParts.length > 0 ? (
-        <div className={`hidden lg:block rounded-lg shadow-md ${
+        <div className={`hidden-below-800 rounded-lg shadow-md ${
           darkMode ? 'bg-gray-800' : 'bg-slate-100'
         }`}>
           <div className="overflow-x-auto overflow-y-visible rounded-lg">
@@ -5329,7 +5388,7 @@ const TakumiGarage = () => {
           </div>
         </div>
         ) : (
-          <div className={`hidden md:block text-center py-16 rounded-lg ${
+          <div className={`hidden-below-800 text-center py-16 rounded-lg ${
             darkMode ? 'bg-gray-800' : 'bg-slate-100'
           }`}>
             <Package className={`w-20 h-20 mx-auto mb-4 ${
@@ -5359,9 +5418,9 @@ const TakumiGarage = () => {
           </div>
         )}
 
-        {/* Mobile Card View - Visible only on mobile */}
+        {/* Mobile Card View - Visible only below 800px */}
         {filteredParts.length > 0 ? (
-        <div className="lg:hidden grid grid-cols-1 gap-4">
+        <div className="show-below-800 grid grid-cols-1 gap-4">
             {filteredParts.map((part) => (
               <div 
                 key={part.id}
@@ -5592,7 +5651,7 @@ const TakumiGarage = () => {
             ))}
           </div>
         ) : (
-          <div className={`lg:hidden text-center py-16 rounded-lg ${
+          <div className={`show-below-800 text-center py-16 rounded-lg ${
             darkMode ? 'bg-gray-800' : 'bg-slate-100'
           }`}>
             <Package className={`w-20 h-20 mx-auto mb-4 ${
