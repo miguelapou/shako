@@ -2,241 +2,55 @@ import React, { useState, useMemo, useEffect, useRef } from 'react';
 import { Search, Package, BadgeDollarSign, TrendingUp, Truck, CheckCircle, Clock, ChevronDown, Plus, X, ExternalLink, ChevronUp, Edit2, Trash2, Moon, Sun, Wrench, GripVertical, ShoppingCart, Car, Upload, Gauge, Settings, Check, Archive, ChevronRight, Pause, Play } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 
-// ========================================
-// CONSTANTS & UTILITIES
-// ========================================
+// Utilities
+import {
+  getStatusColors,
+  getPriorityColors,
+  getPriorityBorderColor,
+  getVendorColor,
+  getVendorDisplayColor,
+  hexToRgba,
+  isLightColor,
+  darkenColor,
+  getMutedColor
+} from '../utils/colorUtils';
+import {
+  cardBg,
+  secondaryBg,
+  primaryText,
+  secondaryText,
+  borderColor,
+  hoverBg,
+  inputClasses,
+  selectDropdownStyle
+} from '../utils/styleUtils';
+import {
+  calculateVehicleTotalSpent,
+  calculateProjectTotal
+} from '../utils/dataUtils';
+import {
+  getTrackingUrl,
+  getCarrierName
+} from '../utils/trackingUtils';
 
-// Status color mappings
-const getStatusColors = (darkMode) => ({
-  planning: darkMode ? 'bg-gray-600 text-gray-200' : 'bg-gray-200 text-gray-800',
-  in_progress: darkMode ? 'bg-blue-600 text-blue-100' : 'bg-blue-100 text-blue-800',
-  completed: darkMode ? 'bg-green-600 text-green-100' : 'bg-green-100 text-green-800',
-  on_hold: darkMode ? 'bg-yellow-600 text-yellow-100' : 'bg-yellow-100 text-yellow-800'
-});
-
-// Priority color mappings
-const getPriorityColors = (darkMode) => ({
-  not_set: darkMode ? 'text-blue-400' : 'text-blue-600',
-  low: darkMode ? 'text-green-400' : 'text-green-600',
-  medium: darkMode ? 'text-yellow-400' : 'text-yellow-600',
-  high: darkMode ? 'text-red-400' : 'text-red-600'
-});
-
-// Priority border colors
-const getPriorityBorderColor = (priority) => {
-  const colors = {
-    not_set: '#3b82f6',
-    low: '#10b981',
-    medium: '#f59e0b',
-    high: '#ef4444',
-  };
-  return colors[priority] || '#3b82f6';
-};
-
-// Vendor color mapping - now accepts customColors object
-const getVendorColor = (vendor, customColors = {}) => {
-  if (!vendor) return 'bg-gray-100 text-gray-700 border border-gray-200';
-
-  // Check if vendor has a custom color
-  if (customColors[vendor]) {
-    return null; // Return null to indicate custom color should be used
-  }
-
-  const vendorLower = vendor.toLowerCase();
-  if (vendorLower === 'toyota') return 'bg-red-100 text-red-700 border border-red-200';
-  if (vendorLower === 'ebay') return 'bg-green-100 text-green-700 border border-green-200';
-  if (vendorLower === 'etsy') return 'bg-orange-100 text-orange-700 border border-orange-200';
-  if (vendorLower === 'partsnext') return 'bg-yellow-100 text-yellow-700 border border-yellow-200';
-  if (vendorLower === 'best buy') return 'bg-purple-100 text-purple-700 border border-purple-200';
-  if (vendorLower === 'amazon') return 'bg-blue-100 text-blue-700 border border-blue-200';
-  if (vendorLower === 'jauce') return 'bg-fuchsia-100 text-fuchsia-700 border border-fuchsia-200';
-  return 'bg-gray-100 text-gray-700 border border-gray-200';
-};
-
-// Helper function to convert hex to rgba with lightness
-const hexToRgba = (hex, alpha = 1) => {
-  const r = parseInt(hex.slice(1, 3), 16);
-  const g = parseInt(hex.slice(3, 5), 16);
-  const b = parseInt(hex.slice(5, 7), 16);
-  return `rgba(${r}, ${g}, ${b}, ${alpha})`;
-};
-
-// Helper function to determine if color is light or dark for text contrast
-const isLightColor = (hex) => {
-  const r = parseInt(hex.slice(1, 3), 16);
-  const g = parseInt(hex.slice(3, 5), 16);
-  const b = parseInt(hex.slice(5, 7), 16);
-  const luminance = (0.299 * r + 0.587 * g + 0.114 * b) / 255;
-  return luminance > 0.5;
-};
-
-// Helper function to darken a color for better visibility in light mode
-const darkenColor = (hex, amount = 0.4) => {
-  const r = parseInt(hex.slice(1, 3), 16);
-  const g = parseInt(hex.slice(3, 5), 16);
-  const b = parseInt(hex.slice(5, 7), 16);
-
-  const newR = Math.round(r * (1 - amount));
-  const newG = Math.round(g * (1 - amount));
-  const newB = Math.round(b * (1 - amount));
-
-  return `#${newR.toString(16).padStart(2, '0')}${newG.toString(16).padStart(2, '0')}${newB.toString(16).padStart(2, '0')}`;
-};
-
-// Get vendor color optimized for current theme
-const getVendorDisplayColor = (color, darkMode) => {
-  if (!color) return null;
-
-  if (darkMode) {
-    // In dark mode, use the original color
-    return {
-      text: color,
-      bg: hexToRgba(color, 0.2),
-      border: hexToRgba(color, 0.3)
-    };
-  } else {
-    // In light mode, use a darkened version for better contrast
-    const darkenedColor = darkenColor(color, 0.4);
-    return {
-      text: darkenedColor,
-      bg: hexToRgba(color, 0.15),
-      border: hexToRgba(darkenedColor, 0.25)
-    };
-  }
-};
-
-// Calculate total spent for a vehicle
-const calculateVehicleTotalSpent = (vehicleId, projects, parts) => {
-  const vehicleProjects = projects.filter(p => p.vehicle_id === vehicleId);
-  return vehicleProjects.reduce((sum, project) => {
-    const projectParts = parts.filter(part => part.projectId === project.id);
-    return sum + projectParts.reduce((partSum, part) => partSum + (part.total || 0), 0);
-  }, 0);
-};
-
-// Convert hex color to muted version (reduces opacity)
-const getMutedColor = (hexColor, darkMode) => {
-  if (!hexColor) return darkMode ? 'rgba(59, 130, 246, 0.3)' : 'rgba(59, 130, 246, 0.4)';
-  // Parse hex color
-  const hex = hexColor.replace('#', '');
-  const r = parseInt(hex.substr(0, 2), 16);
-  const g = parseInt(hex.substr(2, 2), 16);
-  const b = parseInt(hex.substr(4, 2), 16);
-  // Return as rgba with reduced opacity (30% for dark mode, 40% for light mode)
-  const opacity = darkMode ? 0.3 : 0.4;
-  return `rgba(${r}, ${g}, ${b}, ${opacity})`;
-};
-
-// Calculate project totals
-const calculateProjectTotal = (projectId, parts) => {
-  return parts
-    .filter(part => part.projectId === projectId)
-    .reduce((sum, part) => sum + (part.total || 0), 0);
-};
-
-// Dark mode utility functions for common class patterns
-const cardBg = (darkMode) => darkMode ? 'bg-gray-800' : 'bg-slate-50';
-const secondaryBg = (darkMode) => darkMode ? 'bg-gray-700' : 'bg-slate-100';
-const primaryText = (darkMode) => darkMode ? 'text-gray-100' : 'text-slate-800';
-const secondaryText = (darkMode) => darkMode ? 'text-gray-400' : 'text-slate-600';
-const borderColor = (darkMode) => darkMode ? 'border-gray-700' : 'border-slate-200';
-const hoverBg = (darkMode) => darkMode ? 'hover:bg-gray-700' : 'hover:bg-slate-100';
-
-// Common input field classes
-const inputClasses = (darkMode, additionalClasses = '') => {
-  const base = `w-full md:max-w-md px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${additionalClasses}`;
-  const theme = darkMode 
-    ? 'bg-gray-700 border-gray-600 text-gray-100 placeholder-gray-400' 
-    : 'bg-white border-slate-300 text-slate-800 placeholder-slate-400';
-  return `${base} ${theme}`;
-};
-
-
-// Common select dropdown custom arrow style (prevents React from recreating this object on every render)
-const selectDropdownStyle = {
-  width: '100%',
-  WebkitAppearance: 'none',
-  appearance: 'none',
-  backgroundImage: `url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e")`,
-  backgroundRepeat: 'no-repeat',
-  backgroundPosition: 'right 1rem center',
-  backgroundSize: '1.25em 1.25em',
-  paddingRight: '2.5rem'
-};
+// UI Components
+import ConfirmDialog from './ui/ConfirmDialog';
+import PrimaryButton from './ui/PrimaryButton';
+import PriceDisplay from './ui/PriceDisplay';
+import VendorSelect from './ui/VendorSelect';
 
 // ========================================
-// REUSABLE COMPONENTS
+// INTERNAL COMPONENTS (Still to be extracted)
 // ========================================
 
-// ConfirmDialog - Custom styled confirmation modal
-const ConfirmDialog = ({ isOpen, onClose, onConfirm, title, message, confirmText = 'Delete', cancelText = 'Cancel', darkMode, isDangerous = true }) => {
-  if (!isOpen) return null;
+// TODO: These large components should be extracted in Phase 2
+// - ProjectDetailView
+// - ProjectEditForm
+// - LinkedPartsSection
 
-  return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black bg-opacity-50 backdrop-blur-sm">
-      <div 
-        className={`w-full max-w-md rounded-xl shadow-2xl overflow-hidden transition-all ${
-          darkMode ? 'bg-gray-800 border border-gray-700' : 'bg-slate-50 border border-slate-200'
-        }`}
-        onClick={(e) => e.stopPropagation()}
-      >
-        {/* Header */}
-        <div className={`px-6 py-4 border-b ${darkMode ? 'border-gray-700' : 'border-slate-200'}`}>
-          <h3 
-            className={`text-lg font-semibold ${darkMode ? 'text-gray-100' : 'text-slate-800'}`}
-            style={{ fontFamily: "'FoundationOne', 'Courier New', monospace" }}
-          >
-            {title}
-          </h3>
-        </div>
-        {/* Body */}
-        <div className={`px-6 py-4 ${darkMode ? 'text-gray-300' : 'text-slate-700'}`}>
-          <p>{message}</p>
-        </div>
-        {/* Footer */}
-        <div className={`px-6 py-4 flex justify-end gap-3 border-t ${darkMode ? 'border-gray-700' : 'border-slate-200'}`}>
-          <button
-            onClick={onClose}
-            className={`px-4 py-2 rounded-lg font-medium transition-colors ${
-              darkMode
-                ? 'bg-gray-700 hover:bg-gray-600 text-gray-100'
-                : 'bg-slate-200 hover:bg-slate-300 text-slate-800'
-            }`}
-          >
-            {cancelText}
-          </button>
-          <button
-            onClick={() => {
-              onConfirm();
-              onClose();
-            }}
-            className={`px-4 py-2 rounded-lg font-medium transition-colors ${
-              isDangerous
-                ? 'bg-red-600 hover:bg-red-700 text-white'
-                : 'bg-blue-600 hover:bg-blue-700 text-white'
-            }`}
-          >
-            {confirmText}
-          </button>
-        </div>
-      </div>
-    </div>
-  );
-};
-
-// PrimaryButton - Reusable blue button component
-const PrimaryButton = ({ onClick, children, className = '', disabled = false, icon: Icon = null }) => (
-  <button
-    onClick={onClick}
-    disabled={disabled}
-    className={`px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium transition-colors flex items-center gap-2 text-sm ${
-      disabled ? 'opacity-50 cursor-not-allowed' : ''
-    } ${className}`}
-  >
-    {Icon && <Icon className="w-4 h-4" />}
-    {children}
-  </button>
-);
+// ========================================
+// LARGE COMPONENTS (To be extracted in Phase 2)
+// ========================================
 
 // ProjectDetailView - Reusable component for displaying project details with todos and linked parts
 const ProjectDetailView = ({
@@ -1139,359 +953,6 @@ const ProjectDetailView = ({
   );
 };
 
-// Add Foundation One font
-const fontStyles = `
-  @font-face {
-    font-family: 'FoundationOne';
-    src: url('https://db.onlinewebfonts.com/t/f58c10cd63660152b6858a49e05fe609.woff2') format('woff2'),
-         url('https://db.onlinewebfonts.com/t/f58c10cd63660152b6858a49e05fe609.woff') format('woff'),
-         url('https://db.onlinewebfonts.com/t/f58c10cd63660152b6858a49e05fe609.ttf') format('truetype');
-    font-weight: normal;
-    font-style: normal;
-    font-display: swap;
-  }
-
-  /* Prevent touch scrolling on modal backdrop */
-  .modal-backdrop {
-    touch-action: none;
-    transition: opacity 0.2s ease-out;
-  }
-
-  /* Enable smooth scrolling on modal content */
-  .modal-content {
-    -webkit-overflow-scrolling: touch;
-    transition: transform 0.2s cubic-bezier(0.4, 0, 1, 1), opacity 0.2s ease-out;
-    display: flex;
-    flex-direction: column;
-    overflow: hidden;
-  }
-  /* Scrollable area for modal body - use this class on the middle content div */
-  .modal-scrollable {
-    overflow-y: auto;
-    flex: 1 1 auto;
-    min-height: 0;
-  }
-
-  /* Constrain date inputs to prevent full-width on Safari/mobile */
-  input[type="date"] {
-    max-width: 100%;
-  }
-  @media (min-width: 768px) {
-    input[type="date"] {
-      max-width: 300px;
-    }
-  }
-
-  /* Better select dropdown styling */
-  select {
-    padding-top: 0.625rem;
-    padding-bottom: 0.625rem;
-    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e");
-    background-position: right 0.75rem center;
-    background-repeat: no-repeat;
-    background-size: 1.5em 1.5em;
-    padding-right: 2.5rem;
-  }
-
-  @keyframes popUpCenter {
-    0% {
-      opacity: 0;
-      transform: scale(0.7);
-    }
-    50% {
-      transform: scale(1.02);
-    }
-    100% {
-      opacity: 1;
-      transform: scale(1);
-    }
-  }
-
-  @keyframes fadeIn {
-    from {
-      opacity: 0;
-    }
-    to {
-      opacity: 1;
-    }
-  }
-
-  @keyframes fadeOut {
-    from {
-      opacity: 1;
-    }
-    to {
-      opacity: 0;
-    }
-  }
-
-  @keyframes slideInFromRight {
-    from {
-      opacity: 0;
-      transform: translateX(30px);
-    }
-    to {
-      opacity: 1;
-      transform: translateX(0);
-    }
-  }
-
-  @keyframes slideInFromLeft {
-    from {
-      opacity: 0;
-      transform: translateX(-30px);
-    }
-    to {
-      opacity: 1;
-      transform: translateX(0);
-    }
-  }
-
-  @keyframes slideIn {
-    from {
-      opacity: 0;
-      transform: translateY(-10px);
-    }
-    to {
-      opacity: 1;
-      transform: translateY(0);
-    }
-  }
-
-  .modal-popup-enter {
-    animation: popUpCenter 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
-  }
-
-  .modal-popup-exit {
-    animation: fadeOut 0.2s ease-out;
-  }
-
-  .modal-backdrop-enter {
-    animation: fadeIn 0.3s ease-out;
-  }
-
-  .modal-backdrop-exit {
-    animation: fadeOut 0.2s ease-out;
-  }
-
-  .slide-in-right {
-    animation: slideInFromRight 0.4s cubic-bezier(0.16, 1, 0.3, 1);
-  }
-
-  .slide-in-left {
-    animation: slideInFromLeft 0.4s cubic-bezier(0.16, 1, 0.3, 1);
-  }
-
-  /* Sort chevron spin animation */
-  @keyframes spinIn180 {
-    0% {
-      transform: rotate(0deg);
-      opacity: 0.5;
-    }
-    100% {
-      transform: rotate(180deg);
-      opacity: 1;
-    }
-  }
-
-  .spin-in-180 {
-    animation: spinIn180 0.3s ease-out;
-  }
-
-  /* Table sorting animations */
-  @keyframes tableFadeSlide {
-    0% {
-      opacity: 0.3;
-      transform: translateY(-10px);
-    }
-    100% {
-      opacity: 1;
-      transform: translateY(0);
-    }
-  }
-
-  .table-sorting tbody tr {
-    animation: tableFadeSlide 0.4s ease-out;
-  }
-
-  .table-sorting tbody tr:nth-child(1) { animation-delay: 0s; }
-  .table-sorting tbody tr:nth-child(2) { animation-delay: 0.02s; }
-  .table-sorting tbody tr:nth-child(3) { animation-delay: 0.04s; }
-  .table-sorting tbody tr:nth-child(4) { animation-delay: 0.06s; }
-  .table-sorting tbody tr:nth-child(5) { animation-delay: 0.08s; }
-  .table-sorting tbody tr:nth-child(6) { animation-delay: 0.1s; }
-  .table-sorting tbody tr:nth-child(7) { animation-delay: 0.12s; }
-  .table-sorting tbody tr:nth-child(8) { animation-delay: 0.14s; }
-  .table-sorting tbody tr:nth-child(9) { animation-delay: 0.16s; }
-  .table-sorting tbody tr:nth-child(10) { animation-delay: 0.18s; }
-
-  /* Status card filtering animation - slower fade-in only */
-  @keyframes tableFadeOnly {
-    0% {
-      opacity: 0;
-    }
-    100% {
-      opacity: 1;
-    }
-  }
-
-  .table-status-filtering tbody tr {
-    animation: tableFadeOnly 0.6s ease-in;
-  }
-
-  .table-status-filtering tbody tr:nth-child(1) { animation-delay: 0s; }
-  .table-status-filtering tbody tr:nth-child(2) { animation-delay: 0.03s; }
-  .table-status-filtering tbody tr:nth-child(3) { animation-delay: 0.06s; }
-  .table-status-filtering tbody tr:nth-child(4) { animation-delay: 0.09s; }
-  .table-status-filtering tbody tr:nth-child(5) { animation-delay: 0.12s; }
-  .table-status-filtering tbody tr:nth-child(6) { animation-delay: 0.15s; }
-  .table-status-filtering tbody tr:nth-child(7) { animation-delay: 0.18s; }
-  .table-status-filtering tbody tr:nth-child(8) { animation-delay: 0.21s; }
-  .table-status-filtering tbody tr:nth-child(9) { animation-delay: 0.24s; }
-  .table-status-filtering tbody tr:nth-child(10) { animation-delay: 0.27s; }
-
-  /* Mobile card status filtering animation */
-  .cards-status-filtering > div {
-    animation: tableFadeOnly 0.6s ease-in;
-  }
-
-  .cards-status-filtering > div:nth-child(1) { animation-delay: 0s; }
-  .cards-status-filtering > div:nth-child(2) { animation-delay: 0.03s; }
-  .cards-status-filtering > div:nth-child(3) { animation-delay: 0.06s; }
-  .cards-status-filtering > div:nth-child(4) { animation-delay: 0.09s; }
-  .cards-status-filtering > div:nth-child(5) { animation-delay: 0.12s; }
-  .cards-status-filtering > div:nth-child(6) { animation-delay: 0.15s; }
-  .cards-status-filtering > div:nth-child(7) { animation-delay: 0.18s; }
-  .cards-status-filtering > div:nth-child(8) { animation-delay: 0.21s; }
-  .cards-status-filtering > div:nth-child(9) { animation-delay: 0.24s; }
-  .cards-status-filtering > div:nth-child(10) { animation-delay: 0.27s; }
-
-  /* Empty state animation */
-  .animate-fade-in {
-    animation: tableFadeOnly 0.6s ease-in;
-  }
-
-  /* Project filtering animations */
-  @keyframes projectFilterFade {
-    0% {
-      opacity: 0;
-      transform: translateY(20px);
-    }
-    100% {
-      opacity: 1;
-      transform: translateY(0);
-    }
-  }
-
-  .projects-filtering > div {
-    animation: projectFilterFade 0.4s cubic-bezier(0.4, 0, 0.2, 1) forwards;
-    opacity: 0;
-  }
-
-  .projects-filtering > div:nth-child(1) { animation-delay: 0s; }
-  .projects-filtering > div:nth-child(2) { animation-delay: 0.04s; }
-  .projects-filtering > div:nth-child(3) { animation-delay: 0.08s; }
-  .projects-filtering > div:nth-child(4) { animation-delay: 0.12s; }
-  .projects-filtering > div:nth-child(5) { animation-delay: 0.16s; }
-  .projects-filtering > div:nth-child(6) { animation-delay: 0.2s; }
-  .projects-filtering > div:nth-child(7) { animation-delay: 0.24s; }
-  .projects-filtering > div:nth-child(8) { animation-delay: 0.28s; }
-  .projects-filtering > div:nth-child(9) { animation-delay: 0.32s; }
-  .projects-filtering > div:nth-child(10) { animation-delay: 0.36s; }
-  .projects-filtering > div:nth-child(11) { animation-delay: 0.4s; }
-  .projects-filtering > div:nth-child(12) { animation-delay: 0.44s; }
-
-  /* Garage Door Loading Spinner */
-  .garage-spinner {
-    width: 100px;
-    height: 120px;
-    position: relative;
-    overflow: hidden;
-    border: 2px solid #555;
-  }
-
-  .door-segment {
-    height: 30px;
-    background-color: #ccc;
-    border-bottom: 1px solid #555;
-    position: absolute;
-    width: 100%;
-  }
-
-  .door-segment:nth-child(1) { bottom: 0px; }
-  .door-segment:nth-child(2) { bottom: 30px; }
-  .door-segment:nth-child(3) { bottom: 60px; }
-  .door-segment:nth-child(4) { bottom: 90px; }
-
-  @keyframes openGarage {
-    0% { transform: translateY(0) scaleY(1); opacity: 1; }
-    50% { opacity: 1; }
-    100% { transform: translateY(-150px) scaleY(0.5); opacity: 0; }
-  }
-
-  .door-segment {
-    animation: openGarage 2s infinite cubic-bezier(0.25, 0.46, 0.45, 0.94);
-    animation-fill-mode: forwards;
-  }
-
-  .door-segment:nth-child(1) { animation-delay: 0s; }
-  .door-segment:nth-child(2) { animation-delay: 0.1s; }
-  .door-segment:nth-child(3) { animation-delay: 0.2s; }
-  .door-segment:nth-child(4) { animation-delay: 0.3s; }
-
-  /* Scrollbar styles - WebKit only for Chrome/Safari */
-  *::-webkit-scrollbar {
-    width: 12px;
-    height: 12px;
-  }
-
-  *::-webkit-scrollbar-track {
-    background: #f1f5f9;
-  }
-
-  *::-webkit-scrollbar-thumb {
-    background: #cbd5e1;
-    border-radius: 6px;
-    border: 2px solid #f1f5f9;
-  }
-
-  *::-webkit-scrollbar-thumb:hover {
-    background: #94a3b8;
-  }
-
-  /* Scrollbar styles for dark mode */
-  body.dark-scrollbar::-webkit-scrollbar-track,
-  body.dark-scrollbar *::-webkit-scrollbar-track {
-    background: #1f2937;
-  }
-
-  body.dark-scrollbar::-webkit-scrollbar-thumb,
-  body.dark-scrollbar *::-webkit-scrollbar-thumb {
-    background: #4b5563;
-    border-radius: 6px;
-    border: 2px solid #1f2937;
-  }
-
-  body.dark-scrollbar::-webkit-scrollbar-thumb:hover,
-  body.dark-scrollbar *::-webkit-scrollbar-thumb:hover {
-    background: #6b7280;
-  }
-
-  /* Line clamp utility for truncating text */
-  .line-clamp-2 {
-    display: -webkit-box;
-    -webkit-line-clamp: 2;
-    -webkit-box-orient: vertical;
-    overflow: hidden;
-  }
-  .line-clamp-3 {
-    display: -webkit-box;
-    -webkit-line-clamp: 3;
-    -webkit-box-orient: vertical;
-    overflow: hidden;
-  }
-`;
-
 // ========================================
 // PROJECT EDIT FORM COMPONENT (SHARED)
 // ========================================
@@ -1807,58 +1268,9 @@ const LinkedPartsSection = ({
   );
 };
 
-// PriceDisplay Component - displays price with smaller decimal portion
-const PriceDisplay = ({ amount, className = '', darkMode }) => {
-  const formattedAmount = amount.toFixed(2);
-  const [dollars, cents] = formattedAmount.split('.');
-  
-  return (
-    <span className={className}>
-      ${dollars}
-      <span className="text-[0.7em]">.{cents}</span>
-    </span>
-  );
-};
-
-// VendorSelect Component - moved outside to prevent recreation on every render
-const VendorSelect = ({ value, onChange, darkMode, uniqueVendors }) => {
-  return (
-    <div className="space-y-2">
-      <select
-        value={uniqueVendors.includes(value) ? value : ''}
-        onChange={(e) => onChange(e.target.value)}
-        className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent min-h-[42px] box-border ${
-          darkMode 
-            ? 'bg-gray-700 border-gray-600 text-gray-100' 
-            : 'bg-slate-50 border-slate-300 text-slate-800'
-        }`}
-        style={selectDropdownStyle}
-      >
-        <option value="">Select a vendor...</option>
-        {uniqueVendors.map(vendor => (
-          <option key={vendor} value={vendor}>{vendor}</option>
-        ))}
-      </select>
-      <div className={`text-xs ${darkMode ? 'text-gray-400' : 'text-slate-600'}`}>
-        Or enter a new vendor:
-      </div>
-      <input
-        type="text"
-        value={uniqueVendors.includes(value) ? '' : value}
-        onChange={(e) => {
-          const newValue = e.target.value;
-          onChange(newValue);
-        }}
-        className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
-          darkMode 
-            ? 'bg-gray-700 border-gray-600 text-gray-100 placeholder-gray-400' 
-            : 'bg-slate-50 border-slate-300 text-slate-800 placeholder-slate-400'
-        }`}
-        placeholder="Enter new vendor name"
-      />
-    </div>
-  );
-};
+// ========================================
+// MAIN SHAKO COMPONENT
+// ========================================
 
 const Shako = () => {
   const [parts, setParts] = useState([]);
@@ -3818,7 +3230,7 @@ const Shako = () => {
         ? 'bg-gray-900 dark-scrollbar'
         : 'bg-slate-200'
     }`}>
-      <style>{fontStyles}{`
+      <style>{`
         /* Reserve scrollbar space to prevent layout shift */
         html {
           scrollbar-gutter: stable;
