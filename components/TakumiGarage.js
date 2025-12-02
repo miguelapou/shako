@@ -6891,38 +6891,38 @@ const TakumiGarage = () => {
                   }`}>
                     {projectModalEditMode ? (
                       <div className="flex items-center justify-between w-full gap-2">
-                        <div className="flex items-center gap-1 sm:gap-2 justify-center flex-1 sm:flex-initial sm:justify-start">
-                          <button
-                            onClick={() => {
-                              // Check for unsaved changes before going back
-                              if (hasUnsavedProjectChanges()) {
-                                setConfirmDialog({
-                                  isOpen: true,
-                                  title: 'Unsaved Changes',
-                                  message: 'You have unsaved changes. Are you sure you want to go back without saving?',
-                                  confirmText: 'Discard',
-                                  cancelText: 'Keep Editing',
-                                  onConfirm: () => {
-                                    // Restore original data
-                                    if (originalProjectData) {
-                                      setViewingProject({ ...originalProjectData });
-                                    }
-                                    setProjectModalEditMode(false);
+                        <button
+                          onClick={() => {
+                            // Check for unsaved changes before going back
+                            if (hasUnsavedProjectChanges()) {
+                              setConfirmDialog({
+                                isOpen: true,
+                                title: 'Unsaved Changes',
+                                message: 'You have unsaved changes. Are you sure you want to go back without saving?',
+                                confirmText: 'Discard',
+                                cancelText: 'Keep Editing',
+                                onConfirm: () => {
+                                  // Restore original data
+                                  if (originalProjectData) {
+                                    setViewingProject({ ...originalProjectData });
                                   }
-                                });
-                                return;
-                              }
-                              setProjectModalEditMode(false);
-                            }}
-                            className={`flex items-center gap-2 px-4 py-2 rounded-lg font-medium transition-colors border ${
-                              darkMode
-                                ? 'bg-gray-700 hover:bg-gray-600 text-gray-100 border-gray-600 hover:border-gray-500'
-                                : 'bg-gray-200 hover:bg-gray-300 text-gray-800 border-gray-300 hover:border-gray-400'
-                            }`}
-                            title="Back"
-                          >
-                            <ChevronDown className="w-5 h-5 rotate-90" />
-                          </button>
+                                  setProjectModalEditMode(false);
+                                }
+                              });
+                              return;
+                            }
+                            setProjectModalEditMode(false);
+                          }}
+                          className={`flex items-center gap-2 px-4 py-2 rounded-lg font-medium transition-colors border ${
+                            darkMode
+                              ? 'bg-gray-700 hover:bg-gray-600 text-gray-100 border-gray-600 hover:border-gray-500'
+                              : 'bg-gray-200 hover:bg-gray-300 text-gray-800 border-gray-300 hover:border-gray-400'
+                          }`}
+                          title="Back"
+                        >
+                          <ChevronDown className="w-5 h-5 rotate-90" />
+                        </button>
+                        <div className="flex items-center gap-1 sm:gap-2 justify-center">
                         <button
                           onClick={async () => {
                             const partsForProject = parts.filter(p => p.projectId === viewingProject.id);
@@ -6984,8 +6984,6 @@ const TakumiGarage = () => {
                           <Archive className="w-4 h-4" />
                           <span className="hidden sm:inline">{viewingProject.archived ? 'Unarchive' : 'Archive'}</span>
                         </button>
-                        </div>
-                        <div className="flex items-center gap-2 justify-center flex-1">
                         <button
                           onClick={async () => {
                             // Toggle on_hold status
@@ -7016,6 +7014,7 @@ const TakumiGarage = () => {
                             </>
                           )}
                         </button>
+                        </div>
                         <PrimaryButton
                           onClick={async () => {
                             await updateProject(viewingProject.id, {
@@ -8903,39 +8902,39 @@ const TakumiGarage = () => {
                   }`}>
                     {vehicleModalEditMode ? (
                       <div className="flex items-center justify-between w-full gap-2">
-                        <div className="flex items-center gap-1 sm:gap-2 justify-center flex-1 sm:flex-initial sm:justify-start">
-                          <button
-                            onClick={() => {
-                              // Check for unsaved changes before going back
-                              if (hasUnsavedVehicleChanges()) {
-                                setConfirmDialog({
-                                  isOpen: true,
-                                  title: 'Unsaved Changes',
-                                  message: 'You have unsaved changes. Are you sure you want to go back without saving?',
-                                  confirmText: 'Discard',
-                                  cancelText: 'Keep Editing',
-                                  onConfirm: () => {
-                                    // Restore original data
-                                    if (originalVehicleData) {
-                                      setViewingVehicle({ ...originalVehicleData });
-                                    }
-                                    clearImageSelection();
-                                    setVehicleModalEditMode(null);
+                        <button
+                          onClick={() => {
+                            // Check for unsaved changes before going back
+                            if (hasUnsavedVehicleChanges()) {
+                              setConfirmDialog({
+                                isOpen: true,
+                                title: 'Unsaved Changes',
+                                message: 'You have unsaved changes. Are you sure you want to go back without saving?',
+                                confirmText: 'Discard',
+                                cancelText: 'Keep Editing',
+                                onConfirm: () => {
+                                  // Restore original data
+                                  if (originalVehicleData) {
+                                    setViewingVehicle({ ...originalVehicleData });
                                   }
-                                });
-                                return;
-                              }
-                              setVehicleModalEditMode(null);
-                            }}
-                            className={`flex items-center gap-2 px-4 py-2 rounded-lg font-medium transition-colors border ${
-                              darkMode
-                                ? 'bg-gray-700 hover:bg-gray-600 text-gray-100 border-gray-600 hover:border-gray-500'
-                                : 'bg-gray-200 hover:bg-gray-300 text-gray-800 border-gray-300 hover:border-gray-400'
-                            }`}
-                            title="Back"
-                          >
-                            <ChevronDown className="w-5 h-5 rotate-90" />
-                          </button>
+                                  clearImageSelection();
+                                  setVehicleModalEditMode(null);
+                                }
+                              });
+                              return;
+                            }
+                            setVehicleModalEditMode(null);
+                          }}
+                          className={`flex items-center gap-2 px-4 py-2 rounded-lg font-medium transition-colors border ${
+                            darkMode
+                              ? 'bg-gray-700 hover:bg-gray-600 text-gray-100 border-gray-600 hover:border-gray-500'
+                              : 'bg-gray-200 hover:bg-gray-300 text-gray-800 border-gray-300 hover:border-gray-400'
+                          }`}
+                          title="Back"
+                        >
+                          <ChevronDown className="w-5 h-5 rotate-90" />
+                        </button>
+                        <div className="flex items-center gap-1 sm:gap-2 justify-center">
                         {vehicleModalEditMode === 'vehicle' && (
                           <>
                             <button
@@ -9019,8 +9018,6 @@ const TakumiGarage = () => {
                             </button>
                           </>
                         )}
-                        </div>
-                        <div className="flex items-center gap-2 justify-center flex-1">
                         {vehicleModalEditMode === 'project' && (
                           <button
                             onClick={async () => {
@@ -9053,6 +9050,7 @@ const TakumiGarage = () => {
                             )}
                           </button>
                         )}
+                        </div>
                         <button
                           onClick={async () => {
                             // Save logic based on what's being edited
