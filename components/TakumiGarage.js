@@ -6318,7 +6318,7 @@ const TakumiGarage = () => {
                     // If opening the archive, scroll to it after a brief delay to allow expansion
                     if (wasCollapsed && projectArchiveRef.current) {
                       setTimeout(() => {
-                        projectArchiveRef.current?.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+                        projectArchiveRef.current?.scrollIntoView({ behavior: 'smooth', block: 'end' });
                       }, 100);
                     }
                   }}
@@ -7349,7 +7349,7 @@ const TakumiGarage = () => {
                     // If opening the archive, scroll to it after a brief delay to allow expansion
                     if (wasCollapsed && vehicleArchiveRef.current) {
                       setTimeout(() => {
-                        vehicleArchiveRef.current?.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+                        vehicleArchiveRef.current?.scrollIntoView({ behavior: 'smooth', block: 'end' });
                       }, 100);
                     }
                   }}
