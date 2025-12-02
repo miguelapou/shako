@@ -1350,6 +1350,22 @@ const fontStyles = `
   .table-status-filtering tbody tr:nth-child(9) { animation-delay: 0.24s; }
   .table-status-filtering tbody tr:nth-child(10) { animation-delay: 0.27s; }
 
+  /* Mobile card status filtering animation */
+  .cards-status-filtering > div {
+    animation: tableFadeOnly 0.6s ease-in;
+  }
+
+  .cards-status-filtering > div:nth-child(1) { animation-delay: 0s; }
+  .cards-status-filtering > div:nth-child(2) { animation-delay: 0.03s; }
+  .cards-status-filtering > div:nth-child(3) { animation-delay: 0.06s; }
+  .cards-status-filtering > div:nth-child(4) { animation-delay: 0.09s; }
+  .cards-status-filtering > div:nth-child(5) { animation-delay: 0.12s; }
+  .cards-status-filtering > div:nth-child(6) { animation-delay: 0.15s; }
+  .cards-status-filtering > div:nth-child(7) { animation-delay: 0.18s; }
+  .cards-status-filtering > div:nth-child(8) { animation-delay: 0.21s; }
+  .cards-status-filtering > div:nth-child(9) { animation-delay: 0.24s; }
+  .cards-status-filtering > div:nth-child(10) { animation-delay: 0.27s; }
+
   /* Project filtering animations */
   @keyframes projectFilterFade {
     0% {
@@ -5674,7 +5690,7 @@ const TakumiGarage = () => {
 
         {/* Mobile Card View - Visible only below 800px */}
         {filteredParts.length > 0 ? (
-        <div className="show-below-800 grid grid-cols-1 gap-4">
+        <div className={`show-below-800 grid grid-cols-1 gap-4 ${isStatusFiltering ? 'cards-status-filtering' : ''}`}>
             {filteredParts.map((part) => (
               <div 
                 key={part.id}
