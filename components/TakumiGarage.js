@@ -6922,7 +6922,7 @@ const TakumiGarage = () => {
                         >
                           <ChevronDown className="w-5 h-5 rotate-90" />
                         </button>
-                        <div className="flex items-center gap-1 sm:gap-2 justify-center">
+                        <div className="flex items-center gap-1 sm:gap-2 justify-center sm:justify-end sm:mr-2">
                         <button
                           onClick={async () => {
                             const partsForProject = parts.filter(p => p.projectId === viewingProject.id);
@@ -8935,7 +8935,7 @@ const TakumiGarage = () => {
                         >
                           <ChevronDown className="w-5 h-5 rotate-90" />
                         </button>
-                        <div className="flex items-center gap-1 sm:gap-2 justify-center">
+                        <div className="flex items-center gap-1 sm:gap-2 justify-center sm:justify-end sm:mr-2">
                         {vehicleModalEditMode === 'vehicle' && (
                           <>
                             <button
