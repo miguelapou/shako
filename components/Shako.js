@@ -3929,6 +3929,7 @@ const Shako = () => {
                         ? 'bg-gray-800 border-gray-600 text-gray-100'
                         : 'bg-slate-100 border-slate-300 text-slate-800'
                     }`}
+                    style={{ fontFamily: 'ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif' }}
                   >
                     <div className="flex items-center gap-2">
                       {projectVehicleFilter !== 'all' && (() => {
@@ -3958,7 +3959,7 @@ const Shako = () => {
                       />
                       <div className={`absolute right-0 z-20 mt-1 min-w-[200px] w-max rounded-lg border shadow-lg py-1 ${
                         darkMode ? 'bg-gray-800 border-gray-600' : 'bg-slate-50 border-slate-300'
-                      }`}>
+                      }`} style={{ fontFamily: 'ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif' }}>
                         <div className={`px-3 py-1.5 text-xs font-medium uppercase tracking-tight border-b whitespace-nowrap ${
                           darkMode ? 'text-gray-400 border-gray-600' : 'text-gray-500 border-slate-200'
                         }`}>
@@ -4024,6 +4025,7 @@ const Shako = () => {
                         ? 'bg-gray-800 border-gray-600 text-gray-100'
                         : 'bg-slate-100 border-slate-300 text-slate-800'
                     }`}
+                    style={{ fontFamily: 'ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif' }}
                   >
                     <span>
                       {partsDateFilter === 'all' && 'All'}
@@ -4041,7 +4043,7 @@ const Shako = () => {
                       />
                       <div className={`absolute right-0 z-20 mt-1 w-auto rounded-lg border shadow-lg py-1 ${
                         darkMode ? 'bg-gray-800 border-gray-600' : 'bg-slate-50 border-slate-300'
-                      }`}>
+                      }`} style={{ fontFamily: 'ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif' }}>
                         <div className={`px-3 py-1.5 text-xs font-medium uppercase tracking-tight border-b whitespace-nowrap ${
                           darkMode ? 'text-gray-400 border-gray-600' : 'text-gray-500 border-slate-200'
                         }`}>
