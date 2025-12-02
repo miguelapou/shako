@@ -6943,7 +6943,7 @@ const TakumiGarage = () => {
                               }
                             });
                           }}
-                          className={`px-4 py-2 rounded-lg font-medium transition-colors flex items-center gap-2 text-sm ${
+                          className={`h-10 px-4 py-2 rounded-lg font-medium transition-colors flex items-center gap-2 text-sm ${
                             darkMode
                               ? 'bg-red-900/30 hover:bg-red-900/50 text-red-400 border border-red-700'
                               : 'bg-red-50 hover:bg-red-100 text-red-600 border border-red-300'
@@ -6973,7 +6973,7 @@ const TakumiGarage = () => {
                               }
                             });
                           }}
-                          className={`px-4 py-2 rounded-lg font-medium transition-colors flex items-center gap-2 text-sm ${
+                          className={`h-10 px-4 py-2 rounded-lg font-medium transition-colors flex items-center gap-2 text-sm ${
                             viewingProject.archived
                               ? 'bg-green-600 hover:bg-green-700 text-white'
                               : darkMode
@@ -8956,7 +8956,7 @@ const TakumiGarage = () => {
                                   }
                                 });
                               }}
-                              className={`px-4 py-2 rounded-lg font-medium transition-colors flex items-center gap-2 text-sm ${
+                              className={`h-10 px-4 py-2 rounded-lg font-medium transition-colors flex items-center gap-2 text-sm ${
                                 darkMode
                                   ? 'bg-red-900/30 hover:bg-red-900/50 text-red-400 border border-red-700'
                                   : 'bg-red-50 hover:bg-red-100 text-red-600 border border-red-300'
@@ -8970,24 +8970,24 @@ const TakumiGarage = () => {
                                 setConfirmDialog({
                                   isOpen: true,
                                   title: viewingVehicle.archived ? 'Unarchive Vehicle' : 'Archive Vehicle',
-                                  message: viewingVehicle.archived 
-                                    ? 'Are you sure you want to unarchive this vehicle?' 
+                                  message: viewingVehicle.archived
+                                    ? 'Are you sure you want to unarchive this vehicle?'
                                     : 'Are you sure you want to archive this vehicle? It will still be visible but with limited information.',
                                   confirmText: viewingVehicle.archived ? 'Unarchive' : 'Archive',
                                   isDangerous: false,
                                   onConfirm: async () => {
                                     // When archiving, set display_order to a high number to move to end
                                     // When unarchiving, keep current display_order
-                                    const updates = { 
-                                      archived: !viewingVehicle.archived 
+                                    const updates = {
+                                      archived: !viewingVehicle.archived
                                     };
                                     if (!viewingVehicle.archived) {
                                       // Archiving: set display_order to max + 1
                                       const maxOrder = Math.max(...vehicles.map(v => v.display_order || 0), 0);
                                       updates.display_order = maxOrder + 1;
                                     }
-                                    const updatedVehicle = { 
-                                      ...viewingVehicle, 
+                                    const updatedVehicle = {
+                                      ...viewingVehicle,
                                       ...updates
                                     };
                                     await updateVehicle(viewingVehicle.id, updates);
@@ -8996,7 +8996,7 @@ const TakumiGarage = () => {
                                   }
                                 });
                               }}
-                              className={`px-4 py-2 rounded-lg font-medium transition-colors flex items-center gap-2 text-sm ${
+                              className={`h-10 px-4 py-2 rounded-lg font-medium transition-colors flex items-center gap-2 text-sm ${
                                 viewingVehicle.archived
                                   ? 'bg-green-600 hover:bg-green-700 text-white'
                                   : darkMode
