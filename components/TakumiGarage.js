@@ -1891,62 +1891,44 @@ const TakumiGarage = () => {
   const [showVehicleFilterDropdown, setShowVehicleFilterDropdown] = useState(false);
   const [isArchiveCollapsed, setIsArchiveCollapsed] = useState(true);
   const [isProjectArchiveCollapsed, setIsProjectArchiveCollapsed] = useState(true);
+  const [archiveStatesInitialized, setArchiveStatesInitialized] = useState(false);
 
-  // Load preferences from database
-  const loadPreferences = async () => {
-    try {
-      const { data, error } = await supabase
-        .from('preferences')
-        .select('*');
-
-      if (error) throw error;
-
-      if (data && data.length > 0) {
-        data.forEach(pref => {
-          if (pref.key === 'archiveCollapsed') {
-            setIsArchiveCollapsed(pref.value);
-          } else if (pref.key === 'projectArchiveCollapsed') {
-            setIsProjectArchiveCollapsed(pref.value);
-          }
-        });
+  // Initialize archive collapsed states from localStorage after mount to avoid hydration mismatch
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const savedArchiveCollapsed = localStorage.getItem('archiveCollapsed');
+      if (savedArchiveCollapsed !== null) {
+        setIsArchiveCollapsed(JSON.parse(savedArchiveCollapsed));
       }
-    } catch (error) {
-      console.error('Error loading preferences:', error);
+
+      const savedProjectArchiveCollapsed = localStorage.getItem('projectArchiveCollapsed');
+      if (savedProjectArchiveCollapsed !== null) {
+        setIsProjectArchiveCollapsed(JSON.parse(savedProjectArchiveCollapsed));
+      }
+
+      setArchiveStatesInitialized(true);
     }
-  };
+  }, []);
 
-  // Save preference to database
-  const savePreference = async (key, value) => {
-    try {
-      const { error } = await supabase
-        .from('preferences')
-        .upsert(
-          { key, value },
-          { onConflict: 'key' }
-        );
-
-      if (error) throw error;
-    } catch (error) {
-      console.error('Error saving preference:', error);
+  // Save archive collapsed state to localStorage
+  useEffect(() => {
+    if (typeof window !== 'undefined' && archiveStatesInitialized) {
+      localStorage.setItem('archiveCollapsed', JSON.stringify(isArchiveCollapsed));
     }
-  };
+  }, [isArchiveCollapsed, archiveStatesInitialized]);
 
-  // Save archive collapsed state to database
+  // Save project archive collapsed state to localStorage
   useEffect(() => {
-    savePreference('archiveCollapsed', isArchiveCollapsed);
-  }, [isArchiveCollapsed]);
+    if (typeof window !== 'undefined' && archiveStatesInitialized) {
+      localStorage.setItem('projectArchiveCollapsed', JSON.stringify(isProjectArchiveCollapsed));
+    }
+  }, [isProjectArchiveCollapsed, archiveStatesInitialized]);
 
-  // Save project archive collapsed state to database
-  useEffect(() => {
-    savePreference('projectArchiveCollapsed', isProjectArchiveCollapsed);
-  }, [isProjectArchiveCollapsed]);
-
-  // Load parts, projects, vendors, and preferences from Supabase on mount
+  // Load parts, projects, and vendors from Supabase on mount
   useEffect(() => {
     loadParts();
     loadProjects();
     loadVendors();
-    loadPreferences();
     // Don't load vehicles on initial mount, only when tab is accessed
   }, []);
 
