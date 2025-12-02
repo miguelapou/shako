@@ -1,7 +1,7 @@
 'use client';
 
-import TakumiGarage from '../components/TakumiGarage';
+import Shako from '../components/Shako';
 
 export default function Home() {
-  return <TakumiGarage />;
+  return <Shako />;
 }
