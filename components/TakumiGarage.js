@@ -6890,7 +6890,7 @@ const TakumiGarage = () => {
                     darkMode ? 'border-gray-700 bg-gray-800' : 'border-slate-200 bg-slate-100'
                   }`}>
                     {projectModalEditMode ? (
-                      <div className="flex items-center justify-between w-full gap-2">
+                      <div className="flex items-center justify-between sm:justify-start w-full gap-2">
                         <button
                           onClick={() => {
                             // Check for unsaved changes before going back
@@ -6922,7 +6922,7 @@ const TakumiGarage = () => {
                         >
                           <ChevronDown className="w-5 h-5 rotate-90" />
                         </button>
-                        <div className="flex items-center gap-1 sm:gap-2 justify-center sm:justify-end sm:mr-2">
+                        <div className="flex items-center gap-1 sm:gap-2 sm:ml-auto sm:mr-2">
                         <button
                           onClick={async () => {
                             const partsForProject = parts.filter(p => p.projectId === viewingProject.id);
@@ -8902,7 +8902,7 @@ const TakumiGarage = () => {
                     darkMode ? 'border-gray-700 bg-gray-800' : 'border-slate-200 bg-slate-100'
                   }`}>
                     {vehicleModalEditMode ? (
-                      <div className="flex items-center justify-between w-full gap-2">
+                      <div className="flex items-center justify-between sm:justify-start w-full gap-2">
                         <button
                           onClick={() => {
                             // Check for unsaved changes before going back
@@ -8935,7 +8935,7 @@ const TakumiGarage = () => {
                         >
                           <ChevronDown className="w-5 h-5 rotate-90" />
                         </button>
-                        <div className="flex items-center gap-1 sm:gap-2 justify-center sm:justify-end sm:mr-2">
+                        <div className="flex items-center gap-1 sm:gap-2 sm:ml-auto sm:mr-2">
                         {vehicleModalEditMode === 'vehicle' && (
                           <>
                             <button
