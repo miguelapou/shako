@@ -1860,7 +1860,7 @@ const VendorSelect = ({ value, onChange, darkMode, uniqueVendors }) => {
   );
 };
 
-const TakumiGarage = () => {
+const Shako = () => {
   const [parts, setParts] = useState([]);
   const [projects, setProjects] = useState([]);
   const [vehicles, setVehicles] = useState([]);
@@ -3789,10 +3789,10 @@ const TakumiGarage = () => {
         <div className="mb-3 sm:mb-4 min-h-[52px] sm:min-h-[60px]">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <img src="/icon.png" alt="Takumi Garage" className="w-8 h-8 sm:w-10 sm:h-10 lg:w-12 lg:h-12" />
+              <img src="/icon.png" alt="Shako" className="w-8 h-8 sm:w-10 sm:h-10 lg:w-12 lg:h-12" />
               <h1 className={`text-2xl sm:text-3xl lg:text-4xl font-bold ${
                 darkMode ? 'text-gray-100' : 'text-slate-800'
-              }`} style={{ fontFamily: "'FoundationOne', 'Courier New', monospace" }}>TAKUMI GARAGE</h1>
+              }`} style={{ fontFamily: "'FoundationOne', 'Courier New', monospace" }}>Shako</h1>
             </div>
             <div className="flex items-center gap-2 sm:gap-3 min-h-[44px]">
               {/* Vehicle Filter - Only visible on Projects tab */}
@@ -9377,4 +9377,4 @@ const TakumiGarage = () => {
   );
 };
 
-export default TakumiGarage;
+export default Shako;
