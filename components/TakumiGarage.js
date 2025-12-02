@@ -3715,9 +3715,9 @@ const TakumiGarage = () => {
                       e.stopPropagation();
                       setShowVehicleFilterDropdown(!showVehicleFilterDropdown);
                     }}
-                    className={`px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm text-left flex items-center justify-between gap-2 ${
-                      darkMode 
-                        ? 'bg-gray-800 border-gray-600 text-gray-100' 
+                    className={`px-3 py-2 sm:py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm text-left flex items-center justify-between gap-2 ${
+                      darkMode
+                        ? 'bg-gray-800 border-gray-600 text-gray-100'
                         : 'bg-slate-100 border-slate-300 text-slate-800'
                     }`}
                   >
