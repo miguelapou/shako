@@ -3835,9 +3835,14 @@ const TakumiGarage = () => {
                         className="fixed inset-0 z-10"
                         onClick={() => setShowVehicleFilterDropdown(false)}
                       />
-                      <div className={`absolute right-0 z-20 mt-1 min-w-[240px] w-max rounded-lg border shadow-lg py-1 ${
+                      <div className={`absolute right-0 z-20 mt-1 min-w-[200px] w-max rounded-lg border shadow-lg py-1 ${
                         darkMode ? 'bg-gray-800 border-gray-600' : 'bg-slate-50 border-slate-300'
                       }`}>
+                        <div className={`px-3 py-1.5 text-xs font-medium uppercase tracking-tight border-b whitespace-nowrap ${
+                          darkMode ? 'text-gray-400 border-gray-600' : 'text-gray-500 border-slate-200'
+                        }`}>
+                          Filter by Vehicle
+                        </div>
                         <button
                           onClick={() => {
                             setIsFilteringProjects(true);
