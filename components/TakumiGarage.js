@@ -3747,7 +3747,7 @@ const TakumiGarage = () => {
                         className="fixed inset-0 z-10"
                         onClick={() => setShowVehicleFilterDropdown(false)}
                       />
-                      <div className={`absolute right-0 z-20 mt-1 min-w-[240px] w-max rounded-lg border shadow-lg py-1 max-h-60 overflow-y-auto ${
+                      <div className={`absolute right-0 z-20 mt-1 min-w-[240px] w-max rounded-lg border shadow-lg py-1 ${
                         darkMode ? 'bg-gray-800 border-gray-600' : 'bg-slate-50 border-slate-300'
                       }`}>
                         <button
@@ -3765,7 +3765,7 @@ const TakumiGarage = () => {
                         >
                           All
                         </button>
-                        {vehicles.map(vehicle => (
+                        {vehicles.filter(vehicle => !vehicle.archived).map(vehicle => (
                           <button
                             key={vehicle.id}
                             onClick={() => {
