@@ -1886,6 +1886,13 @@ const Shako = () => {
   const [hoverTab, setHoverTab] = useState(null);
   const [isTouchDevice, setIsTouchDevice] = useState(false);
 
+  // Refs for swipe detection on tab content
+  const tabContentRef = useRef(null);
+
+  // Swipe detection state
+  const [touchStart, setTouchStart] = useState(null);
+  const [touchEnd, setTouchEnd] = useState(null);
+
   // Detect touch device on mount
   useEffect(() => {
     setIsTouchDevice('ontouchstart' in window || navigator.maxTouchPoints > 0);
@@ -2621,6 +2628,91 @@ const Shako = () => {
     setPreviousTab(activeTab);
     setActiveTab(newTab);
   };
+
+  // Swipe gesture handlers for tab navigation using native events
+  const minSwipeDistance = 50;
+  const tabs = ['vehicles', 'projects', 'parts'];
+
+  useEffect(() => {
+    // Small delay to ensure DOM is ready
+    const timeoutId = setTimeout(() => {
+      const element = tabContentRef.current;
+      if (!element) return;
+
+      let touchStartPos = null;
+      let touchEndPos = null;
+
+      const handleTouchStart = (e) => {
+        touchEndPos = null;
+        touchStartPos = {
+          x: e.touches[0].clientX,
+          y: e.touches[0].clientY
+        };
+      };
+
+      const handleTouchMove = (e) => {
+        if (!touchStartPos) return;
+
+        const currentX = e.touches[0].clientX;
+        const currentY = e.touches[0].clientY;
+
+        const diffX = Math.abs(currentX - touchStartPos.x);
+        const diffY = Math.abs(currentY - touchStartPos.y);
+
+        // If horizontal movement is greater than vertical, prevent scrolling
+        if (diffX > diffY && diffX > 10) {
+          e.preventDefault();
+        }
+
+        touchEndPos = {
+          x: currentX,
+          y: currentY
+        };
+      };
+
+      const handleTouchEnd = () => {
+        if (!touchStartPos || !touchEndPos) return;
+
+        const distance = touchStartPos.x - touchEndPos.x;
+        const isLeftSwipe = distance > minSwipeDistance;
+        const isRightSwipe = distance < -minSwipeDistance;
+
+        if (isLeftSwipe || isRightSwipe) {
+          const currentIndex = tabs.indexOf(activeTab);
+
+          if (isLeftSwipe && currentIndex < tabs.length - 1) {
+            handleTabChange(tabs[currentIndex + 1]);
+          } else if (isRightSwipe && currentIndex > 0) {
+            handleTabChange(tabs[currentIndex - 1]);
+          }
+        }
+
+        touchStartPos = null;
+        touchEndPos = null;
+      };
+
+      // Add event listeners with passive: false to allow preventDefault
+      element.addEventListener('touchstart', handleTouchStart, { passive: true });
+      element.addEventListener('touchmove', handleTouchMove, { passive: false });
+      element.addEventListener('touchend', handleTouchEnd, { passive: true });
+
+      // Store cleanup function
+      return () => {
+        element.removeEventListener('touchstart', handleTouchStart);
+        element.removeEventListener('touchmove', handleTouchMove);
+        element.removeEventListener('touchend', handleTouchEnd);
+      };
+    }, 0);
+
+    return () => {
+      clearTimeout(timeoutId);
+    };
+  }, [activeTab, loading]);
+
+  // Reset scroll position to top when switching tabs
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: 'instant' });
+  }, [activeTab]);
 
   const updateProjectsOrder = async (orderedProjects) => {
     try {
@@ -3743,6 +3835,34 @@ const Shako = () => {
           -ms-overflow-style: none;
         }
 
+        /* Disable hover and scale effects on touch devices */
+        @media (hover: none), (pointer: coarse) {
+          * {
+            /* Disable all scale transforms on touch devices */
+          }
+          [class*="hover:scale"],
+          [class*="hover:shadow"] {
+            transition: none !important;
+          }
+          [class*="hover:scale"]:hover,
+          [class*="hover:scale"]:active {
+            transform: none !important;
+          }
+          .hover\:scale-\[1\.02\]:hover,
+          .hover\:scale-\[1\.03\]:hover,
+          .hover\:scale-\[1\.02\]:active,
+          .hover\:scale-\[1\.03\]:active,
+          .hover\:scale-\[1\.02\],
+          .hover\:scale-\[1\.03\] {
+            transform: none !important;
+          }
+          .hover\:shadow-lg:hover,
+          .hover\:shadow-xl:hover,
+          .hover\:shadow-2xl:hover {
+            box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1) !important;
+          }
+        }
+
         /* Custom 800px breakpoint */
         .hidden-below-800 {
           display: none;
@@ -3765,7 +3885,8 @@ const Shako = () => {
           display: grid;
         }
         @media (min-width: 800px) {
-          .show-below-800 {
+          .show-below-800,
+          .show-below-800.grid {
             display: none;
           }
         }
@@ -5295,7 +5416,10 @@ const Shako = () => {
 
         {/* PARTS TAB CONTENT */}
         {activeTab === 'parts' && (
-          <div className="slide-in-left">
+          <div
+            ref={tabContentRef}
+            className="slide-in-left"
+          >
           <>
         {/* Statistics and Cost Breakdown - Side by Side */}
         <div className="flex flex-col gap-6 mb-6 stats-container-800">
@@ -5575,7 +5699,7 @@ const Shako = () => {
           </div>
 
           {/* Search Box - Mobile only */}
-          <div className={`md:hidden rounded-lg shadow-md p-3 order-3 ${
+          <div className={`show-below-800 rounded-lg shadow-md p-3 order-3 ${
             darkMode ? 'bg-gray-800' : 'bg-slate-100'
           }`}>
             <div className="relative">
@@ -6152,7 +6276,10 @@ const Shako = () => {
 
         {/* PROJECTS TAB CONTENT */}
         {activeTab === 'projects' && (
-          <div className={previousTab === 'vehicles' ? 'slide-in-left' : 'slide-in-right'}>
+          <div
+            ref={tabContentRef}
+            className={previousTab === 'vehicles' ? 'slide-in-left' : 'slide-in-right'}
+          >
           <>
             {/* Projects Grid */}
             <div className={`grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 ${isFilteringProjects ? 'projects-filtering' : ''}`}>
@@ -7265,7 +7392,10 @@ const Shako = () => {
 
         {/* VEHICLES TAB CONTENT */}
         {activeTab === 'vehicles' && (
-          <div className="slide-in-right">
+          <div
+            ref={tabContentRef}
+            className="slide-in-right"
+          >
           <>
             {/* Active Vehicles Grid */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
