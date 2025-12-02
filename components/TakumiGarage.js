@@ -6973,7 +6973,7 @@ const TakumiGarage = () => {
                           }`}
                         >
                           <Trash2 className="w-4 h-4" />
-                          Delete
+                          <span className="hidden sm:inline">Delete</span>
                         </button>
                         <button
                           onClick={async () => {
@@ -8991,7 +8991,7 @@ const TakumiGarage = () => {
                               }`}
                             >
                               <Trash2 className="w-4 h-4" />
-                              Delete
+                              <span className="hidden sm:inline">Delete</span>
                             </button>
                             <button
                               onClick={async () => {
