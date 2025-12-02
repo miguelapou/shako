@@ -3725,6 +3725,20 @@ const TakumiGarage = () => {
             display: none;
           }
         }
+
+        /* Round bottom corners of parts table */
+        .parts-table-footer {
+          border-bottom-left-radius: 0.5rem;
+          border-bottom-right-radius: 0.5rem;
+        }
+
+        /* Round bottom corners of last table row cells */
+        table tbody tr:last-child td:first-child {
+          border-bottom-left-radius: 0.5rem;
+        }
+        table tbody tr:last-child td:last-child {
+          border-bottom-right-radius: 0.5rem;
+        }
       `}</style>
       <div className="max-w-7xl mx-auto">
         {/* Header */}
@@ -5661,7 +5675,7 @@ const TakumiGarage = () => {
               </tbody>
             </table>
           </div>
-          <div className={`px-6 py-4 border-t ${
+          <div className={`px-6 py-4 border-t parts-table-footer ${
             darkMode ? 'bg-gray-700 border-gray-600' : 'bg-slate-50 border-slate-200'
           }`}>
             <p className={`text-sm ${
