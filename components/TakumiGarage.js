@@ -1325,6 +1325,31 @@ const fontStyles = `
   .table-sorting tbody tr:nth-child(9) { animation-delay: 0.16s; }
   .table-sorting tbody tr:nth-child(10) { animation-delay: 0.18s; }
 
+  /* Status card filtering animation - slower fade-in only */
+  @keyframes tableFadeOnly {
+    0% {
+      opacity: 0;
+    }
+    100% {
+      opacity: 1;
+    }
+  }
+
+  .table-status-filtering tbody tr {
+    animation: tableFadeOnly 0.6s ease-in;
+  }
+
+  .table-status-filtering tbody tr:nth-child(1) { animation-delay: 0s; }
+  .table-status-filtering tbody tr:nth-child(2) { animation-delay: 0.03s; }
+  .table-status-filtering tbody tr:nth-child(3) { animation-delay: 0.06s; }
+  .table-status-filtering tbody tr:nth-child(4) { animation-delay: 0.09s; }
+  .table-status-filtering tbody tr:nth-child(5) { animation-delay: 0.12s; }
+  .table-status-filtering tbody tr:nth-child(6) { animation-delay: 0.15s; }
+  .table-status-filtering tbody tr:nth-child(7) { animation-delay: 0.18s; }
+  .table-status-filtering tbody tr:nth-child(8) { animation-delay: 0.21s; }
+  .table-status-filtering tbody tr:nth-child(9) { animation-delay: 0.24s; }
+  .table-status-filtering tbody tr:nth-child(10) { animation-delay: 0.27s; }
+
   /* Project filtering animations */
   @keyframes projectFilterFade {
     0% {
@@ -2606,6 +2631,7 @@ const TakumiGarage = () => {
   const [sortBy, setSortBy] = useState('status');
   const [sortOrder, setSortOrder] = useState('asc');
   const [isSorting, setIsSorting] = useState(false);
+  const [isStatusFiltering, setIsStatusFiltering] = useState(false);
   const [openDropdown, setOpenDropdown] = useState(null);
   const [showAddModal, setShowAddModal] = useState(false);
   const [showTrackingModal, setShowTrackingModal] = useState(false);
@@ -5139,10 +5165,10 @@ const TakumiGarage = () => {
             <div className="grid grid-cols-3 gap-3 sm:gap-4">
               <div
                 onClick={() => {
-                  setIsSorting(true);
+                  setIsStatusFiltering(true);
                   setStatusFilter(statusFilter === 'purchased' ? 'all' : 'purchased');
                   setDeliveredFilter('all');
-                  setTimeout(() => setIsSorting(false), 400);
+                  setTimeout(() => setIsStatusFiltering(false), 900);
                 }}
                 className={`rounded-lg shadow-md p-3 sm:p-4 md:p-4 border-l-4 border-yellow-500 relative overflow-hidden cursor-pointer transition-all duration-200 hover:shadow-lg hover:scale-[1.02] ${
                   darkMode ? 'bg-gray-800 hover:bg-gray-750' : 'bg-white hover:bg-gray-50'
@@ -5161,10 +5187,10 @@ const TakumiGarage = () => {
 
               <div
                 onClick={() => {
-                  setIsSorting(true);
+                  setIsStatusFiltering(true);
                   setStatusFilter(statusFilter === 'shipped' ? 'all' : 'shipped');
                   setDeliveredFilter('all');
-                  setTimeout(() => setIsSorting(false), 400);
+                  setTimeout(() => setIsStatusFiltering(false), 900);
                 }}
                 className={`rounded-lg shadow-md p-3 sm:p-4 md:p-4 border-l-4 border-blue-500 relative overflow-hidden cursor-pointer transition-all duration-200 hover:shadow-lg hover:scale-[1.02] ${
                   darkMode ? 'bg-gray-800 hover:bg-gray-750' : 'bg-white hover:bg-gray-50'
@@ -5183,14 +5209,14 @@ const TakumiGarage = () => {
 
               <div
                 onClick={() => {
-                  setIsSorting(true);
+                  setIsStatusFiltering(true);
                   // Cycle through: all -> only -> hide -> all
                   setDeliveredFilter(prev =>
                     prev === 'all' ? 'only' :
                     prev === 'only' ? 'hide' : 'all'
                   );
                   setStatusFilter('all');
-                  setTimeout(() => setIsSorting(false), 400);
+                  setTimeout(() => setIsStatusFiltering(false), 900);
                 }}
                 className={`rounded-lg shadow-md p-3 sm:p-4 md:p-4 border-l-4 ${
                   deliveredFilter === 'hide' ? 'border-red-500' : 'border-green-500'
@@ -5415,7 +5441,7 @@ const TakumiGarage = () => {
           darkMode ? 'bg-gray-800' : 'bg-slate-100'
         }`}>
           <div className="overflow-x-auto overflow-y-visible rounded-lg">
-            <table className={`w-full ${isSorting ? 'table-sorting' : ''}`}>
+            <table className={`w-full ${isStatusFiltering ? 'table-status-filtering' : isSorting ? 'table-sorting' : ''}`}>
               <thead className={`border-b ${
                 darkMode ? 'bg-gray-700 border-gray-600' : 'bg-slate-100 border-slate-200'
               }`}>
