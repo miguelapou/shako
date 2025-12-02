@@ -1366,6 +1366,11 @@ const fontStyles = `
   .cards-status-filtering > div:nth-child(9) { animation-delay: 0.24s; }
   .cards-status-filtering > div:nth-child(10) { animation-delay: 0.27s; }
 
+  /* Empty state animation */
+  .animate-fade-in {
+    animation: tableFadeOnly 0.6s ease-in;
+  }
+
   /* Project filtering animations */
   @keyframes projectFilterFade {
     0% {
@@ -5660,7 +5665,7 @@ const TakumiGarage = () => {
         ) : (
           <div className={`hidden-below-800 text-center py-16 rounded-lg ${
             darkMode ? 'bg-gray-800' : 'bg-slate-100'
-          }`}>
+          } ${isStatusFiltering || isSorting ? 'animate-fade-in' : ''}`}>
             <Package className={`w-20 h-20 mx-auto mb-4 ${
               darkMode ? 'text-gray-600' : 'text-gray-400'
             }`} />
@@ -5941,7 +5946,7 @@ const TakumiGarage = () => {
         ) : (
           <div className={`show-below-800 text-center py-16 rounded-lg ${
             darkMode ? 'bg-gray-800' : 'bg-slate-100'
-          }`}>
+          } ${isStatusFiltering || isSorting ? 'animate-fade-in' : ''}`}>
             <Package className={`w-20 h-20 mx-auto mb-4 ${
               darkMode ? 'text-gray-600' : 'text-gray-400'
             }`} />
