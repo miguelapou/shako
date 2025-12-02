@@ -1938,6 +1938,10 @@ const TakumiGarage = () => {
   const [isProjectArchiveCollapsed, setIsProjectArchiveCollapsed] = useState(true);
   const [archiveStatesInitialized, setArchiveStatesInitialized] = useState(false);
 
+  // Refs for archive sections to enable auto-scroll
+  const projectArchiveRef = useRef(null);
+  const vehicleArchiveRef = useRef(null);
+
   // Initialize archive collapsed states from localStorage after mount to avoid hydration mismatch
   useEffect(() => {
     if (typeof window !== 'undefined') {
@@ -6308,7 +6312,16 @@ const TakumiGarage = () => {
                   className={`flex items-center gap-2 ${draggedProject && !draggedProject.archived ? '' : 'mt-8'} mb-6 cursor-pointer select-none transition-colors ${
                     darkMode ? 'text-gray-300 hover:text-gray-100' : 'text-slate-700 hover:text-slate-900'
                   }`}
-                  onClick={() => setIsProjectArchiveCollapsed(!isProjectArchiveCollapsed)}
+                  onClick={() => {
+                    const wasCollapsed = isProjectArchiveCollapsed;
+                    setIsProjectArchiveCollapsed(!isProjectArchiveCollapsed);
+                    // If opening the archive, scroll to it after a brief delay to allow expansion
+                    if (wasCollapsed && projectArchiveRef.current) {
+                      setTimeout(() => {
+                        projectArchiveRef.current?.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+                      }, 100);
+                    }
+                  }}
                 >
                   <Archive className="w-5 h-5" />
                   <h2 className="text-lg font-semibold">
@@ -6323,6 +6336,7 @@ const TakumiGarage = () => {
               </div>
 
               <div
+                ref={projectArchiveRef}
                 className={`transition-all duration-300 ease-in-out overflow-hidden ${
                   isProjectArchiveCollapsed ? 'max-h-0 opacity-0' : 'max-h-[5000px] opacity-100'
                 }`}
@@ -7329,7 +7343,16 @@ const TakumiGarage = () => {
                   className={`flex items-center gap-2 ${draggedVehicle && !draggedVehicle.archived ? '' : 'mt-8'} mb-6 cursor-pointer select-none transition-colors ${
                     darkMode ? 'text-gray-300 hover:text-gray-100' : 'text-slate-700 hover:text-slate-900'
                   }`}
-                  onClick={() => setIsArchiveCollapsed(!isArchiveCollapsed)}
+                  onClick={() => {
+                    const wasCollapsed = isArchiveCollapsed;
+                    setIsArchiveCollapsed(!isArchiveCollapsed);
+                    // If opening the archive, scroll to it after a brief delay to allow expansion
+                    if (wasCollapsed && vehicleArchiveRef.current) {
+                      setTimeout(() => {
+                        vehicleArchiveRef.current?.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+                      }, 100);
+                    }
+                  }}
                 >
                   <Archive className="w-5 h-5" />
                   <h2 className="text-lg font-semibold">
@@ -7344,6 +7367,7 @@ const TakumiGarage = () => {
               </div>
 
               <div
+                ref={vehicleArchiveRef}
                 className={`transition-all duration-300 ease-in-out overflow-hidden ${
                   isArchiveCollapsed ? 'max-h-0 opacity-0' : 'max-h-[5000px] opacity-100'
                 }`}
