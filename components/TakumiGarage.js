@@ -7040,14 +7040,16 @@ const TakumiGarage = () => {
                         </PrimaryButton>
                       </div>
                     ) : (
-                      <PrimaryButton
-                        onClick={() => {
-                          setProjectModalEditMode(true);
-                        }}
-                        icon={Edit2}
-                      >
-                        Edit
-                      </PrimaryButton>
+                      <div className="ml-auto">
+                        <PrimaryButton
+                          onClick={() => {
+                            setProjectModalEditMode(true);
+                          }}
+                          icon={Edit2}
+                        >
+                          Edit
+                        </PrimaryButton>
+                      </div>
                     )}
                   </div>
                 </div>
@@ -9097,7 +9099,7 @@ const TakumiGarage = () => {
                         </button>
                       </div>
                     ) : vehicleModalProjectView ? (
-                      <>
+                      <div className="flex items-center justify-between w-full gap-2">
                         <button
                           onClick={() => {
                             setVehicleModalProjectView(null);
@@ -9120,17 +9122,19 @@ const TakumiGarage = () => {
                           <Edit2 className="w-3 h-3" />
                           Edit Project
                         </button>
-                      </>
+                      </div>
                     ) : (
-                      <button
-                        onClick={() => {
-                          setVehicleModalEditMode('vehicle');
-                        }}
-                        className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium transition-colors flex items-center gap-2 text-sm"
-                      >
-                        <Edit2 className="w-3 h-3" />
-                        Edit Vehicle
-                      </button>
+                      <div className="ml-auto">
+                        <button
+                          onClick={() => {
+                            setVehicleModalEditMode('vehicle');
+                          }}
+                          className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium transition-colors flex items-center gap-2 text-sm"
+                        >
+                          <Edit2 className="w-3 h-3" />
+                          Edit Vehicle
+                        </button>
+                      </div>
                     )}
                   </div>
                 </div>
