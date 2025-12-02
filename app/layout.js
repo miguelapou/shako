@@ -1,7 +1,7 @@
 import './globals.css';
 
 export const metadata = {
-  title: 'Takumi Garage',
+  title: 'Shako',
   description: 'Track your vehicle restoration projects',
   icons: {
     icon: '/icon.png',
