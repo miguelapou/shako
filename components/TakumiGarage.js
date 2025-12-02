@@ -3893,7 +3893,7 @@ const TakumiGarage = () => {
                         className="fixed inset-0 z-10"
                         onClick={() => setShowDateFilterDropdown(false)}
                       />
-                      <div className={`absolute right-0 z-20 mt-1 min-w-[160px] w-max rounded-lg border shadow-lg py-1 ${
+                      <div className={`absolute right-0 z-20 mt-1 w-max rounded-lg border shadow-lg py-1 ${
                         darkMode ? 'bg-gray-800 border-gray-600' : 'bg-slate-50 border-slate-300'
                       }`}>
                         <button
@@ -5585,7 +5585,7 @@ const TakumiGarage = () => {
           darkMode ? 'bg-gray-800' : 'bg-slate-100'
         }`}>
           <div className="overflow-x-auto overflow-y-visible rounded-lg">
-            <table className={`w-full ${isStatusFiltering ? 'table-status-filtering' : isSorting ? 'table-sorting' : ''}`}>
+            <table className={`w-full ${isStatusFiltering || isFilteringParts ? 'table-status-filtering' : isSorting ? 'table-sorting' : ''}`}>
               <thead className={`border-b ${
                 darkMode ? 'bg-gray-700 border-gray-600' : 'bg-slate-100 border-slate-200'
               }`}>
@@ -5838,7 +5838,7 @@ const TakumiGarage = () => {
 
         {/* Mobile Card View - Visible only below 800px */}
         {filteredParts.length > 0 ? (
-        <div className={`show-below-800 grid grid-cols-1 gap-4 ${isStatusFiltering ? 'cards-status-filtering' : ''}`}>
+        <div className={`show-below-800 grid grid-cols-1 gap-4 ${isStatusFiltering || isFilteringParts ? 'cards-status-filtering' : ''}`}>
             {filteredParts.map((part) => (
               <div 
                 key={part.id}
