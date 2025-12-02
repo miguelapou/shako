@@ -6331,7 +6331,6 @@ const TakumiGarage = () => {
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                     {projects.filter(p => p.archived).map((project) => {
                       const vehicle = project.vehicle_id ? vehicles.find(v => v.id === project.vehicle_id) : null;
-                      const borderColor = vehicle ? getMutedColor(vehicle.color, darkMode) : null;
                       return (
                         <div
                           key={project.id}
@@ -6349,28 +6348,23 @@ const TakumiGarage = () => {
                           {vehicle && (
                             <div className="absolute top-2 right-2">
                               <span
-                                className="inline-flex items-center px-2 py-1 rounded text-xs font-medium border"
-                                style={{
-                                  borderLeftWidth: '3px',
-                                  borderLeftColor: borderColor,
-                                  backgroundColor: darkMode ? 'rgba(55, 65, 81, 1)' : 'rgba(243, 244, 246, 1)',
-                                  color: darkMode ? 'rgb(209, 213, 219)' : 'rgb(55, 65, 81)',
-                                  borderColor: darkMode ? 'rgb(75, 85, 99)' : 'rgb(209, 213, 219)'
-                                }}
+                                className={`inline-flex items-center px-2 py-1 rounded text-xs font-medium border ${
+                                  darkMode ? 'bg-gray-700 text-gray-300 border-gray-600' : 'bg-gray-100 text-gray-700 border-gray-300'
+                                }`}
                               >
                                 <Car className="w-3 h-3 mr-1" />
-                                {vehicle.nickname || `${vehicle.year} ${vehicle.make} ${vehicle.name}`}
+                                <span style={{ color: vehicle.color || '#3B82F6' }}>
+                                  {vehicle.nickname || `${vehicle.year} ${vehicle.make} ${vehicle.name}`}
+                                </span>
                               </span>
                             </div>
                           )}
 
-                          {/* Project Name with Archived indicator */}
+                          {/* Project Name */}
                           <h3 className={`text-lg font-bold mb-2 ${vehicle ? 'pr-20' : ''} ${
                             darkMode ? 'text-gray-100' : 'text-slate-800'
                           }`}>
-                            {project.name} <span className={`text-sm font-normal italic ${
-                              darkMode ? 'text-gray-500' : 'text-gray-400'
-                            }`}>(Archived)</span>
+                            {project.name}
                           </h3>
 
                           {/* Description */}
