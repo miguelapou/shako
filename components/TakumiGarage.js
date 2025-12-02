@@ -3913,7 +3913,7 @@ const TakumiGarage = () => {
                         className="fixed inset-0 z-10"
                         onClick={() => setShowDateFilterDropdown(false)}
                       />
-                      <div className={`absolute right-0 z-20 mt-1 w-max rounded-lg border shadow-lg py-1 ${
+                      <div className={`absolute right-0 z-20 mt-1 w-auto rounded-lg border shadow-lg py-1 ${
                         darkMode ? 'bg-gray-800 border-gray-600' : 'bg-slate-50 border-slate-300'
                       }`}>
                         <div className={`px-3 py-1.5 text-xs font-medium uppercase tracking-tight border-b whitespace-nowrap ${
