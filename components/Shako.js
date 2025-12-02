@@ -3830,7 +3830,11 @@ const Shako = () => {
         /* Disable hover effects on touch devices */
         @media (hover: none) {
           .hover\:scale-\[1\.02\]:hover,
-          .hover\:scale-\[1\.03\]:hover {
+          .hover\:scale-\[1\.03\]:hover,
+          .hover\:scale-\[1\.02\]:active,
+          .hover\:scale-\[1\.03\]:active,
+          .hover\:scale-\[1\.02\],
+          .hover\:scale-\[1\.03\] {
             transform: none !important;
           }
           .hover\:shadow-lg:hover,
