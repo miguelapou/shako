@@ -1976,6 +1976,23 @@ const TakumiGarage = () => {
     }
   }, [isProjectArchiveCollapsed, archiveStatesInitialized]);
 
+  // Initialize parts date filter from localStorage
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const savedPartsDateFilter = localStorage.getItem('partsDateFilter');
+      if (savedPartsDateFilter !== null) {
+        setPartsDateFilter(savedPartsDateFilter);
+      }
+    }
+  }, []);
+
+  // Save parts date filter to localStorage
+  useEffect(() => {
+    if (typeof window !== 'undefined' && mounted) {
+      localStorage.setItem('partsDateFilter', partsDateFilter);
+    }
+  }, [partsDateFilter, mounted]);
+
   // Load parts, projects, and vendors from Supabase on mount
   useEffect(() => {
     loadParts();
@@ -3896,6 +3913,11 @@ const TakumiGarage = () => {
                       <div className={`absolute right-0 z-20 mt-1 w-max rounded-lg border shadow-lg py-1 ${
                         darkMode ? 'bg-gray-800 border-gray-600' : 'bg-slate-50 border-slate-300'
                       }`}>
+                        <div className={`px-3 py-2 text-xs font-semibold uppercase tracking-wider border-b ${
+                          darkMode ? 'text-gray-400 border-gray-600' : 'text-gray-500 border-slate-200'
+                        }`}>
+                          Filter by age
+                        </div>
                         <button
                           onClick={() => {
                             setIsFilteringParts(true);
