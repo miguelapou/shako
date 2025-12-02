@@ -1840,7 +1840,6 @@ const VendorSelect = ({ value, onChange, darkMode, uniqueVendors }) => {
 };
 
 const TakumiGarage = () => {
-  console.log('=== COMPONENT RENDER ===');
   const [parts, setParts] = useState([]);
   const [projects, setProjects] = useState([]);
   const [vehicles, setVehicles] = useState([]);
@@ -2030,7 +2029,6 @@ const TakumiGarage = () => {
         setParts(formattedParts);
       }
     } catch (error) {
-      console.error('Error loading parts:', error);
       alert('Error loading parts from database');
     } finally {
       setLoading(false);
@@ -2052,7 +2050,7 @@ const TakumiGarage = () => {
         setProjects(data);
       }
     } catch (error) {
-      console.error('Error loading projects:', error);
+      // Error loading projects
     }
   };
 
@@ -2076,7 +2074,7 @@ const TakumiGarage = () => {
         setVendorColors(colorsMap);
       }
     } catch (error) {
-      console.error('Error loading vendors:', error);
+      // Error loading vendors
     }
   };
 
@@ -2100,7 +2098,6 @@ const TakumiGarage = () => {
       }));
       await loadVendors();
     } catch (error) {
-      console.error('Error updating vendor color:', error);
       alert('Error saving vendor color');
     }
   };
@@ -2124,7 +2121,6 @@ const TakumiGarage = () => {
       if (error) throw error;
       await loadProjects();
     } catch (error) {
-      console.error('Error adding project:', error);
       alert('Error adding project');
     }
   };
@@ -2160,7 +2156,6 @@ const TakumiGarage = () => {
       if (error) throw error;
       await loadProjects();
     } catch (error) {
-      console.error('Error updating project:', error);
       alert('Error updating project');
     }
   };
@@ -2175,7 +2170,6 @@ const TakumiGarage = () => {
       if (error) throw error;
       await loadProjects();
     } catch (error) {
-      console.error('Error deleting project:', error);
       alert('Error deleting project');
     }
   };
@@ -2203,7 +2197,7 @@ const TakumiGarage = () => {
         setVehicles(sorted);
       }
     } catch (error) {
-      console.error('Error loading vehicles:', error);
+      // Error loading vehicles
     }
   };
 
@@ -2217,7 +2211,6 @@ const TakumiGarage = () => {
       if (error) throw error;
       await loadVehicles();
     } catch (error) {
-      console.error('Error adding vehicle:', error);
       alert('Error adding vehicle');
     }
   };
@@ -2232,7 +2225,6 @@ const TakumiGarage = () => {
       if (error) throw error;
       await loadVehicles();
     } catch (error) {
-      console.error('Error updating vehicle:', error);
       alert('Error updating vehicle');
     }
   };
@@ -2249,7 +2241,6 @@ const TakumiGarage = () => {
       await loadVehicles();
       await loadProjects(); // Reload projects to update vehicle_id references
     } catch (error) {
-      console.error('Error deleting vehicle:', error);
       alert('Error deleting vehicle');
     }
   };
@@ -2298,7 +2289,6 @@ const TakumiGarage = () => {
       setUploadingImage(false);
       return publicUrl;
     } catch (error) {
-      console.error('Error uploading image:', error);
       setUploadingImage(false);
       alert('Error uploading image. Please try again.');
       return null;
@@ -2601,7 +2591,7 @@ const TakumiGarage = () => {
           .eq('id', update.id);
       }
     } catch (error) {
-      console.error('Error updating project order:', error);
+      // Error updating project order
     }
   };
 
@@ -2620,7 +2610,7 @@ const TakumiGarage = () => {
           .eq('id', update.id);
       }
     } catch (error) {
-      console.error('Error updating vehicle order:', error);
+      // Error updating vehicle order
     }
   };
 
@@ -2869,7 +2859,6 @@ const TakumiGarage = () => {
       }));
       setOpenDropdown(null);
     } catch (error) {
-      console.error('Error updating part status:', error);
       alert('Error updating part status. Please try again.');
     }
   };
@@ -2904,7 +2893,6 @@ const TakumiGarage = () => {
       setTrackingModalPartId(null);
       setTrackingInput('');
     } catch (error) {
-      console.error('Error saving tracking info:', error);
       alert('Error saving tracking info. Please try again.');
     }
   };
@@ -2937,7 +2925,6 @@ const TakumiGarage = () => {
       setTrackingModalPartId(null);
       setTrackingInput('');
     } catch (error) {
-      console.error('Error updating status:', error);
       alert('Error updating status. Please try again.');
     }
   };
@@ -2994,7 +2981,6 @@ const TakumiGarage = () => {
       setEditingPart(null);
       setPartModalView(null);
     } catch (error) {
-      console.error('Error saving part:', error);
       alert('Error saving part. Please try again.');
     }
   };
@@ -3010,7 +2996,6 @@ const TakumiGarage = () => {
         // Update local state
         setParts(prevParts => prevParts.filter(part => part.id !== partId));
       } catch (error) {
-        console.error('Error deleting part:', error);
         alert('Error deleting part. Please try again.');
       }
   };
@@ -3040,7 +3025,6 @@ const TakumiGarage = () => {
       }
       setEditingVendor(null);
     } catch (error) {
-      console.error('Error renaming vendor:', error);
       alert('Error renaming vendor. Please try again.');
     }
   };
@@ -3063,7 +3047,6 @@ const TakumiGarage = () => {
         setEditingPart({ ...editingPart, vendor: '' });
       }
     } catch (error) {
-      console.error('Error deleting vendor:', error);
       alert('Error deleting vendor. Please try again.');
     }
   };
@@ -3081,7 +3064,6 @@ const TakumiGarage = () => {
         part.id === partId ? { ...part, projectId: null } : part
       ));
     } catch (error) {
-      console.error('Error unlinking part:', error);
       alert('Error unlinking part. Please try again.');
     }
   };
@@ -3099,7 +3081,6 @@ const TakumiGarage = () => {
         part.id === partId ? { ...part, projectId: projectId || null } : part
       ));
     } catch (error) {
-      console.error('Error updating part project:', error);
       alert('Error updating part project. Please try again.');
     }
   };
@@ -3162,7 +3143,6 @@ const TakumiGarage = () => {
         projectId: null
       });
     } catch (error) {
-      console.error('Error adding part:', error);
       alert('Error adding part. Please try again.');
     }
   };
@@ -7076,7 +7056,6 @@ const TakumiGarage = () => {
             {/* Active Vehicles Grid */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {vehicles.filter(v => !v.archived).map((vehicle) => {
-                console.log('render card', vehicle.id, vehicle.nickname || vehicle.name);
                 const borderColor = getMutedColor(vehicle.color, darkMode);
                 return (
                 <div
@@ -7153,7 +7132,6 @@ const TakumiGarage = () => {
                             ? 'grayscale opacity-40' 
                             : ''
                         } ${darkMode ? 'bg-gray-700 border-gray-600' : 'bg-gray-200 border-gray-300'}`}
-                        onLoad={() => console.log('render image', vehicle.id, vehicle.nickname || vehicle.name)}
                       />
                       {vehicle.archived && (
                         <div className="absolute inset-0 flex items-center justify-center">
