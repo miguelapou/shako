@@ -6890,42 +6890,39 @@ const TakumiGarage = () => {
                     darkMode ? 'border-gray-700 bg-gray-800' : 'border-slate-200 bg-slate-100'
                   }`}>
                     {projectModalEditMode ? (
-                      <button
-                        onClick={() => {
-                          // Check for unsaved changes before going back
-                          if (hasUnsavedProjectChanges()) {
-                            setConfirmDialog({
-                              isOpen: true,
-                              title: 'Unsaved Changes',
-                              message: 'You have unsaved changes. Are you sure you want to go back without saving?',
-                              confirmText: 'Discard',
-                              cancelText: 'Keep Editing',
-                              onConfirm: () => {
-                                // Restore original data
-                                if (originalProjectData) {
-                                  setViewingProject({ ...originalProjectData });
-                                }
-                                setProjectModalEditMode(false);
+                      <div className="flex items-center justify-between w-full gap-2">
+                        <div className="flex items-center gap-2">
+                          <button
+                            onClick={() => {
+                              // Check for unsaved changes before going back
+                              if (hasUnsavedProjectChanges()) {
+                                setConfirmDialog({
+                                  isOpen: true,
+                                  title: 'Unsaved Changes',
+                                  message: 'You have unsaved changes. Are you sure you want to go back without saving?',
+                                  confirmText: 'Discard',
+                                  cancelText: 'Keep Editing',
+                                  onConfirm: () => {
+                                    // Restore original data
+                                    if (originalProjectData) {
+                                      setViewingProject({ ...originalProjectData });
+                                    }
+                                    setProjectModalEditMode(false);
+                                  }
+                                });
+                                return;
                               }
-                            });
-                            return;
-                          }
-                          setProjectModalEditMode(false);
-                        }}
-                        className={`flex items-center gap-2 px-4 py-2 rounded-lg font-medium transition-colors border ${
-                          darkMode 
-                            ? 'bg-gray-700 hover:bg-gray-600 text-gray-100 border-gray-600 hover:border-gray-500' 
-                            : 'bg-gray-200 hover:bg-gray-300 text-gray-800 border-gray-300 hover:border-gray-400'
-                        }`}
-                        title="Back"
-                      >
-                        <ChevronDown className="w-5 h-5 rotate-90" />
-                      </button>
-                    ) : (
-                      <div></div>
-                    )}
-                    {projectModalEditMode ? (
-                      <div className="flex items-center gap-2">
+                              setProjectModalEditMode(false);
+                            }}
+                            className={`flex items-center gap-2 px-4 py-2 rounded-lg font-medium transition-colors border ${
+                              darkMode
+                                ? 'bg-gray-700 hover:bg-gray-600 text-gray-100 border-gray-600 hover:border-gray-500'
+                                : 'bg-gray-200 hover:bg-gray-300 text-gray-800 border-gray-300 hover:border-gray-400'
+                            }`}
+                            title="Back"
+                          >
+                            <ChevronDown className="w-5 h-5 rotate-90" />
+                          </button>
                         <button
                           onClick={async () => {
                             const partsForProject = parts.filter(p => p.projectId === viewingProject.id);
@@ -6954,26 +6951,6 @@ const TakumiGarage = () => {
                         >
                           <Trash2 className="w-4 h-4" />
                           <span className="hidden sm:inline">Delete</span>
-                        </button>
-                        <button
-                          onClick={async () => {
-                            // Toggle on_hold status
-                            const newStatus = viewingProject.status === 'on_hold' ? 'in_progress' : 'on_hold';
-                            const updatedProject = { ...viewingProject, status: newStatus };
-                            await updateProject(viewingProject.id, {
-                              status: newStatus
-                            });
-                            setViewingProject(updatedProject);
-                          }}
-                          className={`px-4 py-2 rounded-lg font-medium transition-colors flex items-center gap-2 text-sm ${
-                            viewingProject.status === 'on_hold'
-                              ? 'bg-green-600 hover:bg-green-700 text-white'
-                              : darkMode
-                                ? 'bg-gray-700 hover:bg-gray-600 text-gray-100 border border-gray-600'
-                                : 'bg-gray-200 hover:bg-gray-300 text-gray-800 border border-gray-300'
-                          }`}
-                        >
-                          {viewingProject.status === 'on_hold' ? 'Resume' : 'Pause'}
                         </button>
                         <button
                           onClick={async () => {
@@ -7007,6 +6984,28 @@ const TakumiGarage = () => {
                           <Archive className="w-4 h-4" />
                           <span className="hidden sm:inline">{viewingProject.archived ? 'Unarchive' : 'Archive'}</span>
                         </button>
+                        </div>
+                        <div className="flex items-center gap-2">
+                        <button
+                          onClick={async () => {
+                            // Toggle on_hold status
+                            const newStatus = viewingProject.status === 'on_hold' ? 'in_progress' : 'on_hold';
+                            const updatedProject = { ...viewingProject, status: newStatus };
+                            await updateProject(viewingProject.id, {
+                              status: newStatus
+                            });
+                            setViewingProject(updatedProject);
+                          }}
+                          className={`px-4 py-2 rounded-lg font-medium transition-colors flex items-center gap-2 text-sm ${
+                            viewingProject.status === 'on_hold'
+                              ? 'bg-green-600 hover:bg-green-700 text-white'
+                              : darkMode
+                                ? 'bg-gray-700 hover:bg-gray-600 text-gray-100 border border-gray-600'
+                                : 'bg-gray-200 hover:bg-gray-300 text-gray-800 border border-gray-300'
+                          }`}
+                        >
+                          {viewingProject.status === 'on_hold' ? 'Resume' : 'Pause'}
+                        </button>
                         <PrimaryButton
                           onClick={async () => {
                             await updateProject(viewingProject.id, {
@@ -7030,6 +7029,7 @@ const TakumiGarage = () => {
                           <span className="sm:hidden">Save</span>
                           <span className="hidden sm:inline">Save Changes</span>
                         </PrimaryButton>
+                        </div>
                       </div>
                     ) : (
                       <PrimaryButton
@@ -8891,48 +8891,41 @@ const TakumiGarage = () => {
                   <div className={`sticky bottom-0 border-t p-4 flex items-center justify-between ${
                     darkMode ? 'border-gray-700 bg-gray-800' : 'border-slate-200 bg-slate-100'
                   }`}>
-                    {(vehicleModalProjectView || vehicleModalEditMode) ? (
-                      <button
-                        onClick={() => {
-                          if (vehicleModalEditMode) {
-                            // Check for unsaved changes before going back
-                            if (hasUnsavedVehicleChanges()) {
-                              setConfirmDialog({
-                                isOpen: true,
-                                title: 'Unsaved Changes',
-                                message: 'You have unsaved changes. Are you sure you want to go back without saving?',
-                                confirmText: 'Discard',
-                                cancelText: 'Keep Editing',
-                                onConfirm: () => {
-                                  // Restore original data
-                                  if (originalVehicleData) {
-                                    setViewingVehicle({ ...originalVehicleData });
-                                  }
-                                  clearImageSelection();
-                                  setVehicleModalEditMode(null);
-                                }
-                              });
-                              return;
-                            }
-                            setVehicleModalEditMode(null);
-                          } else {
-                            setVehicleModalProjectView(null);
-                          }
-                        }}
-                        className={`flex items-center gap-2 px-4 py-2 rounded-lg font-medium transition-colors border ${
-                          darkMode 
-                            ? 'bg-gray-700 hover:bg-gray-600 text-gray-100 border-gray-600 hover:border-gray-500' 
-                            : 'bg-gray-200 hover:bg-gray-300 text-gray-800 border-gray-300 hover:border-gray-400'
-                        }`}
-                        title={vehicleModalEditMode ? 'Back' : 'Back to vehicle'}
-                      >
-                        <ChevronDown className="w-5 h-5 rotate-90" />
-                      </button>
-                    ) : (
-                      <div></div>
-                    )}
                     {vehicleModalEditMode ? (
-                      <div className="flex items-center gap-2">
+                      <div className="flex items-center justify-between w-full gap-2">
+                        <div className="flex items-center gap-2">
+                          <button
+                            onClick={() => {
+                              // Check for unsaved changes before going back
+                              if (hasUnsavedVehicleChanges()) {
+                                setConfirmDialog({
+                                  isOpen: true,
+                                  title: 'Unsaved Changes',
+                                  message: 'You have unsaved changes. Are you sure you want to go back without saving?',
+                                  confirmText: 'Discard',
+                                  cancelText: 'Keep Editing',
+                                  onConfirm: () => {
+                                    // Restore original data
+                                    if (originalVehicleData) {
+                                      setViewingVehicle({ ...originalVehicleData });
+                                    }
+                                    clearImageSelection();
+                                    setVehicleModalEditMode(null);
+                                  }
+                                });
+                                return;
+                              }
+                              setVehicleModalEditMode(null);
+                            }}
+                            className={`flex items-center gap-2 px-4 py-2 rounded-lg font-medium transition-colors border ${
+                              darkMode
+                                ? 'bg-gray-700 hover:bg-gray-600 text-gray-100 border-gray-600 hover:border-gray-500'
+                                : 'bg-gray-200 hover:bg-gray-300 text-gray-800 border-gray-300 hover:border-gray-400'
+                            }`}
+                            title="Back"
+                          >
+                            <ChevronDown className="w-5 h-5 rotate-90" />
+                          </button>
                         {vehicleModalEditMode === 'vehicle' && (
                           <>
                             <button
@@ -9016,6 +9009,8 @@ const TakumiGarage = () => {
                             </button>
                           </>
                         )}
+                        </div>
+                        <div className="flex items-center gap-2">
                         {vehicleModalEditMode === 'project' && (
                           <button
                             onClick={async () => {
@@ -9083,8 +9078,34 @@ const TakumiGarage = () => {
                             </>
                           )}
                         </button>
+                        </div>
                       </div>
-                    ) : !vehicleModalProjectView ? (
+                    ) : vehicleModalProjectView ? (
+                      <>
+                        <button
+                          onClick={() => {
+                            setVehicleModalProjectView(null);
+                          }}
+                          className={`flex items-center gap-2 px-4 py-2 rounded-lg font-medium transition-colors border ${
+                            darkMode
+                              ? 'bg-gray-700 hover:bg-gray-600 text-gray-100 border-gray-600 hover:border-gray-500'
+                              : 'bg-gray-200 hover:bg-gray-300 text-gray-800 border-gray-300 hover:border-gray-400'
+                          }`}
+                          title="Back to vehicle"
+                        >
+                          <ChevronDown className="w-5 h-5 rotate-90" />
+                        </button>
+                        <button
+                          onClick={() => {
+                            setVehicleModalEditMode('project');
+                          }}
+                          className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium transition-colors flex items-center gap-2 text-sm"
+                        >
+                          <Edit2 className="w-3 h-3" />
+                          Edit Project
+                        </button>
+                      </>
+                    ) : (
                       <button
                         onClick={() => {
                           setVehicleModalEditMode('vehicle');
@@ -9093,16 +9114,6 @@ const TakumiGarage = () => {
                       >
                         <Edit2 className="w-3 h-3" />
                         Edit Vehicle
-                      </button>
-                    ) : (
-                      <button
-                        onClick={() => {
-                          setVehicleModalEditMode('project');
-                        }}
-                        className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium transition-colors flex items-center gap-2 text-sm"
-                      >
-                        <Edit2 className="w-3 h-3" />
-                        Edit Project
                       </button>
                     )}
                   </div>
