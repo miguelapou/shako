@@ -2701,6 +2701,11 @@ const Shako = () => {
     };
   }, [activeTab]);
 
+  // Reset scroll position to top when switching tabs
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: 'instant' });
+  }, [activeTab]);
+
   const updateProjectsOrder = async (orderedProjects) => {
     try {
       // Update each project with its new display order
