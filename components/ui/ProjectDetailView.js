@@ -1,0 +1,744 @@
+import React, { useState, useMemo, useEffect, useLayoutEffect, useRef } from 'react';
+import { Package, CheckCircle, ChevronDown, X, Car } from 'lucide-react';
+import { secondaryBg } from '../../utils/styleUtils';
+import { getVendorDisplayColor } from '../../utils/colorUtils';
+import ConfirmDialog from './ConfirmDialog';
+
+// ProjectDetailView - Reusable component for displaying project details with todos and linked parts
+const ProjectDetailView = ({
+  project,
+  parts,
+  darkMode,
+  updateProject,
+  getStatusColors,
+  getPriorityColors,
+  getStatusText,
+  getStatusTextColor,
+  getVendorColor,
+  vendorColors,
+  calculateProjectTotal,
+  editingTodoId,
+  setEditingTodoId,
+  editingTodoText,
+  setEditingTodoText,
+  newTodoText,
+  setNewTodoText,
+  vehicle
+}) => {
+  const linkedParts = parts.filter(part => part.projectId === project.id);
+  const linkedPartsTotal = calculateProjectTotal(project.id, parts);
+  const progress = project.budget > 0 ? (linkedPartsTotal / project.budget) * 100 : 0;
+  const statusColors = getStatusColors(darkMode);
+  const priorityColors = getPriorityColors(darkMode);
+
+  // FLIP animation for todos
+  const todoRefs = useRef({});
+  const prevPositions = useRef({});
+  const [isAnimating, setIsAnimating] = useState(false);
+  const hasInitialized = useRef(false);
+  const [isNewTodoFocused, setIsNewTodoFocused] = useState(false);
+  const [showCompletedTodos, setShowCompletedTodos] = useState(false);
+  const [isDescriptionExpanded, setIsDescriptionExpanded] = useState(false);
+  const [isDescriptionClamped, setIsDescriptionClamped] = useState(false);
+  const descriptionRef = useRef(null);
+
+  // Check if description is clamped (more than 3 lines)
+  useEffect(() => {
+    if (descriptionRef.current && project.description) {
+      const element = descriptionRef.current;
+      setIsDescriptionClamped(element.scrollHeight > element.clientHeight);
+    }
+  }, [project.description]);
+
+  // Confirmation dialog state
+  const [confirmDialog, setConfirmDialog] = useState({
+    isOpen: false,
+    title: '',
+    message: '',
+    onConfirm: () => {}
+  });
+
+  // Reset on project change
+  useEffect(() => {
+    hasInitialized.current = false;
+    prevPositions.current = {};
+  }, [project.id]);
+
+  // Sort todos:
+  // - Checked first, then unchecked
+  // - Within checked: by completed_at (oldest first, newest at bottom)
+  // - Within unchecked: recently unchecked at top, then by original_created_at (oldest first = new at bottom)
+  const sortedTodos = useMemo(() => {
+    if (!project.todos) return [];
+    return [...project.todos].sort((a, b) => {
+      // Different completion status: completed items first
+      if (a.completed !== b.completed) {
+        return b.completed - a.completed;
+      }
+      // Both have same completion status
+      if (a.completed) {
+        // Both completed: sort by completed_at (oldest first, newest at bottom)
+        const aCompletedAt = a.completed_at ? new Date(a.completed_at) : new Date(a.created_at);
+        const bCompletedAt = b.completed_at ? new Date(b.completed_at) : new Date(b.created_at);
+        return aCompletedAt - bCompletedAt;
+      } else {
+        // Both uncompleted:
+        // Check if either was recently UNCHECKED (created_at is very recent AND different from original_created_at)
+        const now = Date.now();
+        const aCreatedMs = new Date(a.created_at).getTime();
+        const bCreatedMs = new Date(b.created_at).getTime();
+        const aOriginalMs = a.original_created_at ? new Date(a.original_created_at).getTime() : aCreatedMs;
+        const bOriginalMs = b.original_created_at ? new Date(b.original_created_at).getTime() : bCreatedMs;
+        // Only consider it "recently unchecked" if created_at is recent AND different from original_created_at
+        const aIsRecentlyUnchecked = (now - aCreatedMs < 1000) && (Math.abs(aCreatedMs - aOriginalMs) > 100);
+        const bIsRecentlyUnchecked = (now - bCreatedMs < 1000) && (Math.abs(bCreatedMs - bOriginalMs) > 100);
+        // If one is recently unchecked and other isn't, put recently unchecked one first
+        if (aIsRecentlyUnchecked && !bIsRecentlyUnchecked) return -1;
+        if (!aIsRecentlyUnchecked && bIsRecentlyUnchecked) return 1;
+        // Otherwise sort by original_created_at (oldest first = new todos at bottom)
+        const aOriginal = new Date(a.original_created_at || a.created_at);
+        const bOriginal = new Date(b.original_created_at || b.created_at);
+        return aOriginal - bOriginal;
+      }
+    });
+  }, [project.todos]);
+
+  // FLIP animation with useLayoutEffect for synchronous execution
+  useLayoutEffect(() => {
+    // On first render, capture positions synchronously
+    if (!hasInitialized.current) {
+      sortedTodos.forEach(todo => {
+        const element = todoRefs.current[todo.id];
+        if (element) {
+          const pos = element.getBoundingClientRect().top;
+          prevPositions.current[todo.id] = pos;
+        }
+      });
+      hasInitialized.current = true;
+      return; // Don't animate on first render
+    }
+    if (isAnimating) {
+      return; // Don't interrupt ongoing animations
+    }
+    // Capture the old positions before React updates the DOM
+    const oldPositions = { ...prevPositions.current };
+    const hasOldPositions = Object.keys(oldPositions).length > 0;
+    // Collect new positions first before any animations
+    const newPositions = {};
+    sortedTodos.forEach(todo => {
+      const element = todoRefs.current[todo.id];
+      if (element) {
+        newPositions[todo.id] = element.getBoundingClientRect().top;
+      }
+    });
+    // Now set up animations and update stored positions
+    sortedTodos.forEach(todo => {
+      const element = todoRefs.current[todo.id];
+      if (element) {
+        const newPos = newPositions[todo.id];
+        const oldPos = oldPositions[todo.id];
+        if (hasOldPositions && oldPos !== undefined && newPos !== oldPos) {
+          // Calculate how far the element has moved
+          const deltaY = oldPos - newPos;
+          // Immediately move it back to the old position
+          element.style.transform = `translateY(${deltaY}px)`;
+          element.style.transition = 'none';
+          setIsAnimating(true);
+          // Then animate it to the new position
+          requestAnimationFrame(() => {
+            element.style.transition = 'transform 0.3s ease-out';
+            element.style.transform = 'translateY(0)';
+            // Clear animation state after animation completes
+            setTimeout(() => {
+              setIsAnimating(false);
+              element.style.transition = '';
+            }, 300);
+          });
+        }
+        // Store new position for next time
+        prevPositions.current[todo.id] = newPos;
+      }
+    });
+  }, [sortedTodos, isAnimating]);
+
+  const renderTodoItem = (todo) => (
+    <div
+      key={todo.id}
+      ref={(el) => todoRefs.current[todo.id] = el}
+      className={`flex items-center gap-3 py-1.5 px-3 rounded-lg border transition-colors ${
+        editingTodoId === todo.id
+          ? darkMode
+            ? 'bg-gray-700 border-blue-500'
+            : 'bg-gray-50 border-blue-500'
+          : darkMode
+            ? 'bg-gray-700 border-gray-600 hover:border-white'
+            : 'bg-gray-50 border-gray-200 hover:border-gray-400'
+      }`}
+    >
+      {/* Checkbox */}
+      <button
+        onClick={(e) => {
+          e.stopPropagation();
+          const updatedTodos = project.todos.map(t => {
+            if (t.id === todo.id) {
+              const newCompleted = !t.completed;
+              return {
+                ...t,
+                completed: newCompleted,
+                completed_at: newCompleted ? new Date().toISOString() : null,
+                // Update created_at when unchecking so it goes to top of uncompleted list
+                created_at: !newCompleted ? new Date().toISOString() : t.created_at,
+                // Preserve original_created_at or set it if missing (for old todos)
+                original_created_at: t.original_created_at || t.created_at
+              };
+            }
+            return t;
+          });
+          updateProject(project.id, {
+            todos: updatedTodos
+          });
+        }}
+        className={`flex-shrink-0 w-5 h-5 rounded border-2 flex items-center justify-center transition-colors ${
+          todo.completed
+            ? darkMode
+              ? 'bg-green-600 border-green-600'
+              : 'bg-green-500 border-green-500'
+            : darkMode
+              ? 'border-gray-500 hover:border-gray-400'
+              : 'border-gray-400 hover:border-gray-500'
+        }`}
+      >
+        {todo.completed && (
+          <CheckCircle className="w-4 h-4 text-white" />
+        )}
+      </button>
+      {/* Todo Text - Click to edit inline */}
+      {editingTodoId === todo.id ? (
+        <textarea
+          ref={(el) => {
+            if (el) {
+              el.focus({ preventScroll: true });
+              // Set initial height based on content
+              el.style.height = 'auto';
+              el.style.height = el.scrollHeight + 'px';
+            }
+          }}
+          type="text"
+          value={editingTodoText}
+          onChange={(e) => {
+            setEditingTodoText(e.target.value);
+            // Auto-resize textarea
+            e.target.style.height = 'auto';
+            e.target.style.height = e.target.scrollHeight + 'px';
+          }}
+          onKeyDown={(e) => {
+            if (e.key === 'Enter' && !e.shiftKey) {
+              e.preventDefault();
+              if (editingTodoText.trim()) {
+                const updatedTodos = project.todos.map(t =>
+                  t.id === todo.id ? { ...t, text: editingTodoText.trim() } : t
+                );
+                updateProject(project.id, {
+                  todos: updatedTodos
+                });
+                setEditingTodoId(null);
+                setEditingTodoText('');
+              }
+            } else if (e.key === 'Escape') {
+              setEditingTodoId(null);
+              setEditingTodoText('');
+            }
+          }}
+          onBlur={() => {
+            if (editingTodoText.trim() && editingTodoText !== todo.text) {
+              const updatedTodos = project.todos.map(t =>
+                t.id === todo.id ? { ...t, text: editingTodoText.trim() } : t
+              );
+              updateProject(project.id, {
+                todos: updatedTodos
+              });
+            }
+            setEditingTodoId(null);
+            setEditingTodoText('');
+          }}
+          inputMode="text"
+          rows="1"
+          className={`flex-1 text-base bg-transparent border-0 focus:outline-none resize-none overflow-hidden ${
+            darkMode
+              ? 'text-gray-100'
+              : 'text-gray-800'
+          }`}
+          style={{
+            fontSize: '16px !important',
+            lineHeight: '1.5 !important',
+            padding: '0 !important',
+            backgroundColor: 'transparent !important',
+            border: '0 !important',
+            margin: '0 !important',
+            boxShadow: 'none !important',
+            appearance: 'none',
+            WebkitAppearance: 'none',
+            minHeight: '24px'
+          }}
+        />
+      ) : (
+        <span
+          onClick={(e) => {
+            e.stopPropagation();
+            setEditingTodoId(todo.id);
+            setEditingTodoText(todo.text);
+          }}
+          className={`flex-1 text-base cursor-pointer hover:opacity-70 transition-opacity ${
+            todo.completed
+              ? darkMode
+                ? 'text-gray-500 line-through'
+                : 'text-gray-400 line-through'
+              : darkMode
+                ? 'text-gray-200'
+                : 'text-gray-800'
+          }`}
+          style={{ lineHeight: '1.5' }}
+          title="Click to edit"
+        >
+          {todo.text}
+        </span>
+      )}
+      {/* Delete Button */}
+      <button
+        onClick={(e) => {
+          e.stopPropagation();
+          setConfirmDialog({
+            isOpen: true,
+            title: 'Delete To-Do',
+            message: 'Are you sure you want to delete this to-do item? This action cannot be undone.',
+            onConfirm: () => {
+              const updatedTodos = project.todos.filter(t => t.id !== todo.id);
+              updateProject(project.id, {
+                todos: updatedTodos
+              });
+            }
+          });
+        }}
+        className={`flex-shrink-0 p-1 rounded transition-colors ${
+          darkMode
+            ? 'text-gray-500 hover:text-red-400 hover:bg-gray-600'
+            : 'text-gray-400 hover:text-red-600 hover:bg-gray-200'
+        }`}
+      >
+        <X className="w-4 h-4" />
+      </button>
+    </div>
+  );
+
+  return (
+    <>
+      {/* Status Badge (left) and Vehicle Badge (right) on same row */}
+      <div className="flex items-center justify-between mb-6 gap-3">
+        <span className={`inline-block px-4 py-2 rounded-full text-sm font-medium ${
+          statusColors[project.status]
+        }`}>
+          {project.status.replace('_', ' ').toUpperCase()}
+        </span>
+        {vehicle && (
+          <span
+            className={`inline-flex items-center px-2 py-1 rounded text-xs font-medium border ${
+              darkMode ? 'bg-gray-700 text-gray-300 border-gray-600' : 'bg-gray-100 text-gray-700 border-gray-300'
+            }`}
+          >
+            <Car className="w-3 h-3 mr-1" />
+            <span style={{ color: vehicle.color || '#3B82F6' }}>
+              {vehicle.nickname || vehicle.name}
+            </span>
+          </span>
+        )}
+      </div>
+
+      {/* Two Column Layout: Project Details (Left) and Todo List (Right) */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+        {/* Left Column: Project Details */}
+        <div className="space-y-6">
+          {/* Description */}
+          <div>
+            <h3 className={`text-lg font-semibold mb-2 ${
+              darkMode ? 'text-gray-200' : 'text-gray-800'
+            }`}>Description</h3>
+            <div className="relative">
+              <p
+                ref={descriptionRef}
+                className={`text-base transition-all duration-300 ease-in-out ${
+                  project.description
+                    ? (darkMode ? 'text-gray-400' : 'text-slate-600')
+                    : (darkMode ? 'text-gray-500 italic' : 'text-gray-500 italic')
+                } ${!isDescriptionExpanded && project.description ? 'line-clamp-3' : ''}`}
+              >
+                {project.description || 'No description added'}
+              </p>
+              {project.description && isDescriptionClamped && (
+                <button
+                  onClick={() => setIsDescriptionExpanded(!isDescriptionExpanded)}
+                  className={`mt-2 flex items-center gap-1 text-sm font-medium transition-colors ${
+                    darkMode ? 'text-blue-400 hover:text-blue-300' : 'text-blue-600 hover:text-blue-700'
+                  }`}
+                >
+                  {isDescriptionExpanded ? 'Show less' : 'Show more'}
+                  <ChevronDown className={`w-4 h-4 transition-transform duration-300 ${
+                    isDescriptionExpanded ? 'rotate-180' : ''
+                  }`} />
+                </button>
+              )}
+            </div>
+          </div>
+
+          {/* Budget Progress */}
+          <div>
+            <h3 className={`text-lg font-semibold mb-3 ${
+              darkMode ? 'text-gray-200' : 'text-gray-800'
+            }`}>Budget Used</h3>
+            <div className="flex justify-between items-center mb-2">
+              <span className={`text-sm font-medium ${
+                darkMode ? 'text-gray-300' : 'text-slate-700'
+              }`}>
+                ${linkedPartsTotal.toFixed(2)} / ${Math.round(project.budget || 0)}
+              </span>
+              <span className={`text-sm font-bold ${
+                darkMode ? 'text-gray-200' : 'text-gray-900'
+              }`}>
+                {progress.toFixed(0)}%
+              </span>
+            </div>
+            <div className={`w-full rounded-full h-4 ${
+              darkMode ? 'bg-gray-700' : 'bg-gray-200'
+            }`}>
+              <div
+                className={`h-4 rounded-full transition-all ${
+                  progress > 90
+                    ? 'bg-red-500'
+                    : progress > 70
+                    ? 'bg-yellow-500'
+                    : 'bg-green-500'
+                }`}
+                style={{ width: `${Math.min(progress, 100)}%` }}
+              />
+            </div>
+          </div>
+
+          {/* Project Details Grid */}
+          <div className={`grid grid-cols-2 gap-4 p-4 rounded-lg ${secondaryBg(darkMode)}`}>
+            <div>
+              <p className={`text-xs mb-1 ${darkMode ? 'text-gray-400' : 'text-slate-600'}`}>
+                Priority</p>
+              <p className={`text-lg font-bold ${priorityColors[project.priority]}`}>
+                {project.priority?.replace(/_/g, ' ').toUpperCase()}
+              </p>
+            </div>
+            <div>
+              <p className={`text-xs mb-1 ${
+                darkMode ? 'text-gray-400' : 'text-slate-600'
+              }`}>Parts Linked</p>
+              <p className={`text-lg font-bold ${
+                darkMode ? 'text-gray-100' : 'text-slate-800'
+              }`}>
+                {linkedParts.length}
+              </p>
+            </div>
+          </div>
+        </div>
+
+        {/* Right Column: To-Do List Section */}
+        <div>
+          <div className="mb-3">
+            <h3 className={`text-lg font-semibold ${
+              darkMode ? 'text-gray-200' : 'text-gray-800'
+            }`}>
+              To-Do List
+            </h3>
+          </div>
+          {/* To-Do Items */}
+          <div className="space-y-2">
+            {/* Checked Todos Section (Collapsible) */}
+            {sortedTodos.some(todo => todo.completed) && (
+              <div className="space-y-2">
+                <button
+                  onClick={() => setShowCompletedTodos(!showCompletedTodos)}
+                  className={`w-full flex items-center justify-between px-3 py-2 rounded-lg border transition-colors ${
+                    darkMode
+                      ? 'bg-gray-700/50 border-gray-600 hover:border-gray-500 text-gray-300'
+                      : 'bg-gray-100 border-gray-300 hover:border-gray-400 text-gray-700'
+                  }`}
+                >
+                  <span className="text-sm font-medium flex items-center gap-2">
+                    <CheckCircle className={`w-4 h-4 transition-colors ${
+                      showCompletedTodos
+                        ? ''
+                        : 'text-green-500'
+                    }`} />
+                    Completed ({sortedTodos.filter(t => t.completed).length})
+                  </span>
+                  <ChevronDown className={`w-4 h-4 transition-transform duration-200 ${
+                    showCompletedTodos ? 'rotate-180' : ''
+                  }`} />
+                </button>
+                <div
+                  className={`overflow-hidden transition-all duration-300 ease-in-out ${
+                    showCompletedTodos
+                      ? 'max-h-[2000px] opacity-100'
+                      : 'max-h-0 opacity-0'
+                  }`}
+                >
+                  <div className="space-y-2">
+                    {sortedTodos.filter(todo => todo.completed).map(renderTodoItem)}
+                  </div>
+                </div>
+              </div>
+            )}
+            {/* Unchecked Todos */}
+            {sortedTodos.filter(todo => !todo.completed).map(renderTodoItem)}
+            {/* Always-visible input for new todos */}
+            <div
+              className={`flex items-center gap-3 py-1.5 px-3 rounded-lg border transition-colors ${
+                isNewTodoFocused
+                  ? darkMode
+                    ? 'bg-gray-700 border-blue-500'
+                    : 'bg-gray-50 border-blue-500'
+                  : darkMode
+                    ? 'bg-gray-700 border-gray-600 hover:border-white'
+                    : 'bg-gray-50 border-gray-200 hover:border-gray-400'
+              }`}
+            >
+              {/* Empty checkbox placeholder */}
+              <div className={`flex-shrink-0 w-5 h-5 rounded border-2 ${
+                darkMode ? 'border-gray-600' : 'border-gray-300'
+              }`} />
+              {/* Input field - auto-expanding textarea */}
+              <textarea
+                type="text"
+                value={newTodoText}
+                onChange={(e) => {
+                  setNewTodoText(e.target.value);
+                  // Auto-resize textarea
+                  e.target.style.height = 'auto';
+                  e.target.style.height = e.target.scrollHeight + 'px';
+                }}
+                onFocus={() => setIsNewTodoFocused(true)}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter' && !e.shiftKey) {
+                    e.preventDefault();
+                    if (newTodoText.trim()) {
+                      const currentTodos = project.todos || [];
+                      const timestamp = new Date().toISOString();
+                      const newTodo = {
+                        id: Date.now(),
+                        text: newTodoText.trim(),
+                        completed: false,
+                        created_at: timestamp,
+                        original_created_at: timestamp
+                      };
+                      updateProject(project.id, {
+                        todos: [...currentTodos, newTodo]
+                      });
+                      setNewTodoText('');
+                      // Reset height after clearing
+                      setTimeout(() => {
+                        if (e.target) {
+                          e.target.style.height = 'auto';
+                        }
+                      }, 0);
+                    }
+                  }
+                }}
+                onBlur={(e) => {
+                  setIsNewTodoFocused(false);
+                  if (newTodoText.trim()) {
+                    const currentTodos = project.todos || [];
+                    const timestamp = new Date().toISOString();
+                    const newTodo = {
+                      id: Date.now(),
+                      text: newTodoText.trim(),
+                      completed: false,
+                      created_at: timestamp,
+                      original_created_at: timestamp
+                    };
+                    updateProject(project.id, {
+                      todos: [...currentTodos, newTodo]
+                    });
+                    setNewTodoText('');
+                    // Reset height after clearing
+                    setTimeout(() => {
+                      if (e.target) {
+                        e.target.style.height = 'auto';
+                      }
+                    }, 0);
+                  }
+                }}
+                placeholder="Add a to-do item..."
+                inputMode="text"
+                rows="1"
+                className={`flex-1 text-base px-2 py-1 bg-transparent border-0 focus:outline-none resize-none overflow-hidden ${
+                  darkMode
+                    ? 'text-gray-100 placeholder-gray-500'
+                    : 'text-gray-800 placeholder-gray-400'
+                }`}
+                style={{ fontSize: '16px', lineHeight: '1.5', minHeight: '24px' }}
+              />
+            </div>
+          </div>
+        </div>
+        {/* End of two-column grid */}
+      </div>
+
+      {/* Linked Parts List - Full Width Below */}
+      {linkedParts.length > 0 && (
+        <div className={`pt-6 border-t ${
+          darkMode ? 'border-gray-700' : 'border-slate-200'
+        }`}>
+          <h3 className={`text-lg font-semibold mb-3 ${
+            darkMode ? 'text-gray-200' : 'text-gray-800'
+          }`}>
+            <div className="flex items-center gap-2">
+              <Package className="w-5 h-5" />
+              <span>Linked Parts ({linkedParts.length})</span>
+            </div>
+          </h3>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            {linkedParts.map((part) => (
+              <div
+                key={part.id}
+                className={`p-4 rounded-lg border flex flex-col ${
+                  darkMode ? 'bg-gray-700 border-gray-600' : 'bg-gray-50 border-gray-200'
+                }`}
+              >
+                <div className="flex justify-between items-start mb-3">
+                  <div className="flex-1">
+                    <h4 className={`font-medium ${
+                      darkMode ? 'text-gray-100' : 'text-slate-800'
+                    }`}>
+                      {part.part}
+                    </h4>
+                    {part.vendor && (
+                      vendorColors[part.vendor] ? (
+                        (() => {
+                          const colors = getVendorDisplayColor(vendorColors[part.vendor], darkMode);
+                          return (
+                            <span
+                              className="inline-block mt-1 px-2 py-0.5 rounded-full text-xs font-medium border"
+                              style={{
+                                backgroundColor: colors.bg,
+                                color: colors.text,
+                                borderColor: colors.border
+                              }}
+                            >
+                              {part.vendor}
+                            </span>
+                          );
+                        })()
+                      ) : (
+                        <span className={`inline-block mt-1 px-2 py-0.5 rounded-full text-xs font-medium ${getVendorColor(part.vendor, vendorColors)}`}>
+                          {part.vendor}
+                        </span>
+                      )
+                    )}
+                  </div>
+                  <div className={`text-xs font-medium ${getStatusTextColor(part)}`}>
+                    {getStatusText(part)}
+                  </div>
+                </div>
+                {part.partNumber && part.partNumber !== '-' && (
+                  <p className={`text-xs font-mono mb-3 ${
+                    darkMode ? 'text-gray-400' : 'text-slate-600'
+                  }`}>
+                    Part #: {part.partNumber}
+                  </p>
+                )}
+                <div className={`border-t ${
+                  darkMode ? 'border-gray-600' : 'border-gray-200'
+                }`}>
+                  <div className="pt-3 space-y-2 mt-auto">
+                    <div className="flex justify-between text-sm">
+                      <span className={darkMode ? 'text-gray-400' : 'text-slate-600'}>
+                        Part Price:
+                      </span>
+                      <span className={`font-medium ${
+                        darkMode ? 'text-gray-200' : 'text-gray-800'
+                      }`}>
+                        ${part.price.toFixed(2)}
+                      </span>
+                    </div>
+                    {part.shipping > 0 && (
+                      <div className="flex justify-between text-sm">
+                        <span className={darkMode ? 'text-gray-400' : 'text-slate-600'}>
+                          Shipping:
+                        </span>
+                        <span className={`font-medium ${
+                          darkMode ? 'text-gray-200' : 'text-gray-800'
+                        }`}>
+                          ${part.shipping.toFixed(2)}
+                        </span>
+                      </div>
+                    )}
+                    {part.duties > 0 && (
+                      <div className="flex justify-between text-sm">
+                        <span className={darkMode ? 'text-gray-400' : 'text-slate-600'}>
+                          Duties:
+                        </span>
+                        <span className={`font-medium ${
+                          darkMode ? 'text-gray-200' : 'text-gray-800'
+                        }`}>
+                          ${part.duties.toFixed(2)}
+                        </span>
+                      </div>
+                    )}
+                    <div className={`flex justify-between text-base font-bold pt-2 border-t ${
+                      darkMode ? 'border-gray-600' : 'border-gray-200'
+                    }`}>
+                      <span className={darkMode ? 'text-gray-100' : 'text-slate-800'}>
+                        Total:
+                      </span>
+                      <span className={darkMode ? 'text-gray-100' : 'text-slate-800'}>
+                        ${part.total.toFixed(2)}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {linkedParts.length === 0 && (
+        <div className={`pt-6 border-t ${
+          darkMode ? 'border-gray-700' : 'border-slate-200'
+        }`}>
+          <h3 className={`text-lg font-semibold mb-3 ${
+            darkMode ? 'text-gray-200' : 'text-gray-800'
+          }`}>
+            <div className="flex items-center gap-2">
+              <Package className="w-5 h-5" />
+              <span>Linked Parts (0)</span>
+            </div>
+          </h3>
+          <div className={`text-center py-8 rounded-lg border ${
+            darkMode ? 'bg-gray-700/30 border-gray-600 text-gray-400' : 'bg-gray-50 border-gray-200 text-gray-500'
+          }`}>
+            <Package className="w-12 h-12 mx-auto mb-2 opacity-40" />
+            <p className="text-sm">
+              No parts linked
+            </p>
+          </div>
+        </div>
+      )}
+
+      {/* Confirmation Dialog */}
+      <ConfirmDialog
+        isOpen={confirmDialog.isOpen}
+        onClose={() => setConfirmDialog({ ...confirmDialog, isOpen: false })}
+        onConfirm={confirmDialog.onConfirm}
+        title={confirmDialog.title}
+        message={confirmDialog.message}
+        darkMode={darkMode}
+      />
+    </>
+  );
+};
+
+export default ProjectDetailView;

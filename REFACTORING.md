@@ -8,7 +8,7 @@ This document describes the ongoing refactoring of the Shako application from a 
 
 ### ✅ Completed
 
-#### 1. Utility Functions (`/utils`)
+#### Phase 1: Utility Functions (`/utils`)
 
 All utility functions have been extracted into focused modules:
 
@@ -39,7 +39,7 @@ All utility functions have been extracted into focused modules:
   - `getCarrierName()` - Identify shipping carrier from tracking info
   - Supports: UPS, FedEx, USPS, DHL, Amazon, Orange Connex, ECMS
 
-#### 2. Styles (`/styles`)
+#### Phase 1: Styles (`/styles`)
 
 - **`custom.css`** - All animations and custom CSS
   - FoundationOne custom font
@@ -54,7 +54,7 @@ All utility functions have been extracted into focused modules:
   - Line clamp utilities
   - **Imported in:** `app/layout.js`
 
-#### 3. UI Components (`/components/ui`)
+#### Phase 1: Simple UI Components (`/components/ui`)
 
 - **`ConfirmDialog.js`** - Confirmation modal dialog
   - Props: `isOpen`, `onClose`, `onConfirm`, `title`, `message`, `confirmText`, `cancelText`, `darkMode`, `isDangerous`
@@ -72,6 +72,23 @@ All utility functions have been extracted into focused modules:
   - Props: `value`, `onChange`, `darkMode`, `uniqueVendors`
   - Features: Select existing vendor or input custom vendor name
 
+#### Phase 2: Complex UI Components (`/components/ui`)
+
+- **`ProjectDetailView.js`** (~900 lines) - Project details with todos and linked parts
+  - Props: `project`, `parts`, `darkMode`, `updateProject`, `getStatusColors`, `getPriorityColors`, `getStatusText`, `getStatusTextColor`, `getVendorColor`, `vendorColors`, `calculateProjectTotal`, `editingTodoId`, `setEditingTodoId`, `editingTodoText`, `setEditingTodoText`, `newTodoText`, `setNewTodoText`, `vehicle`
+  - Features: Todo list management with FLIP animations, collapsible sections, budget progress tracking, linked parts display
+  - Imports: React hooks, Lucide icons, styleUtils, colorUtils, ConfirmDialog
+
+- **`ProjectEditForm.js`** (~200 lines) - Project editing form
+  - Props: `project`, `onProjectChange`, `vehicles`, `parts`, `unlinkPartFromProject`, `getVendorColor`, `vendorColors`, `darkMode`
+  - Features: Vehicle dropdown selection, priority select, budget input, description textarea
+  - Imports: React hooks, Lucide icons (Car, ChevronDown)
+
+- **`LinkedPartsSection.js`** (~100 lines) - Display parts linked to a project
+  - Props: `projectId`, `parts`, `unlinkPartFromProject`, `getVendorColor`, `vendorColors`, `darkMode`, `setConfirmDialog`
+  - Features: Grid layout of linked parts, vendor color badges, unlink functionality
+  - Imports: React, Lucide icons (Package), colorUtils
+
 ## New File Structure
 
 ```
@@ -80,12 +97,15 @@ All utility functions have been extracted into focused modules:
 │   ├── globals.css
 │   └── layout.js (imports custom.css)
 ├── components/
-│   ├── Shako.js (9,512 lines - to be refactored)
+│   ├── Shako.js (originally 9,512 lines → now ~7,284 lines after Phase 2)
 │   └── ui/
-│       ├── ConfirmDialog.js ✓
-│       ├── PrimaryButton.js ✓
-│       ├── PriceDisplay.js ✓
-│       └── VendorSelect.js ✓
+│       ├── ConfirmDialog.js ✓ (Phase 1)
+│       ├── PrimaryButton.js ✓ (Phase 1)
+│       ├── PriceDisplay.js ✓ (Phase 1)
+│       ├── VendorSelect.js ✓ (Phase 1)
+│       ├── ProjectDetailView.js ✓ (Phase 2)
+│       ├── ProjectEditForm.js ✓ (Phase 2)
+│       └── LinkedPartsSection.js ✓ (Phase 2)
 ├── styles/
 │   └── custom.css ✓
 ├── utils/
@@ -132,10 +152,16 @@ import {
 ### Using UI Components
 
 ```javascript
+// Phase 1 Components
 import ConfirmDialog from '../components/ui/ConfirmDialog';
 import PrimaryButton from '../components/ui/PrimaryButton';
 import PriceDisplay from '../components/ui/PriceDisplay';
 import VendorSelect from '../components/ui/VendorSelect';
+
+// Phase 2 Components
+import ProjectDetailView from '../components/ui/ProjectDetailView';
+import ProjectEditForm from '../components/ui/ProjectEditForm';
+import LinkedPartsSection from '../components/ui/LinkedPartsSection';
 
 // In your component
 <ConfirmDialog
@@ -167,18 +193,35 @@ import VendorSelect from '../components/ui/VendorSelect';
   darkMode={darkMode}
   uniqueVendors={vendors}
 />
+
+<ProjectDetailView
+  project={currentProject}
+  parts={parts}
+  darkMode={darkMode}
+  updateProject={updateProject}
+  // ... other props
+/>
+
+<ProjectEditForm
+  project={editableProject}
+  onProjectChange={handleProjectChange}
+  vehicles={vehicles}
+  darkMode={darkMode}
+  // ... other props
+/>
+
+<LinkedPartsSection
+  projectId={project.id}
+  parts={parts}
+  unlinkPartFromProject={handleUnlink}
+  darkMode={darkMode}
+  // ... other props
+/>
 ```
 
 ## 🚧 Remaining Work
 
-### Phase 2: Large Component Extraction
-
-The following components are still embedded in `Shako.js` and should be extracted:
-
-#### Complex Components (still in Shako.js)
-- **`ProjectDetailView`** (~900 lines) - Project details with todos and parts
-- **`ProjectEditForm`** (~200 lines) - Project editing form
-- **`LinkedPartsSection`** (~100 lines) - Display parts linked to project
+### Phase 3: Modal Component Extraction
 
 #### Modal Components (still in Shako.js)
 - **Vehicle Modals:**
@@ -199,7 +242,7 @@ The following components are still embedded in `Shako.js` and should be extracte
 - `ProjectsTab` - Project listing and management
 - `PartsTab` - Parts table with filtering/sorting
 
-### Phase 3: State Management
+### Phase 4: State Management
 
 Extract state logic into custom hooks:
 
@@ -214,7 +257,7 @@ Extract state logic into custom hooks:
 └── useDragDrop.js - Drag & drop reordering
 ```
 
-### Phase 4: Additional Improvements
+### Phase 5: Additional Improvements
 
 - Extract Supabase API calls into dedicated service layer (`/services` or `/api`)
 - Create typed interfaces/PropTypes for better type safety
@@ -225,40 +268,46 @@ Extract state logic into custom hooks:
 
 ## Benefits Achieved So Far
 
-1. **Improved Maintainability** - Utilities and simple components are now in focused files
+1. **Improved Maintainability** - Utilities, simple components, and complex components are now in focused files
 2. **Better Reusability** - Components can be imported and used anywhere
-3. **Easier Testing** - Utilities can be tested in isolation
+3. **Easier Testing** - Utilities and components can be tested in isolation
 4. **Cleaner Imports** - Clear dependency structure
-5. **Better IDE Performance** - Smaller files load and parse faster
-6. **Foundation for Growth** - Pattern established for continued refactoring
+5. **Better IDE Performance** - Smaller files load and parse faster (Shako.js reduced by ~2,228 lines)
+6. **Reduced Complexity** - Main component is now 23% smaller (9,512 → ~7,284 lines)
+7. **Foundation for Growth** - Pattern established for continued refactoring
 
 ## Next Steps
 
-1. Extract `ProjectDetailView` as it's the largest self-contained component
-2. Extract modal components one by one
-3. Create custom hooks for state management
-4. Refactor main `Shako.js` to use all extracted modules
-5. Add comprehensive testing
+1. ✅ ~~Extract `ProjectDetailView`, `ProjectEditForm`, and `LinkedPartsSection`~~ (Phase 2 Complete)
+2. Extract modal components one by one (Phase 3)
+3. Extract tab components (Phase 3)
+4. Create custom hooks for state management (Phase 4)
+5. Extract Supabase API calls into service layer (Phase 5)
+6. Add comprehensive testing (Phase 5)
 
 ## Migration Strategy
 
 To avoid breaking changes, the refactoring follows this approach:
 
-1. ✅ **Extract utilities** - No runtime changes, just reorganization
-2. ✅ **Extract simple UI components** - Self-contained, minimal dependencies
-3. 🚧 **Extract complex components** - Requires careful prop drilling analysis
-4. 🚧 **Extract state management** - Requires understanding data flow
-5. 🚧 **Refactor main component** - Final step to tie everything together
+1. ✅ **Extract utilities** - No runtime changes, just reorganization (Phase 1 Complete)
+2. ✅ **Extract simple UI components** - Self-contained, minimal dependencies (Phase 1 Complete)
+3. ✅ **Extract complex components** - Careful prop drilling analysis (Phase 2 Complete)
+4. 🚧 **Extract modal and tab components** - Self-contained UI sections (Phase 3)
+5. 🚧 **Extract state management** - Requires understanding data flow (Phase 4)
+6. 🚧 **Extract API layer** - Centralize Supabase operations (Phase 5)
+7. 🚧 **Add testing** - Comprehensive test coverage (Phase 5)
 
 ## Notes
 
 - All extracted code maintains 100% backward compatibility
 - No functionality has been changed, only reorganized
-- The `Shako.js` file still contains the original code (still needs refactoring)
+- The `Shako.js` file has been reduced from 9,512 lines to ~7,284 lines (23% reduction)
+- Phase 1: Extracted utilities and simple UI components (588 lines removed)
+- Phase 2: Extracted complex components ProjectDetailView, ProjectEditForm, LinkedPartsSection (~1,228 lines removed)
 - Custom CSS is now imported globally via `layout.js`
 - All animations and custom styles are centralized in `custom.css`
 
 ---
 
 **Last Updated:** 2025-12-02
-**Status:** Phase 1 Complete (Utilities & Simple Components Extracted)
+**Status:** Phase 2 Complete (Complex Components Extracted)
