@@ -3761,6 +3761,9 @@ const TakumiGarage = () => {
         .show-below-800 {
           display: block;
         }
+        .show-below-800.grid {
+          display: grid;
+        }
         @media (min-width: 800px) {
           .show-below-800 {
             display: none;
