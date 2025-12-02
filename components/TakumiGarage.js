@@ -1,5 +1,5 @@
 import React, { useState, useMemo, useEffect, useRef } from 'react';
-import { Search, Package, BadgeDollarSign, TrendingUp, Truck, CheckCircle, Clock, ChevronDown, Plus, X, ExternalLink, ChevronUp, Edit2, Trash2, Moon, Sun, Wrench, GripVertical, ShoppingCart, Car, Upload, Gauge, Settings, Check, Archive, ChevronRight } from 'lucide-react';
+import { Search, Package, BadgeDollarSign, TrendingUp, Truck, CheckCircle, Clock, ChevronDown, Plus, X, ExternalLink, ChevronUp, Edit2, Trash2, Moon, Sun, Wrench, GripVertical, ShoppingCart, Car, Upload, Gauge, Settings, Check, Archive, ChevronRight, Pause, Play } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 
 // ========================================
@@ -1350,6 +1350,27 @@ const fontStyles = `
   .table-status-filtering tbody tr:nth-child(9) { animation-delay: 0.24s; }
   .table-status-filtering tbody tr:nth-child(10) { animation-delay: 0.27s; }
 
+  /* Mobile card status filtering animation */
+  .cards-status-filtering > div {
+    animation: tableFadeOnly 0.6s ease-in;
+  }
+
+  .cards-status-filtering > div:nth-child(1) { animation-delay: 0s; }
+  .cards-status-filtering > div:nth-child(2) { animation-delay: 0.03s; }
+  .cards-status-filtering > div:nth-child(3) { animation-delay: 0.06s; }
+  .cards-status-filtering > div:nth-child(4) { animation-delay: 0.09s; }
+  .cards-status-filtering > div:nth-child(5) { animation-delay: 0.12s; }
+  .cards-status-filtering > div:nth-child(6) { animation-delay: 0.15s; }
+  .cards-status-filtering > div:nth-child(7) { animation-delay: 0.18s; }
+  .cards-status-filtering > div:nth-child(8) { animation-delay: 0.21s; }
+  .cards-status-filtering > div:nth-child(9) { animation-delay: 0.24s; }
+  .cards-status-filtering > div:nth-child(10) { animation-delay: 0.27s; }
+
+  /* Empty state animation */
+  .animate-fade-in {
+    animation: tableFadeOnly 0.6s ease-in;
+  }
+
   /* Project filtering animations */
   @keyframes projectFilterFade {
     0% {
@@ -1916,6 +1937,10 @@ const TakumiGarage = () => {
   const [isArchiveCollapsed, setIsArchiveCollapsed] = useState(true);
   const [isProjectArchiveCollapsed, setIsProjectArchiveCollapsed] = useState(true);
   const [archiveStatesInitialized, setArchiveStatesInitialized] = useState(false);
+
+  // Refs for archive sections to enable auto-scroll
+  const projectArchiveRef = useRef(null);
+  const vehicleArchiveRef = useRef(null);
 
   // Initialize archive collapsed states from localStorage after mount to avoid hydration mismatch
   useEffect(() => {
@@ -3661,6 +3686,11 @@ const TakumiGarage = () => {
         : 'bg-gradient-to-br from-slate-200 to-slate-300'
     }`}>
       <style>{fontStyles}{`
+        /* Reserve scrollbar space to prevent layout shift */
+        html {
+          scrollbar-gutter: stable;
+        }
+
         .scrollbar-hide::-webkit-scrollbar {
           display: none;
         }
@@ -3671,7 +3701,7 @@ const TakumiGarage = () => {
           scrollbar-width: none;
           -ms-overflow-style: none;
         }
-        
+
         /* Custom 800px breakpoint */
         .hidden-below-800 {
           display: none;
@@ -3715,9 +3745,9 @@ const TakumiGarage = () => {
                       e.stopPropagation();
                       setShowVehicleFilterDropdown(!showVehicleFilterDropdown);
                     }}
-                    className={`px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm text-left flex items-center justify-between gap-2 ${
-                      darkMode 
-                        ? 'bg-gray-800 border-gray-600 text-gray-100' 
+                    className={`px-3 py-2 sm:py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm text-left flex items-center justify-between gap-2 ${
+                      darkMode
+                        ? 'bg-gray-800 border-gray-600 text-gray-100'
                         : 'bg-slate-100 border-slate-300 text-slate-800'
                     }`}
                   >
@@ -3747,7 +3777,7 @@ const TakumiGarage = () => {
                         className="fixed inset-0 z-10"
                         onClick={() => setShowVehicleFilterDropdown(false)}
                       />
-                      <div className={`absolute right-0 z-20 mt-1 min-w-[240px] w-max rounded-lg border shadow-lg py-1 max-h-60 overflow-y-auto ${
+                      <div className={`absolute right-0 z-20 mt-1 min-w-[240px] w-max rounded-lg border shadow-lg py-1 ${
                         darkMode ? 'bg-gray-800 border-gray-600' : 'bg-slate-50 border-slate-300'
                       }`}>
                         <button
@@ -3765,7 +3795,7 @@ const TakumiGarage = () => {
                         >
                           All
                         </button>
-                        {vehicles.map(vehicle => (
+                        {vehicles.filter(vehicle => !vehicle.archived).map(vehicle => (
                           <button
                             key={vehicle.id}
                             onClick={() => {
@@ -5644,7 +5674,7 @@ const TakumiGarage = () => {
         ) : (
           <div className={`hidden-below-800 text-center py-16 rounded-lg ${
             darkMode ? 'bg-gray-800' : 'bg-slate-100'
-          }`}>
+          } ${isStatusFiltering || isSorting ? 'animate-fade-in' : ''}`}>
             <Package className={`w-20 h-20 mx-auto mb-4 ${
               darkMode ? 'text-gray-600' : 'text-gray-400'
             }`} />
@@ -5674,7 +5704,7 @@ const TakumiGarage = () => {
 
         {/* Mobile Card View - Visible only below 800px */}
         {filteredParts.length > 0 ? (
-        <div className="show-below-800 grid grid-cols-1 gap-4">
+        <div className={`show-below-800 grid grid-cols-1 gap-4 ${isStatusFiltering ? 'cards-status-filtering' : ''}`}>
             {filteredParts.map((part) => (
               <div 
                 key={part.id}
@@ -5925,7 +5955,7 @@ const TakumiGarage = () => {
         ) : (
           <div className={`show-below-800 text-center py-16 rounded-lg ${
             darkMode ? 'bg-gray-800' : 'bg-slate-100'
-          }`}>
+          } ${isStatusFiltering || isSorting ? 'animate-fade-in' : ''}`}>
             <Package className={`w-20 h-20 mx-auto mb-4 ${
               darkMode ? 'text-gray-600' : 'text-gray-400'
             }`} />
@@ -6282,7 +6312,16 @@ const TakumiGarage = () => {
                   className={`flex items-center gap-2 ${draggedProject && !draggedProject.archived ? '' : 'mt-8'} mb-6 cursor-pointer select-none transition-colors ${
                     darkMode ? 'text-gray-300 hover:text-gray-100' : 'text-slate-700 hover:text-slate-900'
                   }`}
-                  onClick={() => setIsProjectArchiveCollapsed(!isProjectArchiveCollapsed)}
+                  onClick={() => {
+                    const wasCollapsed = isProjectArchiveCollapsed;
+                    setIsProjectArchiveCollapsed(!isProjectArchiveCollapsed);
+                    // If opening the archive, scroll to it after a brief delay to allow expansion
+                    if (wasCollapsed && projectArchiveRef.current) {
+                      setTimeout(() => {
+                        projectArchiveRef.current?.scrollIntoView({ behavior: 'smooth', block: 'end' });
+                      }, 100);
+                    }
+                  }}
                 >
                   <Archive className="w-5 h-5" />
                   <h2 className="text-lg font-semibold">
@@ -6297,6 +6336,7 @@ const TakumiGarage = () => {
               </div>
 
               <div
+                ref={projectArchiveRef}
                 className={`transition-all duration-300 ease-in-out overflow-hidden ${
                   isProjectArchiveCollapsed ? 'max-h-0 opacity-0' : 'max-h-[5000px] opacity-100'
                 }`}
@@ -6890,39 +6930,39 @@ const TakumiGarage = () => {
                     darkMode ? 'border-gray-700 bg-gray-800' : 'border-slate-200 bg-slate-100'
                   }`}>
                     {projectModalEditMode ? (
-                      <div className="flex items-center justify-between w-full gap-2">
-                        <div className="flex items-center gap-1 sm:gap-2">
-                          <button
-                            onClick={() => {
-                              // Check for unsaved changes before going back
-                              if (hasUnsavedProjectChanges()) {
-                                setConfirmDialog({
-                                  isOpen: true,
-                                  title: 'Unsaved Changes',
-                                  message: 'You have unsaved changes. Are you sure you want to go back without saving?',
-                                  confirmText: 'Discard',
-                                  cancelText: 'Keep Editing',
-                                  onConfirm: () => {
-                                    // Restore original data
-                                    if (originalProjectData) {
-                                      setViewingProject({ ...originalProjectData });
-                                    }
-                                    setProjectModalEditMode(false);
+                      <div className="flex items-center justify-between sm:justify-start w-full gap-2">
+                        <button
+                          onClick={() => {
+                            // Check for unsaved changes before going back
+                            if (hasUnsavedProjectChanges()) {
+                              setConfirmDialog({
+                                isOpen: true,
+                                title: 'Unsaved Changes',
+                                message: 'You have unsaved changes. Are you sure you want to go back without saving?',
+                                confirmText: 'Discard',
+                                cancelText: 'Keep Editing',
+                                onConfirm: () => {
+                                  // Restore original data
+                                  if (originalProjectData) {
+                                    setViewingProject({ ...originalProjectData });
                                   }
-                                });
-                                return;
-                              }
-                              setProjectModalEditMode(false);
-                            }}
-                            className={`flex items-center gap-2 px-4 py-2 rounded-lg font-medium transition-colors border ${
-                              darkMode
-                                ? 'bg-gray-700 hover:bg-gray-600 text-gray-100 border-gray-600 hover:border-gray-500'
-                                : 'bg-gray-200 hover:bg-gray-300 text-gray-800 border-gray-300 hover:border-gray-400'
-                            }`}
-                            title="Back"
-                          >
-                            <ChevronDown className="w-5 h-5 rotate-90" />
-                          </button>
+                                  setProjectModalEditMode(false);
+                                }
+                              });
+                              return;
+                            }
+                            setProjectModalEditMode(false);
+                          }}
+                          className={`flex items-center gap-2 px-4 py-2 rounded-lg font-medium transition-colors border ${
+                            darkMode
+                              ? 'bg-gray-700 hover:bg-gray-600 text-gray-100 border-gray-600 hover:border-gray-500'
+                              : 'bg-gray-200 hover:bg-gray-300 text-gray-800 border-gray-300 hover:border-gray-400'
+                          }`}
+                          title="Back"
+                        >
+                          <ChevronDown className="w-5 h-5 rotate-90" />
+                        </button>
+                        <div className="flex items-center gap-1 sm:gap-2 sm:ml-auto sm:mr-2">
                         <button
                           onClick={async () => {
                             const partsForProject = parts.filter(p => p.projectId === viewingProject.id);
@@ -6943,7 +6983,7 @@ const TakumiGarage = () => {
                               }
                             });
                           }}
-                          className={`px-4 py-2 rounded-lg font-medium transition-colors flex items-center gap-2 text-sm ${
+                          className={`h-10 px-4 py-2 rounded-lg font-medium transition-colors flex items-center gap-2 text-sm ${
                             darkMode
                               ? 'bg-red-900/30 hover:bg-red-900/50 text-red-400 border border-red-700'
                               : 'bg-red-50 hover:bg-red-100 text-red-600 border border-red-300'
@@ -6973,7 +7013,7 @@ const TakumiGarage = () => {
                               }
                             });
                           }}
-                          className={`px-4 py-2 rounded-lg font-medium transition-colors flex items-center gap-2 text-sm ${
+                          className={`h-10 px-4 py-2 rounded-lg font-medium transition-colors flex items-center gap-2 text-sm ${
                             viewingProject.archived
                               ? 'bg-green-600 hover:bg-green-700 text-white'
                               : darkMode
@@ -6984,8 +7024,6 @@ const TakumiGarage = () => {
                           <Archive className="w-4 h-4" />
                           <span className="hidden sm:inline">{viewingProject.archived ? 'Unarchive' : 'Archive'}</span>
                         </button>
-                        </div>
-                        <div className="flex items-center gap-2">
                         <button
                           onClick={async () => {
                             // Toggle on_hold status
@@ -6996,7 +7034,7 @@ const TakumiGarage = () => {
                             });
                             setViewingProject(updatedProject);
                           }}
-                          className={`px-4 py-2 rounded-lg font-medium transition-colors flex items-center gap-2 text-sm ${
+                          className={`h-10 px-4 py-2 rounded-lg font-medium transition-colors flex items-center gap-2 text-sm ${
                             viewingProject.status === 'on_hold'
                               ? 'bg-green-600 hover:bg-green-700 text-white'
                               : darkMode
@@ -7004,8 +7042,19 @@ const TakumiGarage = () => {
                                 : 'bg-gray-200 hover:bg-gray-300 text-gray-800 border border-gray-300'
                           }`}
                         >
-                          {viewingProject.status === 'on_hold' ? 'Resume' : 'Pause'}
+                          {viewingProject.status === 'on_hold' ? (
+                            <>
+                              <Play className="w-4 h-4" />
+                              <span className="hidden sm:inline">Resume</span>
+                            </>
+                          ) : (
+                            <>
+                              <Pause className="w-4 h-4" />
+                              <span className="hidden sm:inline">Pause</span>
+                            </>
+                          )}
                         </button>
+                        </div>
                         <PrimaryButton
                           onClick={async () => {
                             await updateProject(viewingProject.id, {
@@ -7029,17 +7078,18 @@ const TakumiGarage = () => {
                           <span className="sm:hidden">Save</span>
                           <span className="hidden sm:inline">Save Changes</span>
                         </PrimaryButton>
-                        </div>
                       </div>
                     ) : (
-                      <PrimaryButton
-                        onClick={() => {
-                          setProjectModalEditMode(true);
-                        }}
-                        icon={Edit2}
-                      >
-                        Edit
-                      </PrimaryButton>
+                      <div className="ml-auto">
+                        <PrimaryButton
+                          onClick={() => {
+                            setProjectModalEditMode(true);
+                          }}
+                          icon={Edit2}
+                        >
+                          Edit
+                        </PrimaryButton>
+                      </div>
                     )}
                   </div>
                 </div>
@@ -7293,7 +7343,16 @@ const TakumiGarage = () => {
                   className={`flex items-center gap-2 ${draggedVehicle && !draggedVehicle.archived ? '' : 'mt-8'} mb-6 cursor-pointer select-none transition-colors ${
                     darkMode ? 'text-gray-300 hover:text-gray-100' : 'text-slate-700 hover:text-slate-900'
                   }`}
-                  onClick={() => setIsArchiveCollapsed(!isArchiveCollapsed)}
+                  onClick={() => {
+                    const wasCollapsed = isArchiveCollapsed;
+                    setIsArchiveCollapsed(!isArchiveCollapsed);
+                    // If opening the archive, scroll to it after a brief delay to allow expansion
+                    if (wasCollapsed && vehicleArchiveRef.current) {
+                      setTimeout(() => {
+                        vehicleArchiveRef.current?.scrollIntoView({ behavior: 'smooth', block: 'end' });
+                      }, 100);
+                    }
+                  }}
                 >
                   <Archive className="w-5 h-5" />
                   <h2 className="text-lg font-semibold">
@@ -7308,6 +7367,7 @@ const TakumiGarage = () => {
               </div>
 
               <div
+                ref={vehicleArchiveRef}
                 className={`transition-all duration-300 ease-in-out overflow-hidden ${
                   isArchiveCollapsed ? 'max-h-0 opacity-0' : 'max-h-[5000px] opacity-100'
                 }`}
@@ -8892,40 +8952,40 @@ const TakumiGarage = () => {
                     darkMode ? 'border-gray-700 bg-gray-800' : 'border-slate-200 bg-slate-100'
                   }`}>
                     {vehicleModalEditMode ? (
-                      <div className="flex items-center justify-between w-full gap-2">
-                        <div className="flex items-center gap-1 sm:gap-2">
-                          <button
-                            onClick={() => {
-                              // Check for unsaved changes before going back
-                              if (hasUnsavedVehicleChanges()) {
-                                setConfirmDialog({
-                                  isOpen: true,
-                                  title: 'Unsaved Changes',
-                                  message: 'You have unsaved changes. Are you sure you want to go back without saving?',
-                                  confirmText: 'Discard',
-                                  cancelText: 'Keep Editing',
-                                  onConfirm: () => {
-                                    // Restore original data
-                                    if (originalVehicleData) {
-                                      setViewingVehicle({ ...originalVehicleData });
-                                    }
-                                    clearImageSelection();
-                                    setVehicleModalEditMode(null);
+                      <div className="flex items-center justify-between sm:justify-start w-full gap-2">
+                        <button
+                          onClick={() => {
+                            // Check for unsaved changes before going back
+                            if (hasUnsavedVehicleChanges()) {
+                              setConfirmDialog({
+                                isOpen: true,
+                                title: 'Unsaved Changes',
+                                message: 'You have unsaved changes. Are you sure you want to go back without saving?',
+                                confirmText: 'Discard',
+                                cancelText: 'Keep Editing',
+                                onConfirm: () => {
+                                  // Restore original data
+                                  if (originalVehicleData) {
+                                    setViewingVehicle({ ...originalVehicleData });
                                   }
-                                });
-                                return;
-                              }
-                              setVehicleModalEditMode(null);
-                            }}
-                            className={`flex items-center gap-2 px-4 py-2 rounded-lg font-medium transition-colors border ${
-                              darkMode
-                                ? 'bg-gray-700 hover:bg-gray-600 text-gray-100 border-gray-600 hover:border-gray-500'
-                                : 'bg-gray-200 hover:bg-gray-300 text-gray-800 border-gray-300 hover:border-gray-400'
-                            }`}
-                            title="Back"
-                          >
-                            <ChevronDown className="w-5 h-5 rotate-90" />
-                          </button>
+                                  clearImageSelection();
+                                  setVehicleModalEditMode(null);
+                                }
+                              });
+                              return;
+                            }
+                            setVehicleModalEditMode(null);
+                          }}
+                          className={`flex items-center gap-2 px-4 py-2 rounded-lg font-medium transition-colors border ${
+                            darkMode
+                              ? 'bg-gray-700 hover:bg-gray-600 text-gray-100 border-gray-600 hover:border-gray-500'
+                              : 'bg-gray-200 hover:bg-gray-300 text-gray-800 border-gray-300 hover:border-gray-400'
+                          }`}
+                          title="Back"
+                        >
+                          <ChevronDown className="w-5 h-5 rotate-90" />
+                        </button>
+                        <div className="flex items-center gap-1 sm:gap-2 sm:ml-auto sm:mr-2">
                         {vehicleModalEditMode === 'vehicle' && (
                           <>
                             <button
@@ -8956,7 +9016,7 @@ const TakumiGarage = () => {
                                   }
                                 });
                               }}
-                              className={`px-4 py-2 rounded-lg font-medium transition-colors flex items-center gap-2 text-sm ${
+                              className={`h-10 px-4 py-2 rounded-lg font-medium transition-colors flex items-center gap-2 text-sm ${
                                 darkMode
                                   ? 'bg-red-900/30 hover:bg-red-900/50 text-red-400 border border-red-700'
                                   : 'bg-red-50 hover:bg-red-100 text-red-600 border border-red-300'
@@ -8970,24 +9030,24 @@ const TakumiGarage = () => {
                                 setConfirmDialog({
                                   isOpen: true,
                                   title: viewingVehicle.archived ? 'Unarchive Vehicle' : 'Archive Vehicle',
-                                  message: viewingVehicle.archived 
-                                    ? 'Are you sure you want to unarchive this vehicle?' 
+                                  message: viewingVehicle.archived
+                                    ? 'Are you sure you want to unarchive this vehicle?'
                                     : 'Are you sure you want to archive this vehicle? It will still be visible but with limited information.',
                                   confirmText: viewingVehicle.archived ? 'Unarchive' : 'Archive',
                                   isDangerous: false,
                                   onConfirm: async () => {
                                     // When archiving, set display_order to a high number to move to end
                                     // When unarchiving, keep current display_order
-                                    const updates = { 
-                                      archived: !viewingVehicle.archived 
+                                    const updates = {
+                                      archived: !viewingVehicle.archived
                                     };
                                     if (!viewingVehicle.archived) {
                                       // Archiving: set display_order to max + 1
                                       const maxOrder = Math.max(...vehicles.map(v => v.display_order || 0), 0);
                                       updates.display_order = maxOrder + 1;
                                     }
-                                    const updatedVehicle = { 
-                                      ...viewingVehicle, 
+                                    const updatedVehicle = {
+                                      ...viewingVehicle,
                                       ...updates
                                     };
                                     await updateVehicle(viewingVehicle.id, updates);
@@ -8996,7 +9056,7 @@ const TakumiGarage = () => {
                                   }
                                 });
                               }}
-                              className={`px-4 py-2 rounded-lg font-medium transition-colors flex items-center gap-2 text-sm ${
+                              className={`h-10 px-4 py-2 rounded-lg font-medium transition-colors flex items-center gap-2 text-sm ${
                                 viewingVehicle.archived
                                   ? 'bg-green-600 hover:bg-green-700 text-white'
                                   : darkMode
@@ -9009,8 +9069,6 @@ const TakumiGarage = () => {
                             </button>
                           </>
                         )}
-                        </div>
-                        <div className="flex items-center gap-2">
                         {vehicleModalEditMode === 'project' && (
                           <button
                             onClick={async () => {
@@ -9022,7 +9080,7 @@ const TakumiGarage = () => {
                               });
                               setVehicleModalProjectView(updatedProject);
                             }}
-                            className={`px-4 py-2 rounded-lg font-medium transition-colors flex items-center gap-2 text-sm ${
+                            className={`h-10 px-4 py-2 rounded-lg font-medium transition-colors flex items-center gap-2 text-sm ${
                               vehicleModalProjectView.status === 'on_hold'
                                 ? 'bg-green-600 hover:bg-green-700 text-white'
                                 : darkMode
@@ -9030,9 +9088,20 @@ const TakumiGarage = () => {
                                   : 'bg-gray-200 hover:bg-gray-300 text-gray-800 border border-gray-300'
                             }`}
                           >
-                            {vehicleModalProjectView.status === 'on_hold' ? 'Resume' : 'Pause'}
+                            {vehicleModalProjectView.status === 'on_hold' ? (
+                              <>
+                                <Play className="w-4 h-4" />
+                                <span className="hidden sm:inline">Resume</span>
+                              </>
+                            ) : (
+                              <>
+                                <Pause className="w-4 h-4" />
+                                <span className="hidden sm:inline">Pause</span>
+                              </>
+                            )}
                           </button>
                         )}
+                        </div>
                         <button
                           onClick={async () => {
                             // Save logic based on what's being edited
@@ -9078,10 +9147,9 @@ const TakumiGarage = () => {
                             </>
                           )}
                         </button>
-                        </div>
                       </div>
                     ) : vehicleModalProjectView ? (
-                      <>
+                      <div className="flex items-center justify-between w-full gap-2">
                         <button
                           onClick={() => {
                             setVehicleModalProjectView(null);
@@ -9104,17 +9172,19 @@ const TakumiGarage = () => {
                           <Edit2 className="w-3 h-3" />
                           Edit Project
                         </button>
-                      </>
+                      </div>
                     ) : (
-                      <button
-                        onClick={() => {
-                          setVehicleModalEditMode('vehicle');
-                        }}
-                        className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium transition-colors flex items-center gap-2 text-sm"
-                      >
-                        <Edit2 className="w-3 h-3" />
-                        Edit Vehicle
-                      </button>
+                      <div className="ml-auto">
+                        <button
+                          onClick={() => {
+                            setVehicleModalEditMode('vehicle');
+                          }}
+                          className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium transition-colors flex items-center gap-2 text-sm"
+                        >
+                          <Edit2 className="w-3 h-3" />
+                          Edit
+                        </button>
+                      </div>
                     )}
                   </div>
                 </div>
