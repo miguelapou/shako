@@ -10,7 +10,8 @@ import {
   ChevronDown,
   ExternalLink
 } from 'lucide-react';
-import { PrimaryButton } from '../ui';
+import PrimaryButton from '../ui/PrimaryButton';
+import VendorSelect from '../ui/VendorSelect';
 import {
   getVendorColor,
   getVendorDisplayColor
