@@ -3765,7 +3765,8 @@ const Shako = () => {
           display: grid;
         }
         @media (min-width: 800px) {
-          .show-below-800 {
+          .show-below-800,
+          .show-below-800.grid {
             display: none;
           }
         }
