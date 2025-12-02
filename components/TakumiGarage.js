@@ -3682,6 +3682,11 @@ const TakumiGarage = () => {
         : 'bg-gradient-to-br from-slate-200 to-slate-300'
     }`}>
       <style>{fontStyles}{`
+        /* Reserve scrollbar space to prevent layout shift */
+        html {
+          scrollbar-gutter: stable;
+        }
+
         .scrollbar-hide::-webkit-scrollbar {
           display: none;
         }
@@ -3692,7 +3697,7 @@ const TakumiGarage = () => {
           scrollbar-width: none;
           -ms-overflow-style: none;
         }
-        
+
         /* Custom 800px breakpoint */
         .hidden-below-800 {
           display: none;
