@@ -2634,72 +2634,80 @@ const Shako = () => {
   const tabs = ['vehicles', 'projects', 'parts'];
 
   useEffect(() => {
-    const element = tabContentRef.current;
-    if (!element) return;
+    // Small delay to ensure DOM is ready
+    const timeoutId = setTimeout(() => {
+      const element = tabContentRef.current;
+      if (!element) return;
 
-    let touchStartPos = null;
-    let touchEndPos = null;
+      let touchStartPos = null;
+      let touchEndPos = null;
 
-    const handleTouchStart = (e) => {
-      touchEndPos = null;
-      touchStartPos = {
-        x: e.touches[0].clientX,
-        y: e.touches[0].clientY
+      const handleTouchStart = (e) => {
+        touchEndPos = null;
+        touchStartPos = {
+          x: e.touches[0].clientX,
+          y: e.touches[0].clientY
+        };
       };
-    };
 
-    const handleTouchMove = (e) => {
-      if (!touchStartPos) return;
+      const handleTouchMove = (e) => {
+        if (!touchStartPos) return;
 
-      const currentX = e.touches[0].clientX;
-      const currentY = e.touches[0].clientY;
+        const currentX = e.touches[0].clientX;
+        const currentY = e.touches[0].clientY;
 
-      const diffX = Math.abs(currentX - touchStartPos.x);
-      const diffY = Math.abs(currentY - touchStartPos.y);
+        const diffX = Math.abs(currentX - touchStartPos.x);
+        const diffY = Math.abs(currentY - touchStartPos.y);
 
-      // If horizontal movement is greater than vertical, prevent scrolling
-      if (diffX > diffY && diffX > 10) {
-        e.preventDefault();
-      }
-
-      touchEndPos = {
-        x: currentX,
-        y: currentY
-      };
-    };
-
-    const handleTouchEnd = () => {
-      if (!touchStartPos || !touchEndPos) return;
-
-      const distance = touchStartPos.x - touchEndPos.x;
-      const isLeftSwipe = distance > minSwipeDistance;
-      const isRightSwipe = distance < -minSwipeDistance;
-
-      if (isLeftSwipe || isRightSwipe) {
-        const currentIndex = tabs.indexOf(activeTab);
-
-        if (isLeftSwipe && currentIndex < tabs.length - 1) {
-          handleTabChange(tabs[currentIndex + 1]);
-        } else if (isRightSwipe && currentIndex > 0) {
-          handleTabChange(tabs[currentIndex - 1]);
+        // If horizontal movement is greater than vertical, prevent scrolling
+        if (diffX > diffY && diffX > 10) {
+          e.preventDefault();
         }
-      }
 
-      touchStartPos = null;
-      touchEndPos = null;
-    };
+        touchEndPos = {
+          x: currentX,
+          y: currentY
+        };
+      };
 
-    // Add event listeners with passive: false to allow preventDefault
-    element.addEventListener('touchstart', handleTouchStart, { passive: true });
-    element.addEventListener('touchmove', handleTouchMove, { passive: false });
-    element.addEventListener('touchend', handleTouchEnd, { passive: true });
+      const handleTouchEnd = () => {
+        if (!touchStartPos || !touchEndPos) return;
+
+        const distance = touchStartPos.x - touchEndPos.x;
+        const isLeftSwipe = distance > minSwipeDistance;
+        const isRightSwipe = distance < -minSwipeDistance;
+
+        if (isLeftSwipe || isRightSwipe) {
+          const currentIndex = tabs.indexOf(activeTab);
+
+          if (isLeftSwipe && currentIndex < tabs.length - 1) {
+            handleTabChange(tabs[currentIndex + 1]);
+          } else if (isRightSwipe && currentIndex > 0) {
+            handleTabChange(tabs[currentIndex - 1]);
+          }
+        }
+
+        touchStartPos = null;
+        touchEndPos = null;
+      };
+
+      // Add event listeners with passive: false to allow preventDefault
+      element.addEventListener('touchstart', handleTouchStart, { passive: true });
+      element.addEventListener('touchmove', handleTouchMove, { passive: false });
+      element.addEventListener('touchend', handleTouchEnd, { passive: true });
+
+      // Store cleanup function
+      return () => {
+        element.removeEventListener('touchstart', handleTouchStart);
+        element.removeEventListener('touchmove', handleTouchMove);
+        element.removeEventListener('touchend', handleTouchEnd);
+      };
+    }, 0);
 
     return () => {
-      element.removeEventListener('touchstart', handleTouchStart);
-      element.removeEventListener('touchmove', handleTouchMove);
-      element.removeEventListener('touchend', handleTouchEnd);
+      clearTimeout(timeoutId);
     };
-  }, [activeTab]);
+  }, [activeTab, loading]);
 
   // Reset scroll position to top when switching tabs
   useEffect(() => {
@@ -3827,8 +3835,19 @@ const Shako = () => {
           -ms-overflow-style: none;
         }
 
-        /* Disable hover effects on touch devices */
-        @media (hover: none) {
+        /* Disable hover and scale effects on touch devices */
+        @media (hover: none), (pointer: coarse) {
+          * {
+            /* Disable all scale transforms on touch devices */
+          }
+          [class*="hover:scale"],
+          [class*="hover:shadow"] {
+            transition: none !important;
+          }
+          [class*="hover:scale"]:hover,
+          [class*="hover:scale"]:active {
+            transform: none !important;
+          }
           .hover\:scale-\[1\.02\]:hover,
           .hover\:scale-\[1\.03\]:hover,
           .hover\:scale-\[1\.02\]:active,
