@@ -9,6 +9,7 @@ const ProjectDetailModal = ({
   isOpen,
   darkMode,
   viewingProject,
+  setViewingProject,
   projectModalEditMode,
   setProjectModalEditMode,
   originalProjectData,
