@@ -61,6 +61,7 @@ const useModals = () => {
   // Track if we're transitioning between modals to prevent scroll jumping
   const isTransitioningModals = useRef(false);
   const savedScrollPosition = useRef(0);
+  const isScrollLocked = useRef(false);
 
   /**
    * Handle modal closing with exit animation
@@ -93,43 +94,41 @@ const useModals = () => {
                           showAddProjectModal || showProjectDetailModal ||
                           showAddVehicleModal || showVehicleDetailModal ||
                           showPartDetailModal;
-    if (isAnyModalOpen) {
-      // Only lock scroll if body is not already fixed (i.e., no other modal is open)
-      if (document.body.style.position !== 'fixed') {
-        // Calculate scrollbar width before locking
-        const scrollbarWidth = window.innerWidth - document.documentElement.clientWidth;
 
-        // Store current scroll position when opening a modal
-        savedScrollPosition.current = window.scrollY;
+    if (isAnyModalOpen && !isScrollLocked.current) {
+      // Lock scroll
+      const scrollbarWidth = window.innerWidth - document.documentElement.clientWidth;
+      savedScrollPosition.current = window.scrollY;
 
-        document.body.style.position = 'fixed';
-        document.body.style.top = `-${savedScrollPosition.current}px`;
-        document.body.style.width = '100%';
-        document.body.style.paddingRight = `${scrollbarWidth}px`;
-      }
-    } else {
-      // Only unlock if body is currently fixed
-      if (document.body.style.position === 'fixed') {
-        // Remove fixed positioning but maintain scroll position
-        const scrollY = savedScrollPosition.current;
-        document.body.style.position = '';
-        document.body.style.top = '';
-        document.body.style.width = '';
-        document.body.style.paddingRight = '';
-        // Restore scroll position
-        window.scrollTo(0, scrollY);
-        savedScrollPosition.current = 0; // Reset for next modal
-      }
+      document.body.style.position = 'fixed';
+      document.body.style.top = `-${savedScrollPosition.current}px`;
+      document.body.style.width = '100%';
+      document.body.style.paddingRight = `${scrollbarWidth}px`;
+
+      isScrollLocked.current = true;
+    } else if (!isAnyModalOpen && isScrollLocked.current) {
+      // Unlock scroll
+      const scrollY = savedScrollPosition.current;
+
+      document.body.style.position = '';
+      document.body.style.top = '';
+      document.body.style.width = '';
+      document.body.style.paddingRight = '';
+
+      window.scrollTo(0, scrollY);
+      isScrollLocked.current = false;
     }
+
     // Cleanup on unmount
     return () => {
-      if (document.body.style.position === 'fixed') {
+      if (isScrollLocked.current) {
         const scrollY = savedScrollPosition.current;
         document.body.style.position = '';
         document.body.style.top = '';
         document.body.style.width = '';
         document.body.style.paddingRight = '';
         window.scrollTo(0, scrollY);
+        isScrollLocked.current = false;
       }
     };
   }, [showAddModal, showTrackingModal, showAddProjectModal,
