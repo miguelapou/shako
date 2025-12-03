@@ -285,27 +285,32 @@ const VehicleDetailModal = ({
                                 darkMode ? 'text-green-400' : 'text-green-600'
                               }`}>${totalSpent.toFixed(2)}</p>
                             </div>
-                            <div>
-                              <p className={`text-sm font-medium mb-2 ${
-                                darkMode ? 'text-gray-400' : 'text-slate-600'
-                              }`}>Total Budget</p>
-                              <p className={`text-2xl font-bold ${
-                                darkMode ? 'text-gray-100' : 'text-slate-800'
-                              }`}>${Math.round(totalBudget)}</p>
+                            <div className="flex flex-col">
+                              <div className="flex-1">
+                                <p className={`text-sm font-medium mb-2 ${
+                                  darkMode ? 'text-gray-400' : 'text-slate-600'
+                                }`}>Total Budget</p>
+                                <p className={`text-2xl font-bold ${
+                                  darkMode ? 'text-gray-100' : 'text-slate-800'
+                                }`}>${Math.round(totalBudget)}</p>
+                              </div>
+                              <div className={`flex items-center justify-end gap-4 mt-4 text-xs ${
+                                darkMode ? 'text-gray-500' : 'text-gray-500'
+                              }`}>
+                                {vehicleProjects.length > 0 && (
+                                  <span className="flex items-center gap-1">
+                                    <Wrench className="w-3.5 h-3.5" />
+                                    {vehicleProjects.length}
+                                  </span>
+                                )}
+                                {linkedPartsCount > 0 && (
+                                  <span className="flex items-center gap-1">
+                                    <Package className="w-3.5 h-3.5" />
+                                    {linkedPartsCount}
+                                  </span>
+                                )}
+                              </div>
                             </div>
-                          </div>
-                          <div className={`flex items-center gap-4 mt-2 text-xs ${
-                            darkMode ? 'text-gray-500' : 'text-gray-500'
-                          }`}>
-                            {vehicleProjects.length > 0 && (
-                              <>
-                                <span>{vehicleProjects.length} project{vehicleProjects.length !== 1 ? 's' : ''}</span>
-                                {linkedPartsCount > 0 && <span>•</span>}
-                              </>
-                            )}
-                            {linkedPartsCount > 0 && (
-                              <span>{linkedPartsCount} part{linkedPartsCount !== 1 ? 's' : ''}</span>
-                            )}
                           </div>
                         </div>
                       );

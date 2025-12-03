@@ -126,6 +126,24 @@ All utility functions have been extracted into focused modules:
   - Features: Four nested views (vehicle detail/edit, project detail/edit), project list, total spent calculations, maintenance info, image upload
   - Imports: React, many Lucide icons, ProjectDetailView, ProjectEditForm, LinkedPartsSection, PrimaryButton, inputClasses, multiple utility functions
 
+#### Phase 4: Tab Components (`/components/tabs`)
+
+- **`PartsTab.js`** (~1167 lines) - Parts table with filtering and sorting
+  - Props: `tabContentRef`, `stats`, `filteredParts`, `darkMode`, filter/sort state, `projects`, `vehicles`, `vendorColors`, handlers, utility functions
+  - Features: Statistics cards, cost breakdown, search, desktop table view, mobile card view, status/project dropdowns
+  - Includes internal components: StatusDropdown, ProjectDropdown
+  - Imports: React hooks, Lucide icons, PriceDisplay, colorUtils, trackingUtils
+
+- **`ProjectsTab.js`** (~733 lines) - Project listing and management
+  - Props: `tabContentRef`, `previousTab`, `projects`, `parts`, `vehicles`, `darkMode`, vehicle filter state, archive state, drag/drop state, modal state, handlers
+  - Features: Vehicle filter dropdown, draggable project cards, budget progress, todo counters, archive section with drop zones
+  - Imports: React, Lucide icons, colorUtils, dataUtils
+
+- **`VehiclesTab.js`** (~553 lines) - Vehicle listing and management
+  - Props: `tabContentRef`, `vehicles`, `projects`, `parts`, `darkMode`, drag/drop state, archive state, modal state, handlers
+  - Features: Draggable vehicle cards with images, associated projects display, archive section with drop zones
+  - Imports: React, Lucide icons, colorUtils
+
 ## New File Structure
 
 ```
@@ -134,7 +152,7 @@ All utility functions have been extracted into focused modules:
 │   ├── globals.css
 │   └── layout.js (imports custom.css)
 ├── components/
-│   ├── Shako.js (originally 9,512 lines → now ~4,426 lines after Phase 3)
+│   ├── Shako.js (originally 9,512 lines → now ~2,466 lines after Phase 4)
 │   ├── modals/
 │   │   ├── AddPartModal.js ✓ (Phase 3)
 │   │   ├── TrackingModal.js ✓ (Phase 3)
@@ -143,6 +161,10 @@ All utility functions have been extracted into focused modules:
 │   │   ├── ProjectDetailModal.js ✓ (Phase 3)
 │   │   ├── AddVehicleModal.js ✓ (Phase 3)
 │   │   └── VehicleDetailModal.js ✓ (Phase 3)
+│   ├── tabs/
+│   │   ├── PartsTab.js ✓ (Phase 4)
+│   │   ├── ProjectsTab.js ✓ (Phase 4)
+│   │   └── VehiclesTab.js ✓ (Phase 4)
 │   └── ui/
 │       ├── ConfirmDialog.js ✓ (Phase 1)
 │       ├── PrimaryButton.js ✓ (Phase 1)
@@ -275,13 +297,6 @@ import VehicleDetailModal from '../components/modals/VehicleDetailModal';
 
 ## 🚧 Remaining Work
 
-### Phase 4: Tab Component Extraction
-
-#### Tab Components (still in Shako.js)
-- `VehiclesTab` - Vehicle listing and management
-- `ProjectsTab` - Project listing and management
-- `PartsTab` - Parts table with filtering/sorting
-
 ### Phase 5: State Management
 
 Extract state logic into custom hooks:
@@ -308,20 +323,21 @@ Extract state logic into custom hooks:
 
 ## Benefits Achieved So Far
 
-1. **Dramatically Improved Maintainability** - Utilities, UI components, and modals are now in focused, single-purpose files
+1. **Dramatically Improved Maintainability** - Utilities, UI components, modals, and tabs are now in focused, single-purpose files
 2. **Better Reusability** - All components can be imported and used anywhere in the application
-3. **Easier Testing** - Utilities, UI components, and modals can be tested in complete isolation
-4. **Cleaner Imports** - Clear dependency structure with organized folders (utils, ui, modals)
-5. **Better IDE Performance** - Much smaller files load and parse faster (Shako.js reduced by ~5,086 lines!)
-6. **Massively Reduced Complexity** - Main component is now 53% smaller (9,512 → 4,426 lines)
-7. **Modular Architecture** - Clear separation of concerns (utilities, UI, modals, main logic)
+3. **Easier Testing** - Utilities, UI components, modals, and tabs can be tested in complete isolation
+4. **Cleaner Imports** - Clear dependency structure with organized folders (utils, ui, modals, tabs)
+5. **Better IDE Performance** - Much smaller files load and parse faster (Shako.js reduced by ~7,046 lines!)
+6. **Massively Reduced Complexity** - Main component is now 74% smaller (9,512 → 2,466 lines)
+7. **Modular Architecture** - Clear separation of concerns (utilities, UI, modals, tabs, main logic)
 8. **Foundation for Growth** - Well-established pattern for continued refactoring
+9. **Tab Independence** - Each tab (Parts, Projects, Vehicles) is now self-contained and can be modified independently
 
 ## Next Steps
 
 1. ✅ ~~Extract `ProjectDetailView`, `ProjectEditForm`, and `LinkedPartsSection`~~ (Phase 2 Complete)
 2. ✅ ~~Extract all 7 modal components~~ (Phase 3 Complete)
-3. Extract tab components - VehiclesTab, ProjectsTab, PartsTab (Phase 4)
+3. ✅ ~~Extract tab components - VehiclesTab, ProjectsTab, PartsTab~~ (Phase 4 Complete)
 4. Create custom hooks for state management (Phase 5)
 5. Extract Supabase API calls into service layer (Phase 6)
 6. Add comprehensive testing (Phase 6)
@@ -334,7 +350,7 @@ To avoid breaking changes, the refactoring follows this approach:
 2. ✅ **Extract simple UI components** - Self-contained, minimal dependencies (Phase 1 Complete)
 3. ✅ **Extract complex UI components** - Careful prop drilling analysis (Phase 2 Complete)
 4. ✅ **Extract modal components** - 7 modals extracted with all props preserved (Phase 3 Complete)
-5. 🚧 **Extract tab components** - Self-contained view sections (Phase 4)
+5. ✅ **Extract tab components** - Self-contained view sections with internal components (Phase 4 Complete)
 6. 🚧 **Extract state management** - Requires understanding data flow (Phase 5)
 7. 🚧 **Extract API layer** - Centralize Supabase operations (Phase 6)
 8. 🚧 **Add testing** - Comprehensive test coverage (Phase 6)
@@ -343,7 +359,7 @@ To avoid breaking changes, the refactoring follows this approach:
 
 - All extracted code maintains 100% backward compatibility
 - No functionality has been changed, only reorganized
-- The `Shako.js` file has been reduced from **9,512 lines to 4,426 lines** (53% reduction!)
+- The `Shako.js` file has been reduced from **9,512 lines to 2,466 lines** (74% reduction!)
 - **Phase 1:** Extracted utilities and simple UI components (588 lines removed)
 - **Phase 2:** Extracted complex components: ProjectDetailView, ProjectEditForm, LinkedPartsSection (~1,228 lines removed)
 - **Phase 3:** Extracted all 7 modal components (~3,458 lines removed, including inline JSX)
@@ -354,11 +370,16 @@ To avoid breaking changes, the refactoring follows this approach:
   - PartDetailModal (827 lines - 3 views)
   - ProjectDetailModal (329 lines - 2 modes)
   - VehicleDetailModal (1213 lines - 4 nested views)
+- **Phase 4:** Extracted all 3 tab components (~1,961 lines removed, including StatusDropdown and ProjectDropdown)
+  - PartsTab (1167 lines - statistics, table view, mobile cards, 2 internal dropdowns)
+  - ProjectsTab (733 lines - project grid, drag/drop, archive, vehicle filtering)
+  - VehiclesTab (553 lines - vehicle grid, drag/drop, archive, associated projects)
 - Custom CSS is now imported globally via `layout.js`
 - All animations and custom styles are centralized in `custom.css`
 - Modal components are cleanly organized in `/components/modals` directory
+- Tab components are cleanly organized in `/components/tabs` directory
 
 ---
 
-**Last Updated:** 2025-12-02
-**Status:** Phase 3 Complete (Modal Components Extracted - 53% file size reduction achieved!)
+**Last Updated:** 2025-12-03
+**Status:** Phase 4 Complete (Tab Components Extracted - 74% file size reduction achieved!)
