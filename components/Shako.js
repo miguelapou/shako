@@ -3889,6 +3889,7 @@ const Shako = () => {
               isOpen={showProjectDetailModal}
               darkMode={darkMode}
               viewingProject={viewingProject}
+              setViewingProject={setViewingProject}
               projectModalEditMode={projectModalEditMode}
               setProjectModalEditMode={setProjectModalEditMode}
               originalProjectData={originalProjectData}
