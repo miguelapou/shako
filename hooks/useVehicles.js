@@ -271,7 +271,9 @@ const useVehicles = () => {
     vehicleImagePreview,
     setVehicleImagePreview,
     uploadingImage,
+    setUploadingImage,
     isDraggingImage,
+    setIsDraggingImage,
 
     // Operations
     loadVehicles,
