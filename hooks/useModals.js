@@ -154,11 +154,9 @@ const useModals = () => {
       requestAnimationFrame(() => {
         console.log('[useModals] Restoring scroll to:', scrollY);
         window.scrollTo(0, scrollY);
-        console.log('[useModals] Scroll restored, current scrollY:', window.scrollY);
+        isScrollLocked.current = false;
+        console.log('[useModals] Scroll restored, current scrollY:', window.scrollY, 'isScrollLocked:', isScrollLocked.current);
       });
-      isScrollLocked.current = false;
-
-      console.log('[useModals] Scroll unlocked, isScrollLocked:', isScrollLocked.current);
     } else {
       console.log('[useModals] No action taken');
     }
@@ -177,9 +175,9 @@ const useModals = () => {
         requestAnimationFrame(() => {
           console.log('[useModals] CLEANUP: Restoring scroll to:', scrollY);
           window.scrollTo(0, scrollY);
-          console.log('[useModals] CLEANUP: Scroll restored, current scrollY:', window.scrollY);
+          isScrollLocked.current = false;
+          console.log('[useModals] CLEANUP: Scroll restored, current scrollY:', window.scrollY, 'isScrollLocked:', isScrollLocked.current);
         });
-        isScrollLocked.current = false;
       }
     };
   }, [showAddModal, showTrackingModal, showAddProjectModal,
