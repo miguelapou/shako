@@ -94,36 +94,43 @@ const useModals = () => {
                           showAddVehicleModal || showVehicleDetailModal ||
                           showPartDetailModal;
     if (isAnyModalOpen) {
-      // Calculate scrollbar width before locking
-      const scrollbarWidth = window.innerWidth - document.documentElement.clientWidth;
+      // Only lock scroll if body is not already fixed (i.e., no other modal is open)
+      if (document.body.style.position !== 'fixed') {
+        // Calculate scrollbar width before locking
+        const scrollbarWidth = window.innerWidth - document.documentElement.clientWidth;
 
-      // Store current scroll position when opening a modal
-      if (savedScrollPosition.current === 0) {
+        // Store current scroll position when opening a modal
         savedScrollPosition.current = window.scrollY;
-      }
 
-      document.body.style.position = 'fixed';
-      document.body.style.top = `-${savedScrollPosition.current}px`;
-      document.body.style.width = '100%';
-      document.body.style.paddingRight = `${scrollbarWidth}px`;
+        document.body.style.position = 'fixed';
+        document.body.style.top = `-${savedScrollPosition.current}px`;
+        document.body.style.width = '100%';
+        document.body.style.paddingRight = `${scrollbarWidth}px`;
+      }
     } else {
-      // Remove fixed positioning but maintain scroll position
-      document.body.style.position = '';
-      document.body.style.top = '';
-      document.body.style.width = '';
-      document.body.style.paddingRight = '';
-      // Restore scroll position
-      if (savedScrollPosition.current > 0) {
-        window.scrollTo(0, savedScrollPosition.current);
+      // Only unlock if body is currently fixed
+      if (document.body.style.position === 'fixed') {
+        // Remove fixed positioning but maintain scroll position
+        const scrollY = savedScrollPosition.current;
+        document.body.style.position = '';
+        document.body.style.top = '';
+        document.body.style.width = '';
+        document.body.style.paddingRight = '';
+        // Restore scroll position
+        window.scrollTo(0, scrollY);
         savedScrollPosition.current = 0; // Reset for next modal
       }
     }
     // Cleanup on unmount
     return () => {
-      document.body.style.position = '';
-      document.body.style.top = '';
-      document.body.style.width = '';
-      document.body.style.paddingRight = '';
+      if (document.body.style.position === 'fixed') {
+        const scrollY = savedScrollPosition.current;
+        document.body.style.position = '';
+        document.body.style.top = '';
+        document.body.style.width = '';
+        document.body.style.paddingRight = '';
+        window.scrollTo(0, scrollY);
+      }
     };
   }, [showAddModal, showTrackingModal, showAddProjectModal,
       showProjectDetailModal, showAddVehicleModal, showVehicleDetailModal, showPartDetailModal]);
