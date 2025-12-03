@@ -56,29 +56,242 @@ import PartsTab from './tabs/PartsTab';
 import ProjectsTab from './tabs/ProjectsTab';
 import VehiclesTab from './tabs/VehiclesTab';
 
+// Custom Hooks
+import useDarkMode from '../hooks/useDarkMode';
+import useFilters from '../hooks/useFilters';
+import useModals from '../hooks/useModals';
+import useDragDrop from '../hooks/useDragDrop';
+import useParts from '../hooks/useParts';
+import useProjects from '../hooks/useProjects';
+import useVehicles from '../hooks/useVehicles';
+
 // ========================================
 // MAIN SHAKO COMPONENT
 // ========================================
 
 const Shako = () => {
-  const [parts, setParts] = useState([]);
-  const [projects, setProjects] = useState([]);
-  const [vehicles, setVehicles] = useState([]);
-  const [vendors, setVendors] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [activeTab, setActiveTab] = useState('vehicles'); // 'parts', 'projects', or 'vehicles'
-  const [vendorColors, setVendorColors] = useState({});
-  const [previousTab, setPreviousTab] = useState('vehicles');
-  const [draggedProject, setDraggedProject] = useState(null);
-  const [dragOverProject, setDragOverProject] = useState(null);
-  const [draggedVehicle, setDraggedVehicle] = useState(null);
-  const [dragOverVehicle, setDragOverVehicle] = useState(null);
-  const [dragOverArchiveZone, setDragOverArchiveZone] = useState(false);
-  const [dragOverProjectArchiveZone, setDragOverProjectArchiveZone] = useState(false);
+  // ========================================
+  // CUSTOM HOOKS
+  // ========================================
 
-  // Track if we're transitioning between modals to prevent scroll jumping
-  const isTransitioningModals = useRef(false);
-  const savedScrollPosition = useRef(0);
+  // Dark mode hook
+  const { darkMode, setDarkMode, darkModeInitialized, mounted } = useDarkMode();
+
+  // Parts hook
+  const {
+    parts,
+    setParts,
+    vendors,
+    vendorColors,
+    loading,
+    newPart,
+    setNewPart,
+    loadParts,
+    loadVendors,
+    updateVendorColor,
+    addNewPart,
+    updatePartStatus,
+    saveTrackingInfo,
+    skipTrackingInfo,
+    saveEditedPart,
+    deletePart,
+    renameVendor,
+    deleteVendor,
+    unlinkPartFromProject,
+    updatePartProject,
+    getUniqueVendors
+  } = useParts();
+
+  // Projects hook
+  const {
+    projects,
+    setProjects,
+    newProject,
+    setNewProject,
+    loadProjects,
+    addProject,
+    updateProject,
+    deleteProject,
+    updateProjectsOrder,
+    calculateProjectStatus,
+    getVehicleProjects,
+    getVehicleProjectCount
+  } = useProjects();
+
+  // Vehicles hook
+  const {
+    vehicles,
+    setVehicles,
+    newVehicle,
+    setNewVehicle,
+    vehicleImageFile,
+    setVehicleImageFile,
+    vehicleImagePreview,
+    setVehicleImagePreview,
+    uploadingImage,
+    isDraggingImage,
+    loadVehicles,
+    addVehicle,
+    updateVehicle,
+    deleteVehicle,
+    updateVehiclesOrder,
+    uploadVehicleImage,
+    handleImageFileChange,
+    clearImageSelection,
+    handleImageDragEnter,
+    handleImageDragLeave,
+    handleImageDragOver,
+    handleImageDrop
+  } = useVehicles();
+
+  // Filters hook
+  const {
+    searchTerm,
+    setSearchTerm,
+    deliveredFilter,
+    setDeliveredFilter,
+    statusFilter,
+    setStatusFilter,
+    vendorFilter,
+    setVendorFilter,
+    sortBy,
+    setSortBy,
+    sortOrder,
+    setSortOrder,
+    isSorting,
+    setIsSorting,
+    isStatusFiltering,
+    setIsStatusFiltering,
+    partsDateFilter,
+    setPartsDateFilter,
+    isFilteringParts,
+    setIsFilteringParts,
+    showDateFilterDropdown,
+    setShowDateFilterDropdown,
+    projectVehicleFilter,
+    setProjectVehicleFilter,
+    isFilteringProjects,
+    setIsFilteringProjects,
+    showVehicleFilterDropdown,
+    setShowVehicleFilterDropdown,
+    isArchiveCollapsed,
+    setIsArchiveCollapsed,
+    isProjectArchiveCollapsed,
+    setIsProjectArchiveCollapsed,
+    archiveStatesInitialized,
+    openDropdown,
+    setOpenDropdown
+  } = useFilters();
+
+  // Modals hook
+  const {
+    showAddModal,
+    setShowAddModal,
+    showTrackingModal,
+    setShowTrackingModal,
+    showPartDetailModal,
+    setShowPartDetailModal,
+    viewingPart,
+    setViewingPart,
+    partDetailView,
+    setPartDetailView,
+    trackingModalPartId,
+    setTrackingModalPartId,
+    trackingInput,
+    setTrackingInput,
+    editingPart,
+    setEditingPart,
+    originalPartData,
+    setOriginalPartData,
+    partModalView,
+    setPartModalView,
+    editingVendor,
+    setEditingVendor,
+    showAddProjectModal,
+    setShowAddProjectModal,
+    showProjectDetailModal,
+    setShowProjectDetailModal,
+    viewingProject,
+    setViewingProject,
+    originalProjectData,
+    setOriginalProjectData,
+    projectModalEditMode,
+    setProjectModalEditMode,
+    editingTodoId,
+    setEditingTodoId,
+    editingTodoText,
+    setEditingTodoText,
+    newTodoText,
+    setNewTodoText,
+    showAddProjectVehicleDropdown,
+    setShowAddProjectVehicleDropdown,
+    showAddVehicleModal,
+    setShowAddVehicleModal,
+    showVehicleDetailModal,
+    setShowVehicleDetailModal,
+    viewingVehicle,
+    setViewingVehicle,
+    originalVehicleData,
+    setOriginalVehicleData,
+    vehicleModalProjectView,
+    setVehicleModalProjectView,
+    vehicleModalEditMode,
+    setVehicleModalEditMode,
+    isModalClosing,
+    setIsModalClosing,
+    handleCloseModal,
+    isTransitioningModals,
+    savedScrollPosition,
+    confirmDialog,
+    setConfirmDialog
+  } = useModals();
+
+  // Drag and drop hook
+  const {
+    draggedProject,
+    setDraggedProject,
+    dragOverProject,
+    setDragOverProject,
+    dragOverProjectArchiveZone,
+    setDragOverProjectArchiveZone,
+    handleDragStart,
+    handleDragOver,
+    handleDragLeave,
+    handleDrop,
+    handleDragEnd,
+    handleProjectArchiveZoneDrop,
+    draggedVehicle,
+    setDraggedVehicle,
+    dragOverVehicle,
+    setDragOverVehicle,
+    dragOverArchiveZone,
+    setDragOverArchiveZone,
+    handleVehicleDragStart,
+    handleVehicleDragOver,
+    handleVehicleDragLeave,
+    handleVehicleDrop,
+    handleVehicleDragEnd,
+    handleArchiveZoneDrop
+  } = useDragDrop({
+    projects,
+    setProjects,
+    updateProjectsOrder,
+    updateProject,
+    loadProjects,
+    vehicles,
+    setVehicles,
+    updateVehiclesOrder,
+    updateVehicle,
+    loadVehicles,
+    setConfirmDialog
+  });
+
+  // ========================================
+  // LOCAL COMPONENT STATE
+  // ========================================
+
+  const [activeTab, setActiveTab] = useState('vehicles'); // 'parts', 'projects', or 'vehicles'
+  const [previousTab, setPreviousTab] = useState('vehicles');
 
   // Refs for tab underline animation
   const tabRefs = useRef({});
@@ -98,107 +311,72 @@ const Shako = () => {
     setIsTouchDevice('ontouchstart' in window || navigator.maxTouchPoints > 0);
   }, []);
 
-  // Vehicle modal states
-  const [showAddVehicleModal, setShowAddVehicleModal] = useState(false);
-  const [showVehicleDetailModal, setShowVehicleDetailModal] = useState(false);
-  const [viewingVehicle, setViewingVehicle] = useState(null);
-  const [originalVehicleData, setOriginalVehicleData] = useState(null); // Track original data for unsaved changes detection
-  const [vehicleModalProjectView, setVehicleModalProjectView] = useState(null); // Track if viewing project within vehicle modal
-  const [vehicleModalEditMode, setVehicleModalEditMode] = useState(null); // 'vehicle' or 'project' - track if editing within modal
-  const [newVehicle, setNewVehicle] = useState({
-    nickname: '',
-    name: '',
-    make: '',
-    year: '',
-    license_plate: '',
-    vin: '',
-    insurance_policy: '',
-    fuel_filter: '',
-    air_filter: '',
-    oil_filter: '',
-    oil_type: '',
-    oil_capacity: '',
-    oil_brand: '',
-    drain_plug: '',
-    battery: '',
-    image_url: '',
-    color: '#3B82F6' // Default blue color
-  });
-  const [vehicleImageFile, setVehicleImageFile] = useState(null);
-  const [vehicleImagePreview, setVehicleImagePreview] = useState(null);
-  const [uploadingImage, setUploadingImage] = useState(false);
-  const [isDraggingImage, setIsDraggingImage] = useState(false);
-
-  // Confirmation dialog state for main component
-  const [confirmDialog, setConfirmDialog] = useState({
-    isOpen: false,
-    title: '',
-    message: '',
-    onConfirm: () => {}
-  });
-
-  // Filter and sort states
-  const [projectVehicleFilter, setProjectVehicleFilter] = useState('all'); // 'all' or vehicle ID
-  const [isFilteringProjects, setIsFilteringProjects] = useState(false);
-  const [showVehicleFilterDropdown, setShowVehicleFilterDropdown] = useState(false);
-  const [partsDateFilter, setPartsDateFilter] = useState('all'); // 'all', '1week', '2weeks', '1month'
-  const [isFilteringParts, setIsFilteringParts] = useState(false);
-  const [showDateFilterDropdown, setShowDateFilterDropdown] = useState(false);
-  const [isArchiveCollapsed, setIsArchiveCollapsed] = useState(true);
-  const [isProjectArchiveCollapsed, setIsProjectArchiveCollapsed] = useState(true);
-  const [archiveStatesInitialized, setArchiveStatesInitialized] = useState(false);
-
   // Refs for archive sections to enable auto-scroll
   const projectArchiveRef = useRef(null);
   const vehicleArchiveRef = useRef(null);
 
-  // Initialize archive collapsed states from localStorage after mount to avoid hydration mismatch
-  useEffect(() => {
-    if (typeof window !== 'undefined') {
-      const savedArchiveCollapsed = localStorage.getItem('archiveCollapsed');
-      if (savedArchiveCollapsed !== null) {
-        setIsArchiveCollapsed(JSON.parse(savedArchiveCollapsed));
-      }
+  // ========================================
+  // WRAPPER FUNCTIONS FOR HOOKS
+  // ========================================
 
-      const savedProjectArchiveCollapsed = localStorage.getItem('projectArchiveCollapsed');
-      if (savedProjectArchiveCollapsed !== null) {
-        setIsProjectArchiveCollapsed(JSON.parse(savedProjectArchiveCollapsed));
-      }
+  // Wrapper functions that provide state setters to hook functions
+  const handleAddNewPart = () => addNewPart(setShowAddModal);
 
-      setArchiveStatesInitialized(true);
-    }
-  }, []);
+  const handleSaveTrackingInfo = () => saveTrackingInfo(
+    trackingModalPartId,
+    trackingInput,
+    setShowTrackingModal,
+    setTrackingModalPartId,
+    setTrackingInput
+  );
 
-  // Save archive collapsed state to localStorage
-  useEffect(() => {
-    if (typeof window !== 'undefined' && archiveStatesInitialized) {
-      localStorage.setItem('archiveCollapsed', JSON.stringify(isArchiveCollapsed));
-    }
-  }, [isArchiveCollapsed, archiveStatesInitialized]);
+  const handleSkipTrackingInfo = () => skipTrackingInfo(
+    trackingModalPartId,
+    setShowTrackingModal,
+    setTrackingModalPartId,
+    setTrackingInput
+  );
 
-  // Save project archive collapsed state to localStorage
-  useEffect(() => {
-    if (typeof window !== 'undefined' && archiveStatesInitialized) {
-      localStorage.setItem('projectArchiveCollapsed', JSON.stringify(isProjectArchiveCollapsed));
-    }
-  }, [isProjectArchiveCollapsed, archiveStatesInitialized]);
+  const handleSaveEditedPart = () => saveEditedPart(
+    editingPart,
+    setEditingPart,
+    setPartModalView
+  );
 
-  // Initialize parts date filter from localStorage
-  useEffect(() => {
-    if (typeof window !== 'undefined') {
-      const savedPartsDateFilter = localStorage.getItem('partsDateFilter');
-      if (savedPartsDateFilter !== null) {
-        setPartsDateFilter(savedPartsDateFilter);
-      }
-    }
-  }, []);
+  const handleRenameVendor = (oldName, newName) => renameVendor(
+    oldName,
+    newName,
+    editingPart,
+    setEditingPart,
+    setEditingVendor
+  );
 
-  // Save parts date filter to localStorage
-  useEffect(() => {
-    if (typeof window !== 'undefined' && archiveStatesInitialized) {
-      localStorage.setItem('partsDateFilter', partsDateFilter);
-    }
-  }, [partsDateFilter, archiveStatesInitialized]);
+  const handleDeleteVendor = (vendorName) => deleteVendor(
+    vendorName,
+    editingPart,
+    setEditingPart
+  );
+
+  const handleUpdatePartStatus = (partId, newStatus) => updatePartStatus(
+    partId,
+    newStatus,
+    setTrackingModalPartId,
+    setShowTrackingModal,
+    setOpenDropdown
+  );
+
+  // Helper to get vehicle name/nickname
+  const getVehicleProjects = (vehicleId) => {
+    return projects.filter(project => project.vehicle_id === vehicleId);
+  };
+
+  const getVehicleProjectCount = (vehicleId) => {
+    return projects.filter(project => project.vehicle_id === vehicleId).length;
+  };
+
+  // ========================================
+  // EFFECTS
+  // ========================================
 
   // Load parts, projects, and vendors from Supabase on mount
   useEffect(() => {
@@ -251,1242 +429,6 @@ const Shako = () => {
     return () => clearTimeout(timer);
   }, []);
 
-  const loadParts = async () => {
-    try {
-      setLoading(true);
-      const { data, error } = await supabase
-        .from('parts')
-        .select('*')
-        .order('id', { ascending: true });
-
-      if (error) throw error;
-
-      if (data && data.length > 0) {
-        // Convert database format to app format
-        const formattedParts = data.map(part => ({
-          id: part.id,
-          delivered: part.delivered,
-          shipped: part.shipped,
-          purchased: part.purchased,
-          part: part.part,
-          partNumber: part.part_number || '',
-          vendor: part.vendor || '',
-          price: parseFloat(part.price) || 0,
-          shipping: parseFloat(part.shipping) || 0,
-          duties: parseFloat(part.duties) || 0,
-          total: parseFloat(part.total) || 0,
-          tracking: part.tracking || '',
-          projectId: part.project_id || null,
-          createdAt: part.created_at || null
-        }));
-        setParts(formattedParts);
-      }
-    } catch (error) {
-      alert('Error loading parts from database');
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  // Load projects from Supabase
-  const loadProjects = async () => {
-    try {
-      const { data, error } = await supabase
-        .from('projects')
-        .select('*')
-        .order('display_order', { ascending: true, nullsFirst: false })
-        .order('id', { ascending: true });
-
-      if (error) throw error;
-
-      if (data && data.length > 0) {
-        setProjects(data);
-      }
-    } catch (error) {
-      // Error loading projects
-    }
-  };
-
-  // Load vendors from Supabase
-  const loadVendors = async () => {
-    try {
-      const { data, error } = await supabase
-        .from('vendors')
-        .select('*')
-        .order('name', { ascending: true });
-
-      if (error) throw error;
-
-      if (data && data.length > 0) {
-        setVendors(data);
-        // Convert to vendorColors object for easy lookup
-        const colorsMap = {};
-        data.forEach(vendor => {
-          colorsMap[vendor.name] = vendor.color;
-        });
-        setVendorColors(colorsMap);
-      }
-    } catch (error) {
-      // Error loading vendors
-    }
-  };
-
-  // Update vendor color in database
-  const updateVendorColor = async (vendorName, color) => {
-    try {
-      // Use upsert to insert or update in one operation
-      const { error } = await supabase
-        .from('vendors')
-        .upsert(
-          { name: vendorName, color },
-          { onConflict: 'name' }
-        );
-
-      if (error) throw error;
-
-      // Update local state
-      setVendorColors(prev => ({
-        ...prev,
-        [vendorName]: color
-      }));
-      await loadVendors();
-    } catch (error) {
-      alert('Error saving vendor color');
-    }
-  };
-
-  const addProject = async (projectData) => {
-    try {
-      const { data, error } = await supabase
-        .from('projects')
-        .insert([{
-          name: projectData.name,
-          description: projectData.description,
-          status: projectData.status || 'planning',
-          budget: parseFloat(projectData.budget) || 0,
-          spent: 0,
-          priority: projectData.priority || 'medium',
-          vehicle_id: projectData.vehicle_id || null,
-          todos: []
-        }])
-        .select();
-
-      if (error) throw error;
-      await loadProjects();
-    } catch (error) {
-      alert('Error adding project');
-    }
-  };
-
-  // Helper function to calculate project status based on todos
-  const calculateProjectStatus = (todos, currentStatus) => {
-    // If status is manually set to "on_hold", keep it
-    if (currentStatus === 'on_hold') return 'on_hold';
-    if (!todos || todos.length === 0) {
-      return 'planning';
-    }
-    const completedCount = todos.filter(todo => todo.completed).length;
-    if (completedCount === 0) {
-      return 'planning';
-    } else if (completedCount === todos.length) {
-      return 'completed';
-    } else {
-      return 'in_progress';
-    }
-  };
-
-  const updateProject = async (projectId, updates) => {
-    try {
-      // Auto-calculate status based on todos unless it's being set to on_hold
-      if (updates.todos && updates.status !== 'on_hold') {
-        updates.status = calculateProjectStatus(updates.todos, updates.status);
-      }
-      const { error } = await supabase
-        .from('projects')
-        .update(updates)
-        .eq('id', projectId);
-
-      if (error) throw error;
-      await loadProjects();
-    } catch (error) {
-      alert('Error updating project');
-    }
-  };
-
-  const deleteProject = async (projectId) => {
-    try {
-      const { error } = await supabase
-        .from('projects')
-        .delete()
-        .eq('id', projectId);
-
-      if (error) throw error;
-      await loadProjects();
-    } catch (error) {
-      alert('Error deleting project');
-    }
-  };
-
-  // Vehicle CRUD functions
-  const loadVehicles = async () => {
-    try {
-      const { data, error } = await supabase
-        .from('vehicles')
-        .select('*')
-        .order('display_order', { ascending: true })
-        .order('id', { ascending: true });
-
-      if (error) throw error;
-      if (data) {
-        // Sort so archived vehicles are always at the end
-        const sorted = data.sort((a, b) => {
-          if (a.archived === b.archived) {
-            // If both have same archived status, sort by display_order
-            return (a.display_order || 0) - (b.display_order || 0);
-          }
-          // Put archived vehicles at the end
-          return a.archived ? 1 : -1;
-        });
-        setVehicles(sorted);
-      }
-    } catch (error) {
-      // Error loading vehicles
-    }
-  };
-
-  const addVehicle = async (vehicleData) => {
-    try {
-      const { data, error } = await supabase
-        .from('vehicles')
-        .insert([vehicleData])
-        .select();
-
-      if (error) throw error;
-      await loadVehicles();
-    } catch (error) {
-      alert('Error adding vehicle');
-    }
-  };
-
-  const updateVehicle = async (vehicleId, updates) => {
-    try {
-      const { error } = await supabase
-        .from('vehicles')
-        .update(updates)
-        .eq('id', vehicleId);
-
-      if (error) throw error;
-      await loadVehicles();
-    } catch (error) {
-      alert('Error updating vehicle');
-    }
-  };
-
-  const deleteVehicle = async (vehicleId) => {
-    const projectsForVehicle = projects.filter(p => p.vehicle_id === vehicleId);
-    try {
-      const { error } = await supabase
-        .from('vehicles')
-        .delete()
-        .eq('id', vehicleId);
-
-      if (error) throw error;
-      await loadVehicles();
-      await loadProjects(); // Reload projects to update vehicle_id references
-    } catch (error) {
-      alert('Error deleting vehicle');
-    }
-  };
-
-  // Helper functions for vehicle-project relationships
-  const getVehicleProjects = (vehicleId) => {
-    return projects.filter(project => project.vehicle_id === vehicleId);
-  };
-
-  const getVehicleProjectCount = (vehicleId) => {
-    return projects.filter(project => project.vehicle_id === vehicleId).length;
-  };
-
-  // Handle modal closing with exit animation
-  const handleCloseModal = (closeCallback) => {
-    setIsModalClosing(true);
-    setTimeout(() => {
-      closeCallback();
-      setIsModalClosing(false);
-    }, 200); // Duration matches the exit animation
-  };
-
-  const uploadVehicleImage = async (file) => {
-    try {
-      setUploadingImage(true);
-      // Create a unique filename with timestamp
-      const fileExt = file.name.split('.').pop();
-      const fileName = `${Math.random().toString(36).substring(2)}-${Date.now()}.${fileExt}`;
-      const filePath = `vehicle-images/${fileName}`;
-
-      // Upload to Supabase Storage
-      const { data, error } = await supabase.storage
-        .from('vehicles')
-        .upload(filePath, file, {
-          cacheControl: '3600',
-          upsert: false
-        });
-
-      if (error) throw error;
-
-      // Get public URL
-      const { data: { publicUrl } } = supabase.storage
-        .from('vehicles')
-        .getPublicUrl(filePath);
-
-      setUploadingImage(false);
-      return publicUrl;
-    } catch (error) {
-      setUploadingImage(false);
-      alert('Error uploading image. Please try again.');
-      return null;
-    }
-  };
-
-  const handleImageFileChange = (e) => {
-    const file = e.target.files[0];
-    if (file) {
-      // Validate file type
-      if (!file.type.startsWith('image/')) {
-        alert('Please select an image file');
-        return;
-      }
-      // Validate file size (max 5MB)
-      if (file.size > 5 * 1024 * 1024) {
-        alert('Image size must be less than 5MB');
-        return;
-      }
-
-      setVehicleImageFile(file);
-      // Create preview
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setVehicleImagePreview(reader.result);
-      };
-      reader.readAsDataURL(file);
-    }
-  };
-
-  const clearImageSelection = () => {
-    setVehicleImageFile(null);
-    setVehicleImagePreview(null);
-  };
-
-  // Image drag and drop handlers
-  const handleImageDragEnter = (e) => {
-    e.preventDefault();
-    e.stopPropagation();
-    setIsDraggingImage(true);
-  };
-
-  const handleImageDragLeave = (e) => {
-    e.preventDefault();
-    e.stopPropagation();
-    setIsDraggingImage(false);
-  };
-
-  const handleImageDragOver = (e) => {
-    e.preventDefault();
-    e.stopPropagation();
-  };
-
-  const handleImageDrop = (e) => {
-    e.preventDefault();
-    e.stopPropagation();
-    setIsDraggingImage(false);
-
-    const file = e.dataTransfer.files[0];
-    if (file) {
-      // Validate file type
-      if (!file.type.startsWith('image/')) {
-        alert('Please select an image file');
-        return;
-      }
-      // Validate file size (max 5MB)
-      if (file.size > 5 * 1024 * 1024) {
-        alert('Image size must be less than 5MB');
-        return;
-      }
-
-      setVehicleImageFile(file);
-      // Create preview
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setVehicleImagePreview(reader.result);
-      };
-      reader.readAsDataURL(file);
-    }
-  };
-
-  // Drag and drop handlers for projects
-  const handleDragStart = (e, project) => {
-    setDraggedProject(project);
-    e.dataTransfer.effectAllowed = 'move';
-  };
-
-  const handleDragOver = (e, project) => {
-    e.preventDefault();
-    e.dataTransfer.dropEffect = 'move';
-    if (draggedProject && draggedProject.id !== project.id) {
-      setDragOverProject(project);
-    }
-  };
-
-  const handleDragLeave = () => {
-    setDragOverProject(null);
-  };
-
-  const handleDrop = (e, targetProject) => {
-    e.preventDefault();
-    if (!draggedProject || draggedProject.id === targetProject.id) {
-      setDraggedProject(null);
-      setDragOverProject(null);
-      return;
-    }
-
-    const draggedIndex = projects.findIndex(p => p.id === draggedProject.id);
-    const targetIndex = projects.findIndex(p => p.id === targetProject.id);
-
-    const newProjects = [...projects];
-    const [removed] = newProjects.splice(draggedIndex, 1);
-    newProjects.splice(targetIndex, 0, removed);
-
-    setProjects(newProjects);
-    setDraggedProject(null);
-    setDragOverProject(null);
-
-    // Update display_order in database
-    updateProjectsOrder(newProjects);
-  };
-
-  const handleDragEnd = () => {
-    setDraggedProject(null);
-    setDragOverProject(null);
-  };
-
-  // Drag and drop handlers for vehicles
-  const handleVehicleDragStart = (e, vehicle) => {
-    setDraggedVehicle(vehicle);
-    e.dataTransfer.effectAllowed = 'move';
-  };
-
-  const handleVehicleDragOver = (e, vehicle) => {
-    e.preventDefault();
-    e.dataTransfer.dropEffect = 'move';
-    if (draggedVehicle && draggedVehicle.id !== vehicle.id && dragOverVehicle?.id !== vehicle.id) {
-      setDragOverVehicle(vehicle);
-    }
-  };
-
-  const handleVehicleDragLeave = () => {
-    setDragOverVehicle(null);
-  };
-
-  const handleVehicleDrop = (e, targetVehicle) => {
-    e.preventDefault();
-    if (!draggedVehicle || draggedVehicle.id === targetVehicle.id) {
-      setDraggedVehicle(null);
-      setDragOverVehicle(null);
-      return;
-    }
-
-    // Check if the drag would change archive status
-    const draggedIsArchived = draggedVehicle.archived || false;
-    const targetIsArchived = targetVehicle.archived || false;
-
-    if (draggedIsArchived !== targetIsArchived) {
-      // Show confirmation dialog for archive/unarchive
-      setConfirmDialog({
-        isOpen: true,
-        title: draggedIsArchived ? 'Unarchive Vehicle' : 'Archive Vehicle',
-        message: draggedIsArchived 
-          ? `Are you sure you want to unarchive "${draggedVehicle.nickname || draggedVehicle.name}"?` 
-          : `Are you sure you want to archive "${draggedVehicle.nickname || draggedVehicle.name}"? It will still be visible but with limited information.`,
-        confirmText: draggedIsArchived ? 'Unarchive' : 'Archive',
-        isDangerous: false,
-        onConfirm: async () => {
-          // Update the vehicle's archived status
-          const updates = { archived: !draggedIsArchived };
-          if (!draggedIsArchived) {
-            // Archiving: set display_order to max + 1
-            const maxOrder = Math.max(...vehicles.map(v => v.display_order || 0), 0);
-            updates.display_order = maxOrder + 1;
-          }
-          await updateVehicle(draggedVehicle.id, updates);
-          
-          // Reload vehicles to reflect the change
-          await loadVehicles();
-          
-          setDraggedVehicle(null);
-          setDragOverVehicle(null);
-        }
-      });
-      
-      // Clear drag state but don't reorder
-      setDraggedVehicle(null);
-      setDragOverVehicle(null);
-      return;
-    }
-
-    // Normal reordering within same section
-    const draggedIndex = vehicles.findIndex(v => v.id === draggedVehicle.id);
-    const targetIndex = vehicles.findIndex(v => v.id === targetVehicle.id);
-
-    const newVehicles = [...vehicles];
-    const [removed] = newVehicles.splice(draggedIndex, 1);
-    newVehicles.splice(targetIndex, 0, removed);
-
-    setVehicles(newVehicles);
-    setDraggedVehicle(null);
-    setDragOverVehicle(null);
-
-    // Update display_order in database
-    updateVehiclesOrder(newVehicles);
-  };
-
-  const handleVehicleDragEnd = () => {
-    setDraggedVehicle(null);
-    setDragOverVehicle(null);
-    setDragOverArchiveZone(false);
-  };
-
-  const handleArchiveZoneDrop = (shouldArchive) => {
-    if (!draggedVehicle) return;
-
-    const draggedIsArchived = draggedVehicle.archived || false;
-    
-    // If already in the correct state, do nothing
-    if (draggedIsArchived === shouldArchive) {
-      setDraggedVehicle(null);
-      setDragOverArchiveZone(false);
-      return;
-    }
-
-    // Show confirmation dialog
-    setConfirmDialog({
-      isOpen: true,
-      title: shouldArchive ? 'Archive Vehicle' : 'Unarchive Vehicle',
-      message: shouldArchive 
-        ? `Are you sure you want to archive "${draggedVehicle.nickname || draggedVehicle.name}"? It will still be visible but with limited information.`
-        : `Are you sure you want to unarchive "${draggedVehicle.nickname || draggedVehicle.name}"?`,
-      confirmText: shouldArchive ? 'Archive' : 'Unarchive',
-      isDangerous: false,
-      onConfirm: async () => {
-        const updates = { archived: shouldArchive };
-        if (shouldArchive) {
-          // Archiving: set display_order to max + 1
-          const maxOrder = Math.max(...vehicles.map(v => v.display_order || 0), 0);
-          updates.display_order = maxOrder + 1;
-        }
-        await updateVehicle(draggedVehicle.id, updates);
-        await loadVehicles();
-      }
-    });
-
-    setDraggedVehicle(null);
-    setDragOverArchiveZone(false);
-  };
-
-  const handleProjectArchiveZoneDrop = (shouldArchive) => {
-    if (!draggedProject) return;
-
-    const draggedIsArchived = draggedProject.archived || false;
-
-    // If already in the correct state, do nothing
-    if (draggedIsArchived === shouldArchive) {
-      setDraggedProject(null);
-      setDragOverProjectArchiveZone(false);
-      return;
-    }
-
-    // Show confirmation dialog
-    setConfirmDialog({
-      isOpen: true,
-      title: shouldArchive ? 'Archive Project' : 'Unarchive Project',
-      message: shouldArchive
-        ? `Are you sure you want to archive "${draggedProject.name}"? It will still be visible but with limited information.`
-        : `Are you sure you want to unarchive "${draggedProject.name}"?`,
-      confirmText: shouldArchive ? 'Archive' : 'Unarchive',
-      isDangerous: false,
-      onConfirm: async () => {
-        await updateProject(draggedProject.id, { archived: shouldArchive });
-        await loadProjects();
-      }
-    });
-
-    setDraggedProject(null);
-    setDragOverProjectArchiveZone(false);
-  };
-
-  // Tab change handler to track animation direction
-  const handleTabChange = (newTab) => {
-    setPreviousTab(activeTab);
-    setActiveTab(newTab);
-  };
-
-  // Swipe gesture handlers for tab navigation using native events
-  const minSwipeDistance = 50;
-  const tabs = ['vehicles', 'projects', 'parts'];
-
-  useEffect(() => {
-    // Small delay to ensure DOM is ready
-    const timeoutId = setTimeout(() => {
-      const element = tabContentRef.current;
-      if (!element) return;
-
-      let touchStartPos = null;
-      let touchEndPos = null;
-
-      const handleTouchStart = (e) => {
-        touchEndPos = null;
-        touchStartPos = {
-          x: e.touches[0].clientX,
-          y: e.touches[0].clientY
-        };
-      };
-
-      const handleTouchMove = (e) => {
-        if (!touchStartPos) return;
-
-        const currentX = e.touches[0].clientX;
-        const currentY = e.touches[0].clientY;
-
-        const diffX = Math.abs(currentX - touchStartPos.x);
-        const diffY = Math.abs(currentY - touchStartPos.y);
-
-        // If horizontal movement is greater than vertical, prevent scrolling
-        if (diffX > diffY && diffX > 10) {
-          e.preventDefault();
-        }
-
-        touchEndPos = {
-          x: currentX,
-          y: currentY
-        };
-      };
-
-      const handleTouchEnd = () => {
-        if (!touchStartPos || !touchEndPos) return;
-
-        const distance = touchStartPos.x - touchEndPos.x;
-        const isLeftSwipe = distance > minSwipeDistance;
-        const isRightSwipe = distance < -minSwipeDistance;
-
-        if (isLeftSwipe || isRightSwipe) {
-          const currentIndex = tabs.indexOf(activeTab);
-
-          if (isLeftSwipe && currentIndex < tabs.length - 1) {
-            handleTabChange(tabs[currentIndex + 1]);
-          } else if (isRightSwipe && currentIndex > 0) {
-            handleTabChange(tabs[currentIndex - 1]);
-          }
-        }
-
-        touchStartPos = null;
-        touchEndPos = null;
-      };
-
-      // Add event listeners with passive: false to allow preventDefault
-      element.addEventListener('touchstart', handleTouchStart, { passive: true });
-      element.addEventListener('touchmove', handleTouchMove, { passive: false });
-      element.addEventListener('touchend', handleTouchEnd, { passive: true });
-
-      // Store cleanup function
-      return () => {
-        element.removeEventListener('touchstart', handleTouchStart);
-        element.removeEventListener('touchmove', handleTouchMove);
-        element.removeEventListener('touchend', handleTouchEnd);
-      };
-    }, 0);
-
-    return () => {
-      clearTimeout(timeoutId);
-    };
-  }, [activeTab, loading]);
-
-  // Reset scroll position to top when switching tabs
-  useEffect(() => {
-    window.scrollTo({ top: 0, behavior: 'instant' });
-  }, [activeTab]);
-
-  const updateProjectsOrder = async (orderedProjects) => {
-    try {
-      // Update each project with its new display order
-      const updates = orderedProjects.map((project, index) => ({
-        id: project.id,
-        display_order: index
-      }));
-
-      for (const update of updates) {
-        await supabase
-          .from('projects')
-          .update({ display_order: update.display_order })
-          .eq('id', update.id);
-      }
-    } catch (error) {
-      // Error updating project order
-    }
-  };
-
-  const updateVehiclesOrder = async (orderedVehicles) => {
-    try {
-      // Update each vehicle with its new display order
-      const updates = orderedVehicles.map((vehicle, index) => ({
-        id: vehicle.id,
-        display_order: index
-      }));
-
-      for (const update of updates) {
-        await supabase
-          .from('vehicles')
-          .update({ display_order: update.display_order })
-          .eq('id', update.id);
-      }
-    } catch (error) {
-      // Error updating vehicle order
-    }
-  };
-
-  const [searchTerm, setSearchTerm] = useState('');
-  const [deliveredFilter, setDeliveredFilter] = useState('all'); // 'all', 'only', 'hide'
-  const [statusFilter, setStatusFilter] = useState('all');
-  const [vendorFilter, setVendorFilter] = useState('all');
-  const [sortBy, setSortBy] = useState('status');
-  const [sortOrder, setSortOrder] = useState('asc');
-  const [isSorting, setIsSorting] = useState(false);
-  const [isStatusFiltering, setIsStatusFiltering] = useState(false);
-  const [openDropdown, setOpenDropdown] = useState(null);
-  const [showAddModal, setShowAddModal] = useState(false);
-  const [showTrackingModal, setShowTrackingModal] = useState(false);
-  const [showPartDetailModal, setShowPartDetailModal] = useState(false);
-  const [viewingPart, setViewingPart] = useState(null);
-  const [partDetailView, setPartDetailView] = useState('detail'); // 'detail', 'edit', or 'manage-vendors'
-  const [trackingModalPartId, setTrackingModalPartId] = useState(null);
-  const [trackingInput, setTrackingInput] = useState('');
-  const [editingPart, setEditingPart] = useState(null);
-  const [originalPartData, setOriginalPartData] = useState(null); // Track original data for unsaved changes detection
-  const [isModalClosing, setIsModalClosing] = useState(false);
-  const [partModalView, setPartModalView] = useState(null); // null = edit part, 'manage-vendors' = manage vendors view
-  const [editingVendor, setEditingVendor] = useState(null); // { oldName: string, newName: string }
-  // Project-related state
-  const [showAddProjectModal, setShowAddProjectModal] = useState(false);
-  const [showProjectDetailModal, setShowProjectDetailModal] = useState(false);
-  const [viewingProject, setViewingProject] = useState(null);
-  const [originalProjectData, setOriginalProjectData] = useState(null); // Track original data for unsaved changes detection
-  const [projectModalEditMode, setProjectModalEditMode] = useState(false); // Track if editing within project detail modal
-  const [editingTodoId, setEditingTodoId] = useState(null); // Track which todo is being edited
-  const [editingTodoText, setEditingTodoText] = useState(''); // Temp text while editing
-  const [newTodoText, setNewTodoText] = useState(''); // Text for new todo input
-  const [newProject, setNewProject] = useState({
-    name: '',
-    description: '',
-    budget: '',
-    priority: 'not_set',
-    status: 'planning',
-    vehicle_id: null
-  });
-  const [showAddProjectVehicleDropdown, setShowAddProjectVehicleDropdown] = useState(false);
-  const [darkMode, setDarkMode] = useState(false); // Always start with false to match SSR
-  const [darkModeInitialized, setDarkModeInitialized] = useState(false);
-  const [mounted, setMounted] = useState(false);
-
-  // Prevent SSR hydration mismatch by not rendering until mounted
-  useEffect(() => {
-    setMounted(true);
-  }, []);
-
-  // Initialize dark mode after mount to avoid hydration mismatch
-  useEffect(() => {
-    if (typeof window !== 'undefined') {
-      const saved = localStorage.getItem('darkMode');
-      if (saved !== null) {
-        setDarkMode(JSON.parse(saved));
-      } else {
-        setDarkMode(window.matchMedia('(prefers-color-scheme: dark)').matches);
-      }
-      setDarkModeInitialized(true);
-    }
-  }, []);
-
-  // Save dark mode preference to localStorage
-  useEffect(() => {
-    if (typeof window !== 'undefined' && darkModeInitialized) {
-      localStorage.setItem('darkMode', JSON.stringify(darkMode));
-    }
-  }, [darkMode, darkModeInitialized]);
-
-  // Apply dark scrollbar styles to both html and body for cross-browser compatibility
-  useEffect(() => {
-    if (typeof document !== 'undefined') {
-      // Detect if Safari (not Chrome)
-      const isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
-      if (darkMode) {
-        document.documentElement.classList.add('dark-scrollbar');
-        document.body.classList.add('dark-scrollbar');
-        // Only set color-scheme for Safari
-        if (isSafari) {
-          document.documentElement.style.colorScheme = 'dark';
-        }
-      } else {
-        document.documentElement.classList.remove('dark-scrollbar');
-        document.body.classList.remove('dark-scrollbar');
-        // Only set color-scheme for Safari
-        if (isSafari) {
-          document.documentElement.style.colorScheme = 'light';
-        }
-      }
-    }
-  }, [darkMode]);
-
-  // Scroll to top when switching between vehicle and project view in modal
-  useEffect(() => {
-    if (showVehicleDetailModal) {
-      // Small delay to ensure DOM has updated
-      setTimeout(() => {
-        // Find all scrollable containers in the modal and scroll to top
-        const scrollContainers = document.querySelectorAll('.max-h-\\[calc\\(90vh-180px\\)\\]');
-        scrollContainers.forEach(container => {
-          container.scrollTop = 0;
-        });
-      }, 50);
-    }
-  }, [vehicleModalProjectView, showVehicleDetailModal]);
-
-  // Lock body scroll when any modal is open
-  useEffect(() => {
-    const isAnyModalOpen = showAddModal || showTrackingModal || 
-                          showAddProjectModal || showProjectDetailModal ||
-                          showAddVehicleModal || showVehicleDetailModal ||
-                          showPartDetailModal;
-    if (isAnyModalOpen) {
-      // Calculate scrollbar width before locking
-      const scrollbarWidth = window.innerWidth - document.documentElement.clientWidth;
-      
-      // Store current scroll position when opening a modal
-      if (savedScrollPosition.current === 0) {
-        savedScrollPosition.current = window.scrollY;
-      }
-      
-      document.body.style.position = 'fixed';
-      document.body.style.top = `-${savedScrollPosition.current}px`;
-      document.body.style.width = '100%';
-      document.body.style.paddingRight = `${scrollbarWidth}px`;
-    } else {
-      // Remove fixed positioning but maintain scroll position
-      document.body.style.position = '';
-      document.body.style.top = '';
-      document.body.style.width = '';
-      document.body.style.paddingRight = '';
-      // Restore scroll position
-      if (savedScrollPosition.current > 0) {
-        window.scrollTo(0, savedScrollPosition.current);
-        savedScrollPosition.current = 0; // Reset for next modal
-      }
-    }
-    // Cleanup on unmount
-    return () => {
-      document.body.style.position = '';
-      document.body.style.top = '';
-      document.body.style.width = '';
-      document.body.style.paddingRight = '';
-    };
-  }, [showAddModal, showTrackingModal, showAddProjectModal, 
-      showProjectDetailModal, showAddVehicleModal, showVehicleDetailModal, showPartDetailModal]);
-
-  const [newPart, setNewPart] = useState({
-    part: '',
-    partNumber: '',
-    vendor: '',
-    price: '',
-    shipping: '',
-    duties: '',
-    tracking: '',
-    status: 'pending',
-    projectId: null
-  });
-
-  // Check if there are unsaved changes in vehicle edit mode
-  const hasUnsavedVehicleChanges = () => {
-    if (!vehicleModalEditMode || vehicleModalEditMode !== 'vehicle' || !originalVehicleData || !viewingVehicle) {
-      return false;
-    }
-    // Check if any field has changed
-    const fieldsToCheck = [
-      'nickname', 'name', 'year', 'license_plate', 'vin', 'insurance_policy',
-      'fuel_filter', 'air_filter', 'oil_filter', 'oil_type', 'oil_capacity',
-      'oil_brand', 'drain_plug', 'battery', 'color'
-    ];
-    for (const field of fieldsToCheck) {
-      if (viewingVehicle[field] !== originalVehicleData[field]) {
-        return true;
-      }
-    }
-    // Check if a new image has been selected
-    if (vehicleImageFile !== null) {
-      return true;
-    }
-    return false;
-  };
-
-  const hasUnsavedProjectChanges = () => {
-    if (!projectModalEditMode || !originalProjectData || !viewingProject) {
-      return false;
-    }
-    // Check if any field has changed
-    const fieldsToCheck = [
-      'name', 'description', 'budget', 'priority', 
-      'vehicle_id'
-    ];
-    for (const field of fieldsToCheck) {
-      if (viewingProject[field] !== originalProjectData[field]) {
-        return true;
-      }
-    }
-    return false;
-  };
-
-  const hasUnsavedPartChanges = () => {
-    if (!originalPartData || !editingPart) {
-      return false;
-    }
-    // Check if any field has changed
-    const fieldsToCheck = [
-      'part', 'partNumber', 'vendor', 'price', 'shipping', 'duties', 
-      'tracking', 'status', 'projectId'
-    ];
-    for (const field of fieldsToCheck) {
-      if (String(editingPart[field] || '') !== String(originalPartData[field] || '')) {
-        return true;
-      }
-    }
-    return false;
-  };
-
-  const updatePartStatus = async (partId, newStatus) => {
-    // If changing to shipped, show tracking modal
-    if (newStatus === 'shipped') {
-      setTrackingModalPartId(partId);
-      setShowTrackingModal(true);
-      setOpenDropdown(null);
-      return;
-    }
-    try {
-      const statusMap = {
-        delivered: { delivered: true, shipped: true, purchased: true },
-        purchased: { delivered: false, shipped: false, purchased: true },
-        pending: { delivered: false, shipped: false, purchased: false }
-      };
-      const updates = statusMap[newStatus];
-      // Update in database
-      const { error } = await supabase
-        .from('parts')
-        .update(updates)
-        .eq('id', partId);
-      if (error) throw error;
-      // Update local state
-      setParts(prevParts => prevParts.map(part => {
-        if (part.id === partId) {
-          return { ...part, ...updates };
-        }
-        return part;
-      }));
-      setOpenDropdown(null);
-    } catch (error) {
-      alert('Error updating part status. Please try again.');
-    }
-  };
-
-  const saveTrackingInfo = async () => {
-    try {
-      // Update in database
-      const { error } = await supabase
-        .from('parts')
-        .update({
-          delivered: false,
-          shipped: true,
-          purchased: true,
-          tracking: trackingInput
-        })
-        .eq('id', trackingModalPartId);
-      if (error) throw error;
-      // Update local state
-      setParts(prevParts => prevParts.map(part => {
-        if (part.id === trackingModalPartId) {
-          return { 
-            ...part, 
-            delivered: false, 
-            shipped: true, 
-            purchased: true,
-            tracking: trackingInput 
-          };
-        }
-        return part;
-      }));
-      setShowTrackingModal(false);
-      setTrackingModalPartId(null);
-      setTrackingInput('');
-    } catch (error) {
-      alert('Error saving tracking info. Please try again.');
-    }
-  };
-
-  const skipTrackingInfo = async () => {
-    try {
-      // Update in database
-      const { error } = await supabase
-        .from('parts')
-        .update({
-          delivered: false,
-          shipped: true,
-          purchased: true
-        })
-        .eq('id', trackingModalPartId);
-      if (error) throw error;
-      // Update local state
-      setParts(prevParts => prevParts.map(part => {
-        if (part.id === trackingModalPartId) {
-          return { 
-            ...part, 
-            delivered: false, 
-            shipped: true, 
-            purchased: true
-          };
-        }
-        return part;
-      }));
-      setShowTrackingModal(false);
-      setTrackingModalPartId(null);
-      setTrackingInput('');
-    } catch (error) {
-      alert('Error updating status. Please try again.');
-    }
-  };
-
-  const saveEditedPart = async () => {
-    const price = parseFloat(editingPart.price) || 0;
-    const shipping = parseFloat(editingPart.shipping) || 0;
-    const duties = parseFloat(editingPart.duties) || 0;
-    const total = price + shipping + duties;
-    const statusMap = {
-      delivered: { delivered: true, shipped: true, purchased: true },
-      shipped: { delivered: false, shipped: true, purchased: true },
-      purchased: { delivered: false, shipped: false, purchased: true },
-      pending: { delivered: false, shipped: false, purchased: false }
-    };
-    
-    try {
-      // Update in database
-      const { error } = await supabase
-        .from('parts')
-        .update({
-          ...statusMap[editingPart.status],
-          part: editingPart.part,
-          part_number: editingPart.partNumber,
-          vendor: editingPart.vendor,
-          price,
-          shipping,
-          duties,
-          total,
-          tracking: editingPart.tracking,
-          project_id: editingPart.projectId || null
-        })
-        .eq('id', editingPart.id);
-      if (error) throw error;
-      // Update local state
-      setParts(prevParts => prevParts.map(part => {
-        if (part.id === editingPart.id) {
-          return {
-            ...part,
-            ...statusMap[editingPart.status],
-            part: editingPart.part,
-            partNumber: editingPart.partNumber,
-            vendor: editingPart.vendor,
-            price,
-            shipping,
-            duties,
-            total,
-            tracking: editingPart.tracking,
-            projectId: editingPart.projectId || null
-          };
-        }
-        return part;
-      }));
-      setEditingPart(null);
-      setPartModalView(null);
-    } catch (error) {
-      alert('Error saving part. Please try again.');
-    }
-  };
-
-  const deletePart = async (partId) => {
-    try {
-      // Delete from database
-      const { error } = await supabase
-        .from('parts')
-        .delete()
-        .eq('id', partId);
-      if (error) throw error;
-        // Update local state
-        setParts(prevParts => prevParts.filter(part => part.id !== partId));
-      } catch (error) {
-        alert('Error deleting part. Please try again.');
-      }
-  };
-
-  // Vendor management functions
-  const renameVendor = async (oldName, newName) => {
-    if (!newName || !newName.trim()) {
-      alert('Vendor name cannot be empty');
-      return;
-    }
-
-    try {
-      const partsToUpdate = parts.filter(p => p.vendor === oldName);
-      // Update all parts in database
-      const { error } = await supabase
-        .from('parts')
-        .update({ vendor: newName.trim() })
-        .eq('vendor', oldName);
-      if (error) throw error;
-      // Update local state
-      setParts(prevParts => prevParts.map(part => 
-        part.vendor === oldName ? { ...part, vendor: newName.trim() } : part
-      ));
-      // Update editingPart if it has the old vendor
-      if (editingPart && editingPart.vendor === oldName) {
-        setEditingPart({ ...editingPart, vendor: newName.trim() });
-      }
-      setEditingVendor(null);
-    } catch (error) {
-      alert('Error renaming vendor. Please try again.');
-    }
-  };
-
-  const deleteVendor = async (vendorName) => {
-    try {
-      const partsWithVendor = parts.filter(p => p.vendor === vendorName);
-      // Update all parts in database to have empty vendor
-      const { error } = await supabase
-        .from('parts')
-        .update({ vendor: '' })
-        .eq('vendor', vendorName);
-      if (error) throw error;
-      // Update local state
-      setParts(prevParts => prevParts.map(part => 
-        part.vendor === vendorName ? { ...part, vendor: '' } : part
-      ));
-      // Update editingPart if it has this vendor
-      if (editingPart && editingPart.vendor === vendorName) {
-        setEditingPart({ ...editingPart, vendor: '' });
-      }
-    } catch (error) {
-      alert('Error deleting vendor. Please try again.');
-    }
-  };
-
-  const unlinkPartFromProject = async (partId) => {
-    try {
-      // Update in database
-      const { error } = await supabase
-        .from('parts')
-        .update({ project_id: null })
-        .eq('id', partId);
-      if (error) throw error;
-      // Update local state
-      setParts(prevParts => prevParts.map(part => 
-        part.id === partId ? { ...part, projectId: null } : part
-      ));
-    } catch (error) {
-      alert('Error unlinking part. Please try again.');
-    }
-  };
-
-  const updatePartProject = async (partId, projectId) => {
-    try {
-      // Update in database
-      const { error } = await supabase
-        .from('parts')
-        .update({ project_id: projectId || null })
-        .eq('id', partId);
-      if (error) throw error;
-      // Update local state
-      setParts(prevParts => prevParts.map(part => 
-        part.id === partId ? { ...part, projectId: projectId || null } : part
-      ));
-    } catch (error) {
-      alert('Error updating part project. Please try again.');
-    }
-  };
-
-  const addNewPart = async () => {
-    const price = parseFloat(newPart.price) || 0;
-    const shipping = parseFloat(newPart.shipping) || 0;
-    const duties = parseFloat(newPart.duties) || 0;
-    const total = price + shipping + duties;
-    const statusMap = {
-      delivered: { delivered: true, shipped: true, purchased: true },
-      shipped: { delivered: false, shipped: true, purchased: true },
-      purchased: { delivered: false, shipped: false, purchased: true },
-      pending: { delivered: false, shipped: false, purchased: false }
-    };
-    try {
-      const createdAt = new Date().toISOString();
-      // Insert into database
-      const { data, error } = await supabase
-        .from('parts')
-        .insert({
-          ...statusMap[newPart.status],
-          part: newPart.part,
-          part_number: newPart.partNumber,
-          vendor: newPart.vendor,
-          price,
-          shipping,
-          duties,
-          total,
-          tracking: newPart.tracking,
-          project_id: newPart.projectId || null,
-          created_at: createdAt
-        })
-        .select()
-        .single();
-      if (error) throw error;
-      // Add to local state with the ID from database
-      const partToAdd = {
-        id: data.id,
-        ...statusMap[newPart.status],
-        part: newPart.part,
-        partNumber: newPart.partNumber,
-        vendor: newPart.vendor,
-        price,
-        shipping,
-        duties,
-        total,
-        tracking: newPart.tracking,
-        projectId: newPart.projectId || null,
-        createdAt: createdAt
-      };
-      setParts([...parts, partToAdd]);
-      setShowAddModal(false);
-      setNewPart({
-        part: '',
-        partNumber: '',
-        vendor: '',
-        price: '',
-        shipping: '',
-        duties: '',
-        tracking: '',
-        status: 'pending',
-        projectId: null
-      });
-    } catch (error) {
-      alert('Error adding part. Please try again.');
-    }
-  };
 
   const handleSort = (field) => {
     // Trigger animation
@@ -2203,7 +1145,7 @@ const Shako = () => {
           uniqueVendors={uniqueVendors}
           isModalClosing={isModalClosing}
           handleCloseModal={handleCloseModal}
-          addNewPart={addNewPart}
+          addNewPart={handleAddNewPart}
           onClose={() => setShowAddModal(false)}
         />
 
@@ -2213,8 +1155,8 @@ const Shako = () => {
           darkMode={darkMode}
           trackingInput={trackingInput}
           setTrackingInput={setTrackingInput}
-          skipTrackingInfo={skipTrackingInfo}
-          saveTrackingInfo={saveTrackingInfo}
+          skipTrackingInfo={handleSkipTrackingInfo}
+          saveTrackingInfo={handleSaveTrackingInfo}
           onClose={() => {
             setShowTrackingModal(false);
             setTrackingModalPartId(null);
@@ -2241,11 +1183,11 @@ const Shako = () => {
           setEditingVendor={setEditingVendor}
           isModalClosing={isModalClosing}
           handleCloseModal={handleCloseModal}
-          saveEditedPart={saveEditedPart}
+          saveEditedPart={handleSaveEditedPart}
           deletePart={deletePart}
           updateVendorColor={updateVendorColor}
-          renameVendor={renameVendor}
-          deleteVendor={deleteVendor}
+          renameVendor={handleRenameVendor}
+          deleteVendor={handleDeleteVendor}
           confirmDialog={confirmDialog}
           setConfirmDialog={setConfirmDialog}
           setShowPartDetailModal={setShowPartDetailModal}
@@ -2287,7 +1229,7 @@ const Shako = () => {
             setShowAddModal={setShowAddModal}
             setShowPartDetailModal={setShowPartDetailModal}
             setViewingPart={setViewingPart}
-            updatePartStatus={updatePartStatus}
+            updatePartStatus={handleUpdatePartStatus}
             updatePartProject={updatePartProject}
             handleSort={handleSort}
             getSortIcon={getSortIcon}
