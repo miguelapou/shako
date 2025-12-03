@@ -1243,7 +1243,7 @@ const Shako = () => {
             {/* Animated underline */}
             <div
               className={`absolute bottom-0 h-0.5 transition-all duration-300 ease-out z-10 ${
-                darkMode ? 'bg-blue-400' : 'bg-blue-600'
+                darkMode ? 'bg-blue-400' : 'bg-blue-800'
               }`}
               style={{
                 left: `${underlineStyle.left}px`,
