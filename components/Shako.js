@@ -476,9 +476,11 @@ const Shako = () => {
 
       let touchStartPos = null;
       let touchEndPos = null;
+      let isScrolling = false;
 
       const handleTouchStart = (e) => {
         touchEndPos = null;
+        isScrolling = false;
         touchStartPos = {
           x: e.touches[0].clientX,
           y: e.touches[0].clientY
@@ -494,6 +496,11 @@ const Shako = () => {
         const diffX = Math.abs(currentX - touchStartPos.x);
         const diffY = Math.abs(currentY - touchStartPos.y);
 
+        // Detect if user is scrolling vertically
+        if (diffY > diffX && diffY > 10) {
+          isScrolling = true;
+        }
+
         // If horizontal movement is greater than vertical, prevent scrolling
         if (diffX > diffY && diffX > 10) {
           e.preventDefault();
@@ -507,6 +514,14 @@ const Shako = () => {
 
       const handleTouchEnd = () => {
         if (!touchStartPos || !touchEndPos) return;
+
+        // Don't trigger tab change if user was scrolling vertically
+        if (isScrolling) {
+          touchStartPos = null;
+          touchEndPos = null;
+          isScrolling = false;
+          return;
+        }
 
         const distance = touchStartPos.x - touchEndPos.x;
         const isLeftSwipe = distance > minSwipeDistance;
@@ -524,6 +539,7 @@ const Shako = () => {
 
         touchStartPos = null;
         touchEndPos = null;
+        isScrolling = false;
       };
 
       // Add event listeners with passive: false to allow preventDefault
