@@ -95,10 +95,32 @@ const useModals = () => {
                           showAddVehicleModal || showVehicleDetailModal ||
                           showPartDetailModal;
 
+    console.log('[useModals] Effect running:', {
+      isAnyModalOpen,
+      isScrollLocked: isScrollLocked.current,
+      currentScrollY: window.scrollY,
+      savedScrollY: savedScrollPosition.current,
+      bodyPosition: document.body.style.position,
+      modals: {
+        showAddModal,
+        showTrackingModal,
+        showAddProjectModal,
+        showProjectDetailModal,
+        showAddVehicleModal,
+        showVehicleDetailModal,
+        showPartDetailModal
+      }
+    });
+
     if (isAnyModalOpen && !isScrollLocked.current) {
       // Lock scroll
       const scrollbarWidth = window.innerWidth - document.documentElement.clientWidth;
       savedScrollPosition.current = window.scrollY;
+
+      console.log('[useModals] LOCKING SCROLL:', {
+        savedPosition: savedScrollPosition.current,
+        scrollbarWidth
+      });
 
       document.body.style.position = 'fixed';
       document.body.style.top = `-${savedScrollPosition.current}px`;
@@ -106,33 +128,56 @@ const useModals = () => {
       document.body.style.paddingRight = `${scrollbarWidth}px`;
 
       isScrollLocked.current = true;
+
+      console.log('[useModals] Scroll locked, body styles:', {
+        position: document.body.style.position,
+        top: document.body.style.top,
+        isScrollLocked: isScrollLocked.current
+      });
     } else if (!isAnyModalOpen && isScrollLocked.current) {
       // Unlock scroll
       const scrollY = savedScrollPosition.current;
+
+      console.log('[useModals] UNLOCKING SCROLL:', {
+        restoringToPosition: scrollY,
+        currentBodyPosition: document.body.style.position
+      });
 
       document.body.style.position = '';
       document.body.style.top = '';
       document.body.style.width = '';
       document.body.style.paddingRight = '';
 
+      console.log('[useModals] Body styles cleared, about to scroll');
+
       // Use requestAnimationFrame to ensure DOM has updated before scrolling
       requestAnimationFrame(() => {
+        console.log('[useModals] Restoring scroll to:', scrollY);
         window.scrollTo(0, scrollY);
+        console.log('[useModals] Scroll restored, current scrollY:', window.scrollY);
       });
       isScrollLocked.current = false;
+
+      console.log('[useModals] Scroll unlocked, isScrollLocked:', isScrollLocked.current);
+    } else {
+      console.log('[useModals] No action taken');
     }
 
     // Cleanup on unmount
     return () => {
+      console.log('[useModals] Cleanup running, isScrollLocked:', isScrollLocked.current);
       if (isScrollLocked.current) {
         const scrollY = savedScrollPosition.current;
+        console.log('[useModals] CLEANUP: Unlocking scroll, restoring to:', scrollY);
         document.body.style.position = '';
         document.body.style.top = '';
         document.body.style.width = '';
         document.body.style.paddingRight = '';
         // Use requestAnimationFrame to ensure DOM has updated before scrolling
         requestAnimationFrame(() => {
+          console.log('[useModals] CLEANUP: Restoring scroll to:', scrollY);
           window.scrollTo(0, scrollY);
+          console.log('[useModals] CLEANUP: Scroll restored, current scrollY:', window.scrollY);
         });
         isScrollLocked.current = false;
       }
