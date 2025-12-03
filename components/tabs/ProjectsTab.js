@@ -1,7 +1,7 @@
 import React from 'react';
 import {
   Plus, ChevronDown, ChevronRight, Edit2, GripVertical,
-  Package, CheckCircle, Clock, Car, Archive, Wrench
+  Package, CheckCircle, Clock, Car, Archive, Wrench, FolderLock, FolderOpen
 } from 'lucide-react';
 import { getStatusColors, getPriorityColors, getMutedColor, getPriorityBorderColor } from '../../utils/colorUtils';
 import { calculateProjectTotal } from '../../utils/dataUtils';
@@ -412,7 +412,7 @@ const ProjectsTab = ({
                 }
               }}
             >
-              <Archive className="w-5 h-5" />
+              {isProjectArchiveCollapsed ? <FolderLock className="w-5 h-5" /> : <FolderOpen className="w-5 h-5" />}
               <h2 className="text-lg font-semibold">
                 Archive
               </h2>

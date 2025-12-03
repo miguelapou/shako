@@ -1,7 +1,7 @@
 import React from 'react';
 import {
   Plus, ChevronDown, ChevronRight, Edit2, GripVertical,
-  Car, Archive, Package, Wrench
+  Car, Archive, Package, Wrench, FolderLock, FolderOpen
 } from 'lucide-react';
 import { getMutedColor, getPriorityBorderColor } from '../../utils/colorUtils';
 import AddVehicleModal from '../modals/AddVehicleModal';
@@ -341,7 +341,7 @@ const VehiclesTab = ({
                 }
               }}
             >
-              <Archive className="w-5 h-5" />
+              {isArchiveCollapsed ? <FolderLock className="w-5 h-5" /> : <FolderOpen className="w-5 h-5" />}
               <h2 className="text-lg font-semibold">
                 Archive
               </h2>
