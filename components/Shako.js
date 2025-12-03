@@ -2061,7 +2061,7 @@ const Shako = () => {
               <button
                 onClick={() => setDarkMode(!darkMode)}
                 className={`p-2 sm:p-3 rounded-lg shadow-md transition-colors ${
-                  activeTab !== 'vehicles' ? 'hidden sm:flex' : ''
+                  activeTab !== 'vehicles' ? 'hidden' : ''
                 } ${
                   darkMode 
                     ? 'bg-gray-700 hover:bg-gray-600 text-yellow-300' 
