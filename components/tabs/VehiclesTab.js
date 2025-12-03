@@ -520,6 +520,7 @@ const VehiclesTab = ({
         {/* Vehicle Detail Modal */}
         <VehicleDetailModal
           isOpen={showVehicleDetailModal}
+          setShowVehicleDetailModal={setShowVehicleDetailModal}
           darkMode={darkMode}
           viewingVehicle={viewingVehicle}
           setViewingVehicle={setViewingVehicle}
