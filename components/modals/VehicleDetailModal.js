@@ -32,6 +32,7 @@ import { inputClasses } from '../../utils/styleUtils';
 
 const VehicleDetailModal = ({
   isOpen,
+  setShowVehicleDetailModal,
   darkMode,
   viewingVehicle,
   setViewingVehicle,
@@ -96,6 +97,7 @@ const VehicleDetailModal = ({
             confirmText: 'Discard',
             cancelText: 'Go Back',
             onConfirm: () => {
+              setShowVehicleDetailModal(false);
               setViewingVehicle(null);
               setOriginalVehicleData(null);
               setVehicleModalProjectView(null);
@@ -105,6 +107,7 @@ const VehicleDetailModal = ({
           });
           return;
         }
+        setShowVehicleDetailModal(false);
         setViewingVehicle(null);
         setOriginalVehicleData(null);
         setVehicleModalProjectView(null);
@@ -154,6 +157,7 @@ const VehicleDetailModal = ({
                   confirmText: 'Discard',
                   cancelText: 'Go Back',
                   onConfirm: () => {
+                    setShowVehicleDetailModal(false);
                     setViewingVehicle(null);
                     setOriginalVehicleData(null);
                     setVehicleModalProjectView(null);
@@ -163,6 +167,7 @@ const VehicleDetailModal = ({
                 });
                 return;
               }
+              setShowVehicleDetailModal(false);
               setViewingVehicle(null);
               setOriginalVehicleData(null);
               setVehicleModalProjectView(null);
