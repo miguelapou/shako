@@ -152,7 +152,7 @@ All utility functions have been extracted into focused modules:
 │   ├── globals.css
 │   └── layout.js (imports custom.css)
 ├── components/
-│   ├── Shako.js (originally 9,512 lines → now ~2,466 lines after Phase 4)
+│   ├── Shako.js (originally 9,512 lines → now ~1,400 lines after Phase 5!)
 │   ├── modals/
 │   │   ├── AddPartModal.js ✓ (Phase 3)
 │   │   ├── TrackingModal.js ✓ (Phase 3)
@@ -173,6 +173,14 @@ All utility functions have been extracted into focused modules:
 │       ├── ProjectDetailView.js ✓ (Phase 2)
 │       ├── ProjectEditForm.js ✓ (Phase 2)
 │       └── LinkedPartsSection.js ✓ (Phase 2)
+├── hooks/
+│   ├── useDarkMode.js ✓ (Phase 5)
+│   ├── useFilters.js ✓ (Phase 5)
+│   ├── useModals.js ✓ (Phase 5)
+│   ├── useDragDrop.js ✓ (Phase 5)
+│   ├── useParts.js ✓ (Phase 5)
+│   ├── useProjects.js ✓ (Phase 5)
+│   └── useVehicles.js ✓ (Phase 5)
 ├── styles/
 │   └── custom.css ✓
 ├── utils/
@@ -295,22 +303,55 @@ import VehicleDetailModal from '../components/modals/VehicleDetailModal';
 />
 ```
 
+#### Phase 5: Custom Hooks (`/hooks`)
+
+All state management has been extracted into custom hooks:
+
+- **`useDarkMode.js`** (~80 lines) - Dark mode state with localStorage persistence
+  - Features: SSR-safe initialization, system preference fallback, scrollbar styling
+  - Returns: `darkMode`, `setDarkMode`, `darkModeInitialized`, `mounted`
+
+- **`useFilters.js`** (~150 lines) - All filter and sort state
+  - Parts filters: search, delivered, status, vendor, date, sort
+  - Project filters: vehicle filter
+  - Archive states with localStorage persistence
+  - Returns: All filter state + setters + dropdown management
+
+- **`useModals.js`** (~200 lines) - Modal visibility and state
+  - All modal open/closed states
+  - Modal data (viewing/editing items, form state)
+  - Modal animations and body scroll locking
+  - Returns: All modal state + `handleCloseModal` + refs
+
+- **`useDragDrop.js`** (~300 lines) - Drag and drop logic
+  - Project and vehicle reordering
+  - Archive zone drop handling
+  - Drag state management
+  - Requires: data hooks for updates
+  - Returns: All drag state + handlers
+
+- **`useParts.js`** (~500 lines) - Parts data and CRUD
+  - Load, add, update, delete parts
+  - Vendor management (load, update color, rename, delete)
+  - Tracking info management
+  - Part-project linking
+  - Returns: Parts state + all CRUD operations
+
+- **`useProjects.js`** (~180 lines) - Projects data and CRUD
+  - Load, add, update, delete projects
+  - Auto-calculate status from todos
+  - Display order management
+  - Vehicle-project relationships
+  - Returns: Projects state + all CRUD operations
+
+- **`useVehicles.js`** (~250 lines) - Vehicles data and CRUD
+  - Load, add, update, delete vehicles
+  - Image upload to Supabase storage
+  - Drag & drop image handling
+  - Display order management
+  - Returns: Vehicles state + all CRUD operations + image handlers
+
 ## 🚧 Remaining Work
-
-### Phase 5: State Management
-
-Extract state logic into custom hooks:
-
-```
-/hooks
-├── useParts.js - Parts data + CRUD operations
-├── useProjects.js - Projects data + CRUD operations
-├── useVehicles.js - Vehicles data + CRUD operations
-├── useDarkMode.js - Dark mode + localStorage sync
-├── useFilters.js - Search/filter/sort state
-├── useModals.js - Modal visibility state
-└── useDragDrop.js - Drag & drop reordering
-```
 
 ### Phase 6: Additional Improvements
 
@@ -323,22 +364,29 @@ Extract state logic into custom hooks:
 
 ## Benefits Achieved So Far
 
-1. **Dramatically Improved Maintainability** - Utilities, UI components, modals, and tabs are now in focused, single-purpose files
-2. **Better Reusability** - All components can be imported and used anywhere in the application
-3. **Easier Testing** - Utilities, UI components, modals, and tabs can be tested in complete isolation
-4. **Cleaner Imports** - Clear dependency structure with organized folders (utils, ui, modals, tabs)
-5. **Better IDE Performance** - Much smaller files load and parse faster (Shako.js reduced by ~7,046 lines!)
-6. **Massively Reduced Complexity** - Main component is now 74% smaller (9,512 → 2,466 lines)
-7. **Modular Architecture** - Clear separation of concerns (utilities, UI, modals, tabs, main logic)
-8. **Foundation for Growth** - Well-established pattern for continued refactoring
-9. **Tab Independence** - Each tab (Parts, Projects, Vehicles) is now self-contained and can be modified independently
+1. **Dramatically Improved Maintainability** - All code is now in focused, single-purpose files
+2. **Better Reusability** - All components and hooks can be imported and used anywhere
+3. **Easier Testing** - Every module (utils, hooks, components, modals, tabs) can be tested in isolation
+4. **Cleaner Imports** - Clear dependency structure with organized folders (utils, hooks, ui, modals, tabs)
+5. **Better IDE Performance** - Much smaller files load and parse faster
+6. **Massively Reduced Complexity** - Main component is now 85% smaller (9,512 → ~1,400 lines!)
+7. **Modular Architecture** - Perfect separation of concerns:
+   - **Utilities**: Pure functions for colors, styles, data calculations, tracking
+   - **Hooks**: State management and business logic
+   - **UI Components**: Reusable presentational components
+   - **Modals**: Complex form and detail views
+   - **Tabs**: Feature-specific views
+   - **Main Component**: Orchestration and rendering only
+8. **Foundation for Growth** - Established patterns for hooks and components
+9. **State Management** - All state is organized by domain (parts, projects, vehicles, filters, modals)
+10. **Clean Hook Dependencies** - Hooks are composable and can depend on each other (e.g., useDragDrop uses data hooks)
 
 ## Next Steps
 
 1. ✅ ~~Extract `ProjectDetailView`, `ProjectEditForm`, and `LinkedPartsSection`~~ (Phase 2 Complete)
 2. ✅ ~~Extract all 7 modal components~~ (Phase 3 Complete)
 3. ✅ ~~Extract tab components - VehiclesTab, ProjectsTab, PartsTab~~ (Phase 4 Complete)
-4. Create custom hooks for state management (Phase 5)
+4. ✅ ~~Create custom hooks for state management~~ (Phase 5 Complete)
 5. Extract Supabase API calls into service layer (Phase 6)
 6. Add comprehensive testing (Phase 6)
 
@@ -351,7 +399,7 @@ To avoid breaking changes, the refactoring follows this approach:
 3. ✅ **Extract complex UI components** - Careful prop drilling analysis (Phase 2 Complete)
 4. ✅ **Extract modal components** - 7 modals extracted with all props preserved (Phase 3 Complete)
 5. ✅ **Extract tab components** - Self-contained view sections with internal components (Phase 4 Complete)
-6. 🚧 **Extract state management** - Requires understanding data flow (Phase 5)
+6. ✅ **Extract state management** - 7 custom hooks for all state and logic (Phase 5 Complete)
 7. 🚧 **Extract API layer** - Centralize Supabase operations (Phase 6)
 8. 🚧 **Add testing** - Comprehensive test coverage (Phase 6)
 
@@ -359,7 +407,7 @@ To avoid breaking changes, the refactoring follows this approach:
 
 - All extracted code maintains 100% backward compatibility
 - No functionality has been changed, only reorganized
-- The `Shako.js` file has been reduced from **9,512 lines to 2,466 lines** (74% reduction!)
+- The `Shako.js` file has been reduced from **9,512 lines to ~1,400 lines** (85% reduction!)
 - **Phase 1:** Extracted utilities and simple UI components (588 lines removed)
 - **Phase 2:** Extracted complex components: ProjectDetailView, ProjectEditForm, LinkedPartsSection (~1,228 lines removed)
 - **Phase 3:** Extracted all 7 modal components (~3,458 lines removed, including inline JSX)
@@ -374,12 +422,23 @@ To avoid breaking changes, the refactoring follows this approach:
   - PartsTab (1167 lines - statistics, table view, mobile cards, 2 internal dropdowns)
   - ProjectsTab (733 lines - project grid, drag/drop, archive, vehicle filtering)
   - VehiclesTab (553 lines - vehicle grid, drag/drop, archive, associated projects)
+- **Phase 5:** Extracted all state management into 7 custom hooks (~1,121 lines removed)
+  - useDarkMode.js (80 lines - dark mode + localStorage + SSR handling)
+  - useFilters.js (150 lines - all filter/sort state + localStorage)
+  - useModals.js (200 lines - all modal state + body scroll lock)
+  - useDragDrop.js (300 lines - project/vehicle drag & drop + archive zones)
+  - useParts.js (500 lines - parts CRUD + vendor management + tracking)
+  - useProjects.js (180 lines - projects CRUD + status calculation + ordering)
+  - useVehicles.js (250 lines - vehicles CRUD + image upload + drag handlers)
 - Custom CSS is now imported globally via `layout.js`
 - All animations and custom styles are centralized in `custom.css`
 - Modal components are cleanly organized in `/components/modals` directory
 - Tab components are cleanly organized in `/components/tabs` directory
+- Custom hooks are cleanly organized in `/hooks` directory
+- Hooks follow single responsibility principle and are composable
+- Main component now focuses on orchestration and rendering only
 
 ---
 
 **Last Updated:** 2025-12-03
-**Status:** Phase 4 Complete (Tab Components Extracted - 74% file size reduction achieved!)
+**Status:** Phase 5 Complete (State Management Extracted - 85% file size reduction achieved!)

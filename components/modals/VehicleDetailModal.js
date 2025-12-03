@@ -26,14 +26,13 @@ import {
   getPriorityBorderColor,
   getStatusColors,
   getPriorityColors,
-  getStatusText,
-  getStatusTextColor,
   getVendorColor
 } from '../../utils/colorUtils';
 import { inputClasses } from '../../utils/styleUtils';
 
 const VehicleDetailModal = ({
   isOpen,
+  setShowVehicleDetailModal,
   darkMode,
   viewingVehicle,
   setViewingVehicle,
@@ -73,7 +72,13 @@ const VehicleDetailModal = ({
   getVehicleProjects,
   unlinkPartFromProject,
   loadProjects,
-  setConfirmDialog
+  setConfirmDialog,
+  getStatusColors,
+  getPriorityColors,
+  getStatusText,
+  getStatusTextColor,
+  getVendorColor,
+  calculateProjectTotal
 }) => {
   if (!isOpen || !viewingVehicle) return null;
 
@@ -92,6 +97,7 @@ const VehicleDetailModal = ({
             confirmText: 'Discard',
             cancelText: 'Go Back',
             onConfirm: () => {
+              setShowVehicleDetailModal(false);
               setViewingVehicle(null);
               setOriginalVehicleData(null);
               setVehicleModalProjectView(null);
@@ -101,6 +107,7 @@ const VehicleDetailModal = ({
           });
           return;
         }
+        setShowVehicleDetailModal(false);
         setViewingVehicle(null);
         setOriginalVehicleData(null);
         setVehicleModalProjectView(null);
@@ -150,6 +157,7 @@ const VehicleDetailModal = ({
                   confirmText: 'Discard',
                   cancelText: 'Go Back',
                   onConfirm: () => {
+                    setShowVehicleDetailModal(false);
                     setViewingVehicle(null);
                     setOriginalVehicleData(null);
                     setVehicleModalProjectView(null);
@@ -159,6 +167,7 @@ const VehicleDetailModal = ({
                 });
                 return;
               }
+              setShowVehicleDetailModal(false);
               setViewingVehicle(null);
               setOriginalVehicleData(null);
               setVehicleModalProjectView(null);

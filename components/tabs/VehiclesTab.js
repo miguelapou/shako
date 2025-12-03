@@ -516,6 +516,7 @@ const VehiclesTab = ({
         {/* Vehicle Detail Modal */}
         <VehicleDetailModal
           isOpen={showVehicleDetailModal}
+          setShowVehicleDetailModal={setShowVehicleDetailModal}
           darkMode={darkMode}
           viewingVehicle={viewingVehicle}
           setViewingVehicle={setViewingVehicle}
@@ -556,6 +557,12 @@ const VehiclesTab = ({
           unlinkPartFromProject={unlinkPartFromProject}
           loadProjects={loadProjects}
           setConfirmDialog={setConfirmDialog}
+          getStatusColors={getStatusColors}
+          getPriorityColors={getPriorityColors}
+          getStatusText={getStatusText}
+          getStatusTextColor={getStatusTextColor}
+          getVendorColor={getVendorColor}
+          calculateProjectTotal={calculateProjectTotal}
         />
       </>
     </div>
