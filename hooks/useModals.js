@@ -67,9 +67,12 @@ const useModals = () => {
    * Handle modal closing with exit animation
    */
   const handleCloseModal = (closeCallback) => {
+    console.log('[useModals] handleCloseModal called');
     setIsModalClosing(true);
     setTimeout(() => {
+      console.log('[useModals] Executing close callback after animation delay');
       closeCallback();
+      console.log('[useModals] Close callback completed');
       setIsModalClosing(false);
     }, 200); // Duration matches the exit animation
   };
