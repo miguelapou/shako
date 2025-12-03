@@ -102,13 +102,9 @@ const VehiclesTab = ({
               onDragLeave={handleVehicleDragLeave}
               onDrop={(e) => handleVehicleDrop(e, vehicle)}
               onClick={() => {
-                console.log('[VehiclesTab] Vehicle card clicked, scrollY:', window.scrollY);
                 setViewingVehicle(vehicle);
-                console.log('[VehiclesTab] After setViewingVehicle, scrollY:', window.scrollY);
                 setOriginalVehicleData({ ...vehicle }); // Save original data for unsaved changes check
-                console.log('[VehiclesTab] After setOriginalVehicleData, scrollY:', window.scrollY);
                 setShowVehicleDetailModal(true);
-                console.log('[VehiclesTab] After setShowVehicleDetailModal, scrollY:', window.scrollY);
               }}
               className={`relative rounded-lg shadow-lg pt-3 ${vehicle.archived ? 'pb-3' : 'pb-4'} px-6 transition-all duration-200 hover:shadow-2xl hover:scale-[1.03] cursor-pointer border-t-4 ${
                 draggedVehicle?.id === vehicle.id
