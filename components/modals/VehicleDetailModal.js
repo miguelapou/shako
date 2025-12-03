@@ -298,13 +298,10 @@ const VehicleDetailModal = ({
                             darkMode ? 'text-gray-500' : 'text-gray-500'
                           }`}>
                             {vehicleProjects.length > 0 && (
-                              <>
-                                <span className="flex items-center gap-1">
-                                  <Wrench className="w-3.5 h-3.5" />
-                                  {vehicleProjects.length}
-                                </span>
-                                {linkedPartsCount > 0 && <span>•</span>}
-                              </>
+                              <span className="flex items-center gap-1">
+                                <Wrench className="w-3.5 h-3.5" />
+                                {vehicleProjects.length}
+                              </span>
                             )}
                             {linkedPartsCount > 0 && (
                               <span className="flex items-center gap-1">
