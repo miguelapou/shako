@@ -26,8 +26,6 @@ import {
   getPriorityBorderColor,
   getStatusColors,
   getPriorityColors,
-  getStatusText,
-  getStatusTextColor,
   getVendorColor
 } from '../../utils/colorUtils';
 import { inputClasses } from '../../utils/styleUtils';
@@ -73,7 +71,13 @@ const VehicleDetailModal = ({
   getVehicleProjects,
   unlinkPartFromProject,
   loadProjects,
-  setConfirmDialog
+  setConfirmDialog,
+  getStatusColors,
+  getPriorityColors,
+  getStatusText,
+  getStatusTextColor,
+  getVendorColor,
+  calculateProjectTotal
 }) => {
   if (!isOpen || !viewingVehicle) return null;
 

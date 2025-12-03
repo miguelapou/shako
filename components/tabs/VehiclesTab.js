@@ -556,6 +556,12 @@ const VehiclesTab = ({
           unlinkPartFromProject={unlinkPartFromProject}
           loadProjects={loadProjects}
           setConfirmDialog={setConfirmDialog}
+          getStatusColors={getStatusColors}
+          getPriorityColors={getPriorityColors}
+          getStatusText={getStatusText}
+          getStatusTextColor={getStatusTextColor}
+          getVendorColor={getVendorColor}
+          calculateProjectTotal={calculateProjectTotal}
         />
       </>
     </div>
