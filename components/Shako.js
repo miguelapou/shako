@@ -2381,7 +2381,7 @@ const Shako = () => {
             setDragOverArchiveZone={setDragOverArchiveZone}
             isArchiveCollapsed={isArchiveCollapsed}
             setIsArchiveCollapsed={setIsArchiveCollapsed}
-            archiveRef={archiveRef}
+            archiveRef={vehicleArchiveRef}
             setShowAddVehicleModal={setShowAddVehicleModal}
             setShowVehicleDetailModal={setShowVehicleDetailModal}
             setViewingVehicle={setViewingVehicle}
