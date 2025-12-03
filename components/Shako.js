@@ -304,10 +304,6 @@ const Shako = () => {
   // Refs for swipe detection on tab content
   const tabContentRef = useRef(null);
 
-  // Swipe detection state
-  const [touchStart, setTouchStart] = useState(null);
-  const [touchEnd, setTouchEnd] = useState(null);
-
   // Detect touch device on mount
   useEffect(() => {
     setIsTouchDevice('ontouchstart' in window || navigator.maxTouchPoints > 0);
@@ -462,11 +458,96 @@ const Shako = () => {
         });
       }
     };
-    
+
     // Delay to ensure refs are populated
     const timer = setTimeout(updateUnderline, 100);
     return () => clearTimeout(timer);
   }, []);
+
+  // Swipe gesture handlers for tab navigation
+  useEffect(() => {
+    const minSwipeDistance = 50;
+    const tabs = ['vehicles', 'projects', 'parts'];
+
+    // Small delay to ensure DOM is ready
+    const timeoutId = setTimeout(() => {
+      const element = tabContentRef.current;
+      if (!element || loading) return;
+
+      let touchStartPos = null;
+      let touchEndPos = null;
+
+      const handleTouchStart = (e) => {
+        touchEndPos = null;
+        touchStartPos = {
+          x: e.touches[0].clientX,
+          y: e.touches[0].clientY
+        };
+      };
+
+      const handleTouchMove = (e) => {
+        if (!touchStartPos) return;
+
+        const currentX = e.touches[0].clientX;
+        const currentY = e.touches[0].clientY;
+
+        const diffX = Math.abs(currentX - touchStartPos.x);
+        const diffY = Math.abs(currentY - touchStartPos.y);
+
+        // If horizontal movement is greater than vertical, prevent scrolling
+        if (diffX > diffY && diffX > 10) {
+          e.preventDefault();
+        }
+
+        touchEndPos = {
+          x: currentX,
+          y: currentY
+        };
+      };
+
+      const handleTouchEnd = () => {
+        if (!touchStartPos || !touchEndPos) return;
+
+        const distance = touchStartPos.x - touchEndPos.x;
+        const isLeftSwipe = distance > minSwipeDistance;
+        const isRightSwipe = distance < -minSwipeDistance;
+
+        if (isLeftSwipe || isRightSwipe) {
+          const currentIndex = tabs.indexOf(activeTab);
+
+          if (isLeftSwipe && currentIndex < tabs.length - 1) {
+            handleTabChange(tabs[currentIndex + 1]);
+          } else if (isRightSwipe && currentIndex > 0) {
+            handleTabChange(tabs[currentIndex - 1]);
+          }
+        }
+
+        touchStartPos = null;
+        touchEndPos = null;
+      };
+
+      // Add event listeners with passive: false to allow preventDefault
+      element.addEventListener('touchstart', handleTouchStart, { passive: true });
+      element.addEventListener('touchmove', handleTouchMove, { passive: false });
+      element.addEventListener('touchend', handleTouchEnd, { passive: true });
+
+      // Store cleanup function
+      return () => {
+        element.removeEventListener('touchstart', handleTouchStart);
+        element.removeEventListener('touchmove', handleTouchMove);
+        element.removeEventListener('touchend', handleTouchEnd);
+      };
+    }, 0);
+
+    return () => {
+      clearTimeout(timeoutId);
+    };
+  }, [activeTab, loading]);
+
+  // Reset scroll position to top when switching tabs
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: 'instant' });
+  }, [activeTab]);
 
 
   const handleSort = (field) => {
