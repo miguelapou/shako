@@ -77,13 +77,18 @@ const useModals = () => {
   // Scroll to top when switching between vehicle and project view in modal
   useEffect(() => {
     if (showVehicleDetailModal) {
+      console.log('[useModals] Vehicle modal opened, scrollY before timeout:', window.scrollY);
       // Small delay to ensure DOM has updated
       setTimeout(() => {
+        console.log('[useModals] Scrolling modal containers to top, window.scrollY:', window.scrollY);
         // Find all scrollable containers in the modal and scroll to top
         const scrollContainers = document.querySelectorAll('.max-h-\\[calc\\(90vh-180px\\)\\]');
+        console.log('[useModals] Found scroll containers:', scrollContainers.length);
         scrollContainers.forEach(container => {
+          console.log('[useModals] Container being scrolled:', container.tagName, container.className);
           container.scrollTop = 0;
         });
+        console.log('[useModals] After scrolling containers, window.scrollY:', window.scrollY);
       }, 50);
     }
   }, [vehicleModalProjectView, showVehicleDetailModal]);
