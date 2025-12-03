@@ -1,0 +1,80 @@
+import { supabase } from '../lib/supabase';
+
+/**
+ * Service layer for projects-related Supabase operations
+ * Centralizes all database calls for projects table
+ */
+
+/**
+ * Load all projects from database
+ * @returns {Promise<Array>} Array of projects
+ */
+export const getAllProjects = async () => {
+  const { data, error } = await supabase
+    .from('projects')
+    .select('*')
+    .order('display_order', { ascending: true, nullsFirst: false })
+    .order('id', { ascending: true });
+
+  if (error) throw error;
+  return data || [];
+};
+
+/**
+ * Create a new project
+ * @param {Object} projectData - Project data to insert
+ * @returns {Promise<Object>} Created project
+ */
+export const createProject = async (projectData) => {
+  const { data, error } = await supabase
+    .from('projects')
+    .insert([projectData])
+    .select();
+
+  if (error) throw error;
+  return data;
+};
+
+/**
+ * Update a project by ID
+ * @param {number} projectId - Project ID
+ * @param {Object} updates - Fields to update
+ * @returns {Promise<void>}
+ */
+export const updateProject = async (projectId, updates) => {
+  const { error } = await supabase
+    .from('projects')
+    .update(updates)
+    .eq('id', projectId);
+
+  if (error) throw error;
+};
+
+/**
+ * Delete a project by ID
+ * @param {number} projectId - Project ID
+ * @returns {Promise<void>}
+ */
+export const deleteProject = async (projectId) => {
+  const { error } = await supabase
+    .from('projects')
+    .delete()
+    .eq('id', projectId);
+
+  if (error) throw error;
+};
+
+/**
+ * Update display order for a project
+ * @param {number} projectId - Project ID
+ * @param {number} displayOrder - New display order
+ * @returns {Promise<void>}
+ */
+export const updateProjectDisplayOrder = async (projectId, displayOrder) => {
+  const { error } = await supabase
+    .from('projects')
+    .update({ display_order: displayOrder })
+    .eq('id', projectId);
+
+  if (error) throw error;
+};

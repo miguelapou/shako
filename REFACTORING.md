@@ -178,9 +178,14 @@ All utility functions have been extracted into focused modules:
 │   ├── useFilters.js ✓ (Phase 5)
 │   ├── useModals.js ✓ (Phase 5)
 │   ├── useDragDrop.js ✓ (Phase 5)
-│   ├── useParts.js ✓ (Phase 5)
-│   ├── useProjects.js ✓ (Phase 5)
-│   └── useVehicles.js ✓ (Phase 5)
+│   ├── useParts.js ✓ (Phase 5, updated Phase 6)
+│   ├── useProjects.js ✓ (Phase 5, updated Phase 6)
+│   └── useVehicles.js ✓ (Phase 5, updated Phase 6)
+├── services/
+│   ├── partsService.js ✓ (Phase 6)
+│   ├── vendorsService.js ✓ (Phase 6)
+│   ├── projectsService.js ✓ (Phase 6)
+│   └── vehiclesService.js ✓ (Phase 6)
 ├── styles/
 │   └── custom.css ✓
 ├── utils/
@@ -222,6 +227,67 @@ import {
   getTrackingUrl,
   getCarrierName
 } from '../utils/trackingUtils';
+```
+
+### Using Service Layer
+
+```javascript
+// Phase 6 Services
+import * as partsService from '../services/partsService';
+import * as vendorsService from '../services/vendorsService';
+import * as projectsService from '../services/projectsService';
+import * as vehiclesService from '../services/vehiclesService';
+
+// Example usage in a hook or component
+const loadData = async () => {
+  try {
+    const parts = await partsService.getAllParts();
+    const projects = await projectsService.getAllProjects();
+    const vehicles = await vehiclesService.getAllVehicles();
+    const vendors = await vendorsService.getAllVendors();
+    // Process data...
+  } catch (error) {
+    console.error('Error loading data:', error);
+  }
+};
+
+// Create operations
+const addPart = async (partData) => {
+  try {
+    const newPart = await partsService.createPart(partData);
+    return newPart;
+  } catch (error) {
+    console.error('Error creating part:', error);
+  }
+};
+
+// Update operations
+const updatePart = async (partId, updates) => {
+  try {
+    await partsService.updatePart(partId, updates);
+  } catch (error) {
+    console.error('Error updating part:', error);
+  }
+};
+
+// Delete operations
+const deletePart = async (partId) => {
+  try {
+    await partsService.deletePart(partId);
+  } catch (error) {
+    console.error('Error deleting part:', error);
+  }
+};
+
+// Image upload
+const uploadImage = async (file) => {
+  try {
+    const publicUrl = await vehiclesService.uploadVehicleImage(file);
+    return publicUrl;
+  } catch (error) {
+    console.error('Error uploading image:', error);
+  }
+};
 ```
 
 ### Using UI Components
@@ -351,35 +417,78 @@ All state management has been extracted into custom hooks:
   - Display order management
   - Returns: Vehicles state + all CRUD operations + image handlers
 
-## 🚧 Remaining Work
+#### Phase 6: Service Layer (`/services`)
 
-### Phase 6: Additional Improvements
+All Supabase API calls have been extracted into dedicated service modules:
 
-- Extract Supabase API calls into dedicated service layer (`/services` or `/api`)
-- Create typed interfaces/PropTypes for better type safety
-- Add unit tests for utility functions
-- Add component-level tests
-- Consider Zustand/Redux for global state management
-- Implement code splitting for performance optimization
+- **`partsService.js`** (~95 lines) - Parts table operations
+  - `getAllParts()` - Fetch all parts with ordering
+  - `createPart(partData)` - Insert new part
+  - `updatePart(partId, updates)` - Update part by ID
+  - `deletePart(partId)` - Delete part by ID
+  - `updatePartsVendor(oldName, newName)` - Bulk rename vendor
+  - `removeVendorFromParts(vendorName)` - Remove vendor from all parts
+  - All functions return Promises and throw errors on failure
+
+- **`vendorsService.js`** (~35 lines) - Vendors table operations
+  - `getAllVendors()` - Fetch all vendors ordered by name
+  - `upsertVendor(vendorName, color)` - Insert or update vendor
+  - Supports vendor color customization
+
+- **`projectsService.js`** (~75 lines) - Projects table operations
+  - `getAllProjects()` - Fetch all projects with ordering
+  - `createProject(projectData)` - Insert new project
+  - `updateProject(projectId, updates)` - Update project by ID
+  - `deleteProject(projectId)` - Delete project by ID
+  - `updateProjectDisplayOrder(projectId, displayOrder)` - Update drag & drop order
+
+- **`vehiclesService.js`** (~110 lines) - Vehicles table and storage operations
+  - `getAllVehicles()` - Fetch all vehicles with ordering
+  - `createVehicle(vehicleData)` - Insert new vehicle
+  - `updateVehicle(vehicleId, updates)` - Update vehicle by ID
+  - `deleteVehicle(vehicleId)` - Delete vehicle by ID
+  - `updateVehicleDisplayOrder(vehicleId, displayOrder)` - Update drag & drop order
+  - `uploadVehicleImage(file)` - Upload image to Supabase Storage and return public URL
+
+## 🚧 Future Enhancements
+
+### Phase 7: Testing & Type Safety (Future)
+
+- 🚧 Create typed interfaces/PropTypes for better type safety
+- 🚧 Add unit tests for utility functions
+- 🚧 Add unit tests for service layer
+- 🚧 Add integration tests for hooks
+- 🚧 Add component-level tests
+- 🚧 Consider Zustand/Redux for global state management
+- 🚧 Implement code splitting for performance optimization
+- 🚧 Add request caching and optimistic updates
+- 🚧 Implement error boundaries for better error handling
 
 ## Benefits Achieved So Far
 
 1. **Dramatically Improved Maintainability** - All code is now in focused, single-purpose files
 2. **Better Reusability** - All components and hooks can be imported and used anywhere
-3. **Easier Testing** - Every module (utils, hooks, components, modals, tabs) can be tested in isolation
-4. **Cleaner Imports** - Clear dependency structure with organized folders (utils, hooks, ui, modals, tabs)
+3. **Easier Testing** - Every module (utils, hooks, components, modals, tabs, services) can be tested in isolation
+4. **Cleaner Imports** - Clear dependency structure with organized folders (utils, hooks, ui, modals, tabs, services)
 5. **Better IDE Performance** - Much smaller files load and parse faster
 6. **Massively Reduced Complexity** - Main component is now 85% smaller (9,512 → ~1,400 lines!)
 7. **Modular Architecture** - Perfect separation of concerns:
    - **Utilities**: Pure functions for colors, styles, data calculations, tracking
+   - **Services**: Database operations and external API calls (Supabase)
    - **Hooks**: State management and business logic
    - **UI Components**: Reusable presentational components
    - **Modals**: Complex form and detail views
    - **Tabs**: Feature-specific views
    - **Main Component**: Orchestration and rendering only
-8. **Foundation for Growth** - Established patterns for hooks and components
+8. **Foundation for Growth** - Established patterns for hooks, components, and services
 9. **State Management** - All state is organized by domain (parts, projects, vehicles, filters, modals)
 10. **Clean Hook Dependencies** - Hooks are composable and can depend on each other (e.g., useDragDrop uses data hooks)
+11. **Centralized API Layer** - All Supabase operations are in one place, making it easier to:
+    - Switch databases or add caching
+    - Mock API calls for testing
+    - Add error handling and retry logic
+    - Monitor and log database operations
+    - Implement optimistic updates
 
 ## Next Steps
 
@@ -387,8 +496,10 @@ All state management has been extracted into custom hooks:
 2. ✅ ~~Extract all 7 modal components~~ (Phase 3 Complete)
 3. ✅ ~~Extract tab components - VehiclesTab, ProjectsTab, PartsTab~~ (Phase 4 Complete)
 4. ✅ ~~Create custom hooks for state management~~ (Phase 5 Complete)
-5. Extract Supabase API calls into service layer (Phase 6)
-6. Add comprehensive testing (Phase 6)
+5. ✅ ~~Extract Supabase API calls into service layer~~ (Phase 6 Complete)
+6. Add comprehensive testing (Future)
+7. Add TypeScript or PropTypes for type safety (Future)
+8. Consider state management library like Zustand (Future)
 
 ## Migration Strategy
 
@@ -400,8 +511,9 @@ To avoid breaking changes, the refactoring follows this approach:
 4. ✅ **Extract modal components** - 7 modals extracted with all props preserved (Phase 3 Complete)
 5. ✅ **Extract tab components** - Self-contained view sections with internal components (Phase 4 Complete)
 6. ✅ **Extract state management** - 7 custom hooks for all state and logic (Phase 5 Complete)
-7. 🚧 **Extract API layer** - Centralize Supabase operations (Phase 6)
-8. 🚧 **Add testing** - Comprehensive test coverage (Phase 6)
+7. ✅ **Extract API layer** - Centralized all Supabase operations into service modules (Phase 6 Complete)
+8. 🚧 **Add testing** - Comprehensive test coverage (Future)
+9. 🚧 **Add type safety** - TypeScript or PropTypes (Future)
 
 ## Notes
 
@@ -430,15 +542,25 @@ To avoid breaking changes, the refactoring follows this approach:
   - useParts.js (500 lines - parts CRUD + vendor management + tracking)
   - useProjects.js (180 lines - projects CRUD + status calculation + ordering)
   - useVehicles.js (250 lines - vehicles CRUD + image upload + drag handlers)
+- **Phase 6:** Extracted all Supabase API calls into service layer (~315 lines of service code)
+  - partsService.js (95 lines - parts table CRUD + vendor operations)
+  - vendorsService.js (35 lines - vendors table operations)
+  - projectsService.js (75 lines - projects table CRUD + ordering)
+  - vehiclesService.js (110 lines - vehicles table CRUD + ordering + image storage)
+  - Updated all 3 data hooks (useParts, useProjects, useVehicles) to use services
+  - Hooks no longer import supabase directly - only service functions
+  - Centralized database access for easier testing, mocking, and future migrations
 - Custom CSS is now imported globally via `layout.js`
 - All animations and custom styles are centralized in `custom.css`
 - Modal components are cleanly organized in `/components/modals` directory
 - Tab components are cleanly organized in `/components/tabs` directory
 - Custom hooks are cleanly organized in `/hooks` directory
+- Service modules are cleanly organized in `/services` directory
 - Hooks follow single responsibility principle and are composable
+- Services are pure functions that return Promises and throw errors
 - Main component now focuses on orchestration and rendering only
 
 ---
 
 **Last Updated:** 2025-12-03
-**Status:** Phase 5 Complete (State Management Extracted - 85% file size reduction achieved!)
+**Status:** Phase 6 Complete (Service Layer Extracted - Full separation of concerns achieved!)

@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { supabase } from '../lib/supabase';
+import * as vehiclesService from '../services/vehiclesService';
 
 /**
  * Custom hook for managing vehicles data and CRUD operations
@@ -44,13 +44,7 @@ const useVehicles = () => {
    */
   const loadVehicles = async () => {
     try {
-      const { data, error } = await supabase
-        .from('vehicles')
-        .select('*')
-        .order('display_order', { ascending: true })
-        .order('id', { ascending: true });
-
-      if (error) throw error;
+      const data = await vehiclesService.getAllVehicles();
       if (data) {
         // Sort so archived vehicles are always at the end
         const sorted = data.sort((a, b) => {
@@ -73,12 +67,7 @@ const useVehicles = () => {
    */
   const addVehicle = async (vehicleData) => {
     try {
-      const { data, error } = await supabase
-        .from('vehicles')
-        .insert([vehicleData])
-        .select();
-
-      if (error) throw error;
+      await vehiclesService.createVehicle(vehicleData);
       await loadVehicles();
     } catch (error) {
       alert('Error adding vehicle');
@@ -90,12 +79,7 @@ const useVehicles = () => {
    */
   const updateVehicle = async (vehicleId, updates) => {
     try {
-      const { error } = await supabase
-        .from('vehicles')
-        .update(updates)
-        .eq('id', vehicleId);
-
-      if (error) throw error;
+      await vehiclesService.updateVehicle(vehicleId, updates);
       await loadVehicles();
     } catch (error) {
       alert('Error updating vehicle');
@@ -107,12 +91,7 @@ const useVehicles = () => {
    */
   const deleteVehicle = async (vehicleId) => {
     try {
-      const { error } = await supabase
-        .from('vehicles')
-        .delete()
-        .eq('id', vehicleId);
-
-      if (error) throw error;
+      await vehiclesService.deleteVehicle(vehicleId);
       await loadVehicles();
     } catch (error) {
       alert('Error deleting vehicle');
@@ -125,16 +104,8 @@ const useVehicles = () => {
   const updateVehiclesOrder = async (orderedVehicles) => {
     try {
       // Update each vehicle with its new display order
-      const updates = orderedVehicles.map((vehicle, index) => ({
-        id: vehicle.id,
-        display_order: index
-      }));
-
-      for (const update of updates) {
-        await supabase
-          .from('vehicles')
-          .update({ display_order: update.display_order })
-          .eq('id', update.id);
+      for (let i = 0; i < orderedVehicles.length; i++) {
+        await vehiclesService.updateVehicleDisplayOrder(orderedVehicles[i].id, i);
       }
     } catch (error) {
       // Error updating vehicle order
@@ -147,26 +118,7 @@ const useVehicles = () => {
   const uploadVehicleImage = async (file) => {
     try {
       setUploadingImage(true);
-      // Create a unique filename with timestamp
-      const fileExt = file.name.split('.').pop();
-      const fileName = `${Math.random().toString(36).substring(2)}-${Date.now()}.${fileExt}`;
-      const filePath = `vehicle-images/${fileName}`;
-
-      // Upload to Supabase Storage
-      const { data, error } = await supabase.storage
-        .from('vehicles')
-        .upload(filePath, file, {
-          cacheControl: '3600',
-          upsert: false
-        });
-
-      if (error) throw error;
-
-      // Get public URL
-      const { data: { publicUrl } } = supabase.storage
-        .from('vehicles')
-        .getPublicUrl(filePath);
-
+      const publicUrl = await vehiclesService.uploadVehicleImage(file);
       setUploadingImage(false);
       return publicUrl;
     } catch (error) {

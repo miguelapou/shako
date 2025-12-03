@@ -1,5 +1,6 @@
 import { useState } from 'react';
-import { supabase } from '../lib/supabase';
+import * as partsService from '../services/partsService';
+import * as vendorsService from '../services/vendorsService';
 
 /**
  * Custom hook for managing parts data and CRUD operations
@@ -37,12 +38,7 @@ const useParts = () => {
   const loadParts = async () => {
     try {
       setLoading(true);
-      const { data, error } = await supabase
-        .from('parts')
-        .select('*')
-        .order('id', { ascending: true });
-
-      if (error) throw error;
+      const data = await partsService.getAllParts();
 
       if (data && data.length > 0) {
         // Convert database format to app format
@@ -76,12 +72,7 @@ const useParts = () => {
    */
   const loadVendors = async () => {
     try {
-      const { data, error } = await supabase
-        .from('vendors')
-        .select('*')
-        .order('name', { ascending: true });
-
-      if (error) throw error;
+      const data = await vendorsService.getAllVendors();
 
       if (data && data.length > 0) {
         setVendors(data);
@@ -102,15 +93,7 @@ const useParts = () => {
    */
   const updateVendorColor = async (vendorName, color) => {
     try {
-      // Use upsert to insert or update in one operation
-      const { error } = await supabase
-        .from('vendors')
-        .upsert(
-          { name: vendorName, color },
-          { onConflict: 'name' }
-        );
-
-      if (error) throw error;
+      await vendorsService.upsertVendor(vendorName, color);
 
       // Update local state
       setVendorColors(prev => ({
@@ -140,24 +123,19 @@ const useParts = () => {
     try {
       const createdAt = new Date().toISOString();
       // Insert into database
-      const { data, error } = await supabase
-        .from('parts')
-        .insert({
-          ...statusMap[newPart.status],
-          part: newPart.part,
-          part_number: newPart.partNumber,
-          vendor: newPart.vendor,
-          price,
-          shipping,
-          duties,
-          total,
-          tracking: newPart.tracking,
-          project_id: newPart.projectId || null,
-          created_at: createdAt
-        })
-        .select()
-        .single();
-      if (error) throw error;
+      const data = await partsService.createPart({
+        ...statusMap[newPart.status],
+        part: newPart.part,
+        part_number: newPart.partNumber,
+        vendor: newPart.vendor,
+        price,
+        shipping,
+        duties,
+        total,
+        tracking: newPart.tracking,
+        project_id: newPart.projectId || null,
+        created_at: createdAt
+      });
       // Add to local state with the ID from database
       const partToAdd = {
         id: data.id,
@@ -210,11 +188,7 @@ const useParts = () => {
       };
       const updates = statusMap[newStatus];
       // Update in database
-      const { error } = await supabase
-        .from('parts')
-        .update(updates)
-        .eq('id', partId);
-      if (error) throw error;
+      await partsService.updatePart(partId, updates);
       // Update local state
       setParts(prevParts => prevParts.map(part => {
         if (part.id === partId) {
@@ -234,16 +208,12 @@ const useParts = () => {
   const saveTrackingInfo = async (trackingModalPartId, trackingInput, setShowTrackingModal, setTrackingModalPartId, setTrackingInput) => {
     try {
       // Update in database
-      const { error } = await supabase
-        .from('parts')
-        .update({
-          delivered: false,
-          shipped: true,
-          purchased: true,
-          tracking: trackingInput
-        })
-        .eq('id', trackingModalPartId);
-      if (error) throw error;
+      await partsService.updatePart(trackingModalPartId, {
+        delivered: false,
+        shipped: true,
+        purchased: true,
+        tracking: trackingInput
+      });
       // Update local state
       setParts(prevParts => prevParts.map(part => {
         if (part.id === trackingModalPartId) {
@@ -271,15 +241,11 @@ const useParts = () => {
   const skipTrackingInfo = async (trackingModalPartId, setShowTrackingModal, setTrackingModalPartId, setTrackingInput) => {
     try {
       // Update in database
-      const { error } = await supabase
-        .from('parts')
-        .update({
-          delivered: false,
-          shipped: true,
-          purchased: true
-        })
-        .eq('id', trackingModalPartId);
-      if (error) throw error;
+      await partsService.updatePart(trackingModalPartId, {
+        delivered: false,
+        shipped: true,
+        purchased: true
+      });
       // Update local state
       setParts(prevParts => prevParts.map(part => {
         if (part.id === trackingModalPartId) {
@@ -317,22 +283,18 @@ const useParts = () => {
 
     try {
       // Update in database
-      const { error } = await supabase
-        .from('parts')
-        .update({
-          ...statusMap[editingPart.status],
-          part: editingPart.part,
-          part_number: editingPart.partNumber,
-          vendor: editingPart.vendor,
-          price,
-          shipping,
-          duties,
-          total,
-          tracking: editingPart.tracking,
-          project_id: editingPart.projectId || null
-        })
-        .eq('id', editingPart.id);
-      if (error) throw error;
+      await partsService.updatePart(editingPart.id, {
+        ...statusMap[editingPart.status],
+        part: editingPart.part,
+        part_number: editingPart.partNumber,
+        vendor: editingPart.vendor,
+        price,
+        shipping,
+        duties,
+        total,
+        tracking: editingPart.tracking,
+        project_id: editingPart.projectId || null
+      });
       // Update local state
       setParts(prevParts => prevParts.map(part => {
         if (part.id === editingPart.id) {
@@ -365,11 +327,7 @@ const useParts = () => {
   const deletePart = async (partId) => {
     try {
       // Delete from database
-      const { error } = await supabase
-        .from('parts')
-        .delete()
-        .eq('id', partId);
-      if (error) throw error;
+      await partsService.deletePart(partId);
       // Update local state
       setParts(prevParts => prevParts.filter(part => part.id !== partId));
     } catch (error) {
@@ -388,11 +346,7 @@ const useParts = () => {
 
     try {
       // Update all parts in database
-      const { error } = await supabase
-        .from('parts')
-        .update({ vendor: newName.trim() })
-        .eq('vendor', oldName);
-      if (error) throw error;
+      await partsService.updatePartsVendor(oldName, newName.trim());
       // Update local state
       setParts(prevParts => prevParts.map(part =>
         part.vendor === oldName ? { ...part, vendor: newName.trim() } : part
@@ -413,11 +367,7 @@ const useParts = () => {
   const deleteVendor = async (vendorName, editingPart, setEditingPart) => {
     try {
       // Update all parts in database to have empty vendor
-      const { error } = await supabase
-        .from('parts')
-        .update({ vendor: '' })
-        .eq('vendor', vendorName);
-      if (error) throw error;
+      await partsService.removeVendorFromParts(vendorName);
       // Update local state
       setParts(prevParts => prevParts.map(part =>
         part.vendor === vendorName ? { ...part, vendor: '' } : part
@@ -437,11 +387,7 @@ const useParts = () => {
   const unlinkPartFromProject = async (partId) => {
     try {
       // Update in database
-      const { error } = await supabase
-        .from('parts')
-        .update({ project_id: null })
-        .eq('id', partId);
-      if (error) throw error;
+      await partsService.updatePart(partId, { project_id: null });
       // Update local state
       setParts(prevParts => prevParts.map(part =>
         part.id === partId ? { ...part, projectId: null } : part
@@ -457,11 +403,7 @@ const useParts = () => {
   const updatePartProject = async (partId, projectId) => {
     try {
       // Update in database
-      const { error } = await supabase
-        .from('parts')
-        .update({ project_id: projectId || null })
-        .eq('id', partId);
-      if (error) throw error;
+      await partsService.updatePart(partId, { project_id: projectId || null });
       // Update local state
       setParts(prevParts => prevParts.map(part =>
         part.id === partId ? { ...part, projectId: projectId || null } : part

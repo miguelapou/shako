@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { supabase } from '../lib/supabase';
+import * as projectsService from '../services/projectsService';
 
 /**
  * Custom hook for managing projects data and CRUD operations
@@ -29,13 +29,7 @@ const useProjects = () => {
    */
   const loadProjects = async () => {
     try {
-      const { data, error } = await supabase
-        .from('projects')
-        .select('*')
-        .order('display_order', { ascending: true, nullsFirst: false })
-        .order('id', { ascending: true });
-
-      if (error) throw error;
+      const data = await projectsService.getAllProjects();
 
       if (data && data.length > 0) {
         setProjects(data);
@@ -69,21 +63,16 @@ const useProjects = () => {
    */
   const addProject = async (projectData) => {
     try {
-      const { data, error } = await supabase
-        .from('projects')
-        .insert([{
-          name: projectData.name,
-          description: projectData.description,
-          status: projectData.status || 'planning',
-          budget: parseFloat(projectData.budget) || 0,
-          spent: 0,
-          priority: projectData.priority || 'medium',
-          vehicle_id: projectData.vehicle_id || null,
-          todos: []
-        }])
-        .select();
-
-      if (error) throw error;
+      await projectsService.createProject({
+        name: projectData.name,
+        description: projectData.description,
+        status: projectData.status || 'planning',
+        budget: parseFloat(projectData.budget) || 0,
+        spent: 0,
+        priority: projectData.priority || 'medium',
+        vehicle_id: projectData.vehicle_id || null,
+        todos: []
+      });
       await loadProjects();
     } catch (error) {
       alert('Error adding project');
@@ -99,12 +88,7 @@ const useProjects = () => {
       if (updates.todos && updates.status !== 'on_hold') {
         updates.status = calculateProjectStatus(updates.todos, updates.status);
       }
-      const { error } = await supabase
-        .from('projects')
-        .update(updates)
-        .eq('id', projectId);
-
-      if (error) throw error;
+      await projectsService.updateProject(projectId, updates);
       await loadProjects();
     } catch (error) {
       alert('Error updating project');
@@ -116,12 +100,7 @@ const useProjects = () => {
    */
   const deleteProject = async (projectId) => {
     try {
-      const { error } = await supabase
-        .from('projects')
-        .delete()
-        .eq('id', projectId);
-
-      if (error) throw error;
+      await projectsService.deleteProject(projectId);
       await loadProjects();
     } catch (error) {
       alert('Error deleting project');
@@ -134,16 +113,8 @@ const useProjects = () => {
   const updateProjectsOrder = async (orderedProjects) => {
     try {
       // Update each project with its new display order
-      const updates = orderedProjects.map((project, index) => ({
-        id: project.id,
-        display_order: index
-      }));
-
-      for (const update of updates) {
-        await supabase
-          .from('projects')
-          .update({ display_order: update.display_order })
-          .eq('id', update.id);
+      for (let i = 0; i < orderedProjects.length; i++) {
+        await projectsService.updateProjectDisplayOrder(orderedProjects[i].id, i);
       }
     } catch (error) {
       // Error updating project order
