@@ -299,12 +299,18 @@ const VehicleDetailModal = ({
                           }`}>
                             {vehicleProjects.length > 0 && (
                               <>
-                                <span>{vehicleProjects.length} project{vehicleProjects.length !== 1 ? 's' : ''}</span>
+                                <span className="flex items-center gap-1">
+                                  <Wrench className="w-3.5 h-3.5" />
+                                  {vehicleProjects.length}
+                                </span>
                                 {linkedPartsCount > 0 && <span>•</span>}
                               </>
                             )}
                             {linkedPartsCount > 0 && (
-                              <span>{linkedPartsCount} part{linkedPartsCount !== 1 ? 's' : ''}</span>
+                              <span className="flex items-center gap-1">
+                                <Package className="w-3.5 h-3.5" />
+                                {linkedPartsCount}
+                              </span>
                             )}
                           </div>
                         </div>
