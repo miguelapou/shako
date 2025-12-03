@@ -152,6 +152,7 @@ All utility functions have been extracted into focused modules:
 │   ├── globals.css
 │   └── layout.js (imports custom.css)
 ├── components/
+│   ├── ErrorBoundary.js ✓ (Phase 7)
 │   ├── Shako.js (originally 9,512 lines → now ~1,400 lines after Phase 5!)
 │   ├── modals/
 │   │   ├── AddPartModal.js ✓ (Phase 3)
@@ -172,7 +173,9 @@ All utility functions have been extracted into focused modules:
 │       ├── VendorSelect.js ✓ (Phase 1)
 │       ├── ProjectDetailView.js ✓ (Phase 2)
 │       ├── ProjectEditForm.js ✓ (Phase 2)
-│       └── LinkedPartsSection.js ✓ (Phase 2)
+│       ├── LinkedPartsSection.js ✓ (Phase 2)
+│       ├── Toast.js ✓ (Phase 7)
+│       └── ToastContainer.js ✓ (Phase 7)
 ├── hooks/
 │   ├── useDarkMode.js ✓ (Phase 5)
 │   ├── useFilters.js ✓ (Phase 5)
@@ -180,19 +183,21 @@ All utility functions have been extracted into focused modules:
 │   ├── useDragDrop.js ✓ (Phase 5)
 │   ├── useParts.js ✓ (Phase 5, updated Phase 6)
 │   ├── useProjects.js ✓ (Phase 5, updated Phase 6)
-│   └── useVehicles.js ✓ (Phase 5, updated Phase 6)
+│   ├── useVehicles.js ✓ (Phase 5, updated Phase 6)
+│   └── useToast.js ✓ (Phase 7)
 ├── services/
-│   ├── partsService.js ✓ (Phase 6)
-│   ├── vendorsService.js ✓ (Phase 6)
-│   ├── projectsService.js ✓ (Phase 6)
-│   └── vehiclesService.js ✓ (Phase 6)
+│   ├── partsService.js ✓ (Phase 6, enhanced Phase 7)
+│   ├── vendorsService.js ✓ (Phase 6, enhanced Phase 7)
+│   ├── projectsService.js ✓ (Phase 6, enhanced Phase 7)
+│   └── vehiclesService.js ✓ (Phase 6, enhanced Phase 7)
 ├── styles/
 │   └── custom.css ✓
 ├── utils/
-│   ├── colorUtils.js ✓
-│   ├── dataUtils.js ✓
-│   ├── styleUtils.js ✓
-│   └── trackingUtils.js ✓
+│   ├── colorUtils.js ✓ (Phase 1)
+│   ├── dataUtils.js ✓ (Phase 1)
+│   ├── errorHandler.js ✓ (Phase 7)
+│   ├── styleUtils.js ✓ (Phase 1)
+│   └── trackingUtils.js ✓ (Phase 1)
 └── REFACTORING.md (this file)
 ```
 
@@ -288,6 +293,74 @@ const uploadImage = async (file) => {
     console.error('Error uploading image:', error);
   }
 };
+```
+
+### Using Error Handling (Phase 7)
+
+```javascript
+// Wrap your app with ErrorBoundary (in layout.js or app root)
+import ErrorBoundary from '../components/ErrorBoundary';
+
+export default function RootLayout({ children }) {
+  return (
+    <ErrorBoundary>
+      {children}
+    </ErrorBoundary>
+  );
+}
+
+// Use toast notifications in components
+import useToast from '../hooks/useToast';
+import { ToastContainer } from '../components/ui/ToastContainer';
+
+function MyComponent() {
+  const { toasts, success, error, warning, info } = useToast();
+
+  const handleSave = async () => {
+    try {
+      await partsService.createPart(partData);
+      success('Part added successfully!');
+    } catch (err) {
+      error('Failed to add part. Please try again.');
+    }
+  };
+
+  return (
+    <>
+      <button onClick={handleSave}>Save</button>
+      <ToastContainer toasts={toasts} darkMode={darkMode} />
+    </>
+  );
+}
+
+// Use error handler utility for advanced error handling
+import { handleError, getUserFriendlyMessage, retryWithBackoff } from '../utils/errorHandler';
+
+// Get user-friendly error messages
+try {
+  await partsService.getAllParts();
+} catch (error) {
+  const friendlyMessage = getUserFriendlyMessage(error, 'loading parts');
+  error(friendlyMessage);
+}
+
+// Use retry logic for transient errors
+const data = await retryWithBackoff(
+  async () => await partsService.getAllParts(),
+  { maxRetries: 3, initialDelay: 1000 }
+);
+
+// Comprehensive error handling with options
+try {
+  await partsService.updatePart(id, updates);
+} catch (err) {
+  handleError(err, {
+    operation: 'updating part',
+    showToast: true,
+    logToConsole: true,
+    context: { partId: id, updates }
+  });
+}
 ```
 
 ### Using UI Components
@@ -421,38 +494,90 @@ All state management has been extracted into custom hooks:
 
 All Supabase API calls have been extracted into dedicated service modules:
 
-- **`partsService.js`** (~95 lines) - Parts table operations
+- **`partsService.js`** (~130 lines) - Parts table operations
   - `getAllParts()` - Fetch all parts with ordering
   - `createPart(partData)` - Insert new part
   - `updatePart(partId, updates)` - Update part by ID
   - `deletePart(partId)` - Delete part by ID
   - `updatePartsVendor(oldName, newName)` - Bulk rename vendor
   - `removeVendorFromParts(vendorName)` - Remove vendor from all parts
-  - All functions return Promises and throw errors on failure
+  - All functions include comprehensive error handling (Phase 7)
 
-- **`vendorsService.js`** (~35 lines) - Vendors table operations
+- **`vendorsService.js`** (~50 lines) - Vendors table operations
   - `getAllVendors()` - Fetch all vendors ordered by name
   - `upsertVendor(vendorName, color)` - Insert or update vendor
   - Supports vendor color customization
+  - Enhanced with error handling (Phase 7)
 
-- **`projectsService.js`** (~75 lines) - Projects table operations
+- **`projectsService.js`** (~110 lines) - Projects table operations
   - `getAllProjects()` - Fetch all projects with ordering
   - `createProject(projectData)` - Insert new project
   - `updateProject(projectId, updates)` - Update project by ID
   - `deleteProject(projectId)` - Delete project by ID
   - `updateProjectDisplayOrder(projectId, displayOrder)` - Update drag & drop order
+  - All operations wrapped in try-catch with contextual errors (Phase 7)
 
-- **`vehiclesService.js`** (~110 lines) - Vehicles table and storage operations
+- **`vehiclesService.js`** (~145 lines) - Vehicles table and storage operations
   - `getAllVehicles()` - Fetch all vehicles with ordering
   - `createVehicle(vehicleData)` - Insert new vehicle
   - `updateVehicle(vehicleId, updates)` - Update vehicle by ID
   - `deleteVehicle(vehicleId)` - Delete vehicle by ID
   - `updateVehicleDisplayOrder(vehicleId, displayOrder)` - Update drag & drop order
   - `uploadVehicleImage(file)` - Upload image to Supabase Storage and return public URL
+  - Comprehensive error handling for all operations (Phase 7)
+
+#### Phase 7: Error Handling Infrastructure (`/utils`, `/components`, `/hooks`)
+
+Comprehensive error handling and user feedback system:
+
+- **`ErrorBoundary.js`** (~120 lines) - React error boundary component
+  - Catches React rendering errors in child components
+  - Displays user-friendly fallback UI
+  - Provides reload functionality
+  - Includes development-only error details
+  - Logs errors with component stack traces
+
+- **`utils/errorHandler.js`** (~200 lines) - Centralized error utilities
+  - `ErrorType` enum - Categorizes errors (NETWORK, DATABASE, VALIDATION, AUTHENTICATION, etc.)
+  - `getErrorType(error)` - Detects error type from error object
+  - `getUserFriendlyMessage(error, operation)` - Converts technical errors to user-friendly messages
+  - `logError(error, context)` - Logs errors with contextual information
+  - `handleError(error, options)` - Main error handling function
+  - `isRetryableError(error)` - Determines if error can be retried
+  - `retryWithBackoff(fn, options)` - Retry logic with exponential backoff
+  - All error messages are contextual and user-friendly
+
+- **`components/ui/Toast.js`** (~100 lines) - Toast notification component
+  - Individual toast with auto-dismiss
+  - Types: success, error, warning, info
+  - Customizable duration
+  - Dark mode support
+  - Animated entrance/exit
+  - Manual dismiss button
+
+- **`components/ui/ToastContainer.js`** (~40 lines) - Toast container
+  - Fixed position container for multiple toasts
+  - Stacked layout with proper spacing
+  - Handles toast lifecycle
+
+- **`hooks/useToast.js`** (~100 lines) - Toast management hook
+  - `success(message, duration)` - Show success toast
+  - `error(message, duration)` - Show error toast
+  - `warning(message, duration)` - Show warning toast
+  - `info(message, duration)` - Show info toast
+  - `dismissToast(id)` - Dismiss specific toast
+  - `dismissAll()` - Clear all toasts
+  - Returns array of active toasts for rendering
+
+**Enhanced Service Layer Error Handling:**
+- All service functions wrapped in try-catch blocks
+- Contextual error messages (e.g., "Failed to load parts: ...")
+- `@throws {Error}` JSDoc annotations
+- Errors enriched with operation context before throwing
 
 ## 🚧 Future Enhancements
 
-### Phase 7: Testing & Type Safety (Future)
+### Phase 8: Testing & Type Safety (Future)
 
 - 🚧 Create typed interfaces/PropTypes for better type safety
 - 🚧 Add unit tests for utility functions
@@ -462,7 +587,6 @@ All Supabase API calls have been extracted into dedicated service modules:
 - 🚧 Consider Zustand/Redux for global state management
 - 🚧 Implement code splitting for performance optimization
 - 🚧 Add request caching and optimistic updates
-- 🚧 Implement error boundaries for better error handling
 
 ## Benefits Achieved So Far
 
@@ -473,7 +597,7 @@ All Supabase API calls have been extracted into dedicated service modules:
 5. **Better IDE Performance** - Much smaller files load and parse faster
 6. **Massively Reduced Complexity** - Main component is now 85% smaller (9,512 → ~1,400 lines!)
 7. **Modular Architecture** - Perfect separation of concerns:
-   - **Utilities**: Pure functions for colors, styles, data calculations, tracking
+   - **Utilities**: Pure functions for colors, styles, data calculations, tracking, error handling
    - **Services**: Database operations and external API calls (Supabase)
    - **Hooks**: State management and business logic
    - **UI Components**: Reusable presentational components
@@ -489,6 +613,13 @@ All Supabase API calls have been extracted into dedicated service modules:
     - Add error handling and retry logic
     - Monitor and log database operations
     - Implement optimistic updates
+12. **Comprehensive Error Handling** - Robust error infrastructure with:
+    - React error boundaries for catching rendering errors
+    - User-friendly error messages with contextual information
+    - Toast notification system for non-intrusive feedback
+    - Centralized error utilities with categorization
+    - Retry logic with exponential backoff for transient errors
+    - Service layer enriched with contextual error messages
 
 ## Next Steps
 
@@ -497,9 +628,10 @@ All Supabase API calls have been extracted into dedicated service modules:
 3. ✅ ~~Extract tab components - VehiclesTab, ProjectsTab, PartsTab~~ (Phase 4 Complete)
 4. ✅ ~~Create custom hooks for state management~~ (Phase 5 Complete)
 5. ✅ ~~Extract Supabase API calls into service layer~~ (Phase 6 Complete)
-6. Add comprehensive testing (Future)
-7. Add TypeScript or PropTypes for type safety (Future)
-8. Consider state management library like Zustand (Future)
+6. ✅ ~~Implement comprehensive error handling infrastructure~~ (Phase 7 Complete)
+7. Add comprehensive testing (Future - Phase 8)
+8. Add TypeScript or PropTypes for type safety (Future - Phase 8)
+9. Consider state management library like Zustand (Future - Phase 8)
 
 ## Migration Strategy
 
@@ -512,8 +644,9 @@ To avoid breaking changes, the refactoring follows this approach:
 5. ✅ **Extract tab components** - Self-contained view sections with internal components (Phase 4 Complete)
 6. ✅ **Extract state management** - 7 custom hooks for all state and logic (Phase 5 Complete)
 7. ✅ **Extract API layer** - Centralized all Supabase operations into service modules (Phase 6 Complete)
-8. 🚧 **Add testing** - Comprehensive test coverage (Future)
-9. 🚧 **Add type safety** - TypeScript or PropTypes (Future)
+8. ✅ **Add error handling** - Error boundaries, toast system, and error utilities (Phase 7 Complete)
+9. 🚧 **Add testing** - Comprehensive test coverage (Future - Phase 8)
+10. 🚧 **Add type safety** - TypeScript or PropTypes (Future - Phase 8)
 
 ## Notes
 
@@ -550,6 +683,20 @@ To avoid breaking changes, the refactoring follows this approach:
   - Updated all 3 data hooks (useParts, useProjects, useVehicles) to use services
   - Hooks no longer import supabase directly - only service functions
   - Centralized database access for easier testing, mocking, and future migrations
+- **Phase 7:** Implemented comprehensive error handling infrastructure (~560 lines of error handling code)
+  - ErrorBoundary.js (120 lines - React error boundary for catching rendering errors)
+  - errorHandler.js (200 lines - centralized error utilities with type detection, user-friendly messages, retry logic)
+  - Toast.js + ToastContainer.js (140 lines - non-intrusive toast notification system)
+  - useToast.js (100 lines - hook for managing toast state with success/error/warning/info methods)
+  - Enhanced all 4 service layer files with comprehensive error handling:
+    - All operations wrapped in try-catch blocks
+    - Contextual error messages added (e.g., "Failed to load parts: ...")
+    - `@throws {Error}` JSDoc annotations added
+    - Errors enriched with operation context before throwing
+  - partsService.js updated to 130 lines with error handling
+  - vendorsService.js updated to 50 lines with error handling
+  - projectsService.js updated to 110 lines with error handling
+  - vehiclesService.js updated to 145 lines with error handling
 - Custom CSS is now imported globally via `layout.js`
 - All animations and custom styles are centralized in `custom.css`
 - Modal components are cleanly organized in `/components/modals` directory
@@ -557,10 +704,11 @@ To avoid breaking changes, the refactoring follows this approach:
 - Custom hooks are cleanly organized in `/hooks` directory
 - Service modules are cleanly organized in `/services` directory
 - Hooks follow single responsibility principle and are composable
-- Services are pure functions that return Promises and throw errors
+- Services are pure functions that return Promises and throw enriched errors
+- Error handling is comprehensive and user-friendly across all layers
 - Main component now focuses on orchestration and rendering only
 
 ---
 
 **Last Updated:** 2025-12-03
-**Status:** Phase 6 Complete (Service Layer Extracted - Full separation of concerns achieved!)
+**Status:** Phase 7 Complete (Error Handling Infrastructure - Production-ready error management!)
