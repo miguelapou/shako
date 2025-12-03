@@ -115,7 +115,10 @@ const useModals = () => {
       document.body.style.width = '';
       document.body.style.paddingRight = '';
 
-      window.scrollTo(0, scrollY);
+      // Use requestAnimationFrame to ensure DOM has updated before scrolling
+      requestAnimationFrame(() => {
+        window.scrollTo(0, scrollY);
+      });
       isScrollLocked.current = false;
     }
 
@@ -127,7 +130,10 @@ const useModals = () => {
         document.body.style.top = '';
         document.body.style.width = '';
         document.body.style.paddingRight = '';
-        window.scrollTo(0, scrollY);
+        // Use requestAnimationFrame to ensure DOM has updated before scrolling
+        requestAnimationFrame(() => {
+          window.scrollTo(0, scrollY);
+        });
         isScrollLocked.current = false;
       }
     };
