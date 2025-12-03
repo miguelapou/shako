@@ -407,6 +407,12 @@ const Shako = () => {
     return false;
   };
 
+  // Tab change handler to track animation direction
+  const handleTabChange = (newTab) => {
+    setPreviousTab(activeTab);
+    setActiveTab(newTab);
+  };
+
   // ========================================
   // EFFECTS
   // ========================================
