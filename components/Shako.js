@@ -365,15 +365,6 @@ const Shako = () => {
     setOpenDropdown
   );
 
-  // Helper to get vehicle name/nickname
-  const getVehicleProjects = (vehicleId) => {
-    return projects.filter(project => project.vehicle_id === vehicleId);
-  };
-
-  const getVehicleProjectCount = (vehicleId) => {
-    return projects.filter(project => project.vehicle_id === vehicleId).length;
-  };
-
   // ========================================
   // EFFECTS
   // ========================================
