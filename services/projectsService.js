@@ -8,31 +8,43 @@ import { supabase } from '../lib/supabase';
 /**
  * Load all projects from database
  * @returns {Promise<Array>} Array of projects
+ * @throws {Error} With context about the failed operation
  */
 export const getAllProjects = async () => {
-  const { data, error } = await supabase
-    .from('projects')
-    .select('*')
-    .order('display_order', { ascending: true, nullsFirst: false })
-    .order('id', { ascending: true });
+  try {
+    const { data, error } = await supabase
+      .from('projects')
+      .select('*')
+      .order('display_order', { ascending: true, nullsFirst: false })
+      .order('id', { ascending: true });
 
-  if (error) throw error;
-  return data || [];
+    if (error) throw error;
+    return data || [];
+  } catch (error) {
+    error.message = `Failed to load projects: ${error.message}`;
+    throw error;
+  }
 };
 
 /**
  * Create a new project
  * @param {Object} projectData - Project data to insert
  * @returns {Promise<Object>} Created project
+ * @throws {Error} With context about the failed operation
  */
 export const createProject = async (projectData) => {
-  const { data, error } = await supabase
-    .from('projects')
-    .insert([projectData])
-    .select();
+  try {
+    const { data, error } = await supabase
+      .from('projects')
+      .insert([projectData])
+      .select();
 
-  if (error) throw error;
-  return data;
+    if (error) throw error;
+    return data;
+  } catch (error) {
+    error.message = `Failed to create project: ${error.message}`;
+    throw error;
+  }
 };
 
 /**
@@ -40,28 +52,40 @@ export const createProject = async (projectData) => {
  * @param {number} projectId - Project ID
  * @param {Object} updates - Fields to update
  * @returns {Promise<void>}
+ * @throws {Error} With context about the failed operation
  */
 export const updateProject = async (projectId, updates) => {
-  const { error } = await supabase
-    .from('projects')
-    .update(updates)
-    .eq('id', projectId);
+  try {
+    const { error } = await supabase
+      .from('projects')
+      .update(updates)
+      .eq('id', projectId);
 
-  if (error) throw error;
+    if (error) throw error;
+  } catch (error) {
+    error.message = `Failed to update project: ${error.message}`;
+    throw error;
+  }
 };
 
 /**
  * Delete a project by ID
  * @param {number} projectId - Project ID
  * @returns {Promise<void>}
+ * @throws {Error} With context about the failed operation
  */
 export const deleteProject = async (projectId) => {
-  const { error } = await supabase
-    .from('projects')
-    .delete()
-    .eq('id', projectId);
+  try {
+    const { error } = await supabase
+      .from('projects')
+      .delete()
+      .eq('id', projectId);
 
-  if (error) throw error;
+    if (error) throw error;
+  } catch (error) {
+    error.message = `Failed to delete project: ${error.message}`;
+    throw error;
+  }
 };
 
 /**
@@ -69,12 +93,18 @@ export const deleteProject = async (projectId) => {
  * @param {number} projectId - Project ID
  * @param {number} displayOrder - New display order
  * @returns {Promise<void>}
+ * @throws {Error} With context about the failed operation
  */
 export const updateProjectDisplayOrder = async (projectId, displayOrder) => {
-  const { error } = await supabase
-    .from('projects')
-    .update({ display_order: displayOrder })
-    .eq('id', projectId);
+  try {
+    const { error } = await supabase
+      .from('projects')
+      .update({ display_order: displayOrder })
+      .eq('id', projectId);
 
-  if (error) throw error;
+    if (error) throw error;
+  } catch (error) {
+    error.message = `Failed to update project order: ${error.message}`;
+    throw error;
+  }
 };
