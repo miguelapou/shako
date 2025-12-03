@@ -8,31 +8,43 @@ import { supabase } from '../lib/supabase';
 /**
  * Load all parts from database
  * @returns {Promise<Array>} Array of parts
+ * @throws {Error} With context about the failed operation
  */
 export const getAllParts = async () => {
-  const { data, error } = await supabase
-    .from('parts')
-    .select('*')
-    .order('id', { ascending: true });
+  try {
+    const { data, error } = await supabase
+      .from('parts')
+      .select('*')
+      .order('id', { ascending: true });
 
-  if (error) throw error;
-  return data || [];
+    if (error) throw error;
+    return data || [];
+  } catch (error) {
+    error.message = `Failed to load parts: ${error.message}`;
+    throw error;
+  }
 };
 
 /**
  * Create a new part
  * @param {Object} partData - Part data to insert
  * @returns {Promise<Object>} Created part
+ * @throws {Error} With context about the failed operation
  */
 export const createPart = async (partData) => {
-  const { data, error } = await supabase
-    .from('parts')
-    .insert(partData)
-    .select()
-    .single();
+  try {
+    const { data, error } = await supabase
+      .from('parts')
+      .insert(partData)
+      .select()
+      .single();
 
-  if (error) throw error;
-  return data;
+    if (error) throw error;
+    return data;
+  } catch (error) {
+    error.message = `Failed to create part: ${error.message}`;
+    throw error;
+  }
 };
 
 /**
@@ -40,28 +52,40 @@ export const createPart = async (partData) => {
  * @param {number} partId - Part ID
  * @param {Object} updates - Fields to update
  * @returns {Promise<void>}
+ * @throws {Error} With context about the failed operation
  */
 export const updatePart = async (partId, updates) => {
-  const { error } = await supabase
-    .from('parts')
-    .update(updates)
-    .eq('id', partId);
+  try {
+    const { error } = await supabase
+      .from('parts')
+      .update(updates)
+      .eq('id', partId);
 
-  if (error) throw error;
+    if (error) throw error;
+  } catch (error) {
+    error.message = `Failed to update part: ${error.message}`;
+    throw error;
+  }
 };
 
 /**
  * Delete a part by ID
  * @param {number} partId - Part ID
  * @returns {Promise<void>}
+ * @throws {Error} With context about the failed operation
  */
 export const deletePart = async (partId) => {
-  const { error } = await supabase
-    .from('parts')
-    .delete()
-    .eq('id', partId);
+  try {
+    const { error } = await supabase
+      .from('parts')
+      .delete()
+      .eq('id', partId);
 
-  if (error) throw error;
+    if (error) throw error;
+  } catch (error) {
+    error.message = `Failed to delete part: ${error.message}`;
+    throw error;
+  }
 };
 
 /**
@@ -69,26 +93,38 @@ export const deletePart = async (partId) => {
  * @param {string} oldVendorName - Current vendor name
  * @param {string} newVendorName - New vendor name
  * @returns {Promise<void>}
+ * @throws {Error} With context about the failed operation
  */
 export const updatePartsVendor = async (oldVendorName, newVendorName) => {
-  const { error } = await supabase
-    .from('parts')
-    .update({ vendor: newVendorName })
-    .eq('vendor', oldVendorName);
+  try {
+    const { error } = await supabase
+      .from('parts')
+      .update({ vendor: newVendorName })
+      .eq('vendor', oldVendorName);
 
-  if (error) throw error;
+    if (error) throw error;
+  } catch (error) {
+    error.message = `Failed to rename vendor: ${error.message}`;
+    throw error;
+  }
 };
 
 /**
  * Remove vendor from all parts
  * @param {string} vendorName - Vendor name to remove
  * @returns {Promise<void>}
+ * @throws {Error} With context about the failed operation
  */
 export const removeVendorFromParts = async (vendorName) => {
-  const { error } = await supabase
-    .from('parts')
-    .update({ vendor: '' })
-    .eq('vendor', vendorName);
+  try {
+    const { error } = await supabase
+      .from('parts')
+      .update({ vendor: '' })
+      .eq('vendor', vendorName);
 
-  if (error) throw error;
+    if (error) throw error;
+  } catch (error) {
+    error.message = `Failed to remove vendor from parts: ${error.message}`;
+    throw error;
+  }
 };

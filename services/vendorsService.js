@@ -8,15 +8,21 @@ import { supabase } from '../lib/supabase';
 /**
  * Load all vendors from database
  * @returns {Promise<Array>} Array of vendors
+ * @throws {Error} With context about the failed operation
  */
 export const getAllVendors = async () => {
-  const { data, error } = await supabase
-    .from('vendors')
-    .select('*')
-    .order('name', { ascending: true });
+  try {
+    const { data, error } = await supabase
+      .from('vendors')
+      .select('*')
+      .order('name', { ascending: true });
 
-  if (error) throw error;
-  return data || [];
+    if (error) throw error;
+    return data || [];
+  } catch (error) {
+    error.message = `Failed to load vendors: ${error.message}`;
+    throw error;
+  }
 };
 
 /**
@@ -24,14 +30,20 @@ export const getAllVendors = async () => {
  * @param {string} vendorName - Vendor name
  * @param {string} color - Vendor color
  * @returns {Promise<void>}
+ * @throws {Error} With context about the failed operation
  */
 export const upsertVendor = async (vendorName, color) => {
-  const { error } = await supabase
-    .from('vendors')
-    .upsert(
-      { name: vendorName, color },
-      { onConflict: 'name' }
-    );
+  try {
+    const { error } = await supabase
+      .from('vendors')
+      .upsert(
+        { name: vendorName, color },
+        { onConflict: 'name' }
+      );
 
-  if (error) throw error;
+    if (error) throw error;
+  } catch (error) {
+    error.message = `Failed to save vendor color: ${error.message}`;
+    throw error;
+  }
 };
