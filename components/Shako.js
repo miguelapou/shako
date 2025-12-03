@@ -367,6 +367,46 @@ const Shako = () => {
     setOpenDropdown
   );
 
+  // Check if there are unsaved changes in vehicle edit mode
+  const hasUnsavedVehicleChanges = () => {
+    if (!vehicleModalEditMode || vehicleModalEditMode !== 'vehicle' || !originalVehicleData || !viewingVehicle) {
+      return false;
+    }
+    // Check if any field has changed
+    const fieldsToCheck = [
+      'nickname', 'name', 'year', 'license_plate', 'vin', 'insurance_policy',
+      'fuel_filter', 'air_filter', 'oil_filter', 'oil_type', 'oil_capacity',
+      'oil_brand', 'drain_plug', 'battery', 'color'
+    ];
+    for (const field of fieldsToCheck) {
+      if (viewingVehicle[field] !== originalVehicleData[field]) {
+        return true;
+      }
+    }
+    // Check if a new image has been selected
+    if (vehicleImageFile !== null) {
+      return true;
+    }
+    return false;
+  };
+
+  const hasUnsavedProjectChanges = () => {
+    if (!projectModalEditMode || !originalProjectData || !viewingProject) {
+      return false;
+    }
+    // Check if any field has changed
+    const fieldsToCheck = [
+      'name', 'description', 'budget', 'priority',
+      'vehicle_id'
+    ];
+    for (const field of fieldsToCheck) {
+      if (viewingProject[field] !== originalProjectData[field]) {
+        return true;
+      }
+    }
+    return false;
+  };
+
   // ========================================
   // EFFECTS
   // ========================================
