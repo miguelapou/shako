@@ -1168,7 +1168,7 @@ const Shako = () => {
 
         {/* Tab Navigation */}
         <div className={`mb-6 border-b ${
-          darkMode ? 'border-gray-700' : 'border-slate-200'
+          darkMode ? 'border-gray-700' : 'border-slate-300'
         }`}>
           <div className="flex relative">
             <button
@@ -1243,7 +1243,7 @@ const Shako = () => {
             {/* Animated underline */}
             <div
               className={`absolute bottom-0 h-0.5 transition-all duration-300 ease-out z-10 ${
-                darkMode ? 'bg-blue-400' : 'bg-blue-800'
+                darkMode ? 'bg-blue-400' : 'bg-blue-600'
               }`}
               style={{
                 left: `${underlineStyle.left}px`,
