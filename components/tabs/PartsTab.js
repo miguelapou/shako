@@ -49,6 +49,7 @@ const PartsTab = ({
 }) => {
   // Pagination state
   const [currentPage, setCurrentPage] = useState(1);
+  const [isPaginating, setIsPaginating] = useState(false);
   const [rowsPerPage, setRowsPerPage] = useState(() => {
     // Load from localStorage or default to 10
     if (typeof window !== 'undefined') {
@@ -69,6 +70,15 @@ const PartsTab = ({
   useEffect(() => {
     setCurrentPage(1);
   }, [filteredParts.length, searchTerm, statusFilter, deliveredFilter, vendorFilter]);
+
+  // Helper function to change page with animation
+  const handlePageChange = (newPage) => {
+    if (newPage !== currentPage && newPage >= 1 && newPage <= totalPages) {
+      setIsPaginating(true);
+      setCurrentPage(newPage);
+      setTimeout(() => setIsPaginating(false), 600);
+    }
+  };
 
   // Calculate pagination
   const totalPages = Math.ceil(filteredParts.length / rowsPerPage);
@@ -658,7 +668,7 @@ const PartsTab = ({
           darkMode ? 'bg-gray-800' : 'bg-slate-100'
         }`}>
           <div className="overflow-x-auto overflow-y-visible rounded-lg">
-            <table className={`w-full min-w-[900px] ${isStatusFiltering || isFilteringParts ? 'table-status-filtering' : isSorting ? 'table-sorting' : ''}`}>
+            <table className={`w-full min-w-[900px] ${isStatusFiltering || isFilteringParts ? 'table-status-filtering' : isSorting ? 'table-sorting' : isPaginating ? 'table-status-filtering' : ''}`}>
               <thead className={`border-b ${
                 darkMode ? 'bg-gray-700 border-gray-600' : 'bg-slate-100 border-slate-200'
               }`}>
@@ -893,29 +903,24 @@ const PartsTab = ({
                   }`}>
                     Rows per page:
                   </label>
-                  <div className="relative">
-                    <select
-                      id="rowsPerPage"
-                      value={rowsPerPage}
-                      onChange={(e) => {
-                        setRowsPerPage(Number(e.target.value));
-                        setCurrentPage(1);
-                      }}
-                      className={`appearance-none px-2 py-1 pr-8 rounded border text-sm ${
-                        darkMode
-                          ? 'bg-gray-600 border-gray-500 text-gray-200'
-                          : 'bg-white border-slate-300 text-slate-700'
-                      } cursor-pointer focus:outline-none focus:ring-2 focus:ring-blue-500`}
-                    >
-                      <option value="10">10</option>
-                      <option value="25">25</option>
-                      <option value="50">50</option>
-                      <option value="100">100</option>
-                    </select>
-                    <ChevronDown className={`absolute right-2 top-1/2 -translate-y-1/2 w-4 h-4 pointer-events-none ${
-                      darkMode ? 'text-gray-400' : 'text-slate-500'
-                    }`} />
-                  </div>
+                  <select
+                    id="rowsPerPage"
+                    value={rowsPerPage}
+                    onChange={(e) => {
+                      setRowsPerPage(Number(e.target.value));
+                      setCurrentPage(1);
+                    }}
+                    className={`px-2 py-1 pr-8 rounded border text-sm ${
+                      darkMode
+                        ? 'bg-gray-600 border-gray-500 text-gray-200'
+                        : 'bg-white border-slate-300 text-slate-700'
+                    } cursor-pointer focus:outline-none focus:ring-2 focus:ring-blue-500`}
+                  >
+                    <option value="10">10</option>
+                    <option value="25">25</option>
+                    <option value="50">50</option>
+                    <option value="100">100</option>
+                  </select>
                 </div>
               </div>
 
@@ -924,7 +929,7 @@ const PartsTab = ({
                 <div className="flex items-center gap-1">
                   {/* Previous button */}
                   <button
-                    onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
+                    onClick={() => handlePageChange(currentPage - 1)}
                     disabled={currentPage === 1}
                     className={`p-1 rounded transition-colors ${
                       currentPage === 1
@@ -937,7 +942,7 @@ const PartsTab = ({
 
                   {/* First page button (double arrow) */}
                   <button
-                    onClick={() => setCurrentPage(1)}
+                    onClick={() => handlePageChange(1)}
                     disabled={currentPage === 1}
                     className={`p-1 rounded transition-colors ${
                       currentPage === 1
@@ -957,7 +962,7 @@ const PartsTab = ({
 
                   {/* Last page button (double arrow) */}
                   <button
-                    onClick={() => setCurrentPage(totalPages)}
+                    onClick={() => handlePageChange(totalPages)}
                     disabled={currentPage === totalPages}
                     className={`p-1 rounded transition-colors ${
                       currentPage === totalPages
@@ -970,7 +975,7 @@ const PartsTab = ({
 
                   {/* Next button */}
                   <button
-                    onClick={() => setCurrentPage(prev => Math.min(totalPages, prev + 1))}
+                    onClick={() => handlePageChange(currentPage + 1)}
                     disabled={currentPage === totalPages}
                     className={`p-1 rounded transition-colors ${
                       currentPage === totalPages
