@@ -13,7 +13,8 @@ import {
   ChevronDown,
   Upload,
   Pause,
-  Play
+  Play,
+  Camera
 } from 'lucide-react';
 import ProjectDetailView from '../ui/ProjectDetailView';
 import ProjectEditForm from '../ui/ProjectEditForm';
@@ -327,7 +328,7 @@ const VehicleDetailModal = ({
                   </div>
                 </div>
                 {/* Vehicle Image - Half width on desktop - appears first on mobile */}
-                {viewingVehicle.image_url && (
+                {viewingVehicle.image_url ? (
                   <div className="order-first md:order-last rounded-lg overflow-hidden">
                     <img
                       src={viewingVehicle.image_url}
@@ -336,6 +337,17 @@ const VehicleDetailModal = ({
                       decoding="async"
                       className="w-full h-full object-cover min-h-[300px]"
                     />
+                  </div>
+                ) : (
+                  <div className="order-first md:order-last rounded-lg flex flex-col items-center justify-center min-h-[300px]">
+                    <Camera className={`w-16 h-16 mb-3 opacity-40 ${
+                      darkMode ? 'text-gray-600' : 'text-gray-400'
+                    }`} />
+                    <p className={`text-sm ${
+                      darkMode ? 'text-gray-500' : 'text-gray-500'
+                    }`}>
+                      No image
+                    </p>
                   </div>
                 )}
               </div>
@@ -854,7 +866,7 @@ const VehicleDetailModal = ({
                               : 'border-gray-300 hover:border-gray-400 bg-gray-50 hover:bg-gray-100'
                         }`} style={{ minHeight: '400px' }}>
                           <div className="flex flex-col items-center justify-center pt-5 pb-6">
-                            <Upload className={`w-12 h-12 mb-3 ${
+                            <Camera className={`w-12 h-12 mb-3 ${
                               isDraggingImage
                                 ? 'text-blue-500'
                                 : darkMode ? 'text-gray-400' : 'text-gray-500'
