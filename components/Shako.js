@@ -1002,7 +1002,14 @@ const Shako = () => {
                         >
                           All
                         </button>
-                        {vehicles.filter(vehicle => !vehicle.archived).map(vehicle => (
+                        {vehicles.filter(vehicle => !vehicle.archived).length === 0 ? (
+                          <div className={`px-3 py-2 text-sm text-center italic ${
+                            darkMode ? 'text-gray-500' : 'text-gray-400'
+                          }`}>
+                            No active vehicles
+                          </div>
+                        ) : (
+                          vehicles.filter(vehicle => !vehicle.archived).map(vehicle => (
                           <button
                             key={vehicle.id}
                             onClick={() => {
@@ -1028,7 +1035,8 @@ const Shako = () => {
                               {vehicle.nickname ? `${vehicle.nickname} (${vehicle.name})` : vehicle.name}
                             </span>
                           </button>
-                        ))}
+                        ))
+                        )}
                       </div>
                     </>
                   )}
