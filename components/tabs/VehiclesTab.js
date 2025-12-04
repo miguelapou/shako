@@ -196,7 +196,7 @@ const VehiclesTab = ({
               )}
 
               {/* Vehicle Header */}
-              <div className={`mb-4 ${vehicle.image_url ? 'mt-4' : 'mt-8'}`}>
+              <div className="mb-4">
                 <div className="flex items-start justify-between gap-2 mb-1">
                   <h3 className={`text-xl font-bold ${
                     darkMode ? 'text-gray-100' : 'text-slate-800'
@@ -466,7 +466,7 @@ const VehiclesTab = ({
                   )}
 
                   {/* Vehicle Header */}
-                  <div className={`mb-2 ${vehicle.image_url ? 'mt-2' : 'mt-8'}`}>
+                  <div className="mb-2">
                     <div className="flex items-start justify-between gap-2">
                       <h3 className={`text-base font-bold ${
                         darkMode ? 'text-gray-100' : 'text-slate-800'
