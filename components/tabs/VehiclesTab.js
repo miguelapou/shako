@@ -183,10 +183,8 @@ const VehiclesTab = ({
                   )}
                 </div>
               ) : (
-                <div className={`mb-4 mt-10 w-full h-48 rounded-lg border flex flex-col items-center justify-center ${
-                  darkMode ? 'bg-gray-700/30 border-gray-600' : 'bg-gray-100 border-gray-300'
-                }`}>
-                  <Camera className={`w-12 h-12 mb-2 ${
+                <div className="mb-4 mt-10 w-full h-48 rounded-lg flex flex-col items-center justify-center">
+                  <Camera className={`w-12 h-12 mb-2 opacity-40 ${
                     darkMode ? 'text-gray-600' : 'text-gray-400'
                   }`} />
                   <p className={`text-sm ${
@@ -206,8 +204,8 @@ const VehiclesTab = ({
                     {vehicle.nickname || [vehicle.year, vehicle.make, vehicle.name].filter(Boolean).join(' ')}
                   </h3>
                   {vehicle.nickname && (
-                    <span className={`inline-block px-2.5 py-1 rounded-md text-xs font-medium whitespace-nowrap flex-shrink-0 ${
-                      darkMode ? 'bg-gray-700 text-gray-300' : 'bg-gray-200 text-gray-700'
+                    <span className={`inline-block px-2.5 py-1 rounded-full text-xs font-medium whitespace-nowrap flex-shrink-0 ${
+                      darkMode ? 'bg-blue-600 text-blue-100' : 'bg-blue-100 text-blue-800'
                     }`}>
                       {[vehicle.year, vehicle.make, vehicle.name].filter(Boolean).join(' ')}
                     </span>
@@ -455,10 +453,8 @@ const VehiclesTab = ({
                       </div>
                     </div>
                   ) : (
-                    <div className={`mb-2 mt-8 w-full h-32 rounded-lg border flex flex-col items-center justify-center ${
-                      darkMode ? 'bg-gray-700/30 border-gray-600' : 'bg-gray-100 border-gray-300'
-                    }`}>
-                      <Camera className={`w-8 h-8 mb-1 ${
+                    <div className="mb-2 mt-8 w-full h-32 rounded-lg flex flex-col items-center justify-center">
+                      <Camera className={`w-8 h-8 mb-1 opacity-40 ${
                         darkMode ? 'text-gray-600' : 'text-gray-400'
                       }`} />
                       <p className={`text-xs ${
@@ -478,8 +474,8 @@ const VehiclesTab = ({
                         {vehicle.nickname || [vehicle.year, vehicle.make, vehicle.name].filter(Boolean).join(' ')}
                       </h3>
                       {vehicle.nickname && (
-                        <span className={`inline-block px-2 py-0.5 rounded-md text-xs font-medium whitespace-nowrap flex-shrink-0 ${
-                          darkMode ? 'bg-gray-700 text-gray-300' : 'bg-gray-200 text-gray-700'
+                        <span className={`inline-block px-2 py-0.5 rounded-full text-xs font-medium whitespace-nowrap flex-shrink-0 ${
+                          darkMode ? 'bg-blue-600 text-blue-100' : 'bg-blue-100 text-blue-800'
                         }`}>
                           {[vehicle.year, vehicle.make, vehicle.name].filter(Boolean).join(' ')}
                         </span>
