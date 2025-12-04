@@ -2,7 +2,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import {
   Search, Package, TrendingUp, Truck, CheckCircle, Clock,
   ChevronDown, Plus, X, ExternalLink, ShoppingCart, Car,
-  ChevronLeft, ChevronRight
+  ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight
 } from 'lucide-react';
 import PriceDisplay from '../ui/PriceDisplay';
 import { getVendorDisplayColor } from '../../utils/colorUtils';
@@ -922,34 +922,38 @@ const PartsTab = ({
                     <ChevronLeft className="w-5 h-5" />
                   </button>
 
-                  {/* Page numbers */}
-                  <div className="flex items-center gap-1">
-                    {Array.from({ length: totalPages }, (_, i) => i + 1)
-                      .filter(page => {
-                        // Show first page, last page, current page, and pages around current
-                        if (page === 1 || page === totalPages) return true;
-                        if (Math.abs(page - currentPage) <= 1) return true;
-                        return false;
-                      })
-                      .map((page, index, array) => (
-                        <React.Fragment key={page}>
-                          {/* Show ellipsis if there's a gap */}
-                          {index > 0 && page - array[index - 1] > 1 && (
-                            <span className={`px-2 ${darkMode ? 'text-gray-500' : 'text-slate-500'}`}>...</span>
-                          )}
-                          <button
-                            onClick={() => setCurrentPage(page)}
-                            className={`min-w-[2.5rem] px-3 py-1 rounded text-sm transition-colors ${
-                              currentPage === page
-                                ? darkMode ? 'bg-blue-600 text-white' : 'bg-blue-500 text-white'
-                                : darkMode ? 'text-gray-300 hover:bg-gray-600' : 'text-slate-700 hover:bg-slate-200'
-                            }`}
-                          >
-                            {page}
-                          </button>
-                        </React.Fragment>
-                      ))}
+                  {/* First page button (double arrow) */}
+                  <button
+                    onClick={() => setCurrentPage(1)}
+                    disabled={currentPage === 1}
+                    className={`p-1 rounded transition-colors ${
+                      currentPage === 1
+                        ? darkMode ? 'text-gray-600 cursor-not-allowed' : 'text-slate-400 cursor-not-allowed'
+                        : darkMode ? 'text-gray-300 hover:bg-gray-600' : 'text-slate-700 hover:bg-slate-200'
+                    }`}
+                  >
+                    <ChevronsLeft className="w-5 h-5" />
+                  </button>
+
+                  {/* Current page display */}
+                  <div className={`min-w-[4rem] px-3 py-1 rounded text-sm text-center ${
+                    darkMode ? 'bg-blue-600 text-white' : 'bg-blue-500 text-white'
+                  }`}>
+                    {currentPage} / {totalPages}
                   </div>
+
+                  {/* Last page button (double arrow) */}
+                  <button
+                    onClick={() => setCurrentPage(totalPages)}
+                    disabled={currentPage === totalPages}
+                    className={`p-1 rounded transition-colors ${
+                      currentPage === totalPages
+                        ? darkMode ? 'text-gray-600 cursor-not-allowed' : 'text-slate-400 cursor-not-allowed'
+                        : darkMode ? 'text-gray-300 hover:bg-gray-600' : 'text-slate-700 hover:bg-slate-200'
+                    }`}
+                  >
+                    <ChevronsRight className="w-5 h-5" />
+                  </button>
 
                   {/* Next button */}
                   <button
