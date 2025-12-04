@@ -1,7 +1,7 @@
 import React from 'react';
 import {
   Plus, ChevronDown, ChevronRight, Edit2, GripVertical,
-  Car, Archive, Package, Wrench, FolderLock, FolderOpen
+  Car, Archive, Package, Wrench, FolderLock, FolderOpen, Camera
 } from 'lucide-react';
 import { getMutedColor, getPriorityBorderColor } from '../../utils/colorUtils';
 import AddVehicleModal from '../modals/AddVehicleModal';
@@ -157,7 +157,7 @@ const VehiclesTab = ({
               </div>
 
               {/* Vehicle Image */}
-              {vehicle.image_url && (
+              {vehicle.image_url ? (
                 <div className="mb-4 mt-10 relative">
                   <img
                     src={vehicle.image_url}
@@ -182,41 +182,39 @@ const VehiclesTab = ({
                     </div>
                   )}
                 </div>
+              ) : (
+                <div className={`mb-4 mt-10 w-full h-48 rounded-lg border flex flex-col items-center justify-center ${
+                  darkMode ? 'bg-gray-700/30 border-gray-600' : 'bg-gray-100 border-gray-300'
+                }`}>
+                  <Camera className={`w-12 h-12 mb-2 ${
+                    darkMode ? 'text-gray-600' : 'text-gray-400'
+                  }`} />
+                  <p className={`text-sm ${
+                    darkMode ? 'text-gray-500' : 'text-gray-500'
+                  }`}>
+                    No image
+                  </p>
+                </div>
               )}
 
               {/* Vehicle Header */}
               <div className={`mb-4 ${vehicle.image_url ? 'mt-4' : 'mt-8'}`}>
-                <h3 className={`text-xl font-bold mb-1 ${
-                  darkMode ? 'text-gray-100' : 'text-slate-800'
-                }`}>
-                  {vehicle.nickname || [vehicle.year, vehicle.make, vehicle.name].filter(Boolean).join(' ')}
-                </h3>
-                {vehicle.nickname && (
-                  <p className={`text-sm mb-2 ${
-                    darkMode ? 'text-gray-400' : 'text-slate-600'
+                <div className="flex items-start justify-between gap-2 mb-1">
+                  <h3 className={`text-xl font-bold ${
+                    darkMode ? 'text-gray-100' : 'text-slate-800'
                   }`}>
-                    {[vehicle.year, vehicle.make, vehicle.name].filter(Boolean).join(' ')}
-                  </p>
-                )}
+                    {vehicle.nickname || [vehicle.year, vehicle.make, vehicle.name].filter(Boolean).join(' ')}
+                  </h3>
+                  {vehicle.nickname && (
+                    <span className={`inline-block px-2.5 py-1 rounded-md text-xs font-medium whitespace-nowrap flex-shrink-0 ${
+                      darkMode ? 'bg-gray-700 text-gray-300' : 'bg-gray-200 text-gray-700'
+                    }`}>
+                      {[vehicle.year, vehicle.make, vehicle.name].filter(Boolean).join(' ')}
+                    </span>
+                  )}
+                </div>
                 {!vehicle.archived && (
                   <>
-                    <div className="flex items-center justify-between gap-2 flex-wrap">
-                      {vehicle.vin && (
-                        <span className={`inline-block px-3 py-1 rounded-full text-xs font-mono ${
-                          darkMode ? 'bg-gray-700 text-gray-300' : 'bg-gray-200 text-gray-900'
-                        }`}>
-                          VIN: {vehicle.vin}
-                        </span>
-                      )}
-                      {vehicle.license_plate && (
-                        <span className={`inline-block px-3 py-1 rounded text-sm font-medium ${
-                          darkMode ? 'bg-blue-600 text-blue-100' : 'bg-blue-100 text-blue-800'
-                        }`}>
-                          {vehicle.license_plate}
-                        </span>
-                      )}
-                    </div>
-
                     {/* Project Badges */}
                     {(() => {
                       const vehicleProjects = getVehicleProjects(vehicle.id);
@@ -437,7 +435,7 @@ const VehiclesTab = ({
                   style={{ borderTopColor: borderColor }}
                 >
                   {/* Vehicle Image */}
-                  {vehicle.image_url && (
+                  {vehicle.image_url ? (
                     <div className="mb-2 mt-8 relative">
                       <img
                         src={vehicle.image_url}
@@ -456,22 +454,37 @@ const VehiclesTab = ({
                         </span>
                       </div>
                     </div>
+                  ) : (
+                    <div className={`mb-2 mt-8 w-full h-32 rounded-lg border flex flex-col items-center justify-center ${
+                      darkMode ? 'bg-gray-700/30 border-gray-600' : 'bg-gray-100 border-gray-300'
+                    }`}>
+                      <Camera className={`w-8 h-8 mb-1 ${
+                        darkMode ? 'text-gray-600' : 'text-gray-400'
+                      }`} />
+                      <p className={`text-xs ${
+                        darkMode ? 'text-gray-500' : 'text-gray-500'
+                      }`}>
+                        No image
+                      </p>
+                    </div>
                   )}
 
                   {/* Vehicle Header */}
                   <div className={`mb-2 ${vehicle.image_url ? 'mt-2' : 'mt-8'}`}>
-                    <h3 className={`text-base font-bold mb-1 ${
-                      darkMode ? 'text-gray-100' : 'text-slate-800'
-                    }`}>
-                      {vehicle.nickname || [vehicle.year, vehicle.make, vehicle.name].filter(Boolean).join(' ')}
-                    </h3>
-                    {vehicle.nickname && (
-                      <p className={`text-xs ${
-                        darkMode ? 'text-gray-400' : 'text-slate-600'
+                    <div className="flex items-start justify-between gap-2">
+                      <h3 className={`text-base font-bold ${
+                        darkMode ? 'text-gray-100' : 'text-slate-800'
                       }`}>
-                        {[vehicle.year, vehicle.make, vehicle.name].filter(Boolean).join(' ')}
-                      </p>
-                    )}
+                        {vehicle.nickname || [vehicle.year, vehicle.make, vehicle.name].filter(Boolean).join(' ')}
+                      </h3>
+                      {vehicle.nickname && (
+                        <span className={`inline-block px-2 py-0.5 rounded-md text-xs font-medium whitespace-nowrap flex-shrink-0 ${
+                          darkMode ? 'bg-gray-700 text-gray-300' : 'bg-gray-200 text-gray-700'
+                        }`}>
+                          {[vehicle.year, vehicle.make, vehicle.name].filter(Boolean).join(' ')}
+                        </span>
+                      )}
+                    </div>
                   </div>
                 </div>
               );
