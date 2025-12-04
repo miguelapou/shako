@@ -865,6 +865,12 @@ const PartsTab = ({
                     </td>
                   </tr>
                 ))}
+                {/* Empty rows to maintain consistent height */}
+                {Array.from({ length: rowsPerPage - paginatedParts.length }).map((_, index) => (
+                  <tr key={`empty-${index}`} className={`h-[60px] ${darkMode ? 'bg-gray-800' : 'bg-white'}`}>
+                    <td colSpan="8" className="px-6 py-4">&nbsp;</td>
+                  </tr>
+                ))}
               </tbody>
             </table>
           </div>
@@ -892,7 +898,7 @@ const PartsTab = ({
                       setRowsPerPage(Number(e.target.value));
                       setCurrentPage(1);
                     }}
-                    className={`px-2 py-1 rounded border text-sm ${
+                    className={`appearance-none px-2 py-1 rounded border text-sm ${
                       darkMode
                         ? 'bg-gray-600 border-gray-500 text-gray-200'
                         : 'bg-white border-slate-300 text-slate-700'
