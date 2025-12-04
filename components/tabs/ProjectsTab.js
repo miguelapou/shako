@@ -392,7 +392,7 @@ const ProjectsTab = ({
             <h3 className={`text-xl font-semibold mb-2 ${
               darkMode ? 'text-gray-300' : 'text-slate-700'
             }`}>
-              No Projects Yet
+              No Active Projects
             </h3>
             <p className={`mb-4 ${
               darkMode ? 'text-gray-400' : 'text-slate-600'
