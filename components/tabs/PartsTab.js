@@ -665,7 +665,7 @@ const PartsTab = ({
                 <tr>
                   <th
                     onClick={() => handleSort('status')}
-                    className={`w-32 px-6 py-4 text-center text-xs font-semibold uppercase tracking-wider cursor-pointer transition-colors ${
+                    className={`w-44 px-6 py-4 text-center text-xs font-semibold uppercase tracking-wider cursor-pointer transition-colors ${
                       darkMode ? 'text-gray-300 hover:bg-gray-600' : 'text-slate-700 hover:bg-slate-200'
                     }`}
                   >
