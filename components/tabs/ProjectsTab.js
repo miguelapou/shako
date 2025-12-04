@@ -404,7 +404,7 @@ const ProjectsTab = ({
               className="inline-flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg shadow-md transition-colors font-medium"
             >
               <Plus className="w-5 h-5" />
-              Create First Project
+              + Add a project
             </button>
           </div>
         )}
