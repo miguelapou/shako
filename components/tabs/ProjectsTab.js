@@ -360,6 +360,55 @@ const ProjectsTab = ({
           })}
         </div>
 
+        {/* Empty State - Vehicle has no projects */}
+        {projectVehicleFilter !== 'all' && projects.filter(project => !project.archived && String(project.vehicle_id) === String(projectVehicleFilter)).length === 0 && (
+          <div className={`text-center py-12 rounded-lg ${
+            darkMode ? 'bg-gray-800' : 'bg-slate-100'
+          }`}>
+            <Car className={`w-16 h-16 mx-auto mb-4 opacity-40 ${
+              darkMode ? 'text-gray-600' : 'text-gray-400'
+            }`} />
+            <h3 className={`text-xl font-semibold mb-2 ${
+              darkMode ? 'text-gray-300' : 'text-slate-700'
+            }`}>
+              Selected vehicle has no linked projects
+            </h3>
+            <p className={`${
+              darkMode ? 'text-gray-400' : 'text-slate-600'
+            }`}>
+              Create a project or link an existing one to this vehicle
+            </p>
+          </div>
+        )}
+
+        {/* Empty State - No projects at all */}
+        {projects.filter(p => !p.archived).length === 0 && (
+          <div className={`text-center py-12 rounded-lg ${
+            darkMode ? 'bg-gray-800' : 'bg-slate-100'
+          }`}>
+            <Wrench className={`w-16 h-16 mx-auto mb-4 ${
+              darkMode ? 'text-gray-600' : 'text-gray-400'
+            }`} />
+            <h3 className={`text-xl font-semibold mb-2 ${
+              darkMode ? 'text-gray-300' : 'text-slate-700'
+            }`}>
+              No Projects Yet
+            </h3>
+            <p className={`mb-4 ${
+              darkMode ? 'text-gray-400' : 'text-slate-600'
+            }`}>
+              Start organizing your restoration by creating your first project
+            </p>
+            <button
+              onClick={() => setShowAddProjectModal(true)}
+              className="inline-flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg shadow-md transition-colors font-medium"
+            >
+              <Plus className="w-5 h-5" />
+              Create First Project
+            </button>
+          </div>
+        )}
+
         {/* Archived Projects Section */}
         <>
           <div className={`my-8 border-t ${
@@ -525,55 +574,6 @@ const ProjectsTab = ({
             )}
           </div>
         </>
-
-        {/* Empty State - Vehicle has no projects */}
-        {projectVehicleFilter !== 'all' && projects.filter(project => !project.archived && String(project.vehicle_id) === String(projectVehicleFilter)).length === 0 && (
-          <div className={`text-center py-12 rounded-lg ${
-            darkMode ? 'bg-gray-800' : 'bg-slate-100'
-          }`}>
-            <Car className={`w-16 h-16 mx-auto mb-4 opacity-40 ${
-              darkMode ? 'text-gray-600' : 'text-gray-400'
-            }`} />
-            <h3 className={`text-xl font-semibold mb-2 ${
-              darkMode ? 'text-gray-300' : 'text-slate-700'
-            }`}>
-              Selected vehicle has no linked projects
-            </h3>
-            <p className={`${
-              darkMode ? 'text-gray-400' : 'text-slate-600'
-            }`}>
-              Create a project or link an existing one to this vehicle
-            </p>
-          </div>
-        )}
-
-        {/* Empty State - No projects at all */}
-        {projects.filter(p => !p.archived).length === 0 && (
-          <div className={`text-center py-12 rounded-lg ${
-            darkMode ? 'bg-gray-800' : 'bg-slate-100'
-          }`}>
-            <Wrench className={`w-16 h-16 mx-auto mb-4 ${
-              darkMode ? 'text-gray-600' : 'text-gray-400'
-            }`} />
-            <h3 className={`text-xl font-semibold mb-2 ${
-              darkMode ? 'text-gray-300' : 'text-slate-700'
-            }`}>
-              No Projects Yet
-            </h3>
-            <p className={`mb-4 ${
-              darkMode ? 'text-gray-400' : 'text-slate-600'
-            }`}>
-              Start organizing your restoration by creating your first project
-            </p>
-            <button
-              onClick={() => setShowAddProjectModal(true)}
-              className="inline-flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg shadow-md transition-colors font-medium"
-            >
-              <Plus className="w-5 h-5" />
-              Create First Project
-            </button>
-          </div>
-        )}
 
         {/* Add Project Modal */}
         <AddProjectModal
