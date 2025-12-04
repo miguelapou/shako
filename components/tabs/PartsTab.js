@@ -658,7 +658,7 @@ const PartsTab = ({
           darkMode ? 'bg-gray-800' : 'bg-slate-100'
         }`}>
           <div className="overflow-x-auto overflow-y-visible rounded-lg">
-            <table className={`w-full ${isStatusFiltering || isFilteringParts ? 'table-status-filtering' : isSorting ? 'table-sorting' : ''}`}>
+            <table className={`w-full min-w-[900px] ${isStatusFiltering || isFilteringParts ? 'table-status-filtering' : isSorting ? 'table-sorting' : ''}`}>
               <thead className={`border-b ${
                 darkMode ? 'bg-gray-700 border-gray-600' : 'bg-slate-100 border-slate-200'
               }`}>
@@ -939,7 +939,7 @@ const PartsTab = ({
                           )}
                           <button
                             onClick={() => setCurrentPage(page)}
-                            className={`px-3 py-1 rounded text-sm transition-colors ${
+                            className={`min-w-[2.5rem] px-3 py-1 rounded text-sm transition-colors ${
                               currentPage === page
                                 ? darkMode ? 'bg-blue-600 text-white' : 'bg-blue-500 text-white'
                                 : darkMode ? 'text-gray-300 hover:bg-gray-600' : 'text-slate-700 hover:bg-slate-200'
