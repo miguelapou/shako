@@ -704,7 +704,7 @@ const PartsTab = ({
                   </th>
                   <th
                     onClick={() => handleSort('vehicle')}
-                    className={`hidden xl:table-cell px-6 py-4 text-center text-xs font-semibold uppercase tracking-wider cursor-pointer transition-colors ${
+                    className={`hidden min-[1100px]:table-cell px-6 py-4 text-center text-xs font-semibold uppercase tracking-wider cursor-pointer transition-colors ${
                       darkMode ? 'text-gray-300 hover:bg-gray-600' : 'text-slate-700 hover:bg-slate-200'
                     }`}
                   >
@@ -802,7 +802,7 @@ const PartsTab = ({
                     <td className="px-6 py-4 text-center">
                       <ProjectDropdown part={part} />
                     </td>
-                    <td className="hidden xl:table-cell px-6 py-4 text-center">
+                    <td className="hidden min-[1100px]:table-cell px-6 py-4 text-center">
                       {(() => {
                         const partProject = part.projectId ? projects.find(p => p.id === part.projectId) : null;
                         const vehicle = partProject?.vehicle_id ? vehicles.find(v => v.id === partProject.vehicle_id) : null;

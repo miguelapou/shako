@@ -890,7 +890,7 @@ const Shako = () => {
         .hidden-below-800 {
           display: none;
         }
-        @media (min-width: 800px) {
+        @media (min-width: 948px) {
           .hidden-below-800 {
             display: block;
           }
@@ -907,7 +907,7 @@ const Shako = () => {
         .show-below-800.grid {
           display: grid;
         }
-        @media (min-width: 800px) {
+        @media (min-width: 948px) {
           .show-below-800,
           .show-below-800.grid {
             display: none;
