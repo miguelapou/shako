@@ -1,7 +1,8 @@
 import React, { useState, useRef, useEffect } from 'react';
 import {
   Search, Package, TrendingUp, Truck, CheckCircle, Clock,
-  ChevronDown, Plus, X, ExternalLink, ShoppingCart, Car
+  ChevronDown, Plus, X, ExternalLink, ShoppingCart, Car,
+  ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight
 } from 'lucide-react';
 import PriceDisplay from '../ui/PriceDisplay';
 import { getVendorDisplayColor } from '../../utils/colorUtils';
@@ -46,6 +47,35 @@ const PartsTab = ({
   getStatusColor,
   getVendorColor
 }) => {
+  // Pagination state
+  const [currentPage, setCurrentPage] = useState(1);
+  const [rowsPerPage, setRowsPerPage] = useState(() => {
+    // Load from localStorage or default to 10
+    if (typeof window !== 'undefined') {
+      const saved = localStorage.getItem('partsTableRowsPerPage');
+      return saved ? parseInt(saved, 10) : 10;
+    }
+    return 10;
+  });
+
+  // Save rowsPerPage to localStorage whenever it changes
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('partsTableRowsPerPage', rowsPerPage.toString());
+    }
+  }, [rowsPerPage]);
+
+  // Reset to page 1 when filters change
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [filteredParts.length, searchTerm, statusFilter, deliveredFilter, vendorFilter]);
+
+  // Calculate pagination
+  const totalPages = Math.ceil(filteredParts.length / rowsPerPage);
+  const startIndex = (currentPage - 1) * rowsPerPage;
+  const endIndex = startIndex + rowsPerPage;
+  const paginatedParts = filteredParts.slice(startIndex, endIndex);
+
   // Internal StatusDropdown component
   const StatusDropdown = ({ part }) => {
     const isOpen = openDropdown === part.id;
@@ -416,13 +446,13 @@ const PartsTab = ({
                 <CheckCircle className={`w-6 h-6 sm:w-8 sm:h-8 ${
                   deliveredFilter === 'hide' ? 'text-red-500' : 'text-green-500'
                 } opacity-20 absolute top-2 sm:top-4 right-2 sm:right-4`} />
-                <div>
+                <div key={deliveredFilter} className={deliveredFilter === 'hide' ? 'status-card-content' : ''}>
                   <p className={`text-xs sm:text-sm mb-1 sm:mb-2 md:mb-3 ${
                     darkMode ? 'text-gray-400' : 'text-slate-600'
-                  }`}>Delivered</p>
+                  }`}>{deliveredFilter === 'hide' ? 'Undelivered' : 'Delivered'}</p>
                   <p className={`text-xl sm:text-2xl md:text-2xl font-bold truncate ${
                     darkMode ? 'text-gray-100' : 'text-gray-800'
-                  }`}>{stats.delivered}</p>
+                  }`}>{deliveredFilter === 'hide' ? stats.undelivered : stats.delivered}</p>
                 </div>
               </div>
             </div>
@@ -628,7 +658,7 @@ const PartsTab = ({
           darkMode ? 'bg-gray-800' : 'bg-slate-100'
         }`}>
           <div className="overflow-x-auto overflow-y-visible rounded-lg">
-            <table className={`w-full ${isStatusFiltering || isFilteringParts ? 'table-status-filtering' : isSorting ? 'table-sorting' : ''}`}>
+            <table className={`w-full min-w-[900px] ${isStatusFiltering || isFilteringParts ? 'table-status-filtering' : isSorting ? 'table-sorting' : ''}`}>
               <thead className={`border-b ${
                 darkMode ? 'bg-gray-700 border-gray-600' : 'bg-slate-100 border-slate-200'
               }`}>
@@ -674,7 +704,7 @@ const PartsTab = ({
                   </th>
                   <th
                     onClick={() => handleSort('vehicle')}
-                    className={`hidden xl:table-cell px-6 py-4 text-center text-xs font-semibold uppercase tracking-wider cursor-pointer transition-colors ${
+                    className={`hidden min-[1100px]:table-cell px-6 py-4 text-center text-xs font-semibold uppercase tracking-wider cursor-pointer transition-colors ${
                       darkMode ? 'text-gray-300 hover:bg-gray-600' : 'text-slate-700 hover:bg-slate-200'
                     }`}
                   >
@@ -702,7 +732,7 @@ const PartsTab = ({
               <tbody className={`divide-y ${
                 darkMode ? 'divide-gray-700' : 'divide-slate-200'
               }`}>
-                {filteredParts.map((part) => (
+                {paginatedParts.map((part) => (
                   <tr
                     key={part.id}
                     onClick={() => {
@@ -772,7 +802,7 @@ const PartsTab = ({
                     <td className="px-6 py-4 text-center">
                       <ProjectDropdown part={part} />
                     </td>
-                    <td className="hidden xl:table-cell px-6 py-4 text-center">
+                    <td className="hidden min-[1100px]:table-cell px-6 py-4 text-center">
                       {(() => {
                         const partProject = part.projectId ? projects.find(p => p.id === part.projectId) : null;
                         const vehicle = partProject?.vehicle_id ? vehicles.find(v => v.id === partProject.vehicle_id) : null;
@@ -835,17 +865,124 @@ const PartsTab = ({
                     </td>
                   </tr>
                 ))}
+                {/* Empty rows to maintain consistent height */}
+                {Array.from({ length: rowsPerPage - paginatedParts.length }).map((_, index) => (
+                  <tr key={`empty-${index}`}>
+                    <td colSpan="8" className="px-6 py-4">
+                      <div className="h-[2rem]"></div>
+                    </td>
+                  </tr>
+                ))}
               </tbody>
             </table>
           </div>
           <div className={`px-6 py-4 border-t parts-table-footer ${
             darkMode ? 'bg-gray-700 border-gray-600' : 'bg-slate-50 border-slate-200'
           }`}>
-            <p className={`text-sm ${
-              darkMode ? 'text-gray-400' : 'text-slate-600'
-            }`}>
-              Showing <span className="font-semibold">{filteredParts.length}</span> of <span className="font-semibold">{stats.total}</span> parts
-            </p>
+            <div className="flex items-center justify-between flex-wrap gap-4">
+              {/* Left: Showing text and rows per page dropdown */}
+              <div className="flex items-center gap-4">
+                <p className={`text-sm ${
+                  darkMode ? 'text-gray-400' : 'text-slate-600'
+                }`}>
+                  <span className="font-semibold">{startIndex + 1}-{Math.min(endIndex, filteredParts.length)}</span> of <span className="font-semibold">{filteredParts.length}</span> parts
+                </p>
+                <div className="flex items-center gap-2">
+                  <label htmlFor="rowsPerPage" className={`text-sm ${
+                    darkMode ? 'text-gray-400' : 'text-slate-600'
+                  }`}>
+                    Rows per page:
+                  </label>
+                  <div className="relative">
+                    <select
+                      id="rowsPerPage"
+                      value={rowsPerPage}
+                      onChange={(e) => {
+                        setRowsPerPage(Number(e.target.value));
+                        setCurrentPage(1);
+                      }}
+                      className={`appearance-none px-2 py-1 pr-8 rounded border text-sm ${
+                        darkMode
+                          ? 'bg-gray-600 border-gray-500 text-gray-200'
+                          : 'bg-white border-slate-300 text-slate-700'
+                      } cursor-pointer focus:outline-none focus:ring-2 focus:ring-blue-500`}
+                    >
+                      <option value="10">10</option>
+                      <option value="25">25</option>
+                      <option value="50">50</option>
+                      <option value="100">100</option>
+                    </select>
+                    <ChevronDown className={`absolute right-2 top-1/2 -translate-y-1/2 w-4 h-4 pointer-events-none ${
+                      darkMode ? 'text-gray-400' : 'text-slate-500'
+                    }`} />
+                  </div>
+                </div>
+              </div>
+
+              {/* Right: Pagination controls */}
+              {totalPages > 1 && (
+                <div className="flex items-center gap-1">
+                  {/* Previous button */}
+                  <button
+                    onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
+                    disabled={currentPage === 1}
+                    className={`p-1 rounded transition-colors ${
+                      currentPage === 1
+                        ? darkMode ? 'text-gray-600 cursor-not-allowed' : 'text-slate-400 cursor-not-allowed'
+                        : darkMode ? 'text-gray-300 hover:bg-gray-600' : 'text-slate-700 hover:bg-slate-200'
+                    }`}
+                  >
+                    <ChevronLeft className="w-5 h-5" />
+                  </button>
+
+                  {/* First page button (double arrow) */}
+                  <button
+                    onClick={() => setCurrentPage(1)}
+                    disabled={currentPage === 1}
+                    className={`p-1 rounded transition-colors ${
+                      currentPage === 1
+                        ? darkMode ? 'text-gray-600 cursor-not-allowed' : 'text-slate-400 cursor-not-allowed'
+                        : darkMode ? 'text-gray-300 hover:bg-gray-600' : 'text-slate-700 hover:bg-slate-200'
+                    }`}
+                  >
+                    <ChevronsLeft className="w-5 h-5" />
+                  </button>
+
+                  {/* Current page display */}
+                  <div className={`min-w-[4rem] px-3 py-1 rounded text-sm text-center ${
+                    darkMode ? 'bg-blue-600 text-white' : 'bg-blue-500 text-white'
+                  }`}>
+                    {currentPage} / {totalPages}
+                  </div>
+
+                  {/* Last page button (double arrow) */}
+                  <button
+                    onClick={() => setCurrentPage(totalPages)}
+                    disabled={currentPage === totalPages}
+                    className={`p-1 rounded transition-colors ${
+                      currentPage === totalPages
+                        ? darkMode ? 'text-gray-600 cursor-not-allowed' : 'text-slate-400 cursor-not-allowed'
+                        : darkMode ? 'text-gray-300 hover:bg-gray-600' : 'text-slate-700 hover:bg-slate-200'
+                    }`}
+                  >
+                    <ChevronsRight className="w-5 h-5" />
+                  </button>
+
+                  {/* Next button */}
+                  <button
+                    onClick={() => setCurrentPage(prev => Math.min(totalPages, prev + 1))}
+                    disabled={currentPage === totalPages}
+                    className={`p-1 rounded transition-colors ${
+                      currentPage === totalPages
+                        ? darkMode ? 'text-gray-600 cursor-not-allowed' : 'text-slate-400 cursor-not-allowed'
+                        : darkMode ? 'text-gray-300 hover:bg-gray-600' : 'text-slate-700 hover:bg-slate-200'
+                    }`}
+                  >
+                    <ChevronRight className="w-5 h-5" />
+                  </button>
+                </div>
+              )}
+            </div>
           </div>
         </div>
         ) : (

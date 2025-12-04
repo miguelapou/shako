@@ -226,32 +226,26 @@ select {
   animation: tableFadeOnly 0.6s ease-in;
 }
 
-.table-status-filtering tbody tr:nth-child(1) { animation-delay: 0s; }
-.table-status-filtering tbody tr:nth-child(2) { animation-delay: 0.03s; }
-.table-status-filtering tbody tr:nth-child(3) { animation-delay: 0.06s; }
-.table-status-filtering tbody tr:nth-child(4) { animation-delay: 0.09s; }
-.table-status-filtering tbody tr:nth-child(5) { animation-delay: 0.12s; }
-.table-status-filtering tbody tr:nth-child(6) { animation-delay: 0.15s; }
-.table-status-filtering tbody tr:nth-child(7) { animation-delay: 0.18s; }
-.table-status-filtering tbody tr:nth-child(8) { animation-delay: 0.21s; }
-.table-status-filtering tbody tr:nth-child(9) { animation-delay: 0.24s; }
-.table-status-filtering tbody tr:nth-child(10) { animation-delay: 0.27s; }
-
 /* Mobile Card Status Filtering */
 .cards-status-filtering > div {
   animation: tableFadeOnly 0.6s ease-in;
 }
 
-.cards-status-filtering > div:nth-child(1) { animation-delay: 0s; }
-.cards-status-filtering > div:nth-child(2) { animation-delay: 0.03s; }
-.cards-status-filtering > div:nth-child(3) { animation-delay: 0.06s; }
-.cards-status-filtering > div:nth-child(4) { animation-delay: 0.09s; }
-.cards-status-filtering > div:nth-child(5) { animation-delay: 0.12s; }
-.cards-status-filtering > div:nth-child(6) { animation-delay: 0.15s; }
-.cards-status-filtering > div:nth-child(7) { animation-delay: 0.18s; }
-.cards-status-filtering > div:nth-child(8) { animation-delay: 0.21s; }
-.cards-status-filtering > div:nth-child(9) { animation-delay: 0.24s; }
-.cards-status-filtering > div:nth-child(10) { animation-delay: 0.27s; }
+/* Status Card Content Fade-in Animation */
+.status-card-content {
+  animation: statusCardFadeIn 0.3s ease-in-out;
+}
+
+@keyframes statusCardFadeIn {
+  0% {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
 
 /* Project Filtering Animation */
 .projects-filtering > div {
