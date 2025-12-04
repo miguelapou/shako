@@ -910,7 +910,7 @@ const PartsTab = ({
                       setRowsPerPage(Number(e.target.value));
                       setCurrentPage(1);
                     }}
-                    className={`px-2 py-1 pr-8 rounded border text-sm appearance-none ${
+                    className={`px-3 py-2 pr-8 rounded border text-sm appearance-none ${
                       darkMode
                         ? 'bg-gray-600 border-gray-500 text-gray-200'
                         : 'bg-white border-slate-300 text-slate-700'
@@ -926,15 +926,15 @@ const PartsTab = ({
 
               {/* Right: Pagination controls */}
               {totalPages > 1 && (
-                <div className="flex items-center gap-1">
+                <div className="flex items-center gap-2">
                   {/* Previous button */}
                   <button
                     onClick={() => handlePageChange(currentPage - 1)}
                     disabled={currentPage === 1}
-                    className={`p-1 rounded transition-colors ${
+                    className={`p-2 rounded border transition-colors ${
                       currentPage === 1
-                        ? darkMode ? 'text-gray-600 cursor-not-allowed' : 'text-slate-400 cursor-not-allowed'
-                        : darkMode ? 'text-gray-300 hover:bg-gray-600' : 'text-slate-700 hover:bg-slate-200'
+                        ? darkMode ? 'text-gray-600 border-gray-700 cursor-not-allowed' : 'text-slate-400 border-slate-300 cursor-not-allowed'
+                        : darkMode ? 'text-gray-300 border-gray-600 hover:bg-gray-600' : 'text-slate-700 border-slate-300 hover:bg-slate-200'
                     }`}
                   >
                     <ChevronLeft className="w-5 h-5" />
@@ -944,18 +944,18 @@ const PartsTab = ({
                   <button
                     onClick={() => handlePageChange(1)}
                     disabled={currentPage === 1}
-                    className={`p-1 rounded transition-colors ${
+                    className={`p-2 rounded border transition-colors ${
                       currentPage === 1
-                        ? darkMode ? 'text-gray-600 cursor-not-allowed' : 'text-slate-400 cursor-not-allowed'
-                        : darkMode ? 'text-gray-300 hover:bg-gray-600' : 'text-slate-700 hover:bg-slate-200'
+                        ? darkMode ? 'text-gray-600 border-gray-700 cursor-not-allowed' : 'text-slate-400 border-slate-300 cursor-not-allowed'
+                        : darkMode ? 'text-gray-300 border-gray-600 hover:bg-gray-600' : 'text-slate-700 border-slate-300 hover:bg-slate-200'
                     }`}
                   >
                     <ChevronsLeft className="w-5 h-5" />
                   </button>
 
                   {/* Current page display */}
-                  <div className={`min-w-[4rem] px-3 py-1 rounded text-sm text-center ${
-                    darkMode ? 'bg-blue-600 text-white' : 'bg-blue-500 text-white'
+                  <div className={`min-w-[4rem] px-3 py-2 rounded border text-sm text-center font-medium ${
+                    darkMode ? 'bg-blue-600 text-white border-blue-500' : 'bg-blue-500 text-white border-blue-400'
                   }`}>
                     {currentPage} / {totalPages}
                   </div>
@@ -964,10 +964,10 @@ const PartsTab = ({
                   <button
                     onClick={() => handlePageChange(totalPages)}
                     disabled={currentPage === totalPages}
-                    className={`p-1 rounded transition-colors ${
+                    className={`p-2 rounded border transition-colors ${
                       currentPage === totalPages
-                        ? darkMode ? 'text-gray-600 cursor-not-allowed' : 'text-slate-400 cursor-not-allowed'
-                        : darkMode ? 'text-gray-300 hover:bg-gray-600' : 'text-slate-700 hover:bg-slate-200'
+                        ? darkMode ? 'text-gray-600 border-gray-700 cursor-not-allowed' : 'text-slate-400 border-slate-300 cursor-not-allowed'
+                        : darkMode ? 'text-gray-300 border-gray-600 hover:bg-gray-600' : 'text-slate-700 border-slate-300 hover:bg-slate-200'
                     }`}
                   >
                     <ChevronsRight className="w-5 h-5" />
@@ -977,10 +977,10 @@ const PartsTab = ({
                   <button
                     onClick={() => handlePageChange(currentPage + 1)}
                     disabled={currentPage === totalPages}
-                    className={`p-1 rounded transition-colors ${
+                    className={`p-2 rounded border transition-colors ${
                       currentPage === totalPages
-                        ? darkMode ? 'text-gray-600 cursor-not-allowed' : 'text-slate-400 cursor-not-allowed'
-                        : darkMode ? 'text-gray-300 hover:bg-gray-600' : 'text-slate-700 hover:bg-slate-200'
+                        ? darkMode ? 'text-gray-600 border-gray-700 cursor-not-allowed' : 'text-slate-400 border-slate-300 cursor-not-allowed'
+                        : darkMode ? 'text-gray-300 border-gray-600 hover:bg-gray-600' : 'text-slate-700 border-slate-300 hover:bg-slate-200'
                     }`}
                   >
                     <ChevronRight className="w-5 h-5" />
