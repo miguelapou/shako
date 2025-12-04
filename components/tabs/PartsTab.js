@@ -910,7 +910,7 @@ const PartsTab = ({
                       setRowsPerPage(Number(e.target.value));
                       setCurrentPage(1);
                     }}
-                    className={`px-2 py-1 pr-8 rounded border text-sm ${
+                    className={`px-2 py-1 pr-8 rounded border text-sm appearance-none ${
                       darkMode
                         ? 'bg-gray-600 border-gray-500 text-gray-200'
                         : 'bg-white border-slate-300 text-slate-700'
