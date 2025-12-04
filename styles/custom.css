@@ -205,6 +205,17 @@ select {
   animation: tableFadeOnly 0.6s ease-in;
 }
 
+/* Parts Table Row Hover - Only on Non-Touch Devices */
+@media (hover: hover) and (pointer: fine) {
+  .parts-table-row.light:hover {
+    background-color: #f8fafc; /* slate-50 */
+  }
+  
+  .parts-table-row.dark:hover {
+    background-color: #374151; /* gray-700 */
+  }
+}
+
 /* Table Sorting Animation */
 .table-sorting tbody tr {
   animation: tableFadeSlide 0.4s ease-out;
