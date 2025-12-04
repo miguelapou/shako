@@ -1,7 +1,8 @@
 import React, { useState, useRef, useEffect } from 'react';
 import {
   Search, Package, TrendingUp, Truck, CheckCircle, Clock,
-  ChevronDown, Plus, X, ExternalLink, ShoppingCart, Car
+  ChevronDown, Plus, X, ExternalLink, ShoppingCart, Car,
+  ChevronLeft, ChevronRight
 } from 'lucide-react';
 import PriceDisplay from '../ui/PriceDisplay';
 import { getVendorDisplayColor } from '../../utils/colorUtils';
@@ -46,6 +47,35 @@ const PartsTab = ({
   getStatusColor,
   getVendorColor
 }) => {
+  // Pagination state
+  const [currentPage, setCurrentPage] = useState(1);
+  const [rowsPerPage, setRowsPerPage] = useState(() => {
+    // Load from localStorage or default to 10
+    if (typeof window !== 'undefined') {
+      const saved = localStorage.getItem('partsTableRowsPerPage');
+      return saved ? parseInt(saved, 10) : 10;
+    }
+    return 10;
+  });
+
+  // Save rowsPerPage to localStorage whenever it changes
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('partsTableRowsPerPage', rowsPerPage.toString());
+    }
+  }, [rowsPerPage]);
+
+  // Reset to page 1 when filters change
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [filteredParts.length, searchTerm, statusFilter, deliveredFilter, vendorFilter]);
+
+  // Calculate pagination
+  const totalPages = Math.ceil(filteredParts.length / rowsPerPage);
+  const startIndex = (currentPage - 1) * rowsPerPage;
+  const endIndex = startIndex + rowsPerPage;
+  const paginatedParts = filteredParts.slice(startIndex, endIndex);
+
   // Internal StatusDropdown component
   const StatusDropdown = ({ part }) => {
     const isOpen = openDropdown === part.id;
@@ -702,7 +732,7 @@ const PartsTab = ({
               <tbody className={`divide-y ${
                 darkMode ? 'divide-gray-700' : 'divide-slate-200'
               }`}>
-                {filteredParts.map((part) => (
+                {paginatedParts.map((part) => (
                   <tr
                     key={part.id}
                     onClick={() => {
@@ -841,11 +871,101 @@ const PartsTab = ({
           <div className={`px-6 py-4 border-t parts-table-footer ${
             darkMode ? 'bg-gray-700 border-gray-600' : 'bg-slate-50 border-slate-200'
           }`}>
-            <p className={`text-sm ${
-              darkMode ? 'text-gray-400' : 'text-slate-600'
-            }`}>
-              Showing <span className="font-semibold">{filteredParts.length}</span> of <span className="font-semibold">{stats.total}</span> parts
-            </p>
+            <div className="flex items-center justify-between flex-wrap gap-4">
+              {/* Left: Showing text and rows per page dropdown */}
+              <div className="flex items-center gap-4">
+                <p className={`text-sm ${
+                  darkMode ? 'text-gray-400' : 'text-slate-600'
+                }`}>
+                  Showing <span className="font-semibold">{startIndex + 1}</span> to <span className="font-semibold">{Math.min(endIndex, filteredParts.length)}</span> of <span className="font-semibold">{filteredParts.length}</span> parts
+                </p>
+                <div className="flex items-center gap-2">
+                  <label htmlFor="rowsPerPage" className={`text-sm ${
+                    darkMode ? 'text-gray-400' : 'text-slate-600'
+                  }`}>
+                    Rows per page:
+                  </label>
+                  <select
+                    id="rowsPerPage"
+                    value={rowsPerPage}
+                    onChange={(e) => {
+                      setRowsPerPage(Number(e.target.value));
+                      setCurrentPage(1);
+                    }}
+                    className={`px-2 py-1 rounded border text-sm ${
+                      darkMode
+                        ? 'bg-gray-600 border-gray-500 text-gray-200'
+                        : 'bg-white border-slate-300 text-slate-700'
+                    } cursor-pointer focus:outline-none focus:ring-2 focus:ring-blue-500`}
+                  >
+                    <option value="10">10</option>
+                    <option value="25">25</option>
+                    <option value="50">50</option>
+                    <option value="100">100</option>
+                  </select>
+                </div>
+              </div>
+
+              {/* Right: Pagination controls */}
+              {totalPages > 1 && (
+                <div className="flex items-center gap-1">
+                  {/* Previous button */}
+                  <button
+                    onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
+                    disabled={currentPage === 1}
+                    className={`p-1 rounded transition-colors ${
+                      currentPage === 1
+                        ? darkMode ? 'text-gray-600 cursor-not-allowed' : 'text-slate-400 cursor-not-allowed'
+                        : darkMode ? 'text-gray-300 hover:bg-gray-600' : 'text-slate-700 hover:bg-slate-200'
+                    }`}
+                  >
+                    <ChevronLeft className="w-5 h-5" />
+                  </button>
+
+                  {/* Page numbers */}
+                  <div className="flex items-center gap-1">
+                    {Array.from({ length: totalPages }, (_, i) => i + 1)
+                      .filter(page => {
+                        // Show first page, last page, current page, and pages around current
+                        if (page === 1 || page === totalPages) return true;
+                        if (Math.abs(page - currentPage) <= 1) return true;
+                        return false;
+                      })
+                      .map((page, index, array) => (
+                        <React.Fragment key={page}>
+                          {/* Show ellipsis if there's a gap */}
+                          {index > 0 && page - array[index - 1] > 1 && (
+                            <span className={`px-2 ${darkMode ? 'text-gray-500' : 'text-slate-500'}`}>...</span>
+                          )}
+                          <button
+                            onClick={() => setCurrentPage(page)}
+                            className={`px-3 py-1 rounded text-sm transition-colors ${
+                              currentPage === page
+                                ? darkMode ? 'bg-blue-600 text-white' : 'bg-blue-500 text-white'
+                                : darkMode ? 'text-gray-300 hover:bg-gray-600' : 'text-slate-700 hover:bg-slate-200'
+                            }`}
+                          >
+                            {page}
+                          </button>
+                        </React.Fragment>
+                      ))}
+                  </div>
+
+                  {/* Next button */}
+                  <button
+                    onClick={() => setCurrentPage(prev => Math.min(totalPages, prev + 1))}
+                    disabled={currentPage === totalPages}
+                    className={`p-1 rounded transition-colors ${
+                      currentPage === totalPages
+                        ? darkMode ? 'text-gray-600 cursor-not-allowed' : 'text-slate-400 cursor-not-allowed'
+                        : darkMode ? 'text-gray-300 hover:bg-gray-600' : 'text-slate-700 hover:bg-slate-200'
+                    }`}
+                  >
+                    <ChevronRight className="w-5 h-5" />
+                  </button>
+                </div>
+              )}
+            </div>
           </div>
         </div>
         ) : (
