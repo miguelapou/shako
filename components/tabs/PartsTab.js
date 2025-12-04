@@ -867,8 +867,10 @@ const PartsTab = ({
                 ))}
                 {/* Empty rows to maintain consistent height */}
                 {Array.from({ length: rowsPerPage - paginatedParts.length }).map((_, index) => (
-                  <tr key={`empty-${index}`} className={`h-[60px] ${darkMode ? 'bg-gray-800' : 'bg-white'}`}>
-                    <td colSpan="8" className="px-6 py-4">&nbsp;</td>
+                  <tr key={`empty-${index}`}>
+                    <td colSpan="8" className="px-6 py-4">
+                      <div className="h-[2rem]"></div>
+                    </td>
                   </tr>
                 ))}
               </tbody>
@@ -883,7 +885,7 @@ const PartsTab = ({
                 <p className={`text-sm ${
                   darkMode ? 'text-gray-400' : 'text-slate-600'
                 }`}>
-                  Showing <span className="font-semibold">{startIndex + 1}</span> to <span className="font-semibold">{Math.min(endIndex, filteredParts.length)}</span> of <span className="font-semibold">{filteredParts.length}</span> parts
+                  <span className="font-semibold">{startIndex + 1}-{Math.min(endIndex, filteredParts.length)}</span> of <span className="font-semibold">{filteredParts.length}</span> parts
                 </p>
                 <div className="flex items-center gap-2">
                   <label htmlFor="rowsPerPage" className={`text-sm ${
@@ -891,24 +893,29 @@ const PartsTab = ({
                   }`}>
                     Rows per page:
                   </label>
-                  <select
-                    id="rowsPerPage"
-                    value={rowsPerPage}
-                    onChange={(e) => {
-                      setRowsPerPage(Number(e.target.value));
-                      setCurrentPage(1);
-                    }}
-                    className={`appearance-none px-2 py-1 rounded border text-sm ${
-                      darkMode
-                        ? 'bg-gray-600 border-gray-500 text-gray-200'
-                        : 'bg-white border-slate-300 text-slate-700'
-                    } cursor-pointer focus:outline-none focus:ring-2 focus:ring-blue-500`}
-                  >
-                    <option value="10">10</option>
-                    <option value="25">25</option>
-                    <option value="50">50</option>
-                    <option value="100">100</option>
-                  </select>
+                  <div className="relative">
+                    <select
+                      id="rowsPerPage"
+                      value={rowsPerPage}
+                      onChange={(e) => {
+                        setRowsPerPage(Number(e.target.value));
+                        setCurrentPage(1);
+                      }}
+                      className={`appearance-none px-2 py-1 pr-8 rounded border text-sm ${
+                        darkMode
+                          ? 'bg-gray-600 border-gray-500 text-gray-200'
+                          : 'bg-white border-slate-300 text-slate-700'
+                      } cursor-pointer focus:outline-none focus:ring-2 focus:ring-blue-500`}
+                    >
+                      <option value="10">10</option>
+                      <option value="25">25</option>
+                      <option value="50">50</option>
+                      <option value="100">100</option>
+                    </select>
+                    <ChevronDown className={`absolute right-2 top-1/2 -translate-y-1/2 w-4 h-4 pointer-events-none ${
+                      darkMode ? 'text-gray-400' : 'text-slate-500'
+                    }`} />
+                  </div>
                 </div>
               </div>
 
