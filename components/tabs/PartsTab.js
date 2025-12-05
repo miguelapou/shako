@@ -391,6 +391,9 @@ const PartsTab = ({
                 margin-top: 0 !important;
                 margin-bottom: 0 !important;
               }
+              .stats-cards-800 .grid > div {
+                padding: 1rem !important;
+              }
               .cost-breakdown-800 {
                 order: 0 !important;
               }
