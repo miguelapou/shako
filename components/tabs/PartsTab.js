@@ -406,7 +406,7 @@ const PartsTab = ({
             }
           `}</style>
           {/* Statistics Cards - 3 column grid on mobile */}
-          <div className="space-y-4 order-2 stats-cards-800 mb-8">
+          <div className="space-y-4 order-2 stats-cards-800">
             <div className="grid grid-cols-3 gap-3">
               <div
                 onClick={(e) => {
@@ -546,7 +546,7 @@ const PartsTab = ({
             </div>
 
             {/* Search Box - Shows in left column at 800px+ */}
-            <div className={`hidden search-box-800 rounded-lg shadow-md p-3 ${
+            <div className={`hidden search-box-800 rounded-lg shadow-md p-3 mb-6 ${
               darkMode ? 'bg-gray-800' : 'bg-slate-100'
             }`}>
               <div className="relative">
