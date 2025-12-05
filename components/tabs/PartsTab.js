@@ -79,14 +79,35 @@ const PartsTab = ({
     if (isStatusFiltering) {
       // Save current scroll position when filtering starts
       scrollPositionRef.current = window.scrollY || window.pageYOffset;
+      console.log('[PartsTab] Filtering started - Saved scroll position:', scrollPositionRef.current);
+
+      // Track unexpected scrolls during filtering
+      const handleScroll = () => {
+        const currentScroll = window.scrollY || window.pageYOffset;
+        console.log('[PartsTab] SCROLL EVENT during filtering:', currentScroll);
+      };
+      window.addEventListener('scroll', handleScroll);
+
+      return () => {
+        window.removeEventListener('scroll', handleScroll);
+      };
     } else {
+      console.log('[PartsTab] Filtering ended - Will restore to:', scrollPositionRef.current);
       // Restore scroll position after animation completes
       const timer = setTimeout(() => {
+        const currentScroll = window.scrollY || window.pageYOffset;
+        console.log('[PartsTab] Current scroll before restore:', currentScroll);
         if (scrollPositionRef.current > 0) {
           window.scrollTo({
             top: scrollPositionRef.current,
             behavior: 'instant'
           });
+          console.log('[PartsTab] Restored scroll to:', scrollPositionRef.current);
+          // Verify restoration
+          setTimeout(() => {
+            const finalScroll = window.scrollY || window.pageYOffset;
+            console.log('[PartsTab] Final scroll position:', finalScroll);
+          }, 50);
         }
       }, 100);
       return () => clearTimeout(timer);
@@ -415,14 +436,25 @@ const PartsTab = ({
               <div
                 onClick={(e) => {
                   e.stopPropagation();
+                  const currentScroll = window.scrollY || window.pageYOffset;
+                  console.log('[Ordered Card] Clicked at scroll position:', currentScroll);
                   setIsStatusFiltering(true);
                   setStatusFilter(statusFilter === 'purchased' ? 'all' : 'purchased');
                   setDeliveredFilter('all');
                   setTimeout(() => setIsStatusFiltering(false), 900);
                 }}
-                onTouchStart={(e) => e.stopPropagation()}
-                onTouchMove={(e) => e.stopPropagation()}
-                onTouchEnd={(e) => e.stopPropagation()}
+                onTouchStart={(e) => {
+                  e.stopPropagation();
+                  console.log('[Ordered Card] Touch start');
+                }}
+                onTouchMove={(e) => {
+                  e.stopPropagation();
+                  console.log('[Ordered Card] Touch move');
+                }}
+                onTouchEnd={(e) => {
+                  e.stopPropagation();
+                  console.log('[Ordered Card] Touch end');
+                }}
                 className={`rounded-lg shadow-md p-3 sm:p-4 md:p-4 border-l-4 border-yellow-500 relative overflow-hidden cursor-pointer transition-all duration-200 hover:shadow-lg hover:scale-[1.02] ${
                   darkMode ? 'bg-gray-800 hover:bg-gray-750' : 'bg-white hover:bg-gray-50'
                 } ${statusFilter === 'purchased' ? 'ring-2 ring-yellow-500' : ''}`}
@@ -442,14 +474,25 @@ const PartsTab = ({
               <div
                 onClick={(e) => {
                   e.stopPropagation();
+                  const currentScroll = window.scrollY || window.pageYOffset;
+                  console.log('[Shipped Card] Clicked at scroll position:', currentScroll);
                   setIsStatusFiltering(true);
                   setStatusFilter(statusFilter === 'shipped' ? 'all' : 'shipped');
                   setDeliveredFilter('all');
                   setTimeout(() => setIsStatusFiltering(false), 900);
                 }}
-                onTouchStart={(e) => e.stopPropagation()}
-                onTouchMove={(e) => e.stopPropagation()}
-                onTouchEnd={(e) => e.stopPropagation()}
+                onTouchStart={(e) => {
+                  e.stopPropagation();
+                  console.log('[Shipped Card] Touch start');
+                }}
+                onTouchMove={(e) => {
+                  e.stopPropagation();
+                  console.log('[Shipped Card] Touch move');
+                }}
+                onTouchEnd={(e) => {
+                  e.stopPropagation();
+                  console.log('[Shipped Card] Touch end');
+                }}
                 className={`rounded-lg shadow-md p-3 sm:p-4 md:p-4 border-l-4 border-blue-500 relative overflow-hidden cursor-pointer transition-all duration-200 hover:shadow-lg hover:scale-[1.02] ${
                   darkMode ? 'bg-gray-800 hover:bg-gray-750' : 'bg-white hover:bg-gray-50'
                 } ${statusFilter === 'shipped' ? 'ring-2 ring-blue-500' : ''}`}
