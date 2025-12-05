@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useRef, useState } from 'react';
 import { X, Car, ChevronDown } from 'lucide-react';
 
 const AddProjectModal = ({
@@ -14,7 +14,22 @@ const AddProjectModal = ({
   addProject,
   onClose
 }) => {
+  const vehicleButtonRef = useRef(null);
+  const [dropdownPosition, setDropdownPosition] = useState({ top: 0, left: 0 });
+
   if (!isOpen) return null;
+
+  const handleVehicleDropdownToggle = (e) => {
+    e.stopPropagation();
+    if (!showAddProjectVehicleDropdown && vehicleButtonRef.current) {
+      const rect = vehicleButtonRef.current.getBoundingClientRect();
+      setDropdownPosition({
+        top: rect.bottom + 4,
+        left: rect.left
+      });
+    }
+    setShowAddProjectVehicleDropdown(!showAddProjectVehicleDropdown);
+  };
 
   const handleAddProject = async () => {
     if (!newProject.name) {
@@ -128,11 +143,9 @@ const AddProjectModal = ({
                   </label>
                   <div className="relative">
                     <button
+                      ref={vehicleButtonRef}
                       type="button"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        setShowAddProjectVehicleDropdown(!showAddProjectVehicleDropdown);
-                      }}
+                      onClick={handleVehicleDropdownToggle}
                       className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-left flex items-center justify-between gap-2 min-h-[42px] box-border ${
                         darkMode
                           ? 'bg-gray-700 border-gray-600 text-gray-100'
@@ -161,14 +174,16 @@ const AddProjectModal = ({
                     {showAddProjectVehicleDropdown && (
                       <>
                         <div
-                          className="fixed inset-0 z-10"
+                          className="fixed inset-0 z-[60]"
                           onClick={() => setShowAddProjectVehicleDropdown(false)}
                         />
-                        <div className={`absolute right-0 md:left-0 z-20 mt-1 rounded-lg border shadow-lg py-1 ${
+                        <div className={`fixed z-[70] rounded-lg border shadow-lg py-1 ${
                           darkMode ? 'bg-gray-700 border-gray-600' : 'bg-slate-50 border-slate-300'
                         }`}
                         style={{
-                          minWidth: '200px'
+                          minWidth: '200px',
+                          top: dropdownPosition.top,
+                          left: dropdownPosition.left
                         }}
                         >
                           <button
