@@ -1186,7 +1186,7 @@ const PartsTab = ({
                 </div>
 
                 {/* Part Number and Status Row - Mobile only */}
-                <div className="mb-3 sm:hidden">
+                <div className="mb-3">
                   <div className="flex items-center justify-between gap-3">
                     {/* Part Number on Left */}
                     {part.partNumber && part.partNumber !== '-' ? (
@@ -1209,7 +1209,7 @@ const PartsTab = ({
                 </div>
 
                 {/* Desktop: Show full price breakdown */}
-                <div className="mb-3 hidden sm:block">
+                <div className="mb-3 hidden">
                   <div className={`p-3 rounded-lg ${
                     darkMode ? 'bg-gray-700' : 'bg-gray-50'
                   }`}>
@@ -1260,7 +1260,7 @@ const PartsTab = ({
                 }`}></div>
 
                 {/* Tracking and Total Price Row (Mobile Only) */}
-                <div className="flex items-center justify-between gap-3 sm:hidden">
+                <div className="flex items-center justify-between gap-3">
                   {/* Tracking on Left */}
                   <div className="inline-block" onClick={(e) => e.stopPropagation()}>
                     {part.tracking ? (
@@ -1309,7 +1309,7 @@ const PartsTab = ({
                 </div>
 
                 {/* Desktop: Tracking Only */}
-                <div className="hidden sm:block">
+                <div className="hidden">
                   <div className="inline-block" onClick={(e) => e.stopPropagation()}>
                     {part.tracking ? (
                       getTrackingUrl(part.tracking) ? (
