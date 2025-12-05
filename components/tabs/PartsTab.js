@@ -74,14 +74,11 @@ const PartsTab = ({
     setCurrentPage(1);
   }, [filteredParts.length, searchTerm, statusFilter, deliveredFilter, vendorFilter]);
 
-  // Preserve scroll position when status filtering on mobile
+  // Restore scroll position when filtering ends
   useEffect(() => {
     if (isStatusFiltering) {
-      // Save current scroll position when filtering starts
-      scrollPositionRef.current = window.scrollY || window.pageYOffset;
-      console.log('[PartsTab] Filtering started - Saved scroll position:', scrollPositionRef.current);
-
-      // Track unexpected scrolls during filtering
+      // Track scroll events during filtering for debugging
+      console.log('[PartsTab] Filtering started - Using saved position:', scrollPositionRef.current);
       const handleScroll = () => {
         const currentScroll = window.scrollY || window.pageYOffset;
         console.log('[PartsTab] SCROLL EVENT during filtering:', currentScroll);
@@ -91,26 +88,24 @@ const PartsTab = ({
       return () => {
         window.removeEventListener('scroll', handleScroll);
       };
-    } else {
+    } else if (scrollPositionRef.current > 0) {
+      // Restore scroll position when filtering ends
       console.log('[PartsTab] Filtering ended - Will restore to:', scrollPositionRef.current);
-      // Restore scroll position after animation completes
-      const timer = setTimeout(() => {
+      // Use requestAnimationFrame to ensure DOM has updated
+      requestAnimationFrame(() => {
         const currentScroll = window.scrollY || window.pageYOffset;
         console.log('[PartsTab] Current scroll before restore:', currentScroll);
-        if (scrollPositionRef.current > 0) {
-          window.scrollTo({
-            top: scrollPositionRef.current,
-            behavior: 'instant'
-          });
-          console.log('[PartsTab] Restored scroll to:', scrollPositionRef.current);
-          // Verify restoration
-          setTimeout(() => {
-            const finalScroll = window.scrollY || window.pageYOffset;
-            console.log('[PartsTab] Final scroll position:', finalScroll);
-          }, 50);
-        }
-      }, 100);
-      return () => clearTimeout(timer);
+        window.scrollTo({
+          top: scrollPositionRef.current,
+          behavior: 'instant'
+        });
+        console.log('[PartsTab] Restored scroll to:', scrollPositionRef.current);
+        // Verify restoration
+        requestAnimationFrame(() => {
+          const finalScroll = window.scrollY || window.pageYOffset;
+          console.log('[PartsTab] Final scroll position:', finalScroll);
+        });
+      });
     }
   }, [isStatusFiltering]);
 
@@ -438,6 +433,8 @@ const PartsTab = ({
                   e.stopPropagation();
                   const currentScroll = window.scrollY || window.pageYOffset;
                   console.log('[Ordered Card] Clicked at scroll position:', currentScroll);
+                  // Save scroll position BEFORE state changes
+                  scrollPositionRef.current = currentScroll;
                   setIsStatusFiltering(true);
                   setStatusFilter(statusFilter === 'purchased' ? 'all' : 'purchased');
                   setDeliveredFilter('all');
@@ -476,6 +473,8 @@ const PartsTab = ({
                   e.stopPropagation();
                   const currentScroll = window.scrollY || window.pageYOffset;
                   console.log('[Shipped Card] Clicked at scroll position:', currentScroll);
+                  // Save scroll position BEFORE state changes
+                  scrollPositionRef.current = currentScroll;
                   setIsStatusFiltering(true);
                   setStatusFilter(statusFilter === 'shipped' ? 'all' : 'shipped');
                   setDeliveredFilter('all');
@@ -512,6 +511,9 @@ const PartsTab = ({
               <div
                 onClick={(e) => {
                   e.stopPropagation();
+                  const currentScroll = window.scrollY || window.pageYOffset;
+                  // Save scroll position BEFORE state changes
+                  scrollPositionRef.current = currentScroll;
                   setIsStatusFiltering(true);
                   // Cycle through: all -> only -> hide -> all
                   setDeliveredFilter(prev =>
