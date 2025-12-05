@@ -364,14 +364,14 @@ const PartsTab = ({
       className="slide-in-left"
       style={{
         // Apply minHeight on mobile to maintain page height during filtering
-        minHeight: window.innerWidth < 800 ? containerMinHeight : 'auto'
+        minHeight: window.innerWidth < 948 ? containerMinHeight : 'auto'
       }}
     >
       <>
         {/* Statistics and Cost Breakdown - Side by Side */}
         <div className="flex flex-col gap-6 mb-1 stats-container-800">
           <style>{`
-            @media (min-width: 800px) {
+            @media (min-width: 948px) {
               .stats-container-800 {
                 display: grid !important;
                 grid-template-columns: 1.5fr 1fr !important;
@@ -413,7 +413,7 @@ const PartsTab = ({
                   e.stopPropagation();
                   const isActivating = statusFilter !== 'purchased';
 
-                  if (typeof window !== 'undefined' && window.innerWidth < 800) {
+                  if (typeof window !== 'undefined' && window.innerWidth < 948) {
                     if (isActivating) {
                       // Set page height when activating filter to prevent scroll jumping
                       const currentHeight = document.documentElement.scrollHeight;
@@ -430,7 +430,7 @@ const PartsTab = ({
                   setTimeout(() => setIsStatusFiltering(false), 900);
 
                   // Let page shrink to fit filtered content immediately after filter applies
-                  if (isActivating && typeof window !== 'undefined' && window.innerWidth < 800) {
+                  if (isActivating && typeof window !== 'undefined' && window.innerWidth < 948) {
                     setTimeout(() => setContainerMinHeight('auto'), 50);
                   }
                 }}
@@ -455,7 +455,7 @@ const PartsTab = ({
                   e.stopPropagation();
                   const isActivating = statusFilter !== 'shipped';
 
-                  if (typeof window !== 'undefined' && window.innerWidth < 800) {
+                  if (typeof window !== 'undefined' && window.innerWidth < 948) {
                     if (isActivating) {
                       // Set page height when activating filter to prevent scroll jumping
                       const currentHeight = document.documentElement.scrollHeight;
@@ -472,7 +472,7 @@ const PartsTab = ({
                   setTimeout(() => setIsStatusFiltering(false), 900);
 
                   // Let page shrink to fit filtered content immediately after filter applies
-                  if (isActivating && typeof window !== 'undefined' && window.innerWidth < 800) {
+                  if (isActivating && typeof window !== 'undefined' && window.innerWidth < 948) {
                     setTimeout(() => setContainerMinHeight('auto'), 50);
                   }
                 }}
@@ -497,7 +497,7 @@ const PartsTab = ({
                   e.stopPropagation();
                   const isGoingToAll = deliveredFilter === 'hide'; // Next click goes to 'all'
 
-                  if (typeof window !== 'undefined' && window.innerWidth < 800) {
+                  if (typeof window !== 'undefined' && window.innerWidth < 948) {
                     if (!isGoingToAll) {
                       // Set page height when activating filter to prevent scroll jumping
                       const currentHeight = document.documentElement.scrollHeight;
@@ -518,7 +518,7 @@ const PartsTab = ({
                   setTimeout(() => setIsStatusFiltering(false), 900);
 
                   // Let page shrink to fit filtered content immediately after filter applies
-                  if (!isGoingToAll && typeof window !== 'undefined' && window.innerWidth < 800) {
+                  if (!isGoingToAll && typeof window !== 'undefined' && window.innerWidth < 948) {
                     setTimeout(() => setContainerMinHeight('auto'), 50);
                   }
                 }}
