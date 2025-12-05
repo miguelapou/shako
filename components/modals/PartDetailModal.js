@@ -748,6 +748,7 @@ const PartDetailModal = ({
                   <input
                     type="number"
                     step="0.01"
+                    inputMode="decimal"
                     value={editingPart.price}
                     onChange={(e) =>
                       setEditingPart({
@@ -776,6 +777,7 @@ const PartDetailModal = ({
                   <input
                     type="number"
                     step="0.01"
+                    inputMode="decimal"
                     value={editingPart.shipping}
                     onChange={(e) =>
                       setEditingPart({
@@ -804,6 +806,7 @@ const PartDetailModal = ({
                   <input
                     type="number"
                     step="0.01"
+                    inputMode="decimal"
                     value={editingPart.duties}
                     onChange={(e) =>
                       setEditingPart({

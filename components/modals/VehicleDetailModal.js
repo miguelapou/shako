@@ -704,6 +704,7 @@ const VehicleDetailModal = ({
                         </label>
                         <input
                           type="number"
+                          inputMode="numeric"
                           value={viewingVehicle.year || ''}
                           onChange={(e) => setViewingVehicle({ ...viewingVehicle, year: e.target.value })}
                           className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${

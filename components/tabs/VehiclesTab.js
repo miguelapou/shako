@@ -270,15 +270,6 @@ const VehiclesTab = ({
                     })()}
                   </>
                 )}
-                {vehicle.archived && vehicle.vin && (
-                  <div className="mt-2">
-                    <span className={`inline-block px-3 py-1 rounded-full text-xs font-mono ${
-                      darkMode ? 'bg-gray-700 text-gray-300' : 'bg-gray-200 text-gray-900'
-                    }`}>
-                      VIN: {vehicle.vin}
-                    </span>
-                  </div>
-                )}
               </div>
             </div>
           );
