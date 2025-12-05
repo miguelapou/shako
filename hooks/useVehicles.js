@@ -22,7 +22,7 @@ const useVehicles = () => {
     year: '',
     license_plate: '',
     vin: '',
-    insurance_policy: '',
+    odometer_range: '',
     fuel_filter: '',
     air_filter: '',
     oil_filter: '',
