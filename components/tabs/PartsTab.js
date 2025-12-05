@@ -402,15 +402,10 @@ const PartsTab = ({
               .stats-cards-800 {
                 grid-column: 1 / 2 !important;
                 grid-row: 1 / 2 !important;
-                display: flex !important;
-                flex-direction: column !important;
+                display: grid !important;
+                grid-template-columns: repeat(3, 1fr) !important;
                 gap: 1rem !important;
-                height: 100% !important;
-                justify-content: space-between !important;
-                order: 0 !important;
-              }
-              .stats-cards-800 > div:first-child {
-                flex-shrink: 0 !important;
+                align-content: start !important;
               }
               .stats-cards-800 .status-card {
                 padding: 1rem !important;
