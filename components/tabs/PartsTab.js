@@ -369,33 +369,52 @@ const PartsTab = ({
     >
       <>
         {/* Statistics and Cost Breakdown - Side by Side */}
-        <div className="flex flex-col gap-6 mb-8 stats-container-800">
+        <div className="stats-container-800 mb-4">
           <style>{`
+            .stats-container-800 {
+              display: grid !important;
+              grid-template-columns: repeat(3, 1fr) !important;
+              gap: 0.75rem !important;
+            }
+            .stats-cards-800 {
+              grid-column: 1 / 2 !important;
+              grid-row: 1 / 4 !important;
+              display: flex !important;
+              flex-direction: column !important;
+              gap: 0.75rem !important;
+            }
+            .cost-breakdown-800 {
+              grid-column: 2 / 4 !important;
+              grid-row: 1 / 4 !important;
+            }
+            .search-box-mobile-800 {
+              grid-column: 1 / 4 !important;
+              grid-row: 4 / 5 !important;
+            }
             @media (min-width: 948px) {
               .stats-container-800 {
                 display: grid !important;
                 grid-template-columns: 1.5fr 1fr !important;
+                gap: 1.5rem !important;
               }
               .stats-cards-800 {
+                grid-column: auto !important;
+                grid-row: auto !important;
                 display: flex !important;
                 flex-direction: column !important;
                 gap: 1rem !important;
                 height: 100% !important;
                 justify-content: space-between !important;
-                order: 0 !important;
               }
-              .stats-cards-800 > div:first-child {
-                flex-shrink: 0 !important;
-              }
-              .stats-cards-800 .space-y-4 {
-                margin-top: 0 !important;
-                margin-bottom: 0 !important;
-              }
-              .stats-cards-800 .grid > div {
+              .stats-cards-800 .status-card {
                 padding: 1rem !important;
               }
               .cost-breakdown-800 {
-                order: 0 !important;
+                grid-column: auto !important;
+                grid-row: auto !important;
+              }
+              .search-box-mobile-800 {
+                display: none !important;
               }
               .search-box-800 {
                 display: block !important;
@@ -408,10 +427,10 @@ const PartsTab = ({
               }
             }
           `}</style>
-          {/* Statistics Cards - 3 column grid on mobile */}
-          <div className="space-y-4 order-2 stats-cards-800">
-            <div className="grid grid-cols-3 gap-3">
+          {/* Statistics Cards - Stack in first column on mobile */}
+          <div className="stats-cards-800">
               <div
+                className="status-card"
                 onClick={(e) => {
                   e.stopPropagation();
                   const isActivating = statusFilter !== 'purchased';
@@ -454,6 +473,7 @@ const PartsTab = ({
               </div>
 
               <div
+                className="status-card"
                 onClick={(e) => {
                   e.stopPropagation();
                   const isActivating = statusFilter !== 'shipped';
@@ -496,6 +516,7 @@ const PartsTab = ({
               </div>
 
               <div
+                className="status-card"
                 onClick={(e) => {
                   e.stopPropagation();
                   const isGoingToAll = deliveredFilter === 'hide'; // Next click goes to 'all'
@@ -546,7 +567,6 @@ const PartsTab = ({
                   }`}>{deliveredFilter === 'hide' ? stats.undelivered : stats.delivered}</p>
                 </div>
               </div>
-            </div>
 
             {/* Search Box - Shows in left column at 800px+ */}
             <div className={`hidden search-box-800 rounded-lg shadow-md p-3 mb-8 ${
@@ -707,38 +727,38 @@ const PartsTab = ({
             </div>
           </div>
           </div>
-        </div>
 
-        {/* Search Box - Mobile only */}
-        <div className={`show-below-800 rounded-lg shadow-md p-3 order-3 mb-4 ${
-          darkMode ? 'bg-gray-800' : 'bg-slate-100'
-        }`}>
-          <div className="relative">
-            <Search className={`absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 ${
-              darkMode ? 'text-gray-500' : 'text-gray-400'
-            }`} />
-            <input
-              type="text"
-              placeholder="Search parts..."
-              className={`w-full pl-10 pr-10 py-2 border rounded-lg outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
-                darkMode
-                  ? 'bg-gray-700 border-gray-600 text-gray-100 placeholder-gray-400'
-                  : 'bg-slate-50 border-slate-300 text-slate-800 placeholder-slate-400'
-              }`}
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-            />
-            {searchTerm && (
-              <button
-                onClick={() => setSearchTerm('')}
-                className={`absolute right-3 top-1/2 transform -translate-y-1/2 transition-colors ${
-                  darkMode ? 'text-gray-500 hover:text-gray-300' : 'text-gray-400 hover:text-gray-600'
+          {/* Search Box - Mobile grid row 4 */}
+          <div className={`search-box-mobile-800 rounded-lg shadow-md p-3 ${
+            darkMode ? 'bg-gray-800' : 'bg-slate-100'
+          }`}>
+            <div className="relative">
+              <Search className={`absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 ${
+                darkMode ? 'text-gray-500' : 'text-gray-400'
+              }`} />
+              <input
+                type="text"
+                placeholder="Search parts..."
+                className={`w-full pl-10 pr-10 py-2 border rounded-lg outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
+                  darkMode
+                    ? 'bg-gray-700 border-gray-600 text-gray-100 placeholder-gray-400'
+                    : 'bg-slate-50 border-slate-300 text-slate-800 placeholder-slate-400'
                 }`}
-                title="Clear search"
-              >
-                <X className="w-4 h-4" />
-              </button>
-            )}
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+              />
+              {searchTerm && (
+                <button
+                  onClick={() => setSearchTerm('')}
+                  className={`absolute right-3 top-1/2 transform -translate-y-1/2 transition-colors ${
+                    darkMode ? 'text-gray-500 hover:text-gray-300' : 'text-gray-400 hover:text-gray-600'
+                  }`}
+                  title="Clear search"
+                >
+                  <X className="w-4 h-4" />
+                </button>
+              )}
+            </div>
           </div>
         </div>
 
