@@ -386,7 +386,11 @@ const PartsTab = ({
             }
             .cost-breakdown-800 {
               grid-column: 2 / 4 !important;
-              grid-row: 1 / 4 !important;
+              grid-row: 1 / 3 !important;
+            }
+            .progress-bar-800 {
+              grid-column: 2 / 4 !important;
+              grid-row: 3 / 4 !important;
             }
             .search-box-mobile-800 {
               grid-column: 1 / 4 !important;
@@ -422,14 +426,14 @@ const PartsTab = ({
                 grid-row: 1 / 2 !important;
                 order: 0 !important;
               }
+              .progress-bar-800 {
+                display: none !important;
+              }
               .search-box-mobile-800 {
                 display: none !important;
               }
               .circular-progress-800 {
                 display: flex !important;
-              }
-              .mobile-progress-800 {
-                display: none !important;
               }
             }
           `}</style>
@@ -708,30 +712,35 @@ const PartsTab = ({
                   />
                 </div>
 
-                {/* Mobile Progress Bar */}
-                <div className="pt-1 md:pt-1.5 mt-auto mobile-progress-800">
-                  <p className={`text-xs mb-1 ${
-                    darkMode ? 'text-gray-400' : 'text-slate-600'
-                  }`}>Progress</p>
-                  <div className="flex items-center gap-2">
-                    <div className={`flex-1 rounded-full h-2 ${
-                      darkMode ? 'bg-gray-700' : 'bg-gray-200'
-                    }`}>
-                      <div
-                        className="bg-green-500 h-2 rounded-full transition-all duration-500"
-                        style={{ width: `${(stats.delivered / stats.total) * 100}%` }}
-                      />
-                    </div>
-                    <span className={`text-xs font-semibold ${
-                      darkMode ? 'text-gray-300' : 'text-slate-700'
-                    }`}>
-                      {Math.round((stats.delivered / stats.total) * 100)}%
-                    </span>
-                  </div>
-                </div>
               </div>
             </div>
           </div>
+          </div>
+
+          {/* Progress Bar - Separate container on mobile */}
+          <div className="progress-bar-800">
+            <div className={`rounded-lg shadow-md py-3 px-4 ${
+              darkMode ? 'bg-gray-800' : 'bg-slate-100'
+            }`}>
+              <p className={`text-xs mb-1.5 ${
+                darkMode ? 'text-gray-400' : 'text-slate-600'
+              }`}>Progress</p>
+              <div className="flex items-center gap-2">
+                <div className={`flex-1 rounded-full h-2 ${
+                  darkMode ? 'bg-gray-700' : 'bg-gray-200'
+                }`}>
+                  <div
+                    className="bg-green-500 h-2 rounded-full transition-all duration-500"
+                    style={{ width: `${(stats.delivered / stats.total) * 100}%` }}
+                  />
+                </div>
+                <span className={`text-xs font-semibold ${
+                  darkMode ? 'text-gray-300' : 'text-slate-700'
+                }`}>
+                  {Math.round((stats.delivered / stats.total) * 100)}%
+                </span>
+              </div>
+            </div>
           </div>
 
           {/* Search Box - Mobile grid row 4 */}
