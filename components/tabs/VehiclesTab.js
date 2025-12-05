@@ -466,7 +466,7 @@ const VehiclesTab = ({
                     </h3>
                     {vehicle.nickname && (
                       <span className={`inline-block px-2 py-0.5 rounded-full text-xs font-medium whitespace-nowrap mt-1 ${
-                        darkMode ? 'bg-blue-600 text-blue-100' : 'bg-blue-100 text-blue-800'
+                        darkMode ? 'bg-gray-600 text-gray-300' : 'bg-gray-300 text-gray-700'
                       }`}>
                         {[vehicle.year, vehicle.make, vehicle.name].filter(Boolean).join(' ')}
                       </span>
