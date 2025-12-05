@@ -423,16 +423,21 @@ const PartsTab = ({
                   // Calculate required height to maintain scroll position
                   const requiredHeight = Math.max(currentScroll + window.innerHeight, window.innerHeight);
                   console.log('[Ordered Card] Setting container minHeight to:', requiredHeight);
-                  // Force synchronous render of height change to prevent batching
+                  // Force synchronous render of height change
                   flushSync(() => {
                     setContainerMinHeight(`${requiredHeight}px`);
                   });
                   console.log('[Ordered Card] Height applied, now filtering');
-                  // Now that height is applied to DOM, change the filter
-                  scrollPositionRef.current = currentScroll;
-                  setIsStatusFiltering(true);
-                  setStatusFilter(statusFilter === 'purchased' ? 'all' : 'purchased');
-                  setDeliveredFilter('all');
+                  // Force synchronous render of filter changes
+                  flushSync(() => {
+                    scrollPositionRef.current = currentScroll;
+                    setIsStatusFiltering(true);
+                    setStatusFilter(statusFilter === 'purchased' ? 'all' : 'purchased');
+                    setDeliveredFilter('all');
+                  });
+                  // Explicitly restore scroll position after both renders complete
+                  console.log('[Ordered Card] Restoring scroll to:', currentScroll);
+                  window.scrollTo(0, currentScroll);
                   setTimeout(() => setIsStatusFiltering(false), 900);
                 }}
                 onTouchStart={(e) => {
@@ -471,16 +476,21 @@ const PartsTab = ({
                   // Calculate required height to maintain scroll position
                   const requiredHeight = Math.max(currentScroll + window.innerHeight, window.innerHeight);
                   console.log('[Shipped Card] Setting container minHeight to:', requiredHeight);
-                  // Force synchronous render of height change to prevent batching
+                  // Force synchronous render of height change
                   flushSync(() => {
                     setContainerMinHeight(`${requiredHeight}px`);
                   });
                   console.log('[Shipped Card] Height applied, now filtering');
-                  // Now that height is applied to DOM, change the filter
-                  scrollPositionRef.current = currentScroll;
-                  setIsStatusFiltering(true);
-                  setStatusFilter(statusFilter === 'shipped' ? 'all' : 'shipped');
-                  setDeliveredFilter('all');
+                  // Force synchronous render of filter changes
+                  flushSync(() => {
+                    scrollPositionRef.current = currentScroll;
+                    setIsStatusFiltering(true);
+                    setStatusFilter(statusFilter === 'shipped' ? 'all' : 'shipped');
+                    setDeliveredFilter('all');
+                  });
+                  // Explicitly restore scroll position after both renders complete
+                  console.log('[Shipped Card] Restoring scroll to:', currentScroll);
+                  window.scrollTo(0, currentScroll);
                   setTimeout(() => setIsStatusFiltering(false), 900);
                 }}
                 onTouchStart={(e) => {
