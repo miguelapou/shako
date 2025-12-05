@@ -1469,6 +1469,8 @@ const Shako = () => {
             newTodoText={newTodoText}
             setNewTodoText={setNewTodoText}
             vendorColors={vendorColors}
+            showAddProjectVehicleDropdown={showAddProjectVehicleDropdown}
+            setShowAddProjectVehicleDropdown={setShowAddProjectVehicleDropdown}
           />
         )}
 
