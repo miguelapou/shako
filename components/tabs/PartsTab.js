@@ -351,7 +351,7 @@ const PartsTab = ({
     >
       <>
         {/* Statistics and Cost Breakdown - Side by Side */}
-        <div className="flex flex-col gap-6 mb-6 stats-container-800">
+        <div className="flex flex-col gap-6 mb-4 stats-container-800">
           <style>{`
             @media (min-width: 800px) {
               .stats-container-800 {
