@@ -79,11 +79,23 @@ const PartsTab = ({
     if (isStatusFiltering) {
       // Track scroll events during filtering for debugging
       console.log('[PartsTab] Filtering started - Using saved position:', scrollPositionRef.current);
+
+      // Immediately restore scroll if it changes during filtering
       const handleScroll = () => {
         const currentScroll = window.scrollY || window.pageYOffset;
         console.log('[PartsTab] SCROLL EVENT during filtering:', currentScroll);
+
+        // If scroll changed from saved position, restore immediately
+        if (Math.abs(currentScroll - scrollPositionRef.current) > 5) {
+          console.log('[PartsTab] Restoring scroll immediately to:', scrollPositionRef.current);
+          window.scrollTo({
+            top: scrollPositionRef.current,
+            behavior: 'instant'
+          });
+        }
       };
-      window.addEventListener('scroll', handleScroll);
+
+      window.addEventListener('scroll', handleScroll, { passive: false });
 
       return () => {
         window.removeEventListener('scroll', handleScroll);
@@ -91,19 +103,32 @@ const PartsTab = ({
     } else if (scrollPositionRef.current > 0) {
       // Restore scroll position when filtering ends
       console.log('[PartsTab] Filtering ended - Will restore to:', scrollPositionRef.current);
-      // Use requestAnimationFrame to ensure DOM has updated
-      requestAnimationFrame(() => {
+      const targetScroll = scrollPositionRef.current;
+
+      // Use multiple restoration attempts to fight against whatever is overriding
+      const restore = () => {
         const currentScroll = window.scrollY || window.pageYOffset;
         console.log('[PartsTab] Current scroll before restore:', currentScroll);
         window.scrollTo({
-          top: scrollPositionRef.current,
+          top: targetScroll,
           behavior: 'instant'
         });
-        console.log('[PartsTab] Restored scroll to:', scrollPositionRef.current);
-        // Verify restoration
+        console.log('[PartsTab] Restored scroll to:', targetScroll);
+      };
+
+      // Multiple attempts with different timing strategies
+      restore(); // Immediate
+      requestAnimationFrame(() => {
+        restore(); // Next frame
         requestAnimationFrame(() => {
-          const finalScroll = window.scrollY || window.pageYOffset;
-          console.log('[PartsTab] Final scroll position:', finalScroll);
+          restore(); // Frame after that
+          setTimeout(() => {
+            restore(); // After a short delay
+            setTimeout(() => {
+              const finalScroll = window.scrollY || window.pageYOffset;
+              console.log('[PartsTab] Final scroll position:', finalScroll);
+            }, 50);
+          }, 50);
         });
       });
     }
