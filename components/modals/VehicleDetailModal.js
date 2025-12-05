@@ -200,11 +200,37 @@ const VehicleDetailModal = ({
                 <div className={`order-last md:order-first rounded-lg p-6 ${
                   darkMode ? 'bg-gray-700' : 'bg-gray-50'
                 }`}>
-                  <h3 className={`text-lg font-semibold mb-4 ${
-                    darkMode ? 'text-gray-200' : 'text-gray-800'
-                  }`}>
-                    Basic Info
-                  </h3>
+                  <div className="flex items-center justify-between mb-4">
+                    <h3 className={`text-lg font-semibold ${
+                      darkMode ? 'text-gray-200' : 'text-gray-800'
+                    }`}>
+                      Basic Info
+                    </h3>
+                    {(() => {
+                      const vehicleProjects = projects.filter(p => p.vehicle_id === viewingVehicle.id);
+                      const linkedPartsCount = vehicleProjects.reduce((count, project) => {
+                        return count + parts.filter(part => part.projectId === project.id).length;
+                      }, 0);
+                      return (vehicleProjects.length > 0 || linkedPartsCount > 0) && (
+                        <div className={`flex items-center gap-3 text-xs ${
+                          darkMode ? 'text-gray-400' : 'text-gray-500'
+                        }`}>
+                          {vehicleProjects.length > 0 && (
+                            <span className="flex items-center gap-1">
+                              <Wrench className="w-3.5 h-3.5" />
+                              {vehicleProjects.length}
+                            </span>
+                          )}
+                          {linkedPartsCount > 0 && (
+                            <span className="flex items-center gap-1">
+                              <Package className="w-3.5 h-3.5" />
+                              {linkedPartsCount}
+                            </span>
+                          )}
+                        </div>
+                      );
+                    })()}
+                  </div>
                   <div className="grid grid-cols-2 gap-4">
                     <div className="space-y-4">
                       {viewingVehicle.year && (
@@ -282,34 +308,13 @@ const VehicleDetailModal = ({
                       const totalSpent = calculateVehicleTotalSpent(viewingVehicle.id, projects, parts);
                       const totalBudget = vehicleProjects.reduce((sum, project) => sum + (project.budget || 0), 0);
                       const progress = totalBudget > 0 ? (totalSpent / totalBudget) * 100 : 0;
-                      const linkedPartsCount = vehicleProjects.reduce((count, project) => {
-                        return count + parts.filter(part => part.projectId === project.id).length;
-                      }, 0);
                       return (
                         <div className={`col-span-2 pt-4 mt-4 border-t ${
                           darkMode ? 'border-gray-600' : 'border-gray-300'
                         }`}>
-                          <div className="flex items-center justify-between mb-2">
-                            <p className={`text-sm font-medium ${
-                              darkMode ? 'text-gray-400' : 'text-slate-600'
-                            }`}>Budget Used</p>
-                            <div className={`flex items-center gap-4 text-xs ${
-                              darkMode ? 'text-gray-500' : 'text-gray-500'
-                            }`}>
-                              {vehicleProjects.length > 0 && (
-                                <span className="flex items-center gap-1">
-                                  <Wrench className="w-3.5 h-3.5" />
-                                  {vehicleProjects.length}
-                                </span>
-                              )}
-                              {linkedPartsCount > 0 && (
-                                <span className="flex items-center gap-1">
-                                  <Package className="w-3.5 h-3.5" />
-                                  {linkedPartsCount}
-                                </span>
-                              )}
-                            </div>
-                          </div>
+                          <p className={`text-sm font-medium mb-2 ${
+                            darkMode ? 'text-gray-400' : 'text-slate-600'
+                          }`}>Budget Used</p>
                           <div className="flex justify-between items-center mb-2">
                             <span className={`text-sm font-medium ${
                               darkMode ? 'text-gray-300' : 'text-slate-700'
