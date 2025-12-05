@@ -630,7 +630,7 @@ const PartsTab = ({
                   onChange={(e) => {
                     setIsSearching(true);
                     setSearchTerm(e.target.value);
-                    setTimeout(() => setIsSearching(false), 300);
+                    setTimeout(() => setIsSearching(false), 600);
                   }}
                 />
                 {searchTerm && (
@@ -638,7 +638,7 @@ const PartsTab = ({
                     onClick={() => {
                       setIsSearching(true);
                       setSearchTerm('');
-                      setTimeout(() => setIsSearching(false), 300);
+                      setTimeout(() => setIsSearching(false), 600);
                     }}
                     className={`absolute right-3 top-1/2 transform -translate-y-1/2 transition-colors ${
                       darkMode ? 'text-gray-500 hover:text-gray-300' : 'text-gray-400 hover:text-gray-600'
@@ -825,7 +825,7 @@ const PartsTab = ({
                 onChange={(e) => {
                   setIsSearching(true);
                   setSearchTerm(e.target.value);
-                  setTimeout(() => setIsSearching(false), 300);
+                  setTimeout(() => setIsSearching(false), 600);
                 }}
               />
               {searchTerm && (
@@ -833,7 +833,7 @@ const PartsTab = ({
                   onClick={() => {
                     setIsSearching(true);
                     setSearchTerm('');
-                    setTimeout(() => setIsSearching(false), 300);
+                    setTimeout(() => setIsSearching(false), 600);
                   }}
                   className={`absolute right-3 top-1/2 transform -translate-y-1/2 transition-colors ${
                     darkMode ? 'text-gray-500 hover:text-gray-300' : 'text-gray-400 hover:text-gray-600'
