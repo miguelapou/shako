@@ -66,10 +66,24 @@ const PartsTab = ({
     }
   }, [rowsPerPage]);
 
+  const [containerMinHeight, setContainerMinHeight] = useState('auto');
+
   // Reset to page 1 when filters change
   useEffect(() => {
     setCurrentPage(1);
   }, [filteredParts.length, searchTerm, statusFilter, deliveredFilter, vendorFilter]);
+
+  // Prevent scroll restoration when filtering
+  useEffect(() => {
+    // Disable browser's automatic scroll restoration
+    if ('scrollRestoration' in window.history) {
+      const originalScrollRestoration = window.history.scrollRestoration;
+      window.history.scrollRestoration = 'manual';
+      return () => {
+        window.history.scrollRestoration = originalScrollRestoration;
+      };
+    }
+  }, []);
 
   // Helper function to change page with animation
   const handlePageChange = (newPage) => {
@@ -348,36 +362,68 @@ const PartsTab = ({
     <div
       ref={tabContentRef}
       className="slide-in-left"
+      style={{
+        // Apply minHeight on mobile to maintain page height during filtering
+        minHeight: window.innerWidth < 948 ? containerMinHeight : 'auto'
+      }}
     >
       <>
         {/* Statistics and Cost Breakdown - Side by Side */}
-        <div className="flex flex-col gap-6 mb-1 stats-container-800">
+        <div className="stats-container-800">
           <style>{`
-            @media (min-width: 800px) {
+            .stats-container-800 {
+              display: grid !important;
+              grid-template-columns: repeat(3, 1fr) !important;
+              gap: 0.75rem !important;
+              margin-bottom: 1rem !important;
+            }
+            .stats-cards-800 {
+              grid-column: 1 / 2 !important;
+              grid-row: 1 / 4 !important;
+              display: flex !important;
+              flex-direction: column !important;
+              gap: 0.75rem !important;
+            }
+            .cost-breakdown-800 {
+              grid-column: 2 / 4 !important;
+              grid-row: 1 / 4 !important;
+            }
+            .search-box-mobile-800 {
+              grid-column: 1 / 4 !important;
+              grid-row: 4 / 5 !important;
+            }
+            @media (min-width: 948px) {
               .stats-container-800 {
                 display: grid !important;
                 grid-template-columns: 1.5fr 1fr !important;
+                gap: 1.5rem !important;
+                margin-bottom: 2rem !important;
               }
               .stats-cards-800 {
-                display: flex !important;
-                flex-direction: column !important;
+                grid-column: 1 / 2 !important;
+                grid-row: 1 / 2 !important;
+                display: grid !important;
+                grid-template-columns: repeat(3, 1fr) !important;
+                grid-template-rows: auto auto !important;
                 gap: 1rem !important;
+                align-content: space-between !important;
                 height: 100% !important;
-                justify-content: space-between !important;
-                order: 0 !important;
               }
-              .stats-cards-800 > div:first-child {
-                flex-shrink: 0 !important;
-              }
-              .stats-cards-800 .space-y-4 {
-                margin-top: 0 !important;
-                margin-bottom: 0 !important;
-              }
-              .cost-breakdown-800 {
-                order: 0 !important;
+              .stats-cards-800 .status-card {
+                padding: 1rem !important;
               }
               .search-box-800 {
                 display: block !important;
+                grid-column: 1 / 4 !important;
+                align-self: end !important;
+              }
+              .cost-breakdown-800 {
+                grid-column: 2 / 3 !important;
+                grid-row: 1 / 2 !important;
+                order: 0 !important;
+              }
+              .search-box-mobile-800 {
+                display: none !important;
               }
               .circular-progress-800 {
                 display: flex !important;
@@ -387,55 +433,111 @@ const PartsTab = ({
               }
             }
           `}</style>
-          {/* Statistics Cards - 3 column grid on mobile */}
-          <div className="space-y-4 order-2 stats-cards-800">
-            <div className="grid grid-cols-3 gap-3 sm:gap-4">
+          {/* Statistics Cards - Stack in first column on mobile */}
+          <div className="stats-cards-800">
               <div
-                onClick={() => {
+                className="status-card"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  const isActivating = statusFilter !== 'purchased';
+
+                  if (typeof window !== 'undefined' && window.innerWidth < 948) {
+                    if (isActivating) {
+                      // Set page height when activating filter to prevent scroll jumping
+                      const currentHeight = document.documentElement.scrollHeight;
+                      setContainerMinHeight(`${currentHeight}px`);
+                    } else {
+                      // Reset height when deactivating filter (going back to 'all')
+                      setContainerMinHeight('auto');
+                    }
+                  }
+
                   setIsStatusFiltering(true);
                   setStatusFilter(statusFilter === 'purchased' ? 'all' : 'purchased');
                   setDeliveredFilter('all');
                   setTimeout(() => setIsStatusFiltering(false), 900);
+
+                  // Let page shrink to fit filtered content immediately after filter applies
+                  if (isActivating && typeof window !== 'undefined' && window.innerWidth < 948) {
+                    setTimeout(() => setContainerMinHeight('auto'), 50);
+                  }
                 }}
-                className={`rounded-lg shadow-md p-3 sm:p-4 md:p-4 border-l-4 border-yellow-500 relative overflow-hidden cursor-pointer transition-all duration-200 hover:shadow-lg hover:scale-[1.02] ${
+                className={`rounded-lg shadow-md p-4 border-l-4 border-yellow-500 relative overflow-hidden cursor-pointer transition-all duration-200 hover:shadow-lg hover:scale-[1.02] ${
                   darkMode ? 'bg-gray-800 hover:bg-gray-750' : 'bg-white hover:bg-gray-50'
                 } ${statusFilter === 'purchased' ? 'ring-2 ring-yellow-500' : ''}`}
+                style={{ touchAction: 'manipulation' }}
               >
-                <ShoppingCart className="w-6 h-6 sm:w-8 sm:h-8 text-yellow-500 opacity-20 absolute top-2 sm:top-4 right-2 sm:right-4" />
+                <ShoppingCart className="w-6 h-6 text-yellow-500 opacity-20 absolute top-2 right-2" />
                 <div>
-                  <p className={`text-xs sm:text-sm mb-1 sm:mb-2 md:mb-3 ${
+                  <p className={`text-xs mb-1 ${
                     darkMode ? 'text-gray-400' : 'text-slate-600'
                   }`}>Ordered</p>
-                  <p className={`text-xl sm:text-2xl md:text-2xl font-bold truncate ${
+                  <p className={`text-xl font-bold truncate ${
                     darkMode ? 'text-gray-100' : 'text-gray-800'
                   }`}>{stats.purchased}</p>
                 </div>
               </div>
 
               <div
-                onClick={() => {
+                className="status-card"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  const isActivating = statusFilter !== 'shipped';
+
+                  if (typeof window !== 'undefined' && window.innerWidth < 948) {
+                    if (isActivating) {
+                      // Set page height when activating filter to prevent scroll jumping
+                      const currentHeight = document.documentElement.scrollHeight;
+                      setContainerMinHeight(`${currentHeight}px`);
+                    } else {
+                      // Reset height when deactivating filter (going back to 'all')
+                      setContainerMinHeight('auto');
+                    }
+                  }
+
                   setIsStatusFiltering(true);
                   setStatusFilter(statusFilter === 'shipped' ? 'all' : 'shipped');
                   setDeliveredFilter('all');
                   setTimeout(() => setIsStatusFiltering(false), 900);
+
+                  // Let page shrink to fit filtered content immediately after filter applies
+                  if (isActivating && typeof window !== 'undefined' && window.innerWidth < 948) {
+                    setTimeout(() => setContainerMinHeight('auto'), 50);
+                  }
                 }}
-                className={`rounded-lg shadow-md p-3 sm:p-4 md:p-4 border-l-4 border-blue-500 relative overflow-hidden cursor-pointer transition-all duration-200 hover:shadow-lg hover:scale-[1.02] ${
+                className={`rounded-lg shadow-md p-4 border-l-4 border-blue-500 relative overflow-hidden cursor-pointer transition-all duration-200 hover:shadow-lg hover:scale-[1.02] ${
                   darkMode ? 'bg-gray-800 hover:bg-gray-750' : 'bg-white hover:bg-gray-50'
                 } ${statusFilter === 'shipped' ? 'ring-2 ring-blue-500' : ''}`}
+                style={{ touchAction: 'manipulation' }}
               >
-                <Truck className="w-6 h-6 sm:w-8 sm:h-8 text-blue-500 opacity-20 absolute top-2 sm:top-4 right-2 sm:right-4" />
+                <Truck className="w-6 h-6 text-blue-500 opacity-20 absolute top-2 right-2" />
                 <div>
-                  <p className={`text-xs sm:text-sm mb-1 sm:mb-2 md:mb-3 ${
+                  <p className={`text-xs mb-1 ${
                     darkMode ? 'text-gray-400' : 'text-slate-600'
                   }`}>Shipped</p>
-                  <p className={`text-xl sm:text-2xl md:text-2xl font-bold truncate ${
+                  <p className={`text-xl font-bold truncate ${
                     darkMode ? 'text-gray-100' : 'text-gray-800'
                   }`}>{stats.shipped}</p>
                 </div>
               </div>
 
               <div
-                onClick={() => {
+                className="status-card"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  const isGoingToAll = deliveredFilter === 'hide'; // Next click goes to 'all'
+
+                  if (typeof window !== 'undefined' && window.innerWidth < 948) {
+                    if (!isGoingToAll) {
+                      // Set page height when activating filter to prevent scroll jumping
+                      const currentHeight = document.documentElement.scrollHeight;
+                      setContainerMinHeight(`${currentHeight}px`);
+                    } else {
+                      // Reset height when going back to 'all'
+                      setContainerMinHeight('auto');
+                    }
+                  }
+
                   setIsStatusFiltering(true);
                   // Cycle through: all -> only -> hide -> all
                   setDeliveredFilter(prev =>
@@ -444,28 +546,33 @@ const PartsTab = ({
                   );
                   setStatusFilter('all');
                   setTimeout(() => setIsStatusFiltering(false), 900);
+
+                  // Let page shrink to fit filtered content immediately after filter applies
+                  if (!isGoingToAll && typeof window !== 'undefined' && window.innerWidth < 948) {
+                    setTimeout(() => setContainerMinHeight('auto'), 50);
+                  }
                 }}
-                className={`rounded-lg shadow-md p-3 sm:p-4 md:p-4 border-l-4 ${
+                className={`rounded-lg shadow-md p-4 border-l-4 ${
                   deliveredFilter === 'hide' ? 'border-red-500' : 'border-green-500'
                 } relative overflow-hidden cursor-pointer transition-all duration-200 hover:shadow-lg hover:scale-[1.02] ${
                   deliveredFilter === 'hide'
                     ? (darkMode ? 'bg-gray-900' : 'bg-gray-300')
                     : (darkMode ? 'bg-gray-800 hover:bg-gray-750' : 'bg-white hover:bg-gray-50')
                 } ${deliveredFilter !== 'all' ? `ring-2 ${deliveredFilter === 'hide' ? 'ring-red-500' : 'ring-green-500'}` : ''}`}
+                style={{ touchAction: 'manipulation' }}
               >
-                <CheckCircle className={`w-6 h-6 sm:w-8 sm:h-8 ${
+                <CheckCircle className={`w-6 h-6 ${
                   deliveredFilter === 'hide' ? 'text-red-500' : 'text-green-500'
-                } opacity-20 absolute top-2 sm:top-4 right-2 sm:right-4`} />
+                } opacity-20 absolute top-2 right-2`} />
                 <div key={deliveredFilter} className={deliveredFilter === 'hide' ? 'status-card-content' : ''}>
-                  <p className={`text-xs sm:text-sm mb-1 sm:mb-2 md:mb-3 ${
+                  <p className={`text-xs mb-1 ${
                     darkMode ? 'text-gray-400' : 'text-slate-600'
                   }`}>{deliveredFilter === 'hide' ? 'Undelivered' : 'Delivered'}</p>
-                  <p className={`text-xl sm:text-2xl md:text-2xl font-bold truncate ${
+                  <p className={`text-xl font-bold truncate ${
                     darkMode ? 'text-gray-100' : 'text-gray-800'
                   }`}>{deliveredFilter === 'hide' ? stats.undelivered : stats.delivered}</p>
                 </div>
               </div>
-            </div>
 
             {/* Search Box - Shows in left column at 800px+ */}
             <div className={`hidden search-box-800 rounded-lg shadow-md p-3 ${
@@ -504,7 +611,7 @@ const PartsTab = ({
 
           {/* Cost Breakdown - order-1 on mobile (appears first), full column width at 800px+ */}
           <div className="order-1 cost-breakdown-800">
-            <div className={`rounded-lg shadow-md p-3 pb-2 h-full flex flex-col ${
+            <div className={`rounded-lg shadow-md py-3 px-4 pb-2 h-full flex flex-col ${
               darkMode ? 'bg-gray-800' : 'bg-slate-100'
             }`}>
             <h3 className={`text-sm font-semibold mb-2 flex items-center gap-2 ${
@@ -626,38 +733,38 @@ const PartsTab = ({
             </div>
           </div>
           </div>
-        </div>
 
-        {/* Search Box - Mobile only */}
-        <div className={`show-below-800 rounded-lg shadow-md p-3 order-3 mb-6 ${
-          darkMode ? 'bg-gray-800' : 'bg-slate-100'
-        }`}>
-          <div className="relative">
-            <Search className={`absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 ${
-              darkMode ? 'text-gray-500' : 'text-gray-400'
-            }`} />
-            <input
-              type="text"
-              placeholder="Search parts..."
-              className={`w-full pl-10 pr-10 py-2 border rounded-lg outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
-                darkMode
-                  ? 'bg-gray-700 border-gray-600 text-gray-100 placeholder-gray-400'
-                  : 'bg-slate-50 border-slate-300 text-slate-800 placeholder-slate-400'
-              }`}
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-            />
-            {searchTerm && (
-              <button
-                onClick={() => setSearchTerm('')}
-                className={`absolute right-3 top-1/2 transform -translate-y-1/2 transition-colors ${
-                  darkMode ? 'text-gray-500 hover:text-gray-300' : 'text-gray-400 hover:text-gray-600'
+          {/* Search Box - Mobile grid row 4 */}
+          <div className={`search-box-mobile-800 rounded-lg shadow-md p-3 ${
+            darkMode ? 'bg-gray-800' : 'bg-slate-100'
+          }`}>
+            <div className="relative">
+              <Search className={`absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 ${
+                darkMode ? 'text-gray-500' : 'text-gray-400'
+              }`} />
+              <input
+                type="text"
+                placeholder="Search parts..."
+                className={`w-full pl-10 pr-10 py-2 border rounded-lg outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
+                  darkMode
+                    ? 'bg-gray-700 border-gray-600 text-gray-100 placeholder-gray-400'
+                    : 'bg-slate-50 border-slate-300 text-slate-800 placeholder-slate-400'
                 }`}
-                title="Clear search"
-              >
-                <X className="w-4 h-4" />
-              </button>
-            )}
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+              />
+              {searchTerm && (
+                <button
+                  onClick={() => setSearchTerm('')}
+                  className={`absolute right-3 top-1/2 transform -translate-y-1/2 transition-colors ${
+                    darkMode ? 'text-gray-500 hover:text-gray-300' : 'text-gray-400 hover:text-gray-600'
+                  }`}
+                  title="Clear search"
+                >
+                  <X className="w-4 h-4" />
+                </button>
+              )}
+            </div>
           </div>
         </div>
 
@@ -1016,7 +1123,9 @@ const PartsTab = ({
 
         {/* Mobile Card View - Visible only below 800px */}
         {filteredParts.length > 0 ? (
-        <div className={`show-below-800 grid grid-cols-1 gap-4 ${isStatusFiltering || isFilteringParts ? 'cards-status-filtering' : ''}`}>
+        <div
+          className={`show-below-800 grid grid-cols-1 gap-4 ${isStatusFiltering || isFilteringParts ? 'cards-status-filtering' : ''}`}
+        >
             {filteredParts.map((part) => (
               <div
                 key={part.id}
@@ -1106,7 +1215,7 @@ const PartsTab = ({
                 </div>
 
                 {/* Part Number and Status Row - Mobile only */}
-                <div className="mb-3 sm:hidden">
+                <div className="mb-3">
                   <div className="flex items-center justify-between gap-3">
                     {/* Part Number on Left */}
                     {part.partNumber && part.partNumber !== '-' ? (
@@ -1129,7 +1238,7 @@ const PartsTab = ({
                 </div>
 
                 {/* Desktop: Show full price breakdown */}
-                <div className="mb-3 hidden sm:block">
+                <div className="mb-3 hidden">
                   <div className={`p-3 rounded-lg ${
                     darkMode ? 'bg-gray-700' : 'bg-gray-50'
                   }`}>
@@ -1180,7 +1289,7 @@ const PartsTab = ({
                 }`}></div>
 
                 {/* Tracking and Total Price Row (Mobile Only) */}
-                <div className="flex items-center justify-between gap-3 sm:hidden">
+                <div className="flex items-center justify-between gap-3">
                   {/* Tracking on Left */}
                   <div className="inline-block" onClick={(e) => e.stopPropagation()}>
                     {part.tracking ? (
@@ -1229,7 +1338,7 @@ const PartsTab = ({
                 </div>
 
                 {/* Desktop: Tracking Only */}
-                <div className="hidden sm:block">
+                <div className="hidden">
                   <div className="inline-block" onClick={(e) => e.stopPropagation()}>
                     {part.tracking ? (
                       getTrackingUrl(part.tracking) ? (
