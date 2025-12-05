@@ -164,6 +164,8 @@ const Shako = () => {
     setIsSorting,
     isStatusFiltering,
     setIsStatusFiltering,
+    isSearching,
+    setIsSearching,
     partsDateFilter,
     setPartsDateFilter,
     isFilteringParts,
@@ -1373,6 +1375,8 @@ const Shako = () => {
             setIsSorting={setIsSorting}
             isStatusFiltering={isStatusFiltering}
             setIsStatusFiltering={setIsStatusFiltering}
+            isSearching={isSearching}
+            setIsSearching={setIsSearching}
             isFilteringParts={isFilteringParts}
             openDropdown={openDropdown}
             setOpenDropdown={setOpenDropdown}

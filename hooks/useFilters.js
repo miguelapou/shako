@@ -23,6 +23,7 @@ const useFilters = () => {
   const [sortOrder, setSortOrder] = useState('asc');
   const [isSorting, setIsSorting] = useState(false);
   const [isStatusFiltering, setIsStatusFiltering] = useState(false);
+  const [isSearching, setIsSearching] = useState(false);
   const [partsDateFilter, setPartsDateFilter] = useState('all'); // 'all', '1week', '2weeks', '1month'
   const [isFilteringParts, setIsFilteringParts] = useState(false);
   const [showDateFilterDropdown, setShowDateFilterDropdown] = useState(false);
@@ -125,6 +126,8 @@ const useFilters = () => {
     setIsSorting,
     isStatusFiltering,
     setIsStatusFiltering,
+    isSearching,
+    setIsSearching,
     partsDateFilter,
     setPartsDateFilter,
     isFilteringParts,
