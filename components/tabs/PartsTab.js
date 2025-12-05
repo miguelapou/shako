@@ -351,7 +351,7 @@ const PartsTab = ({
     >
       <>
         {/* Statistics and Cost Breakdown - Side by Side */}
-        <div className="flex flex-col gap-6 mb-6 stats-container-800">
+        <div className="flex flex-col gap-6 mb-1 stats-container-800">
           <style>{`
             @media (min-width: 800px) {
               .stats-container-800 {
@@ -388,7 +388,7 @@ const PartsTab = ({
             }
           `}</style>
           {/* Statistics Cards - 3 column grid on mobile */}
-          <div className="space-y-4 order-1 stats-cards-800">
+          <div className="space-y-4 order-2 stats-cards-800">
             <div className="grid grid-cols-3 gap-3 sm:gap-4">
               <div
                 onClick={() => {
@@ -502,8 +502,8 @@ const PartsTab = ({
 
           </div>
 
-          {/* Cost Breakdown - order-2 on mobile, full column width at 800px+ */}
-          <div className="order-2 cost-breakdown-800">
+          {/* Cost Breakdown - order-1 on mobile (appears first), full column width at 800px+ */}
+          <div className="order-1 cost-breakdown-800">
             <div className={`rounded-lg shadow-md p-3 pb-2 h-full flex flex-col ${
               darkMode ? 'bg-gray-800' : 'bg-slate-100'
             }`}>
@@ -907,8 +907,10 @@ const PartsTab = ({
                     id="rowsPerPage"
                     value={rowsPerPage}
                     onChange={(e) => {
+                      setIsPaginating(true);
                       setRowsPerPage(Number(e.target.value));
                       setCurrentPage(1);
+                      setTimeout(() => setIsPaginating(false), 600);
                     }}
                     className={`px-3 py-2 pr-8 rounded border text-sm appearance-none ${
                       darkMode
