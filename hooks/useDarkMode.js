@@ -46,6 +46,7 @@ const useDarkMode = () => {
   }, [darkMode, darkModeInitialized]);
 
   // Apply dark scrollbar styles to both html and body for cross-browser compatibility
+  // Also manage html background color for iOS Safari edge-to-edge safe areas
   useEffect(() => {
     if (typeof document !== 'undefined') {
       // Detect if Safari (not Chrome)
@@ -53,6 +54,8 @@ const useDarkMode = () => {
       if (darkMode) {
         document.documentElement.classList.add('dark-scrollbar');
         document.body.classList.add('dark-scrollbar');
+        // Set dark mode background for safe area edges
+        document.documentElement.style.backgroundColor = '#111827'; // gray-900
         // Only set color-scheme for Safari
         if (isSafari) {
           document.documentElement.style.colorScheme = 'dark';
@@ -60,6 +63,8 @@ const useDarkMode = () => {
       } else {
         document.documentElement.classList.remove('dark-scrollbar');
         document.body.classList.remove('dark-scrollbar');
+        // Set light mode background for safe area edges
+        document.documentElement.style.backgroundColor = '#f8fafc'; // slate-50
         // Only set color-scheme for Safari
         if (isSafari) {
           document.documentElement.style.colorScheme = 'light';
