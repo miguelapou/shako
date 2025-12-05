@@ -68,6 +68,7 @@ const PartsTab = ({
 
   // Save scroll position before filter changes
   const scrollPositionRef = useRef(0);
+  const containerHeightRef = useRef('100vh');
 
   // Reset to page 1 when filters change
   useEffect(() => {
@@ -418,6 +419,10 @@ const PartsTab = ({
                   e.stopPropagation();
                   const currentScroll = window.scrollY || window.pageYOffset;
                   console.log('[Ordered Card] Clicked at scroll position:', currentScroll);
+                  // Calculate required height to maintain scroll position
+                  const requiredHeight = Math.max(currentScroll + window.innerHeight, window.innerHeight);
+                  containerHeightRef.current = `${requiredHeight}px`;
+                  console.log('[Ordered Card] Setting container minHeight to:', requiredHeight);
                   // Save scroll position BEFORE state changes
                   scrollPositionRef.current = currentScroll;
                   setIsStatusFiltering(true);
@@ -458,6 +463,10 @@ const PartsTab = ({
                   e.stopPropagation();
                   const currentScroll = window.scrollY || window.pageYOffset;
                   console.log('[Shipped Card] Clicked at scroll position:', currentScroll);
+                  // Calculate required height to maintain scroll position
+                  const requiredHeight = Math.max(currentScroll + window.innerHeight, window.innerHeight);
+                  containerHeightRef.current = `${requiredHeight}px`;
+                  console.log('[Shipped Card] Setting container minHeight to:', requiredHeight);
                   // Save scroll position BEFORE state changes
                   scrollPositionRef.current = currentScroll;
                   setIsStatusFiltering(true);
@@ -1085,7 +1094,7 @@ const PartsTab = ({
         {filteredParts.length > 0 ? (
         <div
           className={`show-below-800 grid grid-cols-1 gap-4 ${isStatusFiltering || isFilteringParts ? 'cards-status-filtering' : ''}`}
-          style={{ minHeight: '100vh' }}
+          style={{ minHeight: containerHeightRef.current }}
         >
             {filteredParts.map((part) => (
               <div
