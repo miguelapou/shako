@@ -69,7 +69,7 @@ const AddProjectModal = ({
         </div>
 
         {/* Content - takes flexible space */}
-        <div className="p-6 pb-6 md:pb-64 overflow-y-auto" style={{ minHeight: 0 }}>
+        <div className="p-6 overflow-y-auto" style={{ minHeight: 0 }}>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {/* Left Column: Project Name, Priority/Vehicle, Budget */}
             <div className="space-y-4">
