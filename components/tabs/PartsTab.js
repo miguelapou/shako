@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import {
-  Search, Package, TrendingUp, Truck, CheckCircle, Clock,
+  Search, Package, Receipt, Truck, CheckCircle, Clock,
   ChevronDown, Plus, X, ExternalLink, ShoppingCart, Car,
   ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight
 } from 'lucide-react';
@@ -67,6 +67,30 @@ const PartsTab = ({
   }, [rowsPerPage]);
 
   const [containerMinHeight, setContainerMinHeight] = useState('auto');
+
+  // Progress bar tooltip state (desktop only)
+  const [progressTooltipVisible, setProgressTooltipVisible] = useState(false);
+  const [progressTooltipPos, setProgressTooltipPos] = useState({ x: 0, y: 0 });
+  const progressBarRef = useRef(null);
+
+  // Progress bar tooltip handlers (desktop hover only)
+  const handleProgressMouseMove = (e) => {
+    const rect = progressBarRef.current?.getBoundingClientRect();
+    if (rect) {
+      setProgressTooltipPos({
+        x: e.clientX - rect.left,
+        y: e.clientY - rect.top - 30
+      });
+    }
+  };
+
+  const handleProgressMouseEnter = () => {
+    setProgressTooltipVisible(true);
+  };
+
+  const handleProgressMouseLeave = () => {
+    setProgressTooltipVisible(false);
+  };
 
   // Reset to page 1 when filters change
   useEffect(() => {
@@ -373,24 +397,32 @@ const PartsTab = ({
           <style>{`
             .stats-container-800 {
               display: grid !important;
-              grid-template-columns: repeat(3, 1fr) !important;
+              grid-template-columns: 1fr 2fr !important;
               gap: 0.75rem !important;
               margin-bottom: 1rem !important;
             }
             .stats-cards-800 {
               grid-column: 1 / 2 !important;
-              grid-row: 1 / 4 !important;
+              grid-row: 1 / 2 !important;
+              display: flex !important;
+              flex-direction: column !important;
+              gap: 0.75rem !important;
+            }
+            .cost-progress-wrapper-800 {
+              grid-column: 2 / 3 !important;
+              grid-row: 1 / 2 !important;
               display: flex !important;
               flex-direction: column !important;
               gap: 0.75rem !important;
             }
             .cost-breakdown-800 {
-              grid-column: 2 / 4 !important;
-              grid-row: 1 / 4 !important;
+              flex: 1 !important;
+              display: flex !important;
+              flex-direction: column !important;
             }
             .search-box-mobile-800 {
-              grid-column: 1 / 4 !important;
-              grid-row: 4 / 5 !important;
+              grid-column: 1 / 3 !important;
+              grid-row: 2 / 3 !important;
             }
             @media (min-width: 948px) {
               .stats-container-800 {
@@ -417,19 +449,21 @@ const PartsTab = ({
                 grid-column: 1 / 4 !important;
                 align-self: end !important;
               }
-              .cost-breakdown-800 {
+              .cost-progress-wrapper-800 {
                 grid-column: 2 / 3 !important;
                 grid-row: 1 / 2 !important;
-                order: 0 !important;
+              }
+              .cost-breakdown-800 {
+                flex: 1 !important;
+              }
+              .progress-bar-800 {
+                display: none !important;
               }
               .search-box-mobile-800 {
                 display: none !important;
               }
               .circular-progress-800 {
                 display: flex !important;
-              }
-              .mobile-progress-800 {
-                display: none !important;
               }
             }
           `}</style>
@@ -609,20 +643,41 @@ const PartsTab = ({
 
           </div>
 
-          {/* Cost Breakdown - order-1 on mobile (appears first), full column width at 800px+ */}
-          <div className="order-1 cost-breakdown-800">
+          {/* Cost Breakdown + Progress Bar Wrapper */}
+          <div className="cost-progress-wrapper-800">
+          {/* Cost Breakdown */}
+          <div className="cost-breakdown-800">
             <div className={`rounded-lg shadow-md py-3 px-4 pb-2 h-full flex flex-col ${
               darkMode ? 'bg-gray-800' : 'bg-slate-100'
             }`}>
             <h3 className={`text-sm font-semibold mb-2 flex items-center gap-2 ${
               darkMode ? 'text-gray-100' : 'text-gray-800'
             }`}>
-              <TrendingUp className="w-4 h-4" />
+              <Receipt className="w-4 h-4" />
               Cost Breakdown
             </h3>
             <div className="flex gap-4 flex-1">
               {/* Circular Progress - Desktop Only */}
-              <div className="hidden circular-progress-800 items-center justify-center">
+              <div
+                ref={progressBarRef}
+                className="hidden circular-progress-800 items-center justify-center relative cursor-pointer"
+                onMouseEnter={handleProgressMouseEnter}
+                onMouseLeave={handleProgressMouseLeave}
+                onMouseMove={handleProgressMouseMove}
+              >
+                {/* Floating tooltip */}
+                <div
+                  className={`progress-tooltip pointer-events-none absolute z-10 px-2 py-1 text-xs font-medium rounded shadow-lg whitespace-nowrap ${
+                    darkMode ? 'bg-gray-700 text-gray-100' : 'bg-gray-800 text-white'
+                  } ${progressTooltipVisible ? 'progress-tooltip-visible' : 'progress-tooltip-hidden'}`}
+                  style={{
+                    left: `${progressTooltipPos.x}px`,
+                    top: `${progressTooltipPos.y}px`,
+                    transform: 'translateX(-50%)'
+                  }}
+                >
+                  Delivery Progress
+                </div>
                 <div className="relative w-24 h-24">
                   <svg className="w-24 h-24 transform -rotate-90">
                     <circle
@@ -708,27 +763,33 @@ const PartsTab = ({
                   />
                 </div>
 
-                {/* Mobile Progress Bar */}
-                <div className="pt-1 md:pt-1.5 mt-auto mobile-progress-800">
-                  <p className={`text-xs mb-1 ${
-                    darkMode ? 'text-gray-400' : 'text-slate-600'
-                  }`}>Progress</p>
-                  <div className="flex items-center gap-2">
-                    <div className={`flex-1 rounded-full h-2 ${
-                      darkMode ? 'bg-gray-700' : 'bg-gray-200'
-                    }`}>
-                      <div
-                        className="bg-green-500 h-2 rounded-full transition-all duration-500"
-                        style={{ width: `${(stats.delivered / stats.total) * 100}%` }}
-                      />
-                    </div>
-                    <span className={`text-xs font-semibold ${
-                      darkMode ? 'text-gray-300' : 'text-slate-700'
-                    }`}>
-                      {Math.round((stats.delivered / stats.total) * 100)}%
-                    </span>
-                  </div>
+              </div>
+            </div>
+          </div>
+          </div>
+
+          {/* Progress Bar - Separate container on mobile */}
+          <div className="progress-bar-800">
+            <div className={`rounded-lg shadow-md py-3 px-4 ${
+              darkMode ? 'bg-gray-800' : 'bg-slate-100'
+            }`}>
+              <p className={`text-xs mb-1.5 ${
+                darkMode ? 'text-gray-400' : 'text-slate-600'
+              }`}>Delivery Progress</p>
+              <div className="flex items-center gap-2">
+                <div className={`flex-1 rounded-full h-2 ${
+                  darkMode ? 'bg-gray-700' : 'bg-gray-200'
+                }`}>
+                  <div
+                    className="bg-green-500 h-2 rounded-full transition-all duration-500"
+                    style={{ width: `${(stats.delivered / stats.total) * 100}%` }}
+                  />
                 </div>
+                <span className={`text-xs font-semibold ${
+                  darkMode ? 'text-gray-300' : 'text-slate-700'
+                }`}>
+                  {Math.round((stats.delivered / stats.total) * 100)}%
+                </span>
               </div>
             </div>
           </div>
