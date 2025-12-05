@@ -376,7 +376,7 @@ const Shako = () => {
     }
     // Check if any field has changed
     const fieldsToCheck = [
-      'nickname', 'name', 'year', 'license_plate', 'vin', 'insurance_policy',
+      'nickname', 'name', 'year', 'license_plate', 'vin', 'odometer_range',
       'fuel_filter', 'air_filter', 'oil_filter', 'oil_type', 'oil_capacity',
       'oil_brand', 'drain_plug', 'battery', 'color'
     ];
