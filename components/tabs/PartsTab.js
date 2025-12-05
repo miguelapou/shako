@@ -369,12 +369,13 @@ const PartsTab = ({
     >
       <>
         {/* Statistics and Cost Breakdown - Side by Side */}
-        <div className="stats-container-800 mb-4">
+        <div className="stats-container-800">
           <style>{`
             .stats-container-800 {
               display: grid !important;
               grid-template-columns: repeat(3, 1fr) !important;
               gap: 0.75rem !important;
+              margin-bottom: 1rem !important;
             }
             .stats-cards-800 {
               grid-column: 1 / 2 !important;
@@ -396,22 +397,28 @@ const PartsTab = ({
                 display: grid !important;
                 grid-template-columns: 1.5fr 1fr !important;
                 gap: 1.5rem !important;
+                margin-bottom: 2rem !important;
               }
               .stats-cards-800 {
-                grid-column: auto !important;
-                grid-row: auto !important;
+                grid-column: 1 / 2 !important;
+                grid-row: 1 / 2 !important;
                 display: flex !important;
                 flex-direction: column !important;
                 gap: 1rem !important;
                 height: 100% !important;
                 justify-content: space-between !important;
+                order: 0 !important;
+              }
+              .stats-cards-800 > div:first-child {
+                flex-shrink: 0 !important;
               }
               .stats-cards-800 .status-card {
                 padding: 1rem !important;
               }
               .cost-breakdown-800 {
-                grid-column: auto !important;
-                grid-row: auto !important;
+                grid-column: 2 / 3 !important;
+                grid-row: 1 / 2 !important;
+                order: 0 !important;
               }
               .search-box-mobile-800 {
                 display: none !important;
