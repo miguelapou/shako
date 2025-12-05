@@ -369,3 +369,18 @@ body.dark-scrollbar *::-webkit-scrollbar-thumb:hover {
   -webkit-box-orient: vertical;
   overflow: hidden;
 }
+
+/* Progress Bar Tooltip Animations */
+.progress-tooltip {
+  transition: opacity 0.2s ease-in-out, visibility 0.2s ease-in-out;
+}
+
+.progress-tooltip-visible {
+  opacity: 1;
+  visibility: visible;
+}
+
+.progress-tooltip-hidden {
+  opacity: 0;
+  visibility: hidden;
+}
