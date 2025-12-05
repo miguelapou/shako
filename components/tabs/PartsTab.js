@@ -74,65 +74,25 @@ const PartsTab = ({
     setCurrentPage(1);
   }, [filteredParts.length, searchTerm, statusFilter, deliveredFilter, vendorFilter]);
 
-  // Restore scroll position when filtering ends
+  // Prevent scroll restoration when filtering
   useEffect(() => {
-    if (isStatusFiltering) {
-      // Track scroll events during filtering for debugging
-      console.log('[PartsTab] Filtering started - Using saved position:', scrollPositionRef.current);
-
-      // Immediately restore scroll if it changes during filtering
-      const handleScroll = () => {
-        const currentScroll = window.scrollY || window.pageYOffset;
-        console.log('[PartsTab] SCROLL EVENT during filtering:', currentScroll);
-
-        // If scroll changed from saved position, restore immediately
-        if (Math.abs(currentScroll - scrollPositionRef.current) > 5) {
-          console.log('[PartsTab] Restoring scroll immediately to:', scrollPositionRef.current);
-          window.scrollTo({
-            top: scrollPositionRef.current,
-            behavior: 'instant'
-          });
-        }
-      };
-
-      window.addEventListener('scroll', handleScroll, { passive: false });
-
+    // Disable browser's automatic scroll restoration
+    if ('scrollRestoration' in window.history) {
+      const originalScrollRestoration = window.history.scrollRestoration;
+      window.history.scrollRestoration = 'manual';
       return () => {
-        window.removeEventListener('scroll', handleScroll);
+        window.history.scrollRestoration = originalScrollRestoration;
       };
-    } else if (scrollPositionRef.current > 0) {
-      // Restore scroll position when filtering ends
-      console.log('[PartsTab] Filtering ended - Will restore to:', scrollPositionRef.current);
-      const targetScroll = scrollPositionRef.current;
-
-      // Use multiple restoration attempts to fight against whatever is overriding
-      const restore = () => {
-        const currentScroll = window.scrollY || window.pageYOffset;
-        console.log('[PartsTab] Current scroll before restore:', currentScroll);
-        window.scrollTo({
-          top: targetScroll,
-          behavior: 'instant'
-        });
-        console.log('[PartsTab] Restored scroll to:', targetScroll);
-      };
-
-      // Multiple attempts with different timing strategies
-      restore(); // Immediate
-      requestAnimationFrame(() => {
-        restore(); // Next frame
-        requestAnimationFrame(() => {
-          restore(); // Frame after that
-          setTimeout(() => {
-            restore(); // After a short delay
-            setTimeout(() => {
-              const finalScroll = window.scrollY || window.pageYOffset;
-              console.log('[PartsTab] Final scroll position:', finalScroll);
-            }, 50);
-          }, 50);
-        });
-      });
     }
-  }, [isStatusFiltering]);
+  }, []);
+
+  // Maintain minimum height to prevent scroll jumping
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      console.log('[PartsTab] Filter changed. Status:', statusFilter, 'Delivered:', deliveredFilter);
+      console.log('[PartsTab] Current scroll:', window.scrollY);
+    }
+  }, [statusFilter, deliveredFilter]);
 
   // Helper function to change page with animation
   const handlePageChange = (newPage) => {
@@ -1123,7 +1083,10 @@ const PartsTab = ({
 
         {/* Mobile Card View - Visible only below 800px */}
         {filteredParts.length > 0 ? (
-        <div className={`show-below-800 grid grid-cols-1 gap-4 ${isStatusFiltering || isFilteringParts ? 'cards-status-filtering' : ''}`}>
+        <div
+          className={`show-below-800 grid grid-cols-1 gap-4 ${isStatusFiltering || isFilteringParts ? 'cards-status-filtering' : ''}`}
+          style={{ minHeight: '100vh' }}
+        >
             {filteredParts.map((part) => (
               <div
                 key={part.id}
