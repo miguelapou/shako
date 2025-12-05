@@ -373,28 +373,32 @@ const PartsTab = ({
           <style>{`
             .stats-container-800 {
               display: grid !important;
-              grid-template-columns: repeat(3, 1fr) !important;
+              grid-template-columns: 1fr 2fr !important;
               gap: 0.75rem !important;
               margin-bottom: 1rem !important;
             }
             .stats-cards-800 {
               grid-column: 1 / 2 !important;
-              grid-row: 1 / 4 !important;
+              grid-row: 1 / 2 !important;
+              display: flex !important;
+              flex-direction: column !important;
+              gap: 0.75rem !important;
+            }
+            .cost-progress-wrapper-800 {
+              grid-column: 2 / 3 !important;
+              grid-row: 1 / 2 !important;
               display: flex !important;
               flex-direction: column !important;
               gap: 0.75rem !important;
             }
             .cost-breakdown-800 {
-              grid-column: 2 / 4 !important;
-              grid-row: 1 / 3 !important;
-            }
-            .progress-bar-800 {
-              grid-column: 2 / 4 !important;
-              grid-row: 3 / 4 !important;
+              flex: 1 !important;
+              display: flex !important;
+              flex-direction: column !important;
             }
             .search-box-mobile-800 {
-              grid-column: 1 / 4 !important;
-              grid-row: 4 / 5 !important;
+              grid-column: 1 / 3 !important;
+              grid-row: 2 / 3 !important;
             }
             @media (min-width: 948px) {
               .stats-container-800 {
@@ -421,10 +425,12 @@ const PartsTab = ({
                 grid-column: 1 / 4 !important;
                 align-self: end !important;
               }
-              .cost-breakdown-800 {
+              .cost-progress-wrapper-800 {
                 grid-column: 2 / 3 !important;
                 grid-row: 1 / 2 !important;
-                order: 0 !important;
+              }
+              .cost-breakdown-800 {
+                flex: 1 !important;
               }
               .progress-bar-800 {
                 display: none !important;
@@ -613,8 +619,10 @@ const PartsTab = ({
 
           </div>
 
-          {/* Cost Breakdown - order-1 on mobile (appears first), full column width at 800px+ */}
-          <div className="order-1 cost-breakdown-800 h-full">
+          {/* Cost Breakdown + Progress Bar Wrapper */}
+          <div className="cost-progress-wrapper-800">
+          {/* Cost Breakdown */}
+          <div className="cost-breakdown-800">
             <div className={`rounded-lg shadow-md py-3 px-4 pb-2 h-full flex flex-col ${
               darkMode ? 'bg-gray-800' : 'bg-slate-100'
             }`}>
@@ -715,7 +723,6 @@ const PartsTab = ({
               </div>
             </div>
           </div>
-          </div>
 
           {/* Progress Bar - Separate container on mobile */}
           <div className="progress-bar-800">
@@ -741,6 +748,7 @@ const PartsTab = ({
                 </span>
               </div>
             </div>
+          </div>
           </div>
 
           {/* Search Box - Mobile grid row 4 */}
