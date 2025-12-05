@@ -23,6 +23,7 @@ const useVehicles = () => {
     license_plate: '',
     vin: '',
     odometer_range: '',
+    odometer_unit: 'km',
     fuel_filter: '',
     air_filter: '',
     oil_filter: '',
