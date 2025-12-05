@@ -1528,6 +1528,7 @@ const Shako = () => {
             vendorColors={vendorColors}
             unlinkPartFromProject={unlinkPartFromProject}
             loadProjects={loadProjects}
+            updateProject={updateProject}
           />
         )}
 
