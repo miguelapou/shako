@@ -1,6 +1,6 @@
 import React from 'react';
 import {
-  Plus, ChevronDown, ChevronRight, GripVertical,
+  Plus, ChevronDown, ChevronRight, Edit2, GripVertical,
   Package, CheckCircle, Clock, Car, Archive, Wrench, FolderLock, FolderOpen
 } from 'lucide-react';
 import { getStatusColors, getPriorityColors, getMutedColor, getPriorityBorderColor } from '../../utils/colorUtils';
@@ -136,6 +136,24 @@ const ProjectsTab = ({
                   title="Drag to reorder"
                 >
                   <GripVertical className="w-5 h-5" />
+                </div>
+
+                {/* Edit Button - Top Right */}
+                <div className="absolute top-2 right-2" onClick={(e) => e.stopPropagation()}>
+                  <button
+                    onClick={() => {
+                      setViewingProject(project);
+                      setOriginalProjectData({ ...project }); // Save original data for unsaved changes check
+                      setProjectModalEditMode(true);
+                      setShowProjectDetailModal(true);
+                    }}
+                    className={`p-2 rounded-md transition-colors ${
+                      darkMode ? 'hover:bg-gray-700 text-gray-500 hover:text-blue-400' : 'hover:bg-gray-100 text-gray-500 hover:text-blue-600'
+                    }`}
+                    title="Edit project"
+                  >
+                    <Edit2 className="w-5 h-5" />
+                  </button>
                 </div>
 
                 {/* Project Header */}
