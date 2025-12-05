@@ -265,14 +265,14 @@ const VehicleDetailModal = ({
                       )}
                       {viewingVehicle.odometer_range && (
                         <div>
-                          <p className={`text-sm font-medium mb-2 ${
+                          <p className={`text-sm font-medium mb-1 ${
                             darkMode ? 'text-gray-400' : 'text-slate-600'
                           }`}>Odometer Range</p>
-                          <span className={`inline-block px-3 py-1 rounded text-sm font-medium ${
-                            darkMode ? 'bg-blue-600 text-blue-100' : 'bg-blue-100 text-blue-800'
+                          <p className={`text-base ${
+                            darkMode ? 'text-gray-100' : 'text-slate-800'
                           }`}>
-                            {parseInt(viewingVehicle.odometer_range).toLocaleString()} km
-                          </span>
+                            {parseInt(viewingVehicle.odometer_range).toLocaleString()} {viewingVehicle.odometer_unit === 'mi' ? 'miles' : 'km'}
+                          </p>
                         </div>
                       )}
                     </div>
@@ -828,6 +828,25 @@ const VehicleDetailModal = ({
                           min="0"
                           step="10000"
                         />
+                      </div>
+                      <div>
+                        <label className={`block text-sm font-medium mb-2 ${
+                          darkMode ? 'text-gray-300' : 'text-slate-700'
+                        }`}>
+                          Unit
+                        </label>
+                        <select
+                          value={viewingVehicle.odometer_unit || 'km'}
+                          onChange={(e) => setViewingVehicle({ ...viewingVehicle, odometer_unit: e.target.value })}
+                          className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
+                            darkMode
+                              ? 'bg-gray-700 border-gray-600 text-gray-100'
+                              : 'bg-slate-50 border-slate-300 text-slate-800'
+                          }`}
+                        >
+                          <option value="km">Kilometers</option>
+                          <option value="mi">Miles</option>
+                        </select>
                       </div>
                     </div>
                   </div>

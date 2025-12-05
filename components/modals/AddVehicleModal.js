@@ -227,6 +227,25 @@ const AddVehicleModal = ({
                     step="10000"
                   />
                 </div>
+                <div>
+                  <label className={`block text-sm font-medium mb-2 ${
+                    darkMode ? 'text-gray-300' : 'text-slate-700'
+                  }`}>
+                    Unit
+                  </label>
+                  <select
+                    value={newVehicle.odometer_unit || 'km'}
+                    onChange={(e) => setNewVehicle({ ...newVehicle, odometer_unit: e.target.value })}
+                    className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
+                      darkMode
+                        ? 'bg-gray-700 border-gray-600 text-gray-100'
+                        : 'bg-slate-50 border-slate-300 text-slate-800'
+                    }`}
+                  >
+                    <option value="km">Kilometers</option>
+                    <option value="mi">Miles</option>
+                  </select>
+                </div>
               </div>
             </div>
 
@@ -487,6 +506,7 @@ const AddVehicleModal = ({
                   license_plate: '',
                   vin: '',
                   odometer_range: '',
+                  odometer_unit: 'km',
                   fuel_filter: '',
                   air_filter: '',
                   oil_filter: '',
