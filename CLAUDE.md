@@ -4,7 +4,7 @@ This file provides guidance for Claude Code when working with this codebase.
 
 ## Guiding Principles
 
-1. **Syntax Verification**: After every code change, verify the entire file(s) being edited for correct syntax, missing characters, and nesting errors (unclosed brackets, parentheses, tags).
+1. **Syntax Verification**: After every code change, re-read at least 20-30 lines surrounding the edit to verify correct syntax, missing characters, and nesting errors (unclosed brackets, parentheses, tags). Do not rely solely on syntax checkers.
 
 2. **Clean Final Code**: When fixing or iterating on a solution, once the desired result is achieved, review the final code to ensure it is the cleanest and most efficient version. No band-aids or temporary workarounds should remain.
 
