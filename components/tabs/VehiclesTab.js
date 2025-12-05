@@ -204,9 +204,10 @@ const VehiclesTab = ({
                     {vehicle.nickname || [vehicle.year, vehicle.make, vehicle.name].filter(Boolean).join(' ')}
                   </h3>
                   {vehicle.nickname && (
-                    <span className={`inline-block px-2.5 py-1 rounded-full text-xs font-medium whitespace-nowrap flex-shrink-0 ${
-                      darkMode ? 'bg-blue-600 text-blue-100' : 'bg-blue-100 text-blue-800'
-                    }`}>
+                    <span
+                      className="inline-block px-2.5 py-1 rounded-full text-xs font-medium whitespace-nowrap flex-shrink-0 text-white"
+                      style={{ backgroundColor: vehicle.color || '#3B82F6' }}
+                    >
                       {[vehicle.year, vehicle.make, vehicle.name].filter(Boolean).join(' ')}
                     </span>
                   )}
