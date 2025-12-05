@@ -137,8 +137,8 @@ const VehiclesTab = ({
                 <GripVertical className="w-5 h-5" />
               </div>
 
-              {/* Edit Button - Bottom right on mobile, top right on desktop */}
-              <div className="absolute bottom-3 right-2 md:bottom-auto md:top-2">
+              {/* Edit Button - Desktop only, top right */}
+              <div className="absolute top-2 right-2 hidden md:block">
                 <button
                   onClick={(e) => {
                     e.stopPropagation();
