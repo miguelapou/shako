@@ -68,6 +68,60 @@ const PartsTab = ({
 
   const [containerMinHeight, setContainerMinHeight] = useState('auto');
 
+  // Progress bar tooltip state
+  const [progressTooltipVisible, setProgressTooltipVisible] = useState(false);
+  const [progressTooltipPos, setProgressTooltipPos] = useState({ x: 0, y: 0 });
+  const progressTooltipTimeout = useRef(null);
+  const progressBarRef = useRef(null);
+
+  // Check if device supports hover (desktop)
+  const isHoverDevice = typeof window !== 'undefined' &&
+    window.matchMedia('(hover: hover) and (pointer: fine)').matches;
+
+  // Progress bar tooltip handlers
+  const handleProgressMouseMove = (e) => {
+    if (!isHoverDevice) return;
+    const rect = progressBarRef.current?.getBoundingClientRect();
+    if (rect) {
+      setProgressTooltipPos({
+        x: e.clientX - rect.left,
+        y: e.clientY - rect.top - 30
+      });
+    }
+  };
+
+  const handleProgressMouseEnter = () => {
+    if (!isHoverDevice) return;
+    setProgressTooltipVisible(true);
+  };
+
+  const handleProgressMouseLeave = () => {
+    if (!isHoverDevice) return;
+    setProgressTooltipVisible(false);
+  };
+
+  const handleProgressTouch = () => {
+    if (isHoverDevice) return;
+    // Clear any existing timeout
+    if (progressTooltipTimeout.current) {
+      clearTimeout(progressTooltipTimeout.current);
+    }
+    setProgressTooltipVisible(true);
+    // Hide after 2 seconds
+    progressTooltipTimeout.current = setTimeout(() => {
+      setProgressTooltipVisible(false);
+    }, 2000);
+  };
+
+  // Cleanup timeout on unmount
+  useEffect(() => {
+    return () => {
+      if (progressTooltipTimeout.current) {
+        clearTimeout(progressTooltipTimeout.current);
+      }
+    };
+  }, []);
+
   // Reset to page 1 when filters change
   useEffect(() => {
     setCurrentPage(1);
@@ -727,12 +781,33 @@ const PartsTab = ({
 
           {/* Progress Bar - Separate container on mobile */}
           <div className="progress-bar-800">
-            <div className={`rounded-lg shadow-md py-3 px-4 ${
-              darkMode ? 'bg-gray-800' : 'bg-slate-100'
-            }`}>
-              <p className={`text-xs mb-1.5 ${
-                darkMode ? 'text-gray-400' : 'text-slate-600'
-              }`}>Delivery Progress</p>
+            <div
+              ref={progressBarRef}
+              className={`rounded-lg shadow-md py-3 px-4 relative cursor-pointer ${
+                darkMode ? 'bg-gray-800' : 'bg-slate-100'
+              }`}
+              onMouseEnter={handleProgressMouseEnter}
+              onMouseLeave={handleProgressMouseLeave}
+              onMouseMove={handleProgressMouseMove}
+              onTouchStart={handleProgressTouch}
+            >
+              {/* Floating tooltip */}
+              <div
+                className={`progress-tooltip pointer-events-none absolute z-10 px-2 py-1 text-xs font-medium rounded shadow-lg whitespace-nowrap ${
+                  darkMode ? 'bg-gray-700 text-gray-100' : 'bg-gray-800 text-white'
+                } ${progressTooltipVisible ? 'progress-tooltip-visible' : 'progress-tooltip-hidden'}`}
+                style={isHoverDevice ? {
+                  left: `${progressTooltipPos.x}px`,
+                  top: `${progressTooltipPos.y}px`,
+                  transform: 'translateX(-50%)'
+                } : {
+                  left: '50%',
+                  top: '-8px',
+                  transform: 'translateX(-50%) translateY(-100%)'
+                }}
+              >
+                Delivery Progress
+              </div>
               <div className="flex items-center gap-2">
                 <div className={`flex-1 rounded-full h-2 ${
                   darkMode ? 'bg-gray-700' : 'bg-gray-200'
