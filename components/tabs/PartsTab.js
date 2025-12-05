@@ -614,7 +614,7 @@ const PartsTab = ({
           </div>
 
           {/* Cost Breakdown - order-1 on mobile (appears first), full column width at 800px+ */}
-          <div className="order-1 cost-breakdown-800">
+          <div className="order-1 cost-breakdown-800 h-full">
             <div className={`rounded-lg shadow-md py-3 px-4 pb-2 h-full flex flex-col ${
               darkMode ? 'bg-gray-800' : 'bg-slate-100'
             }`}>
