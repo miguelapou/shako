@@ -907,8 +907,10 @@ const PartsTab = ({
                     id="rowsPerPage"
                     value={rowsPerPage}
                     onChange={(e) => {
+                      setIsPaginating(true);
                       setRowsPerPage(Number(e.target.value));
                       setCurrentPage(1);
+                      setTimeout(() => setIsPaginating(false), 600);
                     }}
                     className={`px-3 py-2 pr-8 rounded border text-sm appearance-none ${
                       darkMode
