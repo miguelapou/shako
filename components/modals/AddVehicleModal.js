@@ -199,19 +199,53 @@ const AddVehicleModal = ({
                 </div>
               </div>
 
-              <div>
-                <label className={`block text-sm font-medium mb-2 ${
-                  darkMode ? 'text-gray-300' : 'text-slate-700'
-                }`}>
-                  Insurance Policy
-                </label>
-                <input
-                  type="text"
-                  value={newVehicle.insurance_policy}
-                  onChange={(e) => setNewVehicle({ ...newVehicle, insurance_policy: e.target.value })}
-                  className={inputClasses(darkMode)}
-                  placeholder=""
-                />
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className={`block text-sm font-medium mb-2 ${
+                    darkMode ? 'text-gray-300' : 'text-slate-700'
+                  }`}>
+                    Odometer Range
+                  </label>
+                  <input
+                    type="number"
+                    inputMode="numeric"
+                    pattern="[0-9]*"
+                    value={newVehicle.odometer_range}
+                    onChange={(e) => setNewVehicle({ ...newVehicle, odometer_range: e.target.value })}
+                    onBlur={(e) => {
+                      const value = parseInt(e.target.value) || 0;
+                      const rounded = Math.round(value / 10000) * 10000;
+                      setNewVehicle({ ...newVehicle, odometer_range: rounded || '' });
+                    }}
+                    className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
+                      darkMode
+                        ? 'bg-gray-700 border-gray-600 text-gray-100 placeholder-gray-400'
+                        : 'bg-slate-50 border-slate-300 text-slate-800 placeholder-slate-400'
+                    }`}
+                    placeholder=""
+                    min="0"
+                    step="10000"
+                  />
+                </div>
+                <div>
+                  <label className={`block text-sm font-medium mb-2 ${
+                    darkMode ? 'text-gray-300' : 'text-slate-700'
+                  }`}>
+                    Unit
+                  </label>
+                  <select
+                    value={newVehicle.odometer_unit || 'km'}
+                    onChange={(e) => setNewVehicle({ ...newVehicle, odometer_unit: e.target.value })}
+                    className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
+                      darkMode
+                        ? 'bg-gray-700 border-gray-600 text-gray-100'
+                        : 'bg-slate-50 border-slate-300 text-slate-800'
+                    }`}
+                  >
+                    <option value="km">Kilometers</option>
+                    <option value="mi">Miles</option>
+                  </select>
+                </div>
               </div>
             </div>
 
@@ -471,7 +505,8 @@ const AddVehicleModal = ({
                   year: '',
                   license_plate: '',
                   vin: '',
-                  insurance_policy: '',
+                  odometer_range: '',
+                  odometer_unit: 'km',
                   fuel_filter: '',
                   air_filter: '',
                   oil_filter: '',

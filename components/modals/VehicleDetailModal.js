@@ -200,11 +200,37 @@ const VehicleDetailModal = ({
                 <div className={`order-last md:order-first rounded-lg p-6 ${
                   darkMode ? 'bg-gray-700' : 'bg-gray-50'
                 }`}>
-                  <h3 className={`text-lg font-semibold mb-4 ${
-                    darkMode ? 'text-gray-200' : 'text-gray-800'
-                  }`}>
-                    Basic Info
-                  </h3>
+                  <div className="flex items-center justify-between mb-4">
+                    <h3 className={`text-lg font-semibold ${
+                      darkMode ? 'text-gray-200' : 'text-gray-800'
+                    }`}>
+                      Basic Info
+                    </h3>
+                    {(() => {
+                      const vehicleProjects = projects.filter(p => p.vehicle_id === viewingVehicle.id);
+                      const linkedPartsCount = vehicleProjects.reduce((count, project) => {
+                        return count + parts.filter(part => part.projectId === project.id).length;
+                      }, 0);
+                      return (vehicleProjects.length > 0 || linkedPartsCount > 0) && (
+                        <div className={`flex items-center gap-3 text-xs ${
+                          darkMode ? 'text-gray-400' : 'text-gray-500'
+                        }`}>
+                          {vehicleProjects.length > 0 && (
+                            <span className="flex items-center gap-1">
+                              <Wrench className="w-3.5 h-3.5" />
+                              {vehicleProjects.length}
+                            </span>
+                          )}
+                          {linkedPartsCount > 0 && (
+                            <span className="flex items-center gap-1">
+                              <Package className="w-3.5 h-3.5" />
+                              {linkedPartsCount}
+                            </span>
+                          )}
+                        </div>
+                      );
+                    })()}
+                  </div>
                   <div className="grid grid-cols-2 gap-4">
                     <div className="space-y-4">
                       {viewingVehicle.year && (
@@ -263,64 +289,57 @@ const VehicleDetailModal = ({
                           </span>
                         </div>
                       )}
-                      {viewingVehicle.insurance_policy && (
+                      {viewingVehicle.odometer_range && (
                         <div>
                           <p className={`text-sm font-medium mb-1 ${
                             darkMode ? 'text-gray-400' : 'text-slate-600'
-                          }`}>Insurance Policy</p>
+                          }`}>Odometer Range</p>
                           <p className={`text-base ${
                             darkMode ? 'text-gray-100' : 'text-slate-800'
-                          }`}>{viewingVehicle.insurance_policy}</p>
+                          }`}>
+                            ~{parseInt(viewingVehicle.odometer_range).toLocaleString()} {viewingVehicle.odometer_unit === 'mi' ? 'miles' : 'km'}
+                          </p>
                         </div>
                       )}
                     </div>
-                    {/* Total Spent on Linked Projects */}
+                    {/* Budget Progress for Linked Projects */}
                     {(() => {
                       const vehicleProjects = projects.filter(p => p.vehicle_id === viewingVehicle.id);
                       const totalSpent = calculateVehicleTotalSpent(viewingVehicle.id, projects, parts);
                       const totalBudget = vehicleProjects.reduce((sum, project) => sum + (project.budget || 0), 0);
-                      const linkedPartsCount = vehicleProjects.reduce((count, project) => {
-                        return count + parts.filter(part => part.projectId === project.id).length;
-                      }, 0);
+                      const progress = totalBudget > 0 ? (totalSpent / totalBudget) * 100 : 0;
                       return (
                         <div className={`col-span-2 pt-4 mt-4 border-t ${
                           darkMode ? 'border-gray-600' : 'border-gray-300'
                         }`}>
-                          <div className="grid grid-cols-2 gap-4">
-                            <div>
-                              <p className={`text-sm font-medium mb-2 ${
-                                darkMode ? 'text-gray-400' : 'text-slate-600'
-                              }`}>Total Spent</p>
-                              <p className={`text-2xl font-bold ${
-                                darkMode ? 'text-green-400' : 'text-green-600'
-                              }`}>${totalSpent.toFixed(2)}</p>
-                            </div>
-                            <div className="flex flex-col">
-                              <div className="flex-1">
-                                <p className={`text-sm font-medium mb-2 ${
-                                  darkMode ? 'text-gray-400' : 'text-slate-600'
-                                }`}>Total Budget</p>
-                                <p className={`text-2xl font-bold ${
-                                  darkMode ? 'text-gray-100' : 'text-slate-800'
-                                }`}>${Math.round(totalBudget)}</p>
-                              </div>
-                              <div className={`flex items-center justify-end gap-4 mt-4 text-xs ${
-                                darkMode ? 'text-gray-500' : 'text-gray-500'
-                              }`}>
-                                {vehicleProjects.length > 0 && (
-                                  <span className="flex items-center gap-1">
-                                    <Wrench className="w-3.5 h-3.5" />
-                                    {vehicleProjects.length}
-                                  </span>
-                                )}
-                                {linkedPartsCount > 0 && (
-                                  <span className="flex items-center gap-1">
-                                    <Package className="w-3.5 h-3.5" />
-                                    {linkedPartsCount}
-                                  </span>
-                                )}
-                              </div>
-                            </div>
+                          <p className={`text-sm font-medium mb-2 ${
+                            darkMode ? 'text-gray-400' : 'text-slate-600'
+                          }`}>Budget Used</p>
+                          <div className="flex justify-between items-center mb-2">
+                            <span className={`text-sm font-medium ${
+                              darkMode ? 'text-gray-300' : 'text-slate-700'
+                            }`}>
+                              ${totalSpent.toFixed(2)} / ${Math.round(totalBudget)}
+                            </span>
+                            <span className={`text-sm font-bold ${
+                              darkMode ? 'text-gray-200' : 'text-gray-900'
+                            }`}>
+                              {progress.toFixed(0)}%
+                            </span>
+                          </div>
+                          <div className={`w-full rounded-full h-4 ${
+                            darkMode ? 'bg-gray-600' : 'bg-gray-200'
+                          }`}>
+                            <div
+                              className={`h-4 rounded-full transition-all ${
+                                progress > 90
+                                  ? 'bg-red-500'
+                                  : progress > 70
+                                  ? 'bg-yellow-500'
+                                  : 'bg-green-500'
+                              }`}
+                              style={{ width: `${Math.min(progress, 100)}%` }}
+                            />
                           </div>
                         </div>
                       );
@@ -799,23 +818,53 @@ const VehicleDetailModal = ({
                       </div>
                     </div>
 
-                    <div>
-                      <label className={`block text-sm font-medium mb-2 ${
-                        darkMode ? 'text-gray-300' : 'text-slate-700'
-                      }`}>
-                        Insurance Policy
-                      </label>
-                      <input
-                        type="text"
-                        value={viewingVehicle.insurance_policy || ''}
-                        onChange={(e) => setViewingVehicle({ ...viewingVehicle, insurance_policy: e.target.value })}
-                        className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
-                          darkMode
-                            ? 'bg-gray-700 border-gray-600 text-gray-100 placeholder-gray-400'
-                            : 'bg-slate-50 border-slate-300 text-slate-800 placeholder-slate-400'
-                        }`}
-                        placeholder=""
-                      />
+                    <div className="grid grid-cols-2 gap-4">
+                      <div>
+                        <label className={`block text-sm font-medium mb-2 ${
+                          darkMode ? 'text-gray-300' : 'text-slate-700'
+                        }`}>
+                          Odometer Range
+                        </label>
+                        <input
+                          type="number"
+                          inputMode="numeric"
+                          pattern="[0-9]*"
+                          value={viewingVehicle.odometer_range || ''}
+                          onChange={(e) => setViewingVehicle({ ...viewingVehicle, odometer_range: e.target.value })}
+                          onBlur={(e) => {
+                            const value = parseInt(e.target.value) || 0;
+                            const rounded = Math.round(value / 10000) * 10000;
+                            setViewingVehicle({ ...viewingVehicle, odometer_range: rounded || '' });
+                          }}
+                          className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
+                            darkMode
+                              ? 'bg-gray-700 border-gray-600 text-gray-100 placeholder-gray-400'
+                              : 'bg-slate-50 border-slate-300 text-slate-800 placeholder-slate-400'
+                          }`}
+                          placeholder=""
+                          min="0"
+                          step="10000"
+                        />
+                      </div>
+                      <div>
+                        <label className={`block text-sm font-medium mb-2 ${
+                          darkMode ? 'text-gray-300' : 'text-slate-700'
+                        }`}>
+                          Unit
+                        </label>
+                        <select
+                          value={viewingVehicle.odometer_unit || 'km'}
+                          onChange={(e) => setViewingVehicle({ ...viewingVehicle, odometer_unit: e.target.value })}
+                          className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
+                            darkMode
+                              ? 'bg-gray-700 border-gray-600 text-gray-100'
+                              : 'bg-slate-50 border-slate-300 text-slate-800'
+                          }`}
+                        >
+                          <option value="km">Kilometers</option>
+                          <option value="mi">Miles</option>
+                        </select>
+                      </div>
                     </div>
                   </div>
 
