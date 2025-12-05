@@ -404,11 +404,18 @@ const PartsTab = ({
                 grid-row: 1 / 2 !important;
                 display: grid !important;
                 grid-template-columns: repeat(3, 1fr) !important;
+                grid-template-rows: auto auto !important;
                 gap: 1rem !important;
-                align-content: start !important;
+                align-content: space-between !important;
+                height: 100% !important;
               }
               .stats-cards-800 .status-card {
                 padding: 1rem !important;
+              }
+              .search-box-800 {
+                display: block !important;
+                grid-column: 1 / 4 !important;
+                align-self: end !important;
               }
               .cost-breakdown-800 {
                 grid-column: 2 / 3 !important;
@@ -417,9 +424,6 @@ const PartsTab = ({
               }
               .search-box-mobile-800 {
                 display: none !important;
-              }
-              .search-box-800 {
-                display: block !important;
               }
               .circular-progress-800 {
                 display: flex !important;
@@ -458,7 +462,7 @@ const PartsTab = ({
                     setTimeout(() => setContainerMinHeight('auto'), 50);
                   }
                 }}
-                className={`rounded-lg shadow-md p-3 border-l-4 border-yellow-500 relative overflow-hidden cursor-pointer transition-all duration-200 hover:shadow-lg hover:scale-[1.02] ${
+                className={`rounded-lg shadow-md p-4 border-l-4 border-yellow-500 relative overflow-hidden cursor-pointer transition-all duration-200 hover:shadow-lg hover:scale-[1.02] ${
                   darkMode ? 'bg-gray-800 hover:bg-gray-750' : 'bg-white hover:bg-gray-50'
                 } ${statusFilter === 'purchased' ? 'ring-2 ring-yellow-500' : ''}`}
                 style={{ touchAction: 'manipulation' }}
@@ -501,7 +505,7 @@ const PartsTab = ({
                     setTimeout(() => setContainerMinHeight('auto'), 50);
                   }
                 }}
-                className={`rounded-lg shadow-md p-3 border-l-4 border-blue-500 relative overflow-hidden cursor-pointer transition-all duration-200 hover:shadow-lg hover:scale-[1.02] ${
+                className={`rounded-lg shadow-md p-4 border-l-4 border-blue-500 relative overflow-hidden cursor-pointer transition-all duration-200 hover:shadow-lg hover:scale-[1.02] ${
                   darkMode ? 'bg-gray-800 hover:bg-gray-750' : 'bg-white hover:bg-gray-50'
                 } ${statusFilter === 'shipped' ? 'ring-2 ring-blue-500' : ''}`}
                 style={{ touchAction: 'manipulation' }}
@@ -548,7 +552,7 @@ const PartsTab = ({
                     setTimeout(() => setContainerMinHeight('auto'), 50);
                   }
                 }}
-                className={`rounded-lg shadow-md p-3 border-l-4 ${
+                className={`rounded-lg shadow-md p-4 border-l-4 ${
                   deliveredFilter === 'hide' ? 'border-red-500' : 'border-green-500'
                 } relative overflow-hidden cursor-pointer transition-all duration-200 hover:shadow-lg hover:scale-[1.02] ${
                   deliveredFilter === 'hide'
@@ -571,7 +575,7 @@ const PartsTab = ({
               </div>
 
             {/* Search Box - Shows in left column at 800px+ */}
-            <div className={`hidden search-box-800 rounded-lg shadow-md p-3 mb-8 ${
+            <div className={`hidden search-box-800 rounded-lg shadow-md p-3 ${
               darkMode ? 'bg-gray-800' : 'bg-slate-100'
             }`}>
               <div className="relative">
