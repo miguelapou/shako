@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import {
-  Search, Package, TrendingUp, Truck, CheckCircle, Clock,
+  Search, Package, Receipt, Truck, CheckCircle, Clock,
   ChevronDown, Plus, X, ExternalLink, ShoppingCart, Car,
   ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight
 } from 'lucide-react';
@@ -617,7 +617,7 @@ const PartsTab = ({
             <h3 className={`text-sm font-semibold mb-2 flex items-center gap-2 ${
               darkMode ? 'text-gray-100' : 'text-gray-800'
             }`}>
-              <TrendingUp className="w-4 h-4" />
+              <Receipt className="w-4 h-4" />
               Cost Breakdown
             </h3>
             <div className="flex gap-4 flex-1">
