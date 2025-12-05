@@ -562,7 +562,6 @@ const Shako = () => {
 
   // Reset scroll position to top when switching tabs
   useEffect(() => {
-    console.log('[Shako] Tab changed to:', activeTab, '- Scrolling to top');
     window.scrollTo({ top: 0, behavior: 'instant' });
   }, [activeTab]);
 

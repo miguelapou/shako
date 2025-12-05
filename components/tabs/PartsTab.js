@@ -1,5 +1,4 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { flushSync } from 'react-dom';
 import {
   Search, Package, TrendingUp, Truck, CheckCircle, Clock,
   ChevronDown, Plus, X, ExternalLink, ShoppingCart, Car,
@@ -67,9 +66,7 @@ const PartsTab = ({
     }
   }, [rowsPerPage]);
 
-  // Save scroll position before filter changes
-  const scrollPositionRef = useRef(0);
-  const [containerMinHeight, setContainerMinHeight] = useState('100vh');
+  const [containerMinHeight, setContainerMinHeight] = useState('auto');
 
   // Reset to page 1 when filters change
   useEffect(() => {
@@ -87,14 +84,6 @@ const PartsTab = ({
       };
     }
   }, []);
-
-  // Maintain minimum height to prevent scroll jumping
-  useEffect(() => {
-    if (typeof window !== 'undefined') {
-      console.log('[PartsTab] Filter changed. Status:', statusFilter, 'Delivered:', deliveredFilter);
-      console.log('[PartsTab] Current scroll:', window.scrollY);
-    }
-  }, [statusFilter, deliveredFilter]);
 
   // Helper function to change page with animation
   const handlePageChange = (newPage) => {
@@ -373,6 +362,10 @@ const PartsTab = ({
     <div
       ref={tabContentRef}
       className="slide-in-left"
+      style={{
+        // Apply minHeight on mobile to maintain page height during filtering
+        minHeight: window.innerWidth < 800 ? containerMinHeight : 'auto'
+      }}
     >
       <>
         {/* Statistics and Cost Breakdown - Side by Side */}
@@ -418,39 +411,18 @@ const PartsTab = ({
               <div
                 onClick={(e) => {
                   e.stopPropagation();
-                  const currentScroll = window.scrollY || window.pageYOffset;
-                  console.log('[Ordered Card] Clicked at scroll position:', currentScroll);
-                  // Calculate required height to maintain scroll position
-                  const requiredHeight = Math.max(currentScroll + window.innerHeight, window.innerHeight);
-                  console.log('[Ordered Card] Setting container minHeight to:', requiredHeight);
-                  // Force synchronous render of height change
-                  flushSync(() => {
-                    setContainerMinHeight(`${requiredHeight}px`);
-                  });
-                  console.log('[Ordered Card] Height applied, now filtering');
-                  // Force synchronous render of filter changes
-                  flushSync(() => {
-                    scrollPositionRef.current = currentScroll;
-                    setIsStatusFiltering(true);
-                    setStatusFilter(statusFilter === 'purchased' ? 'all' : 'purchased');
-                    setDeliveredFilter('all');
-                  });
-                  // Explicitly restore scroll position after both renders complete
-                  console.log('[Ordered Card] Restoring scroll to:', currentScroll);
-                  window.scrollTo(0, currentScroll);
-                  setTimeout(() => setIsStatusFiltering(false), 900);
-                }}
-                onTouchStart={(e) => {
-                  e.stopPropagation();
-                  console.log('[Ordered Card] Touch start');
-                }}
-                onTouchMove={(e) => {
-                  e.stopPropagation();
-                  console.log('[Ordered Card] Touch move');
-                }}
-                onTouchEnd={(e) => {
-                  e.stopPropagation();
-                  console.log('[Ordered Card] Touch end');
+                  // Set page height before filtering to prevent scroll jumping
+                  if (typeof window !== 'undefined' && window.innerWidth < 800) {
+                    const currentHeight = document.documentElement.scrollHeight;
+                    setContainerMinHeight(`${currentHeight}px`);
+                  }
+                  setIsStatusFiltering(true);
+                  setStatusFilter(statusFilter === 'purchased' ? 'all' : 'purchased');
+                  setDeliveredFilter('all');
+                  setTimeout(() => {
+                    setIsStatusFiltering(false);
+                    setContainerMinHeight('auto');
+                  }, 900);
                 }}
                 className={`rounded-lg shadow-md p-3 sm:p-4 md:p-4 border-l-4 border-yellow-500 relative overflow-hidden cursor-pointer transition-all duration-200 hover:shadow-lg hover:scale-[1.02] ${
                   darkMode ? 'bg-gray-800 hover:bg-gray-750' : 'bg-white hover:bg-gray-50'
@@ -471,39 +443,18 @@ const PartsTab = ({
               <div
                 onClick={(e) => {
                   e.stopPropagation();
-                  const currentScroll = window.scrollY || window.pageYOffset;
-                  console.log('[Shipped Card] Clicked at scroll position:', currentScroll);
-                  // Calculate required height to maintain scroll position
-                  const requiredHeight = Math.max(currentScroll + window.innerHeight, window.innerHeight);
-                  console.log('[Shipped Card] Setting container minHeight to:', requiredHeight);
-                  // Force synchronous render of height change
-                  flushSync(() => {
-                    setContainerMinHeight(`${requiredHeight}px`);
-                  });
-                  console.log('[Shipped Card] Height applied, now filtering');
-                  // Force synchronous render of filter changes
-                  flushSync(() => {
-                    scrollPositionRef.current = currentScroll;
-                    setIsStatusFiltering(true);
-                    setStatusFilter(statusFilter === 'shipped' ? 'all' : 'shipped');
-                    setDeliveredFilter('all');
-                  });
-                  // Explicitly restore scroll position after both renders complete
-                  console.log('[Shipped Card] Restoring scroll to:', currentScroll);
-                  window.scrollTo(0, currentScroll);
-                  setTimeout(() => setIsStatusFiltering(false), 900);
-                }}
-                onTouchStart={(e) => {
-                  e.stopPropagation();
-                  console.log('[Shipped Card] Touch start');
-                }}
-                onTouchMove={(e) => {
-                  e.stopPropagation();
-                  console.log('[Shipped Card] Touch move');
-                }}
-                onTouchEnd={(e) => {
-                  e.stopPropagation();
-                  console.log('[Shipped Card] Touch end');
+                  // Set page height before filtering to prevent scroll jumping
+                  if (typeof window !== 'undefined' && window.innerWidth < 800) {
+                    const currentHeight = document.documentElement.scrollHeight;
+                    setContainerMinHeight(`${currentHeight}px`);
+                  }
+                  setIsStatusFiltering(true);
+                  setStatusFilter(statusFilter === 'shipped' ? 'all' : 'shipped');
+                  setDeliveredFilter('all');
+                  setTimeout(() => {
+                    setIsStatusFiltering(false);
+                    setContainerMinHeight('auto');
+                  }, 900);
                 }}
                 className={`rounded-lg shadow-md p-3 sm:p-4 md:p-4 border-l-4 border-blue-500 relative overflow-hidden cursor-pointer transition-all duration-200 hover:shadow-lg hover:scale-[1.02] ${
                   darkMode ? 'bg-gray-800 hover:bg-gray-750' : 'bg-white hover:bg-gray-50'
@@ -524,9 +475,11 @@ const PartsTab = ({
               <div
                 onClick={(e) => {
                   e.stopPropagation();
-                  const currentScroll = window.scrollY || window.pageYOffset;
-                  // Save scroll position BEFORE state changes
-                  scrollPositionRef.current = currentScroll;
+                  // Set page height before filtering to prevent scroll jumping
+                  if (typeof window !== 'undefined' && window.innerWidth < 800) {
+                    const currentHeight = document.documentElement.scrollHeight;
+                    setContainerMinHeight(`${currentHeight}px`);
+                  }
                   setIsStatusFiltering(true);
                   // Cycle through: all -> only -> hide -> all
                   setDeliveredFilter(prev =>
@@ -534,11 +487,11 @@ const PartsTab = ({
                     prev === 'only' ? 'hide' : 'all'
                   );
                   setStatusFilter('all');
-                  setTimeout(() => setIsStatusFiltering(false), 900);
+                  setTimeout(() => {
+                    setIsStatusFiltering(false);
+                    setContainerMinHeight('auto');
+                  }, 900);
                 }}
-                onTouchStart={(e) => e.stopPropagation()}
-                onTouchMove={(e) => e.stopPropagation()}
-                onTouchEnd={(e) => e.stopPropagation()}
                 className={`rounded-lg shadow-md p-3 sm:p-4 md:p-4 border-l-4 ${
                   deliveredFilter === 'hide' ? 'border-red-500' : 'border-green-500'
                 } relative overflow-hidden cursor-pointer transition-all duration-200 hover:shadow-lg hover:scale-[1.02] ${
@@ -1113,7 +1066,6 @@ const PartsTab = ({
         {filteredParts.length > 0 ? (
         <div
           className={`show-below-800 grid grid-cols-1 gap-4 ${isStatusFiltering || isFilteringParts ? 'cards-status-filtering' : ''}`}
-          style={{ minHeight: containerMinHeight }}
         >
             {filteredParts.map((part) => (
               <div
