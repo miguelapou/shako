@@ -503,7 +503,7 @@ const PartsTab = ({
                 } ${statusFilter === 'purchased' ? 'ring-2 ring-yellow-500' : ''}`}
                 style={{ touchAction: 'manipulation' }}
               >
-                <ShoppingCart className="w-6 h-6 text-yellow-500 opacity-20 absolute top-2 right-2" />
+                <ShoppingCart className={`w-6 h-6 text-yellow-500 absolute top-2 right-2 transition-opacity ${statusFilter === 'purchased' ? 'opacity-70' : 'opacity-20'}`} />
                 <div>
                   <p className={`text-xs mb-1 ${
                     darkMode ? 'text-gray-400' : 'text-slate-600'
@@ -546,7 +546,7 @@ const PartsTab = ({
                 } ${statusFilter === 'shipped' ? 'ring-2 ring-blue-500' : ''}`}
                 style={{ touchAction: 'manipulation' }}
               >
-                <Truck className="w-6 h-6 text-blue-500 opacity-20 absolute top-2 right-2" />
+                <Truck className={`w-6 h-6 text-blue-500 absolute top-2 right-2 transition-opacity ${statusFilter === 'shipped' ? 'opacity-70' : 'opacity-20'}`} />
                 <div>
                   <p className={`text-xs mb-1 ${
                     darkMode ? 'text-gray-400' : 'text-slate-600'
@@ -599,7 +599,7 @@ const PartsTab = ({
               >
                 <CheckCircle className={`w-6 h-6 ${
                   deliveredFilter === 'hide' ? 'text-red-500' : 'text-green-500'
-                } opacity-20 absolute top-2 right-2`} />
+                } absolute top-2 right-2 transition-opacity ${deliveredFilter !== 'all' ? 'opacity-70' : 'opacity-20'}`} />
                 <div key={deliveredFilter} className={deliveredFilter === 'hide' ? 'status-card-content' : ''}>
                   <p className={`text-xs mb-1 ${
                     darkMode ? 'text-gray-400' : 'text-slate-600'
