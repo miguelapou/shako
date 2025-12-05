@@ -724,7 +724,7 @@ const PartsTab = ({
             }`}>
               <p className={`text-xs mb-1.5 ${
                 darkMode ? 'text-gray-400' : 'text-slate-600'
-              }`}>Progress</p>
+              }`}>Delivery Progress</p>
               <div className="flex items-center gap-2">
                 <div className={`flex-1 rounded-full h-2 ${
                   darkMode ? 'bg-gray-700' : 'bg-gray-200'
