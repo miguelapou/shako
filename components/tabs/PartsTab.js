@@ -68,7 +68,7 @@ const PartsTab = ({
 
   // Save scroll position before filter changes
   const scrollPositionRef = useRef(0);
-  const containerHeightRef = useRef('100vh');
+  const [containerMinHeight, setContainerMinHeight] = useState('100vh');
 
   // Reset to page 1 when filters change
   useEffect(() => {
@@ -421,14 +421,17 @@ const PartsTab = ({
                   console.log('[Ordered Card] Clicked at scroll position:', currentScroll);
                   // Calculate required height to maintain scroll position
                   const requiredHeight = Math.max(currentScroll + window.innerHeight, window.innerHeight);
-                  containerHeightRef.current = `${requiredHeight}px`;
                   console.log('[Ordered Card] Setting container minHeight to:', requiredHeight);
-                  // Save scroll position BEFORE state changes
-                  scrollPositionRef.current = currentScroll;
-                  setIsStatusFiltering(true);
-                  setStatusFilter(statusFilter === 'purchased' ? 'all' : 'purchased');
-                  setDeliveredFilter('all');
-                  setTimeout(() => setIsStatusFiltering(false), 900);
+                  // Set height BEFORE filtering to ensure container is tall enough
+                  setContainerMinHeight(`${requiredHeight}px`);
+                  // Use setTimeout to ensure height is applied before filtering
+                  setTimeout(() => {
+                    scrollPositionRef.current = currentScroll;
+                    setIsStatusFiltering(true);
+                    setStatusFilter(statusFilter === 'purchased' ? 'all' : 'purchased');
+                    setDeliveredFilter('all');
+                    setTimeout(() => setIsStatusFiltering(false), 900);
+                  }, 0);
                 }}
                 onTouchStart={(e) => {
                   e.stopPropagation();
@@ -465,14 +468,17 @@ const PartsTab = ({
                   console.log('[Shipped Card] Clicked at scroll position:', currentScroll);
                   // Calculate required height to maintain scroll position
                   const requiredHeight = Math.max(currentScroll + window.innerHeight, window.innerHeight);
-                  containerHeightRef.current = `${requiredHeight}px`;
                   console.log('[Shipped Card] Setting container minHeight to:', requiredHeight);
-                  // Save scroll position BEFORE state changes
-                  scrollPositionRef.current = currentScroll;
-                  setIsStatusFiltering(true);
-                  setStatusFilter(statusFilter === 'shipped' ? 'all' : 'shipped');
-                  setDeliveredFilter('all');
-                  setTimeout(() => setIsStatusFiltering(false), 900);
+                  // Set height BEFORE filtering to ensure container is tall enough
+                  setContainerMinHeight(`${requiredHeight}px`);
+                  // Use setTimeout to ensure height is applied before filtering
+                  setTimeout(() => {
+                    scrollPositionRef.current = currentScroll;
+                    setIsStatusFiltering(true);
+                    setStatusFilter(statusFilter === 'shipped' ? 'all' : 'shipped');
+                    setDeliveredFilter('all');
+                    setTimeout(() => setIsStatusFiltering(false), 900);
+                  }, 0);
                 }}
                 onTouchStart={(e) => {
                   e.stopPropagation();
@@ -1094,7 +1100,7 @@ const PartsTab = ({
         {filteredParts.length > 0 ? (
         <div
           className={`show-below-800 grid grid-cols-1 gap-4 ${isStatusFiltering || isFilteringParts ? 'cards-status-filtering' : ''}`}
-          style={{ minHeight: containerHeightRef.current }}
+          style={{ minHeight: containerMinHeight }}
         >
             {filteredParts.map((part) => (
               <div
