@@ -597,9 +597,11 @@ const PartsTab = ({
                 } ${deliveredFilter !== 'all' ? `ring-2 ${deliveredFilter === 'hide' ? 'ring-red-500' : 'ring-green-500'}` : ''}`}
                 style={{ touchAction: 'manipulation' }}
               >
-                <CheckCircle className={`w-6 h-6 ${
-                  deliveredFilter === 'hide' ? 'text-red-500' : 'text-green-500'
-                } absolute top-2 right-2 transition-opacity ${deliveredFilter !== 'all' ? 'opacity-70' : 'opacity-20'}`} />
+                {deliveredFilter === 'hide' ? (
+                  <Clock className={`w-6 h-6 text-red-500 absolute top-2 right-2 transition-opacity ${deliveredFilter !== 'all' ? 'opacity-70' : 'opacity-20'}`} />
+                ) : (
+                  <CheckCircle className={`w-6 h-6 text-green-500 absolute top-2 right-2 transition-opacity ${deliveredFilter !== 'all' ? 'opacity-70' : 'opacity-20'}`} />
+                )}
                 <div key={deliveredFilter} className={deliveredFilter === 'hide' ? 'status-card-content' : ''}>
                   <p className={`text-xs mb-1 ${
                     darkMode ? 'text-gray-400' : 'text-slate-600'

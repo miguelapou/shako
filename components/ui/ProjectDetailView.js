@@ -1,5 +1,5 @@
 import React, { useState, useMemo, useEffect, useLayoutEffect, useRef } from 'react';
-import { Package, CheckCircle, ChevronDown, X, Car } from 'lucide-react';
+import { Package, CheckCircle, CheckSquare, ChevronDown, X, Car } from 'lucide-react';
 import { secondaryBg } from '../../utils/styleUtils';
 import { getVendorDisplayColor } from '../../utils/colorUtils';
 import ConfirmDialog from './ConfirmDialog';
@@ -209,7 +209,7 @@ const ProjectDetailView = ({
         }`}
       >
         {todo.completed && (
-          <CheckCircle className="w-4 h-4 text-white" />
+          <CheckSquare className="w-4 h-4 text-white" />
         )}
       </button>
       {/* Todo Text - Click to edit inline */}
@@ -467,7 +467,7 @@ const ProjectDetailView = ({
                   }`}
                 >
                   <span className="text-sm font-medium flex items-center gap-2">
-                    <CheckCircle className={`w-4 h-4 transition-colors ${
+                    <CheckSquare className={`w-4 h-4 transition-colors ${
                       showCompletedTodos
                         ? ''
                         : 'text-green-500'
