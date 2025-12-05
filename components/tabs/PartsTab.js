@@ -29,6 +29,8 @@ const PartsTab = ({
   setIsSorting,
   isStatusFiltering,
   setIsStatusFiltering,
+  isSearching,
+  setIsSearching,
   isFilteringParts,
   openDropdown,
   setOpenDropdown,
@@ -625,11 +627,19 @@ const PartsTab = ({
                       : 'bg-slate-50 border-slate-300 text-slate-800 placeholder-slate-400'
                   }`}
                   value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
+                  onChange={(e) => {
+                    setIsSearching(true);
+                    setSearchTerm(e.target.value);
+                    setTimeout(() => setIsSearching(false), 300);
+                  }}
                 />
                 {searchTerm && (
                   <button
-                    onClick={() => setSearchTerm('')}
+                    onClick={() => {
+                      setIsSearching(true);
+                      setSearchTerm('');
+                      setTimeout(() => setIsSearching(false), 300);
+                    }}
                     className={`absolute right-3 top-1/2 transform -translate-y-1/2 transition-colors ${
                       darkMode ? 'text-gray-500 hover:text-gray-300' : 'text-gray-400 hover:text-gray-600'
                     }`}
@@ -812,11 +822,19 @@ const PartsTab = ({
                     : 'bg-slate-50 border-slate-300 text-slate-800 placeholder-slate-400'
                 }`}
                 value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
+                onChange={(e) => {
+                  setIsSearching(true);
+                  setSearchTerm(e.target.value);
+                  setTimeout(() => setIsSearching(false), 300);
+                }}
               />
               {searchTerm && (
                 <button
-                  onClick={() => setSearchTerm('')}
+                  onClick={() => {
+                    setIsSearching(true);
+                    setSearchTerm('');
+                    setTimeout(() => setIsSearching(false), 300);
+                  }}
                   className={`absolute right-3 top-1/2 transform -translate-y-1/2 transition-colors ${
                     darkMode ? 'text-gray-500 hover:text-gray-300' : 'text-gray-400 hover:text-gray-600'
                   }`}
@@ -836,7 +854,7 @@ const PartsTab = ({
           darkMode ? 'bg-gray-800' : 'bg-slate-100'
         }`}>
           <div className="overflow-x-auto overflow-y-visible rounded-lg">
-            <table className={`w-full min-w-[900px] ${isStatusFiltering || isFilteringParts ? 'table-status-filtering' : isSorting ? 'table-sorting' : isPaginating ? 'table-status-filtering' : ''}`}>
+            <table className={`w-full min-w-[900px] ${isStatusFiltering || isFilteringParts || isSearching ? 'table-status-filtering' : isSorting ? 'table-sorting' : isPaginating ? 'table-status-filtering' : ''}`}>
               <thead className={`border-b ${
                 darkMode ? 'bg-gray-700 border-gray-600' : 'bg-slate-100 border-slate-200'
               }`}>
@@ -1163,7 +1181,7 @@ const PartsTab = ({
         ) : (
           <div className={`hidden-below-800 text-center py-16 rounded-lg ${
             darkMode ? 'bg-gray-800' : 'bg-slate-100'
-          } ${isStatusFiltering || isSorting ? 'animate-fade-in' : ''}`}>
+          } ${isStatusFiltering || isSorting || isSearching ? 'animate-fade-in' : ''}`}>
             <Package className={`w-20 h-20 mx-auto mb-4 ${
               darkMode ? 'text-gray-600' : 'text-gray-400'
             }`} />
@@ -1185,7 +1203,7 @@ const PartsTab = ({
         {/* Mobile Card View - Visible only below 800px */}
         {filteredParts.length > 0 ? (
         <div
-          className={`show-below-800 grid grid-cols-1 gap-4 ${isStatusFiltering || isFilteringParts ? 'cards-status-filtering' : ''}`}
+          className={`show-below-800 grid grid-cols-1 gap-4 ${isStatusFiltering || isFilteringParts || isSearching ? 'cards-status-filtering' : ''}`}
         >
             {filteredParts.map((part) => (
               <div
@@ -1437,7 +1455,7 @@ const PartsTab = ({
         ) : (
           <div className={`show-below-800 text-center py-16 rounded-lg ${
             darkMode ? 'bg-gray-800' : 'bg-slate-100'
-          } ${isStatusFiltering || isSorting ? 'animate-fade-in' : ''}`}>
+          } ${isStatusFiltering || isSorting || isSearching ? 'animate-fade-in' : ''}`}>
             <Package className={`w-20 h-20 mx-auto mb-4 ${
               darkMode ? 'text-gray-600' : 'text-gray-400'
             }`} />
