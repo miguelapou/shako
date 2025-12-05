@@ -427,7 +427,13 @@ const PartsTab = ({
                   setIsStatusFiltering(true);
                   setStatusFilter(statusFilter === 'purchased' ? 'all' : 'purchased');
                   setDeliveredFilter('all');
-                  setTimeout(() => setIsStatusFiltering(false), 900);
+                  setTimeout(() => {
+                    setIsStatusFiltering(false);
+                    // After animation completes, let page shrink to fit filtered content
+                    if (isActivating && typeof window !== 'undefined' && window.innerWidth < 800) {
+                      setContainerMinHeight('auto');
+                    }
+                  }, 900);
                 }}
                 className={`rounded-lg shadow-md p-3 sm:p-4 md:p-4 border-l-4 border-yellow-500 relative overflow-hidden cursor-pointer transition-all duration-200 hover:shadow-lg hover:scale-[1.02] ${
                   darkMode ? 'bg-gray-800 hover:bg-gray-750' : 'bg-white hover:bg-gray-50'
@@ -464,7 +470,13 @@ const PartsTab = ({
                   setIsStatusFiltering(true);
                   setStatusFilter(statusFilter === 'shipped' ? 'all' : 'shipped');
                   setDeliveredFilter('all');
-                  setTimeout(() => setIsStatusFiltering(false), 900);
+                  setTimeout(() => {
+                    setIsStatusFiltering(false);
+                    // After animation completes, let page shrink to fit filtered content
+                    if (isActivating && typeof window !== 'undefined' && window.innerWidth < 800) {
+                      setContainerMinHeight('auto');
+                    }
+                  }, 900);
                 }}
                 className={`rounded-lg shadow-md p-3 sm:p-4 md:p-4 border-l-4 border-blue-500 relative overflow-hidden cursor-pointer transition-all duration-200 hover:shadow-lg hover:scale-[1.02] ${
                   darkMode ? 'bg-gray-800 hover:bg-gray-750' : 'bg-white hover:bg-gray-50'
@@ -505,7 +517,13 @@ const PartsTab = ({
                     prev === 'only' ? 'hide' : 'all'
                   );
                   setStatusFilter('all');
-                  setTimeout(() => setIsStatusFiltering(false), 900);
+                  setTimeout(() => {
+                    setIsStatusFiltering(false);
+                    // After animation completes, let page shrink to fit filtered content
+                    if (!isGoingToAll && typeof window !== 'undefined' && window.innerWidth < 800) {
+                      setContainerMinHeight('auto');
+                    }
+                  }, 900);
                 }}
                 className={`rounded-lg shadow-md p-3 sm:p-4 md:p-4 border-l-4 ${
                   deliveredFilter === 'hide' ? 'border-red-500' : 'border-green-500'
