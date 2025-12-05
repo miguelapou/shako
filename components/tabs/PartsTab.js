@@ -546,7 +546,7 @@ const PartsTab = ({
             </div>
 
             {/* Search Box - Shows in left column at 800px+ */}
-            <div className={`hidden search-box-800 rounded-lg shadow-md p-3 mb-6 ${
+            <div className={`hidden search-box-800 rounded-lg shadow-md p-3 mb-8 ${
               darkMode ? 'bg-gray-800' : 'bg-slate-100'
             }`}>
               <div className="relative">
