@@ -149,6 +149,7 @@ select {
 @keyframes tableFadeOnly {
   0% {
     opacity: 0;
+    border-color: transparent;
   }
   100% {
     opacity: 1;
