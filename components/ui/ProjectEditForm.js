@@ -76,7 +76,7 @@ const ProjectEditForm = ({
                   e.stopPropagation();
                   setShowVehicleDropdown(!showVehicleDropdown);
                 }}
-                className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm text-left flex items-center justify-between gap-2 ${
+                className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-left flex items-center justify-between gap-2 min-h-[42px] box-border ${
                   darkMode
                     ? 'bg-gray-700 border-gray-600 text-gray-100'
                     : 'bg-slate-50 border-slate-300 text-slate-800'
