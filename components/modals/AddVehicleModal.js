@@ -1,5 +1,5 @@
 import React from 'react';
-import { X, Upload, ChevronUp, ChevronDown } from 'lucide-react';
+import { X, Upload } from 'lucide-react';
 import { inputClasses } from '../../utils/styleUtils';
 
 const AddVehicleModal = ({
@@ -205,52 +205,25 @@ const AddVehicleModal = ({
                 }`}>
                   Odometer Range
                 </label>
-                <div className="flex items-center">
-                  <input
-                    type="number"
-                    inputMode="numeric"
-                    value={newVehicle.odometer_range}
-                    onChange={(e) => setNewVehicle({ ...newVehicle, odometer_range: e.target.value })}
-                    className={`flex-1 px-4 py-2 border rounded-l-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
-                      darkMode
-                        ? 'bg-gray-700 border-gray-600 text-gray-100 placeholder-gray-400'
-                        : 'bg-slate-50 border-slate-300 text-slate-800 placeholder-slate-400'
-                    }`}
-                    placeholder=""
-                    min="0"
-                    step="10000"
-                  />
-                  <div className="flex flex-col">
-                    <button
-                      type="button"
-                      onClick={() => {
-                        const current = parseInt(newVehicle.odometer_range) || 0;
-                        setNewVehicle({ ...newVehicle, odometer_range: current + 10000 });
-                      }}
-                      className={`px-3 py-1 border-t border-r border-b-0 rounded-tr-lg transition-colors ${
-                        darkMode
-                          ? 'bg-gray-600 hover:bg-gray-500 border-gray-600 text-gray-300'
-                          : 'bg-slate-100 hover:bg-slate-200 border-slate-300 text-slate-600'
-                      }`}
-                    >
-                      <ChevronUp className="w-4 h-4" />
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => {
-                        const current = parseInt(newVehicle.odometer_range) || 0;
-                        setNewVehicle({ ...newVehicle, odometer_range: Math.max(0, current - 10000) });
-                      }}
-                      className={`px-3 py-1 border-b border-r rounded-br-lg transition-colors ${
-                        darkMode
-                          ? 'bg-gray-600 hover:bg-gray-500 border-gray-600 text-gray-300'
-                          : 'bg-slate-100 hover:bg-slate-200 border-slate-300 text-slate-600'
-                      }`}
-                    >
-                      <ChevronDown className="w-4 h-4" />
-                    </button>
-                  </div>
-                </div>
+                <input
+                  type="number"
+                  inputMode="numeric"
+                  value={newVehicle.odometer_range}
+                  onChange={(e) => setNewVehicle({ ...newVehicle, odometer_range: e.target.value })}
+                  onBlur={(e) => {
+                    const value = parseInt(e.target.value) || 0;
+                    const rounded = Math.round(value / 10000) * 10000;
+                    setNewVehicle({ ...newVehicle, odometer_range: rounded || '' });
+                  }}
+                  className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
+                    darkMode
+                      ? 'bg-gray-700 border-gray-600 text-gray-100 placeholder-gray-400'
+                      : 'bg-slate-50 border-slate-300 text-slate-800 placeholder-slate-400'
+                  }`}
+                  placeholder=""
+                  min="0"
+                  step="10000"
+                />
               </div>
             </div>
 
