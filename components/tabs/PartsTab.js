@@ -723,6 +723,7 @@ const PartsTab = ({
               </div>
             </div>
           </div>
+          </div>
 
           {/* Progress Bar - Separate container on mobile */}
           <div className="progress-bar-800">
