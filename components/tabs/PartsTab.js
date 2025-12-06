@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, useCallback } from 'react';
 import {
   Search, Package, Receipt, Truck, CheckCircle, Clock,
   ChevronDown, Plus, X, ExternalLink, ShoppingCart, Car,
@@ -60,6 +60,22 @@ const PartsTab = ({
     }
     return 10;
   });
+
+  // Dropdown animation state
+  const [closingDropdown, setClosingDropdown] = useState(null);
+
+  // Close dropdown with animation
+  const closeDropdownWithAnimation = useCallback((dropdownId) => {
+    if (dropdownId === null) {
+      setOpenDropdown(null);
+      return;
+    }
+    setClosingDropdown(dropdownId);
+    setTimeout(() => {
+      setClosingDropdown(null);
+      setOpenDropdown(null);
+    }, 150);
+  }, [setOpenDropdown]);
 
   // Save rowsPerPage to localStorage whenever it changes
   useEffect(() => {
@@ -129,6 +145,7 @@ const PartsTab = ({
   // Internal StatusDropdown component
   const StatusDropdown = ({ part }) => {
     const isOpen = openDropdown === part.id;
+    const isClosing = closingDropdown === part.id;
     const buttonRef = useRef(null);
     const [dropdownPosition, setDropdownPosition] = useState('bottom');
     const [dropdownStyle, setDropdownStyle] = useState({});
@@ -161,7 +178,11 @@ const PartsTab = ({
           ref={buttonRef}
           onClick={(e) => {
             e.stopPropagation();
-            setOpenDropdown(isOpen ? null : part.id);
+            if (isOpen) {
+              closeDropdownWithAnimation(part.id);
+            } else {
+              setOpenDropdown(part.id);
+            }
           }}
           className={`flex items-center gap-2 px-3 py-1.5 text-xs font-medium rounded-full border transition-all hover:shadow-md ${getStatusColor(part)}`}
           style={{ width: '8.25rem' }}
@@ -176,13 +197,13 @@ const PartsTab = ({
               className="fixed inset-0 z-10"
               onClick={(e) => {
                 e.stopPropagation();
-                setOpenDropdown(null);
+                closeDropdownWithAnimation(part.id);
               }}
             />
             <div
               className={`fixed rounded-lg shadow-lg border py-1 z-50 ${
-                darkMode ? 'bg-gray-800 border-gray-600' : 'bg-slate-50 border-slate-200'
-              }`}
+                isClosing ? 'dropdown-fade-out' : 'dropdown-fade-in'
+              } ${darkMode ? 'bg-gray-800 border-gray-600' : 'bg-slate-50 border-slate-200'}`}
               style={dropdownStyle}
             >
               <button
@@ -250,7 +271,9 @@ const PartsTab = ({
 
   // Internal ProjectDropdown component
   const ProjectDropdown = ({ part }) => {
-    const isOpen = openDropdown === `project-${part.id}`;
+    const dropdownId = `project-${part.id}`;
+    const isOpen = openDropdown === dropdownId;
+    const isClosing = closingDropdown === dropdownId;
     const selectedProject = part.projectId ? projects.find(p => p.id === part.projectId) : null;
     const buttonRef = useRef(null);
     const [dropdownPosition, setDropdownPosition] = useState('bottom');
@@ -301,7 +324,11 @@ const PartsTab = ({
           ref={buttonRef}
           onClick={(e) => {
             e.stopPropagation();
-            setOpenDropdown(isOpen ? null : `project-${part.id}`);
+            if (isOpen) {
+              closeDropdownWithAnimation(dropdownId);
+            } else {
+              setOpenDropdown(dropdownId);
+            }
           }}
           className={`flex items-center gap-2 px-3 py-1.5 text-xs font-medium rounded-full border transition-all hover:shadow-md ${
             selectedProject
@@ -319,13 +346,13 @@ const PartsTab = ({
               className="fixed inset-0 z-10"
               onClick={(e) => {
                 e.stopPropagation();
-                setOpenDropdown(null);
+                closeDropdownWithAnimation(dropdownId);
               }}
             />
             <div
               className={`fixed rounded-lg shadow-lg border py-1 z-50 overflow-y-auto scrollbar-hide ${
-                darkMode ? 'bg-gray-800 border-gray-600' : 'bg-slate-50 border-slate-200'
-              }`}
+                isClosing ? 'dropdown-fade-out' : 'dropdown-fade-in'
+              } ${darkMode ? 'bg-gray-800 border-gray-600' : 'bg-slate-50 border-slate-200'}`}
               style={{
                 ...dropdownStyle,
                 scrollbarWidth: 'none',
