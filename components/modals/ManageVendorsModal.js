@@ -138,6 +138,16 @@ const ManageVendorsModal = ({
                           />
                         ) : (
                           <>
+                            <span
+                              className={`text-sm flex items-center gap-1 ${
+                                darkMode
+                                  ? 'text-gray-400'
+                                  : 'text-slate-600'
+                              }`}
+                            >
+                              {partCount}
+                              <Wrench className="w-3.5 h-3.5" />
+                            </span>
                             {vendorColors[vendor] ? (
                               (() => {
                                 const colors = getVendorDisplayColor(
@@ -167,16 +177,6 @@ const ManageVendorsModal = ({
                                 {vendor}
                               </span>
                             )}
-                            <span
-                              className={`text-sm flex items-center gap-1 ${
-                                darkMode
-                                  ? 'text-gray-400'
-                                  : 'text-slate-600'
-                              }`}
-                            >
-                              {partCount}
-                              <Wrench className="w-3.5 h-3.5" />
-                            </span>
                           </>
                         )}
                       </div>
