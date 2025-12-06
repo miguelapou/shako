@@ -51,6 +51,7 @@ import ProjectDetailModal from './modals/ProjectDetailModal';
 import AddVehicleModal from './modals/AddVehicleModal';
 import VehicleDetailModal from './modals/VehicleDetailModal';
 import DeleteAccountModal from './modals/DeleteAccountModal';
+import ManageVendorsModal from './modals/ManageVendorsModal';
 
 // Tab Components
 import PartsTab from './tabs/PartsTab';
@@ -86,6 +87,9 @@ const Shako = () => {
 
   // Delete account modal state
   const [showDeleteAccountModal, setShowDeleteAccountModal] = useState(false);
+
+  // Manage vendors modal state
+  const [showManageVendorsModal, setShowManageVendorsModal] = useState(false);
 
   // Parts hook
   const {
@@ -1118,6 +1122,21 @@ const Shako = () => {
                         {darkMode ? <Sun className="w-5 h-5 text-yellow-300" /> : <Moon className="w-5 h-5" />}
                         <span>{darkMode ? 'Light Mode' : 'Dark Mode'}</span>
                       </button>
+                      {/* Manage Vendors */}
+                      <button
+                        onClick={() => {
+                          closeMenuWithAnimation();
+                          setShowManageVendorsModal(true);
+                        }}
+                        className={`w-full flex items-center gap-3 px-3 py-2 rounded-lg transition-colors ${
+                          darkMode
+                            ? 'hover:bg-gray-700 text-gray-100'
+                            : 'hover:bg-slate-100 text-slate-700'
+                        }`}
+                      >
+                        <Settings className="w-5 h-5" />
+                        <span>Manage Vendors</span>
+                      </button>
                       {/* Sign Out */}
                       <button
                         onClick={() => {
@@ -1551,16 +1570,10 @@ const Shako = () => {
           parts={parts}
           uniqueVendors={uniqueVendors}
           vendorColors={vendorColors}
-          editingVendor={editingVendor}
-          setEditingVendor={setEditingVendor}
           isModalClosing={isModalClosing}
           handleCloseModal={handleCloseModal}
           saveEditedPart={handleSaveEditedPart}
           deletePart={deletePart}
-          updateVendorColor={updateVendorColor}
-          renameVendor={handleRenameVendor}
-          deleteVendor={handleDeleteVendor}
-          confirmDialog={confirmDialog}
           setConfirmDialog={setConfirmDialog}
           setShowPartDetailModal={setShowPartDetailModal}
           setViewingPart={setViewingPart}
@@ -1807,6 +1820,23 @@ const Shako = () => {
         onConfirm={deleteAccount}
         darkMode={darkMode}
         userEmail={user?.email}
+      />
+      {/* Manage Vendors Modal */}
+      <ManageVendorsModal
+        isOpen={showManageVendorsModal}
+        onClose={() => setShowManageVendorsModal(false)}
+        darkMode={darkMode}
+        uniqueVendors={uniqueVendors}
+        vendorColors={vendorColors}
+        parts={parts}
+        editingVendor={editingVendor}
+        setEditingVendor={setEditingVendor}
+        updateVendorColor={updateVendorColor}
+        renameVendor={handleRenameVendor}
+        deleteVendor={handleDeleteVendor}
+        setConfirmDialog={setConfirmDialog}
+        isModalClosing={isModalClosing}
+        handleCloseModal={handleCloseModal}
       />
     </div>
   );
