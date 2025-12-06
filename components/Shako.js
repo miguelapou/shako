@@ -1,5 +1,5 @@
 import React, { useState, useMemo, useEffect, useRef } from 'react';
-import { Search, Package, PackageOpen, BadgeDollarSign, TrendingUp, Truck, CheckCircle, Clock, ChevronDown, Plus, X, ExternalLink, ChevronUp, Edit2, Trash2, Moon, Sun, Wrench, GripVertical, ShoppingCart, Car, Upload, Gauge, Settings, Check, Archive, ChevronRight, Pause, Play, LogOut } from 'lucide-react';
+import { Search, Package, PackageOpen, BadgeDollarSign, TrendingUp, Truck, CheckCircle, Clock, ChevronDown, Plus, X, ExternalLink, ChevronUp, Edit2, Trash2, Moon, Sun, Wrench, GripVertical, ShoppingCart, Car, Upload, Gauge, Settings, Check, Archive, ChevronRight, Pause, Play, LogOut, Menu } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 
 // Utilities
@@ -338,6 +338,8 @@ const Shako = () => {
   const [underlineStyle, setUnderlineStyle] = useState({ left: 0, width: 0 });
   const [hoverTab, setHoverTab] = useState(null);
   const [isTouchDevice, setIsTouchDevice] = useState(false);
+  const [showUserMenu, setShowUserMenu] = useState(false);
+  const userMenuRef = useRef(null);
 
   // Refs for swipe detection on tab content
   const tabContentRef = useRef(null);
@@ -346,6 +348,20 @@ const Shako = () => {
   useEffect(() => {
     setIsTouchDevice('ontouchstart' in window || navigator.maxTouchPoints > 0);
   }, []);
+
+  // Close user menu when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (userMenuRef.current && !userMenuRef.current.contains(event.target)) {
+        setShowUserMenu(false);
+      }
+    };
+
+    if (showUserMenu) {
+      document.addEventListener('mousedown', handleClickOutside);
+      return () => document.removeEventListener('mousedown', handleClickOutside);
+    }
+  }, [showUserMenu]);
 
   // Refs for archive sections to enable auto-scroll
   const projectArchiveRef = useRef(null);
@@ -986,6 +1002,89 @@ const Shako = () => {
         <div className="mb-3 sm:mb-4 min-h-[52px] sm:min-h-[60px]">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
+              {/* Hamburger Menu */}
+              <div className="relative" ref={userMenuRef}>
+                <button
+                  onClick={() => setShowUserMenu(!showUserMenu)}
+                  className={`p-2 rounded-lg transition-colors ${
+                    darkMode
+                      ? 'hover:bg-gray-700 text-gray-300'
+                      : 'hover:bg-slate-200 text-slate-600'
+                  }`}
+                  title="Menu"
+                >
+                  <Menu className="w-6 h-6" />
+                </button>
+                {/* User Menu Dropdown */}
+                {showUserMenu && (
+                  <div className={`absolute left-0 top-full mt-2 w-64 rounded-lg shadow-lg border z-50 ${
+                    darkMode
+                      ? 'bg-gray-800 border-gray-700'
+                      : 'bg-white border-slate-200'
+                  }`}>
+                    {/* User Info */}
+                    <div className={`p-4 border-b ${darkMode ? 'border-gray-700' : 'border-slate-200'}`}>
+                      <div className="flex items-center gap-3">
+                        {user?.user_metadata?.avatar_url ? (
+                          <img
+                            src={user.user_metadata.avatar_url}
+                            alt="Avatar"
+                            className="w-10 h-10 rounded-full"
+                          />
+                        ) : (
+                          <div className={`w-10 h-10 rounded-full flex items-center justify-center ${
+                            darkMode ? 'bg-gray-700' : 'bg-slate-200'
+                          }`}>
+                            <span className={`text-lg font-medium ${darkMode ? 'text-gray-300' : 'text-slate-600'}`}>
+                              {user?.user_metadata?.full_name?.charAt(0) || user?.email?.charAt(0) || '?'}
+                            </span>
+                          </div>
+                        )}
+                        <div className="flex-1 min-w-0">
+                          <p className={`font-medium truncate ${darkMode ? 'text-gray-100' : 'text-slate-800'}`}>
+                            {user?.user_metadata?.full_name || 'User'}
+                          </p>
+                          <p className={`text-sm truncate ${darkMode ? 'text-gray-400' : 'text-slate-500'}`}>
+                            {user?.email}
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                    {/* Menu Options */}
+                    <div className="p-2">
+                      {/* Dark Mode Toggle */}
+                      <button
+                        onClick={() => {
+                          setDarkMode(!darkMode);
+                        }}
+                        className={`w-full flex items-center gap-3 px-3 py-2 rounded-lg transition-colors ${
+                          darkMode
+                            ? 'hover:bg-gray-700 text-gray-100'
+                            : 'hover:bg-slate-100 text-slate-700'
+                        }`}
+                      >
+                        {darkMode ? <Sun className="w-5 h-5 text-yellow-300" /> : <Moon className="w-5 h-5" />}
+                        <span>{darkMode ? 'Light Mode' : 'Dark Mode'}</span>
+                      </button>
+                      {/* Sign Out */}
+                      <button
+                        onClick={() => {
+                          setShowUserMenu(false);
+                          signOut();
+                        }}
+                        className={`w-full flex items-center gap-3 px-3 py-2 rounded-lg transition-colors ${
+                          darkMode
+                            ? 'hover:bg-gray-700 text-gray-100'
+                            : 'hover:bg-slate-100 text-slate-700'
+                        }`}
+                      >
+                        <LogOut className="w-5 h-5" />
+                        <span>Sign Out</span>
+                      </button>
+                    </div>
+                  </div>
+                )}
+              </div>
               <img src="/icon.png" alt="Shako" className="w-8 h-8 sm:w-10 sm:h-10 lg:w-12 lg:h-12" />
               <h1 className={`text-2xl sm:text-3xl lg:text-4xl font-bold ${
                 darkMode ? 'text-gray-100' : 'text-slate-800'
@@ -1202,32 +1301,6 @@ const Shako = () => {
                   )}
                 </div>
               )}
-              <button
-                onClick={() => setDarkMode(!darkMode)}
-                className={`p-2 sm:p-3 rounded-lg shadow-md transition-colors ${
-                  activeTab !== 'vehicles' ? 'hidden' : ''
-                } ${
-                  darkMode
-                    ? 'bg-gray-700 hover:bg-gray-600 text-yellow-300'
-                    : 'bg-slate-100 hover:bg-slate-200 text-slate-700'
-                }`}
-                title={darkMode ? 'Switch to Light Mode' : 'Switch to Dark Mode'}
-              >
-                {darkMode ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
-              </button>
-              <button
-                onClick={signOut}
-                className={`p-2 sm:p-3 rounded-lg shadow-md transition-colors ${
-                  activeTab !== 'vehicles' ? 'hidden' : ''
-                } ${
-                  darkMode
-                    ? 'bg-gray-700 hover:bg-gray-600 text-gray-300'
-                    : 'bg-slate-100 hover:bg-slate-200 text-slate-700'
-                }`}
-                title="Sign Out"
-              >
-                <LogOut className="w-5 h-5" />
-              </button>
               <button
                 onClick={() => {
                   if (activeTab === 'parts') setShowAddModal(true);
