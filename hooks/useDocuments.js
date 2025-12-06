@@ -9,9 +9,10 @@ import * as documentsService from '../services/documentsService';
  * - Add, update, and delete documents
  * - File upload to Supabase storage
  *
+ * @param {string} userId - Current user's ID for data isolation
  * @returns {Object} Documents state and operations
  */
-const useDocuments = () => {
+const useDocuments = (userId) => {
   const [documents, setDocuments] = useState([]);
   const [loadingDocuments, setLoadingDocuments] = useState(false);
   const [uploadingDocument, setUploadingDocument] = useState(false);
@@ -48,13 +49,13 @@ const useDocuments = () => {
    * @param {File} file - Document file
    */
   const addDocument = async (vehicleId, title, file) => {
-    if (!vehicleId || !title || !file) return null;
+    if (!vehicleId || !title || !file || !userId) return null;
 
     try {
       setUploadingDocument(true);
 
       // Upload file to storage
-      const fileUrl = await documentsService.uploadDocumentFile(file);
+      const fileUrl = await documentsService.uploadDocumentFile(file, userId);
 
       // Create document record
       const documentData = {
@@ -66,7 +67,7 @@ const useDocuments = () => {
         file_size: file.size
       };
 
-      const newDocument = await documentsService.createDocument(documentData);
+      const newDocument = await documentsService.createDocument(documentData, userId);
       setDocuments(prev => [newDocument, ...prev]);
 
       return newDocument;

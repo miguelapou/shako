@@ -3,10 +3,13 @@ import { supabase } from '../lib/supabase';
 /**
  * Service layer for projects-related Supabase operations
  * Centralizes all database calls for projects table
+ *
+ * Note: With RLS enabled, queries automatically filter by authenticated user.
+ * user_id must be included when creating new records.
  */
 
 /**
- * Load all projects from database
+ * Load all projects for the authenticated user
  * @returns {Promise<Array>} Array of projects
  * @throws {Error} With context about the failed operation
  */
@@ -29,14 +32,15 @@ export const getAllProjects = async () => {
 /**
  * Create a new project
  * @param {Object} projectData - Project data to insert
+ * @param {string} userId - User ID to associate with the project
  * @returns {Promise<Object>} Created project
  * @throws {Error} With context about the failed operation
  */
-export const createProject = async (projectData) => {
+export const createProject = async (projectData, userId) => {
   try {
     const { data, error } = await supabase
       .from('projects')
-      .insert([projectData])
+      .insert([{ ...projectData, user_id: userId }])
       .select();
 
     if (error) throw error;

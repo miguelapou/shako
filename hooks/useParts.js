@@ -13,9 +13,10 @@ import * as vendorsService from '../services/vendorsService';
  * - Link/unlink parts to/from projects
  * - Vendor management (rename, delete vendors)
  *
+ * @param {string} userId - Current user's ID for data isolation
  * @returns {Object} Parts state and operations
  */
-const useParts = () => {
+const useParts = (userId) => {
   const [parts, setParts] = useState([]);
   const [vendors, setVendors] = useState([]);
   const [vendorColors, setVendorColors] = useState({});
@@ -59,6 +60,8 @@ const useParts = () => {
           createdAt: part.created_at || null
         }));
         setParts(formattedParts);
+      } else {
+        setParts([]);
       }
     } catch (error) {
       alert('Error loading parts from database');
@@ -92,8 +95,9 @@ const useParts = () => {
    * Update vendor color in database
    */
   const updateVendorColor = async (vendorName, color) => {
+    if (!userId) return;
     try {
-      await vendorsService.upsertVendor(vendorName, color);
+      await vendorsService.upsertVendor(vendorName, color, userId);
 
       // Update local state
       setVendorColors(prev => ({
@@ -110,6 +114,7 @@ const useParts = () => {
    * Add a new part
    */
   const addNewPart = async (setShowAddModal) => {
+    if (!userId) return;
     const price = parseFloat(newPart.price) || 0;
     const shipping = parseFloat(newPart.shipping) || 0;
     const duties = parseFloat(newPart.duties) || 0;
@@ -135,7 +140,7 @@ const useParts = () => {
         tracking: newPart.tracking,
         project_id: newPart.projectId || null,
         created_at: createdAt
-      });
+      }, userId);
       // Add to local state with the ID from database
       const partToAdd = {
         id: data.id,
