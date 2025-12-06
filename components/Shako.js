@@ -1,5 +1,5 @@
 import React, { useState, useMemo, useEffect, useRef } from 'react';
-import { Search, Package, PackageOpen, BadgeDollarSign, TrendingUp, Truck, CheckCircle, Clock, ChevronDown, Plus, X, ExternalLink, ChevronUp, Edit2, Trash2, Moon, Sun, Wrench, GripVertical, ShoppingCart, Car, Upload, Gauge, Settings, Check, Archive, ChevronRight, Pause, Play, LogOut, Menu } from 'lucide-react';
+import { Search, Package, PackageOpen, BadgeDollarSign, TrendingUp, Truck, CheckCircle, Clock, ChevronDown, Plus, X, ExternalLink, ChevronUp, Edit2, Trash2, Moon, Sun, Wrench, GripVertical, ShoppingCart, Car, Upload, Gauge, Settings, Check, Archive, ChevronRight, Pause, Play, LogOut } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 
 // Utilities
@@ -339,6 +339,7 @@ const Shako = () => {
   const [hoverTab, setHoverTab] = useState(null);
   const [isTouchDevice, setIsTouchDevice] = useState(false);
   const [showUserMenu, setShowUserMenu] = useState(false);
+  const [menuHasBeenToggled, setMenuHasBeenToggled] = useState(false);
   const userMenuRef = useRef(null);
 
   // Refs for swipe detection on tab content
@@ -1005,15 +1006,22 @@ const Shako = () => {
               {/* Hamburger Menu */}
               <div className="relative" ref={userMenuRef}>
                 <button
-                  onClick={() => setShowUserMenu(!showUserMenu)}
+                  onClick={() => {
+                    if (!menuHasBeenToggled) setMenuHasBeenToggled(true);
+                    setShowUserMenu(!showUserMenu);
+                  }}
                   className={`p-2 rounded-lg transition-colors ${
                     darkMode
-                      ? 'hover:bg-gray-700 text-gray-300'
-                      : 'hover:bg-slate-200 text-slate-600'
+                      ? 'hover:bg-gray-700'
+                      : 'hover:bg-slate-200'
                   }`}
                   title="Menu"
                 >
-                  <Menu className="w-6 h-6" />
+                  <div className={`hamburger-btn ${!menuHasBeenToggled ? 'initial' : showUserMenu ? 'active' : 'not-active'}`}>
+                    <span className={darkMode ? 'bg-gray-300' : 'bg-slate-600'}></span>
+                    <span className={darkMode ? 'bg-gray-300' : 'bg-slate-600'}></span>
+                    <span className={darkMode ? 'bg-gray-300' : 'bg-slate-600'}></span>
+                  </div>
                 </button>
                 {/* User Menu Dropdown */}
                 {showUserMenu && (
