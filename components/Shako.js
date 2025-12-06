@@ -339,8 +339,20 @@ const Shako = () => {
   const [hoverTab, setHoverTab] = useState(null);
   const [isTouchDevice, setIsTouchDevice] = useState(false);
   const [showUserMenu, setShowUserMenu] = useState(false);
+  const [isMenuClosing, setIsMenuClosing] = useState(false);
   const [menuHasBeenToggled, setMenuHasBeenToggled] = useState(false);
   const userMenuRef = useRef(null);
+
+  // Function to close menu with animation
+  const closeMenuWithAnimation = () => {
+    if (showUserMenu && !isMenuClosing) {
+      setIsMenuClosing(true);
+      setTimeout(() => {
+        setShowUserMenu(false);
+        setIsMenuClosing(false);
+      }, 150); // Match dropdown-fade-out duration
+    }
+  };
 
   // Refs for swipe detection on tab content
   const tabContentRef = useRef(null);
@@ -354,7 +366,7 @@ const Shako = () => {
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (userMenuRef.current && !userMenuRef.current.contains(event.target)) {
-        setShowUserMenu(false);
+        closeMenuWithAnimation();
       }
     };
 
@@ -362,7 +374,7 @@ const Shako = () => {
       document.addEventListener('mousedown', handleClickOutside);
       return () => document.removeEventListener('mousedown', handleClickOutside);
     }
-  }, [showUserMenu]);
+  }, [showUserMenu, isMenuClosing]);
 
   // Refs for archive sections to enable auto-scroll
   const projectArchiveRef = useRef(null);
@@ -1008,7 +1020,11 @@ const Shako = () => {
                 <button
                   onClick={() => {
                     if (!menuHasBeenToggled) setMenuHasBeenToggled(true);
-                    setShowUserMenu(!showUserMenu);
+                    if (showUserMenu) {
+                      closeMenuWithAnimation();
+                    } else {
+                      setShowUserMenu(true);
+                    }
                   }}
                   className={`p-2 rounded-lg transition-colors ${
                     darkMode
@@ -1017,7 +1033,7 @@ const Shako = () => {
                   }`}
                   title="Menu"
                 >
-                  <div className={`hamburger-btn ${!menuHasBeenToggled ? 'initial' : showUserMenu ? 'active' : 'not-active'}`}>
+                  <div className={`hamburger-btn ${!menuHasBeenToggled ? 'initial' : (showUserMenu && !isMenuClosing) ? 'active' : 'not-active'}`}>
                     <span className={darkMode ? 'bg-gray-300' : 'bg-slate-600'}></span>
                     <span className={darkMode ? 'bg-gray-300' : 'bg-slate-600'}></span>
                     <span className={darkMode ? 'bg-gray-300' : 'bg-slate-600'}></span>
@@ -1026,6 +1042,8 @@ const Shako = () => {
                 {/* User Menu Dropdown */}
                 {showUserMenu && (
                   <div className={`absolute left-0 top-full mt-2 w-64 rounded-lg shadow-lg border z-50 ${
+                    isMenuClosing ? 'dropdown-fade-out' : 'dropdown-fade-in'
+                  } ${
                     darkMode
                       ? 'bg-gray-800 border-gray-700'
                       : 'bg-white border-slate-200'
@@ -1077,7 +1095,7 @@ const Shako = () => {
                       {/* Sign Out */}
                       <button
                         onClick={() => {
-                          setShowUserMenu(false);
+                          closeMenuWithAnimation();
                           signOut();
                         }}
                         className={`w-full flex items-center gap-3 px-3 py-2 rounded-lg transition-colors ${
