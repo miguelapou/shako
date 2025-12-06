@@ -14,6 +14,7 @@ const AuthContext = createContext({
   isRefreshing: false,
   signInWithGoogle: async () => {},
   signOut: async () => {},
+  deleteAccount: async () => {},
   refreshSession: async () => {},
   handleAuthError: async () => {},
 });
