@@ -447,7 +447,7 @@ const VehiclesTab = ({
                 >
                   {/* Vehicle Image */}
                   {vehicle.image_url ? (
-                    <div className="mb-2 mt-8 relative">
+                    <div className="mb-2 mt-1 relative">
                       <img
                         src={vehicle.image_url}
                         alt={vehicle.name}
@@ -466,7 +466,7 @@ const VehiclesTab = ({
                       </div>
                     </div>
                   ) : (
-                    <div className="mb-2 mt-8 w-full h-32 rounded-lg flex flex-col items-center justify-center">
+                    <div className="mb-2 mt-1 w-full h-32 rounded-lg flex flex-col items-center justify-center">
                       <Camera className={`w-8 h-8 mb-1 opacity-40 ${
                         darkMode ? 'text-gray-600' : 'text-gray-400'
                       }`} />
