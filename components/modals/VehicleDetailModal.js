@@ -93,12 +93,17 @@ const VehicleDetailModal = ({
   setNewDocumentTitle,
   newDocumentFile,
   setNewDocumentFile,
+  isDraggingDocument,
   loadDocuments,
   addDocument,
   deleteDocument,
   handleDocumentFileChange,
   clearDocumentSelection,
-  openDocument
+  openDocument,
+  handleDocumentDragEnter,
+  handleDocumentDragLeave,
+  handleDocumentDragOver,
+  handleDocumentDrop
 }) => {
   if (!isOpen || !viewingVehicle) return null;
 
@@ -684,19 +689,38 @@ const VehicleDetailModal = ({
                               </button>
                             </div>
                           ) : (
-                            <label className={`flex flex-col items-center justify-center w-full h-32 border-2 border-dashed rounded-lg cursor-pointer transition-all ${
-                              darkMode
-                                ? 'border-gray-600 hover:border-gray-500 bg-gray-700/50 hover:bg-gray-700'
-                                : 'border-gray-300 hover:border-gray-400 bg-gray-50 hover:bg-gray-100'
+                            <label
+                              onDragEnter={handleDocumentDragEnter}
+                              onDragLeave={handleDocumentDragLeave}
+                              onDragOver={handleDocumentDragOver}
+                              onDrop={handleDocumentDrop}
+                              className={`flex flex-col items-center justify-center w-full h-32 border-2 border-dashed rounded-lg cursor-pointer transition-all ${
+                              isDraggingDocument
+                                ? darkMode
+                                  ? 'border-blue-500 bg-blue-900/20 scale-105'
+                                  : 'border-blue-500 bg-blue-50 scale-105'
+                                : darkMode
+                                  ? 'border-gray-600 hover:border-gray-500 bg-gray-700/50 hover:bg-gray-700'
+                                  : 'border-gray-300 hover:border-gray-400 bg-gray-50 hover:bg-gray-100'
                             }`}>
                               <div className="flex flex-col items-center justify-center pt-5 pb-6">
                                 <Upload className={`w-8 h-8 mb-2 ${
-                                  darkMode ? 'text-gray-400' : 'text-gray-500'
+                                  isDraggingDocument
+                                    ? 'text-blue-500'
+                                    : darkMode ? 'text-gray-400' : 'text-gray-500'
                                 }`} />
                                 <p className={`text-sm ${
-                                  darkMode ? 'text-gray-400' : 'text-gray-600'
+                                  isDraggingDocument
+                                    ? 'text-blue-600 font-semibold'
+                                    : darkMode ? 'text-gray-400' : 'text-gray-600'
                                 }`}>
-                                  <span className="font-semibold">Click to upload</span>
+                                  {isDraggingDocument ? (
+                                    'Drop file here'
+                                  ) : (
+                                    <>
+                                      <span className="font-semibold">Click to upload</span> or drag and drop
+                                    </>
+                                  )}
                                 </p>
                                 <p className={`text-xs ${
                                   darkMode ? 'text-gray-500' : 'text-gray-500'

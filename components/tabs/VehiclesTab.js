@@ -93,12 +93,17 @@ const VehiclesTab = ({
   setNewDocumentTitle,
   newDocumentFile,
   setNewDocumentFile,
+  isDraggingDocument,
   loadDocuments,
   addDocument,
   deleteDocument,
   handleDocumentFileChange,
   clearDocumentSelection,
-  openDocument
+  openDocument,
+  handleDocumentDragEnter,
+  handleDocumentDragLeave,
+  handleDocumentDragOver,
+  handleDocumentDrop
 }) => {
   return (
     <div
@@ -616,12 +621,17 @@ const VehiclesTab = ({
           setNewDocumentTitle={setNewDocumentTitle}
           newDocumentFile={newDocumentFile}
           setNewDocumentFile={setNewDocumentFile}
+          isDraggingDocument={isDraggingDocument}
           loadDocuments={loadDocuments}
           addDocument={addDocument}
           deleteDocument={deleteDocument}
           handleDocumentFileChange={handleDocumentFileChange}
           clearDocumentSelection={clearDocumentSelection}
           openDocument={openDocument}
+          handleDocumentDragEnter={handleDocumentDragEnter}
+          handleDocumentDragLeave={handleDocumentDragLeave}
+          handleDocumentDragOver={handleDocumentDragOver}
+          handleDocumentDrop={handleDocumentDrop}
         />
       </>
     </div>

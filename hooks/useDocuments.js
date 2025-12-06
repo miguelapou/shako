@@ -18,6 +18,7 @@ const useDocuments = () => {
   const [showAddDocumentModal, setShowAddDocumentModal] = useState(false);
   const [newDocumentTitle, setNewDocumentTitle] = useState('');
   const [newDocumentFile, setNewDocumentFile] = useState(null);
+  const [isDraggingDocument, setIsDraggingDocument] = useState(false);
 
   /**
    * Load documents for a specific vehicle
@@ -133,6 +134,43 @@ const useDocuments = () => {
     setNewDocumentTitle('');
   };
 
+  // ========================================
+  // DOCUMENT DRAG AND DROP HANDLERS
+  // ========================================
+
+  const handleDocumentDragEnter = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDraggingDocument(true);
+  };
+
+  const handleDocumentDragLeave = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDraggingDocument(false);
+  };
+
+  const handleDocumentDragOver = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+  };
+
+  const handleDocumentDrop = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDraggingDocument(false);
+
+    const file = e.dataTransfer.files[0];
+    if (file) {
+      // Validate file size (max 10MB for documents)
+      if (file.size > 10 * 1024 * 1024) {
+        alert('Document size must be less than 10MB');
+        return;
+      }
+      setNewDocumentFile(file);
+    }
+  };
+
   /**
    * Open document in new tab
    * @param {string} fileUrl - File URL
@@ -155,6 +193,7 @@ const useDocuments = () => {
     setNewDocumentTitle,
     newDocumentFile,
     setNewDocumentFile,
+    isDraggingDocument,
 
     // Operations
     loadDocuments,
@@ -163,7 +202,13 @@ const useDocuments = () => {
     deleteDocument,
     handleDocumentFileChange,
     clearDocumentSelection,
-    openDocument
+    openDocument,
+
+    // Drag and drop handlers
+    handleDocumentDragEnter,
+    handleDocumentDragLeave,
+    handleDocumentDragOver,
+    handleDocumentDrop
   };
 };
 
