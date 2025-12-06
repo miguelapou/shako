@@ -101,6 +101,42 @@ export const deleteDocument = async (documentId, fileUrl) => {
 };
 
 /**
+ * Delete all documents for a vehicle (including storage files)
+ * @param {number} vehicleId - Vehicle ID
+ * @returns {Promise<void>}
+ * @throws {Error} With context about the failed operation
+ */
+export const deleteAllVehicleDocuments = async (vehicleId) => {
+  try {
+    // First, get all documents for this vehicle to get their file URLs
+    const documents = await getVehicleDocuments(vehicleId);
+
+    // Delete files from storage
+    if (documents.length > 0) {
+      const filePaths = documents
+        .filter(doc => doc.file_url)
+        .map(doc => {
+          const urlParts = doc.file_url.split('/vehicle-documents/');
+          if (urlParts.length > 1) {
+            return `vehicle-documents/${urlParts[1]}`;
+          }
+          return null;
+        })
+        .filter(Boolean);
+
+      if (filePaths.length > 0) {
+        await supabase.storage.from('vehicles').remove(filePaths);
+      }
+    }
+
+    // Database records will be deleted via CASCADE when vehicle is deleted
+  } catch (error) {
+    error.message = `Failed to delete vehicle documents: ${error.message}`;
+    throw error;
+  }
+};
+
+/**
  * Upload a document file to Supabase storage
  * @param {File} file - Document file to upload
  * @returns {Promise<string>} Public URL of uploaded document

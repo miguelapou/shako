@@ -1,4 +1,5 @@
 import { supabase } from '../lib/supabase';
+import { deleteAllVehicleDocuments } from './documentsService';
 
 /**
  * Service layer for vehicles-related Supabase operations
@@ -70,12 +71,17 @@ export const updateVehicle = async (vehicleId, updates) => {
 
 /**
  * Delete a vehicle by ID
+ * Also cleans up associated document files from storage
  * @param {number} vehicleId - Vehicle ID
  * @returns {Promise<void>}
  * @throws {Error} With context about the failed operation
  */
 export const deleteVehicle = async (vehicleId) => {
   try {
+    // Clean up document files from storage before deleting vehicle
+    // (database records will be deleted via CASCADE)
+    await deleteAllVehicleDocuments(vehicleId);
+
     const { error } = await supabase
       .from('vehicles')
       .delete()
