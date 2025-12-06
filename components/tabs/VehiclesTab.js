@@ -82,7 +82,28 @@ const VehiclesTab = ({
   getStatusText,
   getStatusTextColor,
   getVendorColor,
-  calculateProjectTotal
+  calculateProjectTotal,
+  // Document props
+  documents,
+  loadingDocuments,
+  uploadingDocument,
+  showAddDocumentModal,
+  setShowAddDocumentModal,
+  newDocumentTitle,
+  setNewDocumentTitle,
+  newDocumentFile,
+  setNewDocumentFile,
+  isDraggingDocument,
+  loadDocuments,
+  addDocument,
+  deleteDocument,
+  handleDocumentFileChange,
+  clearDocumentSelection,
+  openDocument,
+  handleDocumentDragEnter,
+  handleDocumentDragLeave,
+  handleDocumentDragOver,
+  handleDocumentDrop
 }) => {
   return (
     <div
@@ -590,6 +611,27 @@ const VehiclesTab = ({
           getStatusTextColor={getStatusTextColor}
           getVendorColor={getVendorColor}
           calculateProjectTotal={calculateProjectTotal}
+          // Document props
+          documents={documents}
+          loadingDocuments={loadingDocuments}
+          uploadingDocument={uploadingDocument}
+          showAddDocumentModal={showAddDocumentModal}
+          setShowAddDocumentModal={setShowAddDocumentModal}
+          newDocumentTitle={newDocumentTitle}
+          setNewDocumentTitle={setNewDocumentTitle}
+          newDocumentFile={newDocumentFile}
+          setNewDocumentFile={setNewDocumentFile}
+          isDraggingDocument={isDraggingDocument}
+          loadDocuments={loadDocuments}
+          addDocument={addDocument}
+          deleteDocument={deleteDocument}
+          handleDocumentFileChange={handleDocumentFileChange}
+          clearDocumentSelection={clearDocumentSelection}
+          openDocument={openDocument}
+          handleDocumentDragEnter={handleDocumentDragEnter}
+          handleDocumentDragLeave={handleDocumentDragLeave}
+          handleDocumentDragOver={handleDocumentDragOver}
+          handleDocumentDrop={handleDocumentDrop}
         />
       </>
     </div>

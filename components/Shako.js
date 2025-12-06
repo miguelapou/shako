@@ -64,6 +64,7 @@ import useDragDrop from '../hooks/useDragDrop';
 import useParts from '../hooks/useParts';
 import useProjects from '../hooks/useProjects';
 import useVehicles from '../hooks/useVehicles';
+import useDocuments from '../hooks/useDocuments';
 
 // ========================================
 // MAIN SHAKO COMPONENT
@@ -145,6 +146,32 @@ const Shako = () => {
     handleImageDragOver,
     handleImageDrop
   } = useVehicles();
+
+  // Documents hook
+  const {
+    documents,
+    setDocuments,
+    loadingDocuments,
+    uploadingDocument,
+    showAddDocumentModal,
+    setShowAddDocumentModal,
+    newDocumentTitle,
+    setNewDocumentTitle,
+    newDocumentFile,
+    setNewDocumentFile,
+    isDraggingDocument,
+    loadDocuments,
+    addDocument,
+    updateDocumentTitle,
+    deleteDocument,
+    handleDocumentFileChange,
+    clearDocumentSelection,
+    openDocument,
+    handleDocumentDragEnter,
+    handleDocumentDragLeave,
+    handleDocumentDragOver,
+    handleDocumentDrop
+  } = useDocuments();
 
   // Filters hook
   const {
@@ -570,6 +597,13 @@ const Shako = () => {
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: 'instant' });
   }, [activeTab]);
+
+  // Load documents when viewing a vehicle
+  useEffect(() => {
+    if (viewingVehicle?.id && showVehicleDetailModal) {
+      loadDocuments(viewingVehicle.id);
+    }
+  }, [viewingVehicle?.id, showVehicleDetailModal]);
 
 
   const handleSort = (field) => {
@@ -1551,6 +1585,27 @@ const Shako = () => {
             unlinkPartFromProject={unlinkPartFromProject}
             loadProjects={loadProjects}
             updateProject={updateProject}
+            // Document props
+            documents={documents}
+            loadingDocuments={loadingDocuments}
+            uploadingDocument={uploadingDocument}
+            showAddDocumentModal={showAddDocumentModal}
+            setShowAddDocumentModal={setShowAddDocumentModal}
+            newDocumentTitle={newDocumentTitle}
+            setNewDocumentTitle={setNewDocumentTitle}
+            newDocumentFile={newDocumentFile}
+            setNewDocumentFile={setNewDocumentFile}
+            isDraggingDocument={isDraggingDocument}
+            loadDocuments={loadDocuments}
+            addDocument={addDocument}
+            deleteDocument={deleteDocument}
+            handleDocumentFileChange={handleDocumentFileChange}
+            clearDocumentSelection={clearDocumentSelection}
+            openDocument={openDocument}
+            handleDocumentDragEnter={handleDocumentDragEnter}
+            handleDocumentDragLeave={handleDocumentDragLeave}
+            handleDocumentDragOver={handleDocumentDragOver}
+            handleDocumentDrop={handleDocumentDrop}
           />
         )}
 
