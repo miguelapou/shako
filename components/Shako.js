@@ -1653,6 +1653,7 @@ const Shako = () => {
             handleDragEnd={handleDragEnd}
             handleProjectArchiveZoneDrop={handleProjectArchiveZoneDrop}
             calculateProjectStatus={calculateProjectStatus}
+            addProject={addProject}
             updateProject={updateProject}
             deleteProject={deleteProject}
             unlinkPartFromProject={unlinkPartFromProject}
