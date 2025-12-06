@@ -9,6 +9,43 @@ import { deleteAllVehicleDocuments } from './documentsService';
  * user_id must be included when creating new records.
  */
 
+// Valid columns in the vehicles database table
+const VALID_VEHICLE_COLUMNS = [
+  'nickname',
+  'name',
+  'year',
+  'license_plate',
+  'vin',
+  'color',
+  'image_url',
+  'archived',
+  'display_order',
+  'fuel_filter',
+  'air_filter',
+  'oil_filter',
+  'oil_type',
+  'oil_capacity',
+  'oil_brand',
+  'drain_plug',
+  'battery',
+  'insurance_policy'
+];
+
+/**
+ * Filter object to only include valid database columns
+ * @param {Object} data - Data object to filter
+ * @returns {Object} Filtered object with only valid columns
+ */
+const filterValidColumns = (data) => {
+  const filtered = {};
+  for (const key of Object.keys(data)) {
+    if (VALID_VEHICLE_COLUMNS.includes(key)) {
+      filtered[key] = data[key];
+    }
+  }
+  return filtered;
+};
+
 /**
  * Load all vehicles for the authenticated user
  * @param {string} userId - User ID to filter by (defense-in-depth with RLS)
@@ -41,9 +78,12 @@ export const getAllVehicles = async (userId) => {
  */
 export const createVehicle = async (vehicleData, userId) => {
   try {
+    // Filter to only include valid database columns
+    const filteredData = filterValidColumns(vehicleData);
+
     const { data, error } = await supabase
       .from('vehicles')
-      .insert([{ ...vehicleData, user_id: userId }])
+      .insert([{ ...filteredData, user_id: userId }])
       .select();
 
     if (error) throw error;
@@ -63,9 +103,12 @@ export const createVehicle = async (vehicleData, userId) => {
  */
 export const updateVehicle = async (vehicleId, updates) => {
   try {
+    // Filter to only include valid database columns
+    const filteredUpdates = filterValidColumns(updates);
+
     const { error } = await supabase
       .from('vehicles')
-      .update(updates)
+      .update(filteredUpdates)
       .eq('id', vehicleId);
 
     if (error) throw error;
