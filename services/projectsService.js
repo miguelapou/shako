@@ -8,6 +8,46 @@ import { supabase } from '../lib/supabase';
  * user_id must be included when creating new records.
  */
 
+// Valid columns in the projects database table
+const VALID_PROJECT_COLUMNS = [
+  'name',
+  'description',
+  'budget',
+  'priority',
+  'vehicle_id',
+  'todos',
+  'archived',
+  'paused',
+  'display_order'
+];
+
+// Numeric columns that should skip empty strings (to avoid type mismatch)
+const NUMERIC_COLUMNS = ['budget', 'display_order'];
+
+/**
+ * Filter object to only include valid database columns
+ * @param {Object} data - Data object to filter
+ * @returns {Object} Filtered object with only valid columns
+ */
+const filterValidColumns = (data) => {
+  const filtered = {};
+  for (const key of Object.keys(data)) {
+    if (VALID_PROJECT_COLUMNS.includes(key)) {
+      const value = data[key];
+      if (NUMERIC_COLUMNS.includes(key)) {
+        if (value !== '' && value !== null && value !== undefined) {
+          filtered[key] = value;
+        }
+      } else {
+        if (value !== null && value !== undefined) {
+          filtered[key] = value;
+        }
+      }
+    }
+  }
+  return filtered;
+};
+
 /**
  * Load all projects for the authenticated user
  * @param {string} userId - User ID to filter by (defense-in-depth with RLS)
@@ -40,9 +80,12 @@ export const getAllProjects = async (userId) => {
  */
 export const createProject = async (projectData, userId) => {
   try {
+    // Filter to only include valid database columns
+    const filteredData = filterValidColumns(projectData);
+
     const { data, error } = await supabase
       .from('projects')
-      .insert([{ ...projectData, user_id: userId }])
+      .insert([{ ...filteredData, user_id: userId }])
       .select();
 
     if (error) throw error;
@@ -62,9 +105,12 @@ export const createProject = async (projectData, userId) => {
  */
 export const updateProject = async (projectId, updates) => {
   try {
+    // Filter to only include valid database columns
+    const filteredUpdates = filterValidColumns(updates);
+
     const { error } = await supabase
       .from('projects')
-      .update(updates)
+      .update(filteredUpdates)
       .eq('id', projectId);
 
     if (error) throw error;
