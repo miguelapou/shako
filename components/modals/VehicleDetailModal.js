@@ -621,7 +621,7 @@ const VehicleDetailModal = ({
                       }`}>
                         <h3 className={`text-lg font-semibold ${
                           darkMode ? 'text-gray-100' : 'text-gray-800'
-                        }`}>
+                        }`} style={{ fontFamily: "'FoundationOne', 'Courier New', monospace" }}>
                           Add Document
                         </h3>
                         <button
