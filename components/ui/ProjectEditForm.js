@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useCallback } from 'react';
 import { Car, ChevronDown } from 'lucide-react';
 
 // ProjectEditForm - Form component for editing project details
@@ -13,6 +13,15 @@ const ProjectEditForm = ({
   darkMode
 }) => {
   const [showVehicleDropdown, setShowVehicleDropdown] = useState(false);
+  const [isDropdownClosing, setIsDropdownClosing] = useState(false);
+
+  const closeDropdownWithAnimation = useCallback(() => {
+    setIsDropdownClosing(true);
+    setTimeout(() => {
+      setIsDropdownClosing(false);
+      setShowVehicleDropdown(false);
+    }, 150);
+  }, []);
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -74,7 +83,11 @@ const ProjectEditForm = ({
                 type="button"
                 onClick={(e) => {
                   e.stopPropagation();
-                  setShowVehicleDropdown(!showVehicleDropdown);
+                  if (showVehicleDropdown) {
+                    closeDropdownWithAnimation();
+                  } else {
+                    setShowVehicleDropdown(true);
+                  }
                 }}
                 className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-left flex items-center justify-between gap-2 min-h-[42px] box-border ${
                   darkMode
@@ -99,18 +112,18 @@ const ProjectEditForm = ({
                     ) : 'No vehicle';
                   })() : 'No vehicle'}
                 </div>
-                <ChevronDown className="w-4 h-4 flex-shrink-0" />
+                <ChevronDown className={`w-4 h-4 flex-shrink-0 transition-transform ${showVehicleDropdown ? 'rotate-180' : ''}`} />
               </button>
               {showVehicleDropdown && (
                 <>
                   <div
                     className="fixed inset-0 z-10"
-                    onClick={() => setShowVehicleDropdown(false)}
+                    onClick={closeDropdownWithAnimation}
                   />
                   <div
                     className={`absolute right-0 md:left-0 z-20 mt-1 rounded-lg border shadow-lg py-1 max-h-60 overflow-y-auto vehicle-dropdown-scroll ${
-                      darkMode ? 'bg-gray-700 border-gray-600' : 'bg-slate-50 border-slate-300'
-                    }`}
+                      isDropdownClosing ? 'dropdown-fade-out' : 'dropdown-fade-in'
+                    } ${darkMode ? 'bg-gray-700 border-gray-600' : 'bg-slate-50 border-slate-300'}`}
                     style={{
                       minWidth: '200px'
                     }}

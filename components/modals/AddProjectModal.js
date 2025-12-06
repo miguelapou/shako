@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react';
+import React, { useRef, useState, useCallback } from 'react';
 import { X, Car, ChevronDown } from 'lucide-react';
 
 const AddProjectModal = ({
@@ -16,19 +16,32 @@ const AddProjectModal = ({
 }) => {
   const vehicleButtonRef = useRef(null);
   const [dropdownPosition, setDropdownPosition] = useState({ top: 0, left: 0 });
+  const [isDropdownClosing, setIsDropdownClosing] = useState(false);
+
+  const closeDropdownWithAnimation = useCallback(() => {
+    setIsDropdownClosing(true);
+    setTimeout(() => {
+      setIsDropdownClosing(false);
+      setShowAddProjectVehicleDropdown(false);
+    }, 150);
+  }, [setShowAddProjectVehicleDropdown]);
 
   if (!isOpen) return null;
 
   const handleVehicleDropdownToggle = (e) => {
     e.stopPropagation();
-    if (!showAddProjectVehicleDropdown && vehicleButtonRef.current) {
-      const rect = vehicleButtonRef.current.getBoundingClientRect();
-      setDropdownPosition({
-        top: rect.bottom + 4,
-        left: rect.left
-      });
+    if (showAddProjectVehicleDropdown) {
+      closeDropdownWithAnimation();
+    } else {
+      if (vehicleButtonRef.current) {
+        const rect = vehicleButtonRef.current.getBoundingClientRect();
+        setDropdownPosition({
+          top: rect.bottom + 4,
+          left: rect.left
+        });
+      }
+      setShowAddProjectVehicleDropdown(true);
     }
-    setShowAddProjectVehicleDropdown(!showAddProjectVehicleDropdown);
   };
 
   const handleAddProject = async () => {
@@ -169,17 +182,17 @@ const AddProjectModal = ({
                           ) : 'No vehicle';
                         })() : 'No vehicle'}
                       </div>
-                      <ChevronDown className="w-4 h-4 flex-shrink-0" />
+                      <ChevronDown className={`w-4 h-4 flex-shrink-0 transition-transform ${showAddProjectVehicleDropdown ? 'rotate-180' : ''}`} />
                     </button>
                     {showAddProjectVehicleDropdown && (
                       <>
                         <div
                           className="fixed inset-0 z-[60]"
-                          onClick={() => setShowAddProjectVehicleDropdown(false)}
+                          onClick={closeDropdownWithAnimation}
                         />
                         <div className={`fixed z-[70] rounded-lg border shadow-lg py-1 ${
-                          darkMode ? 'bg-gray-700 border-gray-600' : 'bg-slate-50 border-slate-300'
-                        }`}
+                          isDropdownClosing ? 'dropdown-fade-out' : 'dropdown-fade-in'
+                        } ${darkMode ? 'bg-gray-700 border-gray-600' : 'bg-slate-50 border-slate-300'}`}
                         style={{
                           minWidth: '200px',
                           top: dropdownPosition.top,
