@@ -16,7 +16,6 @@ import {
   Play,
   Camera,
   FileText,
-  FolderOpen,
   Plus,
   ExternalLink
 } from 'lucide-react';
@@ -511,10 +510,7 @@ const VehicleDetailModal = ({
                   <h3 className={`text-lg font-semibold ${
                     darkMode ? 'text-gray-200' : 'text-gray-800'
                   }`}>
-                    <div className="flex items-center gap-2">
-                      <FolderOpen className="w-5 h-5" />
-                      <span>Documents ({documents.length})</span>
-                    </div>
+                    Documents ({documents.length})
                   </h3>
                   <button
                     onClick={() => setShowAddDocumentModal(true)}
