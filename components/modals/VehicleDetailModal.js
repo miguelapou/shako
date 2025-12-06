@@ -341,7 +341,11 @@ const VehicleDetailModal = ({
                           }`}>Budget Used</p>
                           <div className="flex justify-between items-center mb-2">
                             <span className={`text-sm font-medium ${
-                              darkMode ? 'text-gray-300' : 'text-slate-700'
+                              progress > 66
+                                ? (darkMode ? 'text-red-400' : 'text-red-600')
+                                : progress > 33
+                                ? (darkMode ? 'text-yellow-400' : 'text-yellow-600')
+                                : (darkMode ? 'text-green-400' : 'text-green-600')
                             }`}>
                               ${totalSpent.toFixed(2)} / ${Math.round(totalBudget)}
                             </span>
