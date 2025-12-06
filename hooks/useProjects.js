@@ -11,9 +11,10 @@ import * as projectsService from '../services/projectsService';
  * - Update project display order (for drag and drop)
  * - Helper functions for vehicle-project relationships
  *
+ * @param {string} userId - Current user's ID for data isolation
  * @returns {Object} Projects state and operations
  */
-const useProjects = () => {
+const useProjects = (userId) => {
   const [projects, setProjects] = useState([]);
   const [newProject, setNewProject] = useState({
     name: '',
@@ -33,6 +34,8 @@ const useProjects = () => {
 
       if (data && data.length > 0) {
         setProjects(data);
+      } else {
+        setProjects([]);
       }
     } catch (error) {
       // Error loading projects
@@ -62,6 +65,7 @@ const useProjects = () => {
    * Add a new project
    */
   const addProject = async (projectData) => {
+    if (!userId) return;
     try {
       await projectsService.createProject({
         name: projectData.name,
@@ -72,7 +76,7 @@ const useProjects = () => {
         priority: projectData.priority || 'medium',
         vehicle_id: projectData.vehicle_id || null,
         todos: []
-      });
+      }, userId);
       await loadProjects();
     } catch (error) {
       alert('Error adding project');

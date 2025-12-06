@@ -80,7 +80,8 @@ const Shako = () => {
   const { darkMode, setDarkMode, darkModeInitialized, mounted } = useDarkMode();
 
   // Auth hook
-  const { signOut } = useAuthContext();
+  const { user, signOut } = useAuthContext();
+  const userId = user?.id;
 
   // Parts hook
   const {
@@ -105,7 +106,7 @@ const Shako = () => {
     unlinkPartFromProject,
     updatePartProject,
     getUniqueVendors
-  } = useParts();
+  } = useParts(userId);
 
   // Projects hook
   const {
@@ -121,7 +122,7 @@ const Shako = () => {
     calculateProjectStatus,
     getVehicleProjects,
     getVehicleProjectCount
-  } = useProjects();
+  } = useProjects(userId);
 
   // Vehicles hook
   const {
@@ -149,7 +150,7 @@ const Shako = () => {
     handleImageDragLeave,
     handleImageDragOver,
     handleImageDrop
-  } = useVehicles();
+  } = useVehicles(userId);
 
   // Documents hook
   const {
@@ -175,7 +176,7 @@ const Shako = () => {
     handleDocumentDragLeave,
     handleDocumentDragOver,
     handleDocumentDrop
-  } = useDocuments();
+  } = useDocuments(userId);
 
   // Filters hook
   const {
