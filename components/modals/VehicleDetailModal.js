@@ -407,8 +407,8 @@ const VehicleDetailModal = ({
                   Maintenance
                 </h3>
                 {(viewingVehicle.fuel_filter || viewingVehicle.air_filter || viewingVehicle.oil_filter || viewingVehicle.oil_type || viewingVehicle.oil_capacity || viewingVehicle.oil_brand || viewingVehicle.drain_plug || viewingVehicle.battery) ? (
-                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-                    {/* Mobile order: fuel filter, air filter, battery, oil filter, oil capacity, oil type, oil brand, drain plug */}
+                  <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+                    {/* Mobile two-column layout: Left (fuel filter, air filter, battery, drain plug) | Right (oil filter, oil capacity, oil type, oil brand) */}
                     {viewingVehicle.fuel_filter && (
                       <div>
                         <p className={`text-sm font-medium mb-1 ${
@@ -417,26 +417,6 @@ const VehicleDetailModal = ({
                         <p className={`text-base ${
                           darkMode ? 'text-gray-100' : 'text-slate-800'
                         }`}>{viewingVehicle.fuel_filter}</p>
-                      </div>
-                    )}
-                    {viewingVehicle.air_filter && (
-                      <div>
-                        <p className={`text-sm font-medium mb-1 ${
-                          darkMode ? 'text-gray-400' : 'text-slate-600'
-                        }`}>Air Filter</p>
-                        <p className={`text-base ${
-                          darkMode ? 'text-gray-100' : 'text-slate-800'
-                        }`}>{viewingVehicle.air_filter}</p>
-                      </div>
-                    )}
-                    {viewingVehicle.battery && (
-                      <div>
-                        <p className={`text-sm font-medium mb-1 ${
-                          darkMode ? 'text-gray-400' : 'text-slate-600'
-                        }`}>Battery Type</p>
-                        <p className={`text-base ${
-                          darkMode ? 'text-gray-100' : 'text-slate-800'
-                        }`}>{viewingVehicle.battery}</p>
                       </div>
                     )}
                     {viewingVehicle.oil_filter && (
@@ -449,6 +429,16 @@ const VehicleDetailModal = ({
                         }`}>{viewingVehicle.oil_filter}</p>
                       </div>
                     )}
+                    {viewingVehicle.air_filter && (
+                      <div>
+                        <p className={`text-sm font-medium mb-1 ${
+                          darkMode ? 'text-gray-400' : 'text-slate-600'
+                        }`}>Air Filter</p>
+                        <p className={`text-base ${
+                          darkMode ? 'text-gray-100' : 'text-slate-800'
+                        }`}>{viewingVehicle.air_filter}</p>
+                      </div>
+                    )}
                     {viewingVehicle.oil_capacity && (
                       <div>
                         <p className={`text-sm font-medium mb-1 ${
@@ -457,6 +447,16 @@ const VehicleDetailModal = ({
                         <p className={`text-base ${
                           darkMode ? 'text-gray-100' : 'text-slate-800'
                         }`}>{viewingVehicle.oil_capacity}</p>
+                      </div>
+                    )}
+                    {viewingVehicle.battery && (
+                      <div>
+                        <p className={`text-sm font-medium mb-1 ${
+                          darkMode ? 'text-gray-400' : 'text-slate-600'
+                        }`}>Battery Type</p>
+                        <p className={`text-base ${
+                          darkMode ? 'text-gray-100' : 'text-slate-800'
+                        }`}>{viewingVehicle.battery}</p>
                       </div>
                     )}
                     {viewingVehicle.oil_type && (
@@ -469,16 +469,6 @@ const VehicleDetailModal = ({
                         }`}>{viewingVehicle.oil_type}</p>
                       </div>
                     )}
-                    {viewingVehicle.oil_brand && (
-                      <div>
-                        <p className={`text-sm font-medium mb-1 ${
-                          darkMode ? 'text-gray-400' : 'text-slate-600'
-                        }`}>Oil Brand</p>
-                        <p className={`text-base ${
-                          darkMode ? 'text-gray-100' : 'text-slate-800'
-                        }`}>{viewingVehicle.oil_brand}</p>
-                      </div>
-                    )}
                     {viewingVehicle.drain_plug && (
                       <div>
                         <p className={`text-sm font-medium mb-1 ${
@@ -487,6 +477,16 @@ const VehicleDetailModal = ({
                         <p className={`text-base ${
                           darkMode ? 'text-gray-100' : 'text-slate-800'
                         }`}>{viewingVehicle.drain_plug}</p>
+                      </div>
+                    )}
+                    {viewingVehicle.oil_brand && (
+                      <div>
+                        <p className={`text-sm font-medium mb-1 ${
+                          darkMode ? 'text-gray-400' : 'text-slate-600'
+                        }`}>Oil Brand</p>
+                        <p className={`text-base ${
+                          darkMode ? 'text-gray-100' : 'text-slate-800'
+                        }`}>{viewingVehicle.oil_brand}</p>
                       </div>
                     )}
                   </div>
