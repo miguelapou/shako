@@ -57,7 +57,7 @@ const AddProjectModal = ({
       <div
         className={`rounded-lg shadow-xl max-w-4xl w-full modal-content grid ${
           isModalClosing ? 'modal-popup-exit' : 'modal-popup-enter'
-        } ${darkMode ? 'bg-gray-800' : 'bg-slate-100'}`}
+        } ${darkMode ? 'bg-gray-800' : 'bg-slate-200'}`}
         style={{
           gridTemplateRows: 'auto 1fr auto',
           maxHeight: '90vh'

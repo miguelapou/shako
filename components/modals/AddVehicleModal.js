@@ -37,7 +37,7 @@ const AddVehicleModal = ({
       <div
         className={`rounded-lg shadow-xl max-w-4xl w-full max-h-[90vh] modal-content ${
           isModalClosing ? 'modal-popup-exit' : 'modal-popup-enter'
-        } ${darkMode ? 'bg-gray-800' : 'bg-slate-100'}`}
+        } ${darkMode ? 'bg-gray-800' : 'bg-slate-200'}`}
         onClick={(e) => e.stopPropagation()}
       >
         <div className={`sticky top-0 border-b px-6 py-4 flex items-center justify-between ${

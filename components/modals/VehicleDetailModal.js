@@ -143,7 +143,7 @@ const VehicleDetailModal = ({
       <div
         className={`rounded-lg shadow-xl max-w-5xl w-full overflow-hidden modal-content transition-all duration-700 ease-in-out grid ${
           isModalClosing ? 'modal-popup-exit' : 'modal-popup-enter'
-        } ${darkMode ? 'bg-gray-800' : 'bg-slate-100'}`}
+        } ${darkMode ? 'bg-gray-800' : 'bg-slate-200'}`}
         style={{
           gridTemplateRows: 'auto 1fr auto',
           maxHeight: vehicleModalEditMode ? '90vh' : '85vh',
@@ -608,7 +608,7 @@ const VehicleDetailModal = ({
                   >
                     <div
                       className={`rounded-lg shadow-xl max-w-md w-full mx-4 ${
-                        darkMode ? 'bg-gray-800' : 'bg-slate-100'
+                        darkMode ? 'bg-gray-800' : 'bg-slate-200'
                       }`}
                       onClick={(e) => e.stopPropagation()}
                     >

@@ -70,7 +70,7 @@ const PartDetailModal = ({
       <div
         className={`rounded-lg shadow-xl max-w-4xl w-full modal-content overflow-hidden transition-all duration-700 ease-in-out grid ${
           isModalClosing ? 'modal-popup-exit' : 'modal-popup-enter'
-        } ${darkMode ? 'bg-gray-800' : 'bg-slate-100'}`}
+        } ${darkMode ? 'bg-gray-800' : 'bg-slate-200'}`}
         style={{
           gridTemplateRows:
             partDetailView === 'detail' ? 'auto 1fr auto' : 'auto 1fr auto',

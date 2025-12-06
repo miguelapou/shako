@@ -19,7 +19,7 @@ const TrackingModal = ({
     >
       <div
         className={`rounded-lg shadow-xl max-w-md w-full modal-popup-enter ${
-          darkMode ? 'bg-gray-800' : 'bg-slate-100'
+          darkMode ? 'bg-gray-800' : 'bg-slate-200'
         }`}
         onClick={(e) => e.stopPropagation()}
       >
