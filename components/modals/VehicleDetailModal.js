@@ -616,14 +616,14 @@ const VehicleDetailModal = ({
                 {/* Add Document Modal */}
                 {showAddDocumentModal && (
                   <div
-                    className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-[60]"
+                    className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-[60] modal-backdrop modal-backdrop-enter"
                     onClick={() => {
                       setShowAddDocumentModal(false);
                       clearDocumentSelection();
                     }}
                   >
                     <div
-                      className={`rounded-lg shadow-xl max-w-md w-full mx-4 ${
+                      className={`rounded-lg shadow-xl max-w-md w-full mx-4 modal-content modal-popup-enter ${
                         darkMode ? 'bg-gray-800' : 'bg-slate-200'
                       }`}
                       onClick={(e) => e.stopPropagation()}
