@@ -342,9 +342,9 @@ const VehicleDetailModal = ({
                           <div className="flex justify-between items-center mb-2">
                             <span className="text-sm font-medium">
                               <span className={
-                                progress > 66
+                                progress > 90
                                   ? (darkMode ? 'text-red-400' : 'text-red-600')
-                                  : progress > 33
+                                  : progress > 70
                                   ? (darkMode ? 'text-yellow-400' : 'text-yellow-600')
                                   : (darkMode ? 'text-green-400' : 'text-green-600')
                               }>
