@@ -516,7 +516,7 @@ const PartsTab = ({
                 ) : (
                   <ShoppingCart className={`w-6 h-6 text-yellow-500 absolute top-2 right-2 transition-opacity ${statusFilter === 'purchased' ? 'opacity-70' : 'opacity-20'}`} />
                 )}
-                <div key={statusFilter === 'pending' ? 'pending' : statusFilter === 'purchased' ? 'purchased' : 'ordered'} className={statusFilter === 'pending' ? 'status-card-content' : ''}>
+                <div key={statusFilter === 'pending' ? 'pending' : statusFilter === 'purchased' ? 'purchased' : 'ordered'} className="status-card-content">
                   <p className={`text-xs mb-1 ${
                     darkMode ? 'text-gray-400' : 'text-slate-600'
                   }`}>{statusFilter === 'pending' ? 'Unordered' : 'Ordered'}</p>
