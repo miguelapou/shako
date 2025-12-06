@@ -337,7 +337,7 @@ const VehicleDetailModal = ({
                           darkMode ? 'border-gray-600' : 'border-gray-300'
                         }`}>
                           <p className={`text-sm font-semibold mb-2 ${
-                            darkMode ? 'text-gray-300' : 'text-black'
+                            darkMode ? 'text-gray-300' : 'text-slate-700'
                           }`}>Budget Used</p>
                           <div className="flex justify-between items-center mb-2">
                             <span className="text-sm font-medium">
