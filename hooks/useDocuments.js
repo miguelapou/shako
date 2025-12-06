@@ -22,7 +22,7 @@ const useDocuments = (userId) => {
   const [isDraggingDocument, setIsDraggingDocument] = useState(false);
 
   /**
-   * Load documents for a specific vehicle
+   * Load documents for a specific vehicle and resolve file URLs
    * @param {number} vehicleId - Vehicle ID
    */
   const loadDocuments = async (vehicleId) => {
@@ -33,7 +33,45 @@ const useDocuments = (userId) => {
     try {
       setLoadingDocuments(true);
       const data = await documentsService.getVehicleDocuments(vehicleId);
-      setDocuments(data || []);
+
+      if (data && data.length > 0) {
+        // Resolve signed URLs for document files
+        const filePaths = data
+          .map(doc => doc.file_url)
+          .filter(url => url && !url.startsWith('http'));
+
+        if (filePaths.length > 0) {
+          try {
+            const urlMap = await documentsService.getDocumentFileUrls(filePaths);
+            // Update documents with resolved URLs
+            const withResolvedUrls = data.map(doc => {
+              if (doc.file_url && !doc.file_url.startsWith('http')) {
+                return {
+                  ...doc,
+                  file_url_resolved: urlMap[doc.file_url] || doc.file_url
+                };
+              }
+              return {
+                ...doc,
+                file_url_resolved: doc.file_url
+              };
+            });
+            setDocuments(withResolvedUrls);
+          } catch (urlError) {
+            // If URL resolution fails, use original data
+            setDocuments(data);
+          }
+        } else {
+          // No storage paths to resolve, use URLs as-is
+          const withResolvedUrls = data.map(doc => ({
+            ...doc,
+            file_url_resolved: doc.file_url
+          }));
+          setDocuments(withResolvedUrls);
+        }
+      } else {
+        setDocuments([]);
+      }
     } catch (error) {
       // Error loading documents - silently fail
       setDocuments([]);
@@ -174,11 +212,31 @@ const useDocuments = (userId) => {
 
   /**
    * Open document in new tab
-   * @param {string} fileUrl - File URL
+   * Uses resolved URL if available, otherwise gets signed URL on-demand
+   * @param {Object} document - Document object with file_url and file_url_resolved
    */
-  const openDocument = (fileUrl) => {
-    if (fileUrl) {
-      window.open(fileUrl, '_blank');
+  const openDocument = async (document) => {
+    if (!document) return;
+
+    // Use resolved URL if available
+    if (document.file_url_resolved) {
+      window.open(document.file_url_resolved, '_blank');
+      return;
+    }
+
+    // Fall back to original URL (legacy or already a full URL)
+    if (document.file_url) {
+      if (document.file_url.startsWith('http')) {
+        window.open(document.file_url, '_blank');
+      } else {
+        // Get signed URL on-demand
+        try {
+          const signedUrl = await documentsService.getDocumentFileUrl(document.file_url);
+          window.open(signedUrl, '_blank');
+        } catch (error) {
+          alert('Error opening document');
+        }
+      }
     }
   };
 

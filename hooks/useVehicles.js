@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useCallback } from 'react';
 import * as vehiclesService from '../services/vehiclesService';
 
 /**
@@ -42,7 +42,7 @@ const useVehicles = (userId) => {
   const [isDraggingImage, setIsDraggingImage] = useState(false);
 
   /**
-   * Load vehicles from Supabase
+   * Load vehicles from Supabase and resolve image URLs
    */
   const loadVehicles = async () => {
     try {
@@ -57,7 +57,41 @@ const useVehicles = (userId) => {
           // Put archived vehicles at the end
           return a.archived ? 1 : -1;
         });
-        setVehicles(sorted);
+
+        // Resolve signed URLs for vehicle images
+        const imagePaths = sorted
+          .map(v => v.image_url)
+          .filter(url => url && !url.startsWith('http'));
+
+        if (imagePaths.length > 0) {
+          try {
+            const urlMap = await vehiclesService.getVehicleImageUrls(imagePaths);
+            // Update vehicles with resolved URLs
+            const withResolvedUrls = sorted.map(vehicle => {
+              if (vehicle.image_url && !vehicle.image_url.startsWith('http')) {
+                return {
+                  ...vehicle,
+                  image_url_resolved: urlMap[vehicle.image_url] || vehicle.image_url
+                };
+              }
+              return {
+                ...vehicle,
+                image_url_resolved: vehicle.image_url
+              };
+            });
+            setVehicles(withResolvedUrls);
+          } catch (urlError) {
+            // If URL resolution fails, use original data
+            setVehicles(sorted);
+          }
+        } else {
+          // No storage paths to resolve, use URLs as-is
+          const withResolvedUrls = sorted.map(vehicle => ({
+            ...vehicle,
+            image_url_resolved: vehicle.image_url
+          }));
+          setVehicles(withResolvedUrls);
+        }
       } else {
         setVehicles([]);
       }
@@ -218,6 +252,21 @@ const useVehicles = (userId) => {
     }
   };
 
+  /**
+   * Get a signed URL for a vehicle image (on-demand)
+   * @param {string} imagePath - Storage path or URL
+   * @returns {Promise<string>} Signed URL
+   */
+  const getImageUrl = useCallback(async (imagePath) => {
+    if (!imagePath) return null;
+    if (imagePath.startsWith('http')) return imagePath;
+    try {
+      return await vehiclesService.getVehicleImageUrl(imagePath);
+    } catch (error) {
+      return imagePath;
+    }
+  }, []);
+
   return {
     // State
     vehicles,
@@ -240,6 +289,7 @@ const useVehicles = (userId) => {
     deleteVehicle,
     updateVehiclesOrder,
     uploadVehicleImage,
+    getImageUrl,
 
     // Image handlers
     handleImageFileChange,

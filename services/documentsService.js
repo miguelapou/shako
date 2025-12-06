@@ -144,7 +144,7 @@ export const deleteAllVehicleDocuments = async (vehicleId) => {
  * Upload a document file to Supabase storage
  * @param {File} file - Document file to upload
  * @param {string} userId - User ID for organizing storage
- * @returns {Promise<string>} Public URL of uploaded document
+ * @returns {Promise<string>} Storage path of uploaded document (use getDocumentFileUrl to get accessible URL)
  * @throws {Error} With context about the failed operation
  */
 export const uploadDocumentFile = async (file, userId) => {
@@ -164,14 +164,79 @@ export const uploadDocumentFile = async (file, userId) => {
 
     if (error) throw error;
 
-    // Get public URL
-    const { data: { publicUrl } } = supabase.storage
-      .from('vehicles')
-      .getPublicUrl(filePath);
-
-    return publicUrl;
+    // Return the storage path - URL will be generated on demand
+    return filePath;
   } catch (error) {
     error.message = `Failed to upload document: ${error.message}`;
+    throw error;
+  }
+};
+
+/**
+ * Get a signed URL for a document file
+ * @param {string} filePath - Storage path of the document
+ * @param {number} expiresIn - Expiration time in seconds (default: 1 hour)
+ * @returns {Promise<string>} Signed URL for the document
+ * @throws {Error} With context about the failed operation
+ */
+export const getDocumentFileUrl = async (filePath, expiresIn = 3600) => {
+  try {
+    // If it's already a full URL (legacy data), return as-is
+    if (filePath.startsWith('http')) {
+      return filePath;
+    }
+
+    const { data, error } = await supabase.storage
+      .from('vehicles')
+      .createSignedUrl(filePath, expiresIn);
+
+    if (error) throw error;
+    return data.signedUrl;
+  } catch (error) {
+    error.message = `Failed to get document URL: ${error.message}`;
+    throw error;
+  }
+};
+
+/**
+ * Get signed URLs for multiple document files (batch operation)
+ * @param {string[]} filePaths - Array of storage paths
+ * @param {number} expiresIn - Expiration time in seconds (default: 1 hour)
+ * @returns {Promise<Object>} Map of filePath to signedUrl
+ * @throws {Error} With context about the failed operation
+ */
+export const getDocumentFileUrls = async (filePaths, expiresIn = 3600) => {
+  try {
+    const urlMap = {};
+
+    // Separate legacy URLs from storage paths
+    const pathsToSign = [];
+    for (const path of filePaths) {
+      if (path.startsWith('http')) {
+        urlMap[path] = path;
+      } else if (path) {
+        pathsToSign.push(path);
+      }
+    }
+
+    // Batch create signed URLs for storage paths
+    if (pathsToSign.length > 0) {
+      const { data, error } = await supabase.storage
+        .from('vehicles')
+        .createSignedUrls(pathsToSign, expiresIn);
+
+      if (error) throw error;
+
+      for (const item of data) {
+        if (item.signedUrl) {
+          urlMap[item.path] = item.signedUrl;
+        }
+      }
+    }
+
+    return urlMap;
+  } catch (error) {
+    error.message = `Failed to get document URLs: ${error.message}`;
     throw error;
   }
 };

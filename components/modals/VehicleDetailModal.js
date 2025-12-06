@@ -380,10 +380,10 @@ const VehicleDetailModal = ({
                   </div>
                 </div>
                 {/* Vehicle Image - Half width on desktop - appears first on mobile */}
-                {viewingVehicle.image_url ? (
+                {(viewingVehicle.image_url_resolved || viewingVehicle.image_url) ? (
                   <div className="order-first md:order-last rounded-lg overflow-hidden">
                     <img
-                      src={viewingVehicle.image_url}
+                      src={viewingVehicle.image_url_resolved || viewingVehicle.image_url}
                       alt={viewingVehicle.nickname || viewingVehicle.name}
                       loading="lazy"
                       decoding="async"
@@ -549,7 +549,7 @@ const VehicleDetailModal = ({
                             ? 'bg-gray-700 border-gray-600 hover:border-gray-500'
                             : 'bg-gray-50 border-gray-200 hover:border-gray-300'
                         }`}
-                        onClick={() => openDocument(doc.file_url)}
+                        onClick={() => openDocument(doc)}
                       >
                         <div className="flex items-start gap-2">
                           <FileText className={`w-8 h-8 flex-shrink-0 ${
@@ -1193,10 +1193,10 @@ const VehicleDetailModal = ({
                         Vehicle Image
                       </label>
                       {/* Current Image or Preview */}
-                      {(vehicleImagePreview || viewingVehicle.image_url) && (
+                      {(vehicleImagePreview || viewingVehicle.image_url_resolved || viewingVehicle.image_url) && (
                         <div className="mb-3 relative">
                           <img
-                            src={vehicleImagePreview || viewingVehicle.image_url}
+                            src={vehicleImagePreview || viewingVehicle.image_url_resolved || viewingVehicle.image_url}
                             alt="Vehicle"
                             className={`w-full h-full object-cover rounded-lg ${
                               darkMode ? 'bg-gray-700' : 'bg-gray-200'
@@ -1208,7 +1208,7 @@ const VehicleDetailModal = ({
                               if (vehicleImagePreview) {
                                 clearImageSelection();
                               } else {
-                                setViewingVehicle({ ...viewingVehicle, image_url: '' });
+                                setViewingVehicle({ ...viewingVehicle, image_url: '', image_url_resolved: '' });
                               }
                             }}
                             className="absolute top-2 right-2 p-1 rounded-full bg-red-600 hover:bg-red-700 text-white transition-colors"
@@ -1218,7 +1218,7 @@ const VehicleDetailModal = ({
                         </div>
                       )}
                       {/* File Upload Button */}
-                      {!vehicleImagePreview && !viewingVehicle.image_url && (
+                      {!vehicleImagePreview && !viewingVehicle.image_url_resolved && !viewingVehicle.image_url && (
                         <label
                           onDragEnter={handleImageDragEnter}
                           onDragLeave={handleImageDragLeave}

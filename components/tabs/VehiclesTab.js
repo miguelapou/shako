@@ -178,10 +178,10 @@ const VehiclesTab = ({
               </div>
 
               {/* Vehicle Image */}
-              {vehicle.image_url ? (
+              {(vehicle.image_url_resolved || vehicle.image_url) ? (
                 <div className="mb-4 mt-2 md:mt-10 relative">
                   <img
-                    src={vehicle.image_url}
+                    src={vehicle.image_url_resolved || vehicle.image_url}
                     alt={vehicle.nickname || vehicle.name}
                     loading="lazy"
                     decoding="async"
@@ -446,10 +446,10 @@ const VehiclesTab = ({
                   style={{ borderTopColor: borderColor }}
                 >
                   {/* Vehicle Image */}
-                  {vehicle.image_url ? (
+                  {(vehicle.image_url_resolved || vehicle.image_url) ? (
                     <div className="mb-2 mt-1 relative">
                       <img
-                        src={vehicle.image_url}
+                        src={vehicle.image_url_resolved || vehicle.image_url}
                         alt={vehicle.name}
                         className={`w-full h-32 object-cover rounded-lg border grayscale opacity-40 ${
                           darkMode ? 'bg-gray-700 border-gray-600' : 'bg-gray-200 border-gray-300'
