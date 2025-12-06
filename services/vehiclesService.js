@@ -13,9 +13,12 @@ import { deleteAllVehicleDocuments } from './documentsService';
 const VALID_VEHICLE_COLUMNS = [
   'nickname',
   'name',
+  'make',
   'year',
   'license_plate',
   'vin',
+  'odometer_range',
+  'odometer_unit',
   'color',
   'image_url',
   'archived',
