@@ -14,7 +14,10 @@ import {
   Upload,
   Pause,
   Play,
-  Camera
+  Camera,
+  FileText,
+  Plus,
+  ExternalLink
 } from 'lucide-react';
 import ProjectDetailView from '../ui/ProjectDetailView';
 import ProjectEditForm from '../ui/ProjectEditForm';
@@ -79,7 +82,23 @@ const VehicleDetailModal = ({
   getStatusText,
   getStatusTextColor,
   getVendorColor,
-  calculateProjectTotal
+  calculateProjectTotal,
+  // Document props
+  documents,
+  loadingDocuments,
+  uploadingDocument,
+  showAddDocumentModal,
+  setShowAddDocumentModal,
+  newDocumentTitle,
+  setNewDocumentTitle,
+  newDocumentFile,
+  setNewDocumentFile,
+  loadDocuments,
+  addDocument,
+  deleteDocument,
+  handleDocumentFileChange,
+  clearDocumentSelection,
+  openDocument
 }) => {
   if (!isOpen || !viewingVehicle) return null;
 
@@ -474,6 +493,273 @@ const VehicleDetailModal = ({
                     <p className="text-sm">
                       No maintenance information added yet
                     </p>
+                  </div>
+                )}
+              </div>
+
+              {/* Documents Section */}
+              <div className={`pt-6 border-t ${
+                darkMode ? 'border-gray-700' : 'border-slate-200'
+              }`}>
+                <div className="flex items-center justify-between mb-3">
+                  <h3 className={`text-lg font-semibold ${
+                    darkMode ? 'text-gray-200' : 'text-gray-800'
+                  }`}>
+                    <div className="flex items-center gap-2">
+                      <FileText className="w-5 h-5" />
+                      <span>Documents ({documents.length})</span>
+                    </div>
+                  </h3>
+                  <button
+                    onClick={() => setShowAddDocumentModal(true)}
+                    className={`flex items-center gap-1 px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${
+                      darkMode
+                        ? 'bg-blue-600 hover:bg-blue-700 text-white'
+                        : 'bg-blue-600 hover:bg-blue-700 text-white'
+                    }`}
+                  >
+                    <Plus className="w-4 h-4" />
+                    Add
+                  </button>
+                </div>
+                {loadingDocuments ? (
+                  <div className={`text-center py-8 ${
+                    darkMode ? 'text-gray-400' : 'text-gray-500'
+                  }`}>
+                    Loading documents...
+                  </div>
+                ) : documents.length > 0 ? (
+                  <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+                    {documents.map((doc) => (
+                      <div
+                        key={doc.id}
+                        className={`group relative rounded-lg p-3 border transition-all cursor-pointer hover:shadow-md ${
+                          darkMode
+                            ? 'bg-gray-700 border-gray-600 hover:border-gray-500'
+                            : 'bg-gray-50 border-gray-200 hover:border-gray-300'
+                        }`}
+                        onClick={() => openDocument(doc.file_url)}
+                      >
+                        <div className="flex items-start gap-2">
+                          <FileText className={`w-8 h-8 flex-shrink-0 ${
+                            darkMode ? 'text-blue-400' : 'text-blue-600'
+                          }`} />
+                          <div className="flex-1 min-w-0">
+                            <p className={`text-sm font-medium truncate ${
+                              darkMode ? 'text-gray-200' : 'text-gray-800'
+                            }`} title={doc.title}>
+                              {doc.title}
+                            </p>
+                            <p className={`text-xs truncate ${
+                              darkMode ? 'text-gray-500' : 'text-gray-500'
+                            }`} title={doc.file_name}>
+                              {doc.file_name}
+                            </p>
+                          </div>
+                        </div>
+                        {/* Delete button - appears on hover */}
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setConfirmDialog({
+                              isOpen: true,
+                              title: 'Delete Document',
+                              message: `Are you sure you want to delete "${doc.title}"? This action cannot be undone.`,
+                              confirmText: 'Delete',
+                              onConfirm: () => deleteDocument(doc.id, doc.file_url)
+                            });
+                          }}
+                          className={`absolute top-1 right-1 p-1 rounded opacity-0 group-hover:opacity-100 transition-opacity ${
+                            darkMode
+                              ? 'bg-red-900/50 hover:bg-red-800 text-red-400'
+                              : 'bg-red-100 hover:bg-red-200 text-red-600'
+                          }`}
+                        >
+                          <X className="w-3 h-3" />
+                        </button>
+                        {/* External link indicator */}
+                        <ExternalLink className={`absolute bottom-2 right-2 w-3 h-3 opacity-0 group-hover:opacity-50 transition-opacity ${
+                          darkMode ? 'text-gray-400' : 'text-gray-500'
+                        }`} />
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <div className={`text-center py-8 rounded-lg border ${
+                    darkMode ? 'bg-gray-700/30 border-gray-600 text-gray-400' : 'bg-gray-50 border-gray-200 text-gray-500'
+                  }`}>
+                    <FileText className="w-12 h-12 mx-auto mb-2 opacity-40" />
+                    <p className="text-sm">
+                      No documents uploaded yet
+                    </p>
+                  </div>
+                )}
+
+                {/* Add Document Modal */}
+                {showAddDocumentModal && (
+                  <div
+                    className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-[60]"
+                    onClick={() => {
+                      setShowAddDocumentModal(false);
+                      clearDocumentSelection();
+                    }}
+                  >
+                    <div
+                      className={`rounded-lg shadow-xl max-w-md w-full mx-4 ${
+                        darkMode ? 'bg-gray-800' : 'bg-white'
+                      }`}
+                      onClick={(e) => e.stopPropagation()}
+                    >
+                      <div className={`px-6 py-4 border-b flex items-center justify-between ${
+                        darkMode ? 'border-gray-700' : 'border-gray-200'
+                      }`}>
+                        <h3 className={`text-lg font-semibold ${
+                          darkMode ? 'text-gray-100' : 'text-gray-800'
+                        }`}>
+                          Add Document
+                        </h3>
+                        <button
+                          onClick={() => {
+                            setShowAddDocumentModal(false);
+                            clearDocumentSelection();
+                          }}
+                          className={`p-1 rounded transition-colors ${
+                            darkMode ? 'hover:bg-gray-700 text-gray-400' : 'hover:bg-gray-100 text-gray-600'
+                          }`}
+                        >
+                          <X className="w-5 h-5" />
+                        </button>
+                      </div>
+                      <div className="p-6 space-y-4">
+                        <div>
+                          <label className={`block text-sm font-medium mb-2 ${
+                            darkMode ? 'text-gray-300' : 'text-gray-700'
+                          }`}>
+                            Document Title *
+                          </label>
+                          <input
+                            type="text"
+                            value={newDocumentTitle}
+                            onChange={(e) => setNewDocumentTitle(e.target.value)}
+                            className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
+                              darkMode
+                                ? 'bg-gray-700 border-gray-600 text-gray-100 placeholder-gray-400'
+                                : 'bg-white border-gray-300 text-gray-800 placeholder-gray-400'
+                            }`}
+                            placeholder="e.g., Insurance Certificate"
+                          />
+                        </div>
+                        <div>
+                          <label className={`block text-sm font-medium mb-2 ${
+                            darkMode ? 'text-gray-300' : 'text-gray-700'
+                          }`}>
+                            File *
+                          </label>
+                          {newDocumentFile ? (
+                            <div className={`flex items-center gap-3 p-3 rounded-lg border ${
+                              darkMode ? 'bg-gray-700 border-gray-600' : 'bg-gray-50 border-gray-200'
+                            }`}>
+                              <FileText className={`w-8 h-8 ${
+                                darkMode ? 'text-blue-400' : 'text-blue-600'
+                              }`} />
+                              <div className="flex-1 min-w-0">
+                                <p className={`text-sm font-medium truncate ${
+                                  darkMode ? 'text-gray-200' : 'text-gray-800'
+                                }`}>
+                                  {newDocumentFile.name}
+                                </p>
+                                <p className={`text-xs ${
+                                  darkMode ? 'text-gray-500' : 'text-gray-500'
+                                }`}>
+                                  {(newDocumentFile.size / 1024 / 1024).toFixed(2)} MB
+                                </p>
+                              </div>
+                              <button
+                                onClick={() => setNewDocumentFile(null)}
+                                className={`p-1 rounded ${
+                                  darkMode ? 'hover:bg-gray-600 text-gray-400' : 'hover:bg-gray-200 text-gray-600'
+                                }`}
+                              >
+                                <X className="w-4 h-4" />
+                              </button>
+                            </div>
+                          ) : (
+                            <label className={`flex flex-col items-center justify-center w-full h-32 border-2 border-dashed rounded-lg cursor-pointer transition-all ${
+                              darkMode
+                                ? 'border-gray-600 hover:border-gray-500 bg-gray-700/50 hover:bg-gray-700'
+                                : 'border-gray-300 hover:border-gray-400 bg-gray-50 hover:bg-gray-100'
+                            }`}>
+                              <div className="flex flex-col items-center justify-center pt-5 pb-6">
+                                <Upload className={`w-8 h-8 mb-2 ${
+                                  darkMode ? 'text-gray-400' : 'text-gray-500'
+                                }`} />
+                                <p className={`text-sm ${
+                                  darkMode ? 'text-gray-400' : 'text-gray-600'
+                                }`}>
+                                  <span className="font-semibold">Click to upload</span>
+                                </p>
+                                <p className={`text-xs ${
+                                  darkMode ? 'text-gray-500' : 'text-gray-500'
+                                }`}>
+                                  PDF, DOC, TXT, etc. (MAX. 10MB)
+                                </p>
+                              </div>
+                              <input
+                                type="file"
+                                className="hidden"
+                                onChange={handleDocumentFileChange}
+                              />
+                            </label>
+                          )}
+                        </div>
+                      </div>
+                      <div className={`px-6 py-4 border-t flex justify-end gap-3 ${
+                        darkMode ? 'border-gray-700' : 'border-gray-200'
+                      }`}>
+                        <button
+                          onClick={() => {
+                            setShowAddDocumentModal(false);
+                            clearDocumentSelection();
+                          }}
+                          className={`px-4 py-2 rounded-lg font-medium transition-colors ${
+                            darkMode
+                              ? 'bg-gray-700 hover:bg-gray-600 text-gray-100'
+                              : 'bg-gray-200 hover:bg-gray-300 text-gray-800'
+                          }`}
+                        >
+                          Cancel
+                        </button>
+                        <button
+                          onClick={async () => {
+                            if (!newDocumentTitle.trim()) {
+                              alert('Please enter a document title');
+                              return;
+                            }
+                            if (!newDocumentFile) {
+                              alert('Please select a file to upload');
+                              return;
+                            }
+                            const result = await addDocument(
+                              viewingVehicle.id,
+                              newDocumentTitle.trim(),
+                              newDocumentFile
+                            );
+                            if (result) {
+                              setShowAddDocumentModal(false);
+                              clearDocumentSelection();
+                            }
+                          }}
+                          disabled={uploadingDocument || !newDocumentTitle.trim() || !newDocumentFile}
+                          className={`px-4 py-2 rounded-lg font-medium transition-colors ${
+                            uploadingDocument || !newDocumentTitle.trim() || !newDocumentFile
+                              ? 'bg-gray-600 cursor-not-allowed text-gray-300'
+                              : 'bg-blue-600 hover:bg-blue-700 text-white'
+                          }`}
+                        >
+                          {uploadingDocument ? 'Uploading...' : 'Upload'}
+                        </button>
+                      </div>
+                    </div>
                   </div>
                 )}
               </div>
