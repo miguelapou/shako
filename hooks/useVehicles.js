@@ -11,9 +11,10 @@ import * as vehiclesService from '../services/vehiclesService';
  * - Image drag and drop handling
  * - Update vehicle display order (for drag and drop)
  *
+ * @param {string} userId - Current user's ID for data isolation
  * @returns {Object} Vehicles state and operations
  */
-const useVehicles = () => {
+const useVehicles = (userId) => {
   const [vehicles, setVehicles] = useState([]);
   const [newVehicle, setNewVehicle] = useState({
     nickname: '',
@@ -57,6 +58,8 @@ const useVehicles = () => {
           return a.archived ? 1 : -1;
         });
         setVehicles(sorted);
+      } else {
+        setVehicles([]);
       }
     } catch (error) {
       // Error loading vehicles
@@ -67,8 +70,9 @@ const useVehicles = () => {
    * Add a new vehicle
    */
   const addVehicle = async (vehicleData) => {
+    if (!userId) return;
     try {
-      await vehiclesService.createVehicle(vehicleData);
+      await vehiclesService.createVehicle(vehicleData, userId);
       await loadVehicles();
     } catch (error) {
       alert('Error adding vehicle');
@@ -117,9 +121,10 @@ const useVehicles = () => {
    * Upload vehicle image to Supabase storage
    */
   const uploadVehicleImage = async (file) => {
+    if (!userId) return null;
     try {
       setUploadingImage(true);
-      const publicUrl = await vehiclesService.uploadVehicleImage(file);
+      const publicUrl = await vehiclesService.uploadVehicleImage(file, userId);
       setUploadingImage(false);
       return publicUrl;
     } catch (error) {

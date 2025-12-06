@@ -3,6 +3,9 @@ import { supabase } from '../lib/supabase';
 /**
  * Service layer for vehicle documents-related Supabase operations
  * Centralizes all database calls for vehicle_documents table and storage operations
+ *
+ * Note: With RLS enabled, queries automatically filter by authenticated user.
+ * user_id must be included when creating new records.
  */
 
 /**
@@ -30,14 +33,15 @@ export const getVehicleDocuments = async (vehicleId) => {
 /**
  * Create a new document record
  * @param {Object} documentData - Document data to insert
+ * @param {string} userId - User ID to associate with the document
  * @returns {Promise<Object>} Created document
  * @throws {Error} With context about the failed operation
  */
-export const createDocument = async (documentData) => {
+export const createDocument = async (documentData, userId) => {
   try {
     const { data, error } = await supabase
       .from('vehicle_documents')
-      .insert([documentData])
+      .insert([{ ...documentData, user_id: userId }])
       .select();
 
     if (error) throw error;
@@ -139,15 +143,16 @@ export const deleteAllVehicleDocuments = async (vehicleId) => {
 /**
  * Upload a document file to Supabase storage
  * @param {File} file - Document file to upload
+ * @param {string} userId - User ID for organizing storage
  * @returns {Promise<string>} Public URL of uploaded document
  * @throws {Error} With context about the failed operation
  */
-export const uploadDocumentFile = async (file) => {
+export const uploadDocumentFile = async (file, userId) => {
   try {
-    // Create a unique filename with timestamp
+    // Create a unique filename with user folder and timestamp
     const fileExt = file.name.split('.').pop();
     const fileName = `${Math.random().toString(36).substring(2)}-${Date.now()}.${fileExt}`;
-    const filePath = `vehicle-documents/${fileName}`;
+    const filePath = `vehicle-documents/${userId}/${fileName}`;
 
     // Upload to Supabase Storage
     const { data, error } = await supabase.storage

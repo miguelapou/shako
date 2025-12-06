@@ -4,10 +4,13 @@ import { deleteAllVehicleDocuments } from './documentsService';
 /**
  * Service layer for vehicles-related Supabase operations
  * Centralizes all database calls for vehicles table and storage operations
+ *
+ * Note: With RLS enabled, queries automatically filter by authenticated user.
+ * user_id must be included when creating new records.
  */
 
 /**
- * Load all vehicles from database
+ * Load all vehicles for the authenticated user
  * @returns {Promise<Array>} Array of vehicles
  * @throws {Error} With context about the failed operation
  */
@@ -30,14 +33,15 @@ export const getAllVehicles = async () => {
 /**
  * Create a new vehicle
  * @param {Object} vehicleData - Vehicle data to insert
+ * @param {string} userId - User ID to associate with the vehicle
  * @returns {Promise<Object>} Created vehicle
  * @throws {Error} With context about the failed operation
  */
-export const createVehicle = async (vehicleData) => {
+export const createVehicle = async (vehicleData, userId) => {
   try {
     const { data, error } = await supabase
       .from('vehicles')
-      .insert([vehicleData])
+      .insert([{ ...vehicleData, user_id: userId }])
       .select();
 
     if (error) throw error;
@@ -118,15 +122,16 @@ export const updateVehicleDisplayOrder = async (vehicleId, displayOrder) => {
 /**
  * Upload a vehicle image to Supabase storage
  * @param {File} file - Image file to upload
+ * @param {string} userId - User ID for organizing storage
  * @returns {Promise<string>} Public URL of uploaded image
  * @throws {Error} With context about the failed operation
  */
-export const uploadVehicleImage = async (file) => {
+export const uploadVehicleImage = async (file, userId) => {
   try {
-    // Create a unique filename with timestamp
+    // Create a unique filename with user folder and timestamp
     const fileExt = file.name.split('.').pop();
     const fileName = `${Math.random().toString(36).substring(2)}-${Date.now()}.${fileExt}`;
-    const filePath = `vehicle-images/${fileName}`;
+    const filePath = `vehicle-images/${userId}/${fileName}`;
 
     // Upload to Supabase Storage
     const { data, error } = await supabase.storage

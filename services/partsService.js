@@ -3,10 +3,13 @@ import { supabase } from '../lib/supabase';
 /**
  * Service layer for parts-related Supabase operations
  * Centralizes all database calls for parts table
+ *
+ * Note: With RLS enabled, queries automatically filter by authenticated user.
+ * user_id must be included when creating new records.
  */
 
 /**
- * Load all parts from database
+ * Load all parts for the authenticated user
  * @returns {Promise<Array>} Array of parts
  * @throws {Error} With context about the failed operation
  */
@@ -28,14 +31,15 @@ export const getAllParts = async () => {
 /**
  * Create a new part
  * @param {Object} partData - Part data to insert
+ * @param {string} userId - User ID to associate with the part
  * @returns {Promise<Object>} Created part
  * @throws {Error} With context about the failed operation
  */
-export const createPart = async (partData) => {
+export const createPart = async (partData, userId) => {
   try {
     const { data, error } = await supabase
       .from('parts')
-      .insert(partData)
+      .insert({ ...partData, user_id: userId })
       .select()
       .single();
 
