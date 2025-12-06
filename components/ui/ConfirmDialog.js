@@ -15,7 +15,7 @@ const ConfirmDialog = ({
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black bg-opacity-50 backdrop-blur-sm">
+    <div className="fixed inset-0 z-[60] flex items-center justify-center p-4 bg-black bg-opacity-50 backdrop-blur-sm">
       <div
         className={`w-full max-w-md rounded-xl shadow-2xl overflow-hidden transition-all ${
           darkMode ? 'bg-gray-800 border border-gray-700' : 'bg-slate-50 border border-slate-200'
