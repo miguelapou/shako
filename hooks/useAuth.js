@@ -20,6 +20,7 @@ import { supabase } from '../lib/supabase';
  * @property {boolean} isRefreshing - Whether session is being refreshed
  * @property {function} signInWithGoogle - Initiates Google OAuth flow
  * @property {function} signOut - Signs out the current user
+ * @property {function} deleteAccount - Permanently delete user account and all data
  * @property {function} refreshSession - Manually refresh the session
  * @property {function} handleAuthError - Handle auth errors with retry
  */
@@ -237,6 +238,38 @@ const useAuth = () => {
     }
   }, []);
 
+  // Delete user account and all associated data
+  const deleteAccount = useCallback(async () => {
+    setLoading(true);
+    setError(null);
+
+    try {
+      // Call the database function to delete the user account
+      const { error: deleteError } = await supabase.rpc('delete_user_account');
+
+      if (deleteError) {
+        console.error('Error deleting account:', deleteError);
+        setError(deleteError.message);
+        return { success: false, error: deleteError };
+      }
+
+      // Clear local state
+      setUser(null);
+      setSession(null);
+
+      // Sign out to clear any remaining session data
+      await supabase.auth.signOut();
+
+      return { success: true };
+    } catch (err) {
+      console.error('Error deleting account:', err);
+      setError(err.message);
+      return { success: false, error: err };
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
   return {
     user,
     session,
@@ -245,6 +278,7 @@ const useAuth = () => {
     isRefreshing,
     signInWithGoogle,
     signOut,
+    deleteAccount,
     refreshSession,
     handleAuthError,
   };

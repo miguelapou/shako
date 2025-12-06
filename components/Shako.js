@@ -50,6 +50,7 @@ import AddProjectModal from './modals/AddProjectModal';
 import ProjectDetailModal from './modals/ProjectDetailModal';
 import AddVehicleModal from './modals/AddVehicleModal';
 import VehicleDetailModal from './modals/VehicleDetailModal';
+import DeleteAccountModal from './modals/DeleteAccountModal';
 
 // Tab Components
 import PartsTab from './tabs/PartsTab';
@@ -80,8 +81,11 @@ const Shako = () => {
   const { darkMode, setDarkMode, darkModeInitialized, mounted } = useDarkMode();
 
   // Auth hook
-  const { user, signOut } = useAuthContext();
+  const { user, signOut, deleteAccount } = useAuthContext();
   const userId = user?.id;
+
+  // Delete account modal state
+  const [showDeleteAccountModal, setShowDeleteAccountModal] = useState(false);
 
   // Parts hook
   const {
@@ -1107,6 +1111,23 @@ const Shako = () => {
                         <LogOut className="w-5 h-5" />
                         <span>Sign Out</span>
                       </button>
+                      {/* Divider */}
+                      <div className={`my-2 border-t ${darkMode ? 'border-gray-700' : 'border-slate-200'}`} />
+                      {/* Delete Account */}
+                      <button
+                        onClick={() => {
+                          closeMenuWithAnimation();
+                          setShowDeleteAccountModal(true);
+                        }}
+                        className={`w-full flex items-center gap-3 px-3 py-2 rounded-lg transition-colors ${
+                          darkMode
+                            ? 'hover:bg-red-900/30 text-red-400'
+                            : 'hover:bg-red-50 text-red-600'
+                        }`}
+                      >
+                        <Trash2 className="w-5 h-5" />
+                        <span>Delete Account</span>
+                      </button>
                     </div>
                   </div>
                 )}
@@ -1754,6 +1775,14 @@ const Shako = () => {
         cancelText={confirmDialog.cancelText}
         isDangerous={confirmDialog.isDangerous !== false}
         darkMode={darkMode}
+      />
+      {/* Delete Account Modal */}
+      <DeleteAccountModal
+        isOpen={showDeleteAccountModal}
+        onClose={() => setShowDeleteAccountModal(false)}
+        onConfirm={deleteAccount}
+        darkMode={darkMode}
+        userEmail={user?.email}
       />
     </div>
   );
