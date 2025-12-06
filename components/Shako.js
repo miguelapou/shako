@@ -1116,7 +1116,7 @@ const Shako = () => {
                 darkMode ? 'text-gray-100' : 'text-slate-800'
               }`} style={{ fontFamily: "'FoundationOne', 'Courier New', monospace" }}>Shako</h1>
             </div>
-            <div className="flex items-center gap-2 sm:gap-3 min-h-[44px]">
+            <div key={activeTab} className="flex items-center gap-2 sm:gap-3 min-h-[44px] toolbar-animate">
               {/* Vehicle Filter - Only visible on Projects tab */}
               {activeTab === 'projects' && (
                 <div className="relative">
