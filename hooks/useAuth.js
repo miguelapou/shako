@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { supabase } from '../lib/supabase';
 
 /**
@@ -8,6 +8,8 @@ import { supabase } from '../lib/supabase';
  * - Tracks current user session
  * - Handles Google OAuth sign in/out
  * - Listens for auth state changes
+ * - Automatic token refresh handling
+ * - Session expiration detection and recovery
  * - Provides loading and error states
  *
  * @returns {Object} Auth state and handlers
@@ -15,14 +17,106 @@ import { supabase } from '../lib/supabase';
  * @property {Object|null} session - Current session
  * @property {boolean} loading - Whether auth state is being determined
  * @property {string|null} error - Any auth error message
+ * @property {boolean} isRefreshing - Whether session is being refreshed
  * @property {function} signInWithGoogle - Initiates Google OAuth flow
  * @property {function} signOut - Signs out the current user
+ * @property {function} refreshSession - Manually refresh the session
+ * @property {function} handleAuthError - Handle auth errors with retry
  */
 const useAuth = () => {
   const [user, setUser] = useState(null);
   const [session, setSession] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [isRefreshing, setIsRefreshing] = useState(false);
+
+  // Track if we're currently refreshing to avoid duplicate refresh attempts
+  const refreshPromiseRef = useRef(null);
+
+  // Manually refresh the session
+  const refreshSession = useCallback(async () => {
+    // If already refreshing, return the existing promise
+    if (refreshPromiseRef.current) {
+      return refreshPromiseRef.current;
+    }
+
+    setIsRefreshing(true);
+
+    refreshPromiseRef.current = (async () => {
+      try {
+        const { data: { session: newSession }, error: refreshError } =
+          await supabase.auth.refreshSession();
+
+        if (refreshError) {
+          console.error('Error refreshing session:', refreshError);
+
+          // If refresh fails, the token might be completely invalid
+          // In this case, we need to sign out and let the user re-authenticate
+          if (refreshError.message?.includes('Invalid Refresh Token') ||
+              refreshError.message?.includes('Refresh Token Not Found')) {
+            setUser(null);
+            setSession(null);
+            setError('Your session has expired. Please sign in again.');
+            return { success: false, needsReauth: true };
+          }
+
+          return { success: false, error: refreshError };
+        }
+
+        if (newSession) {
+          setSession(newSession);
+          setUser(newSession.user);
+          setError(null);
+          return { success: true, session: newSession };
+        }
+
+        return { success: false, error: new Error('No session returned') };
+      } catch (err) {
+        console.error('Error during session refresh:', err);
+        return { success: false, error: err };
+      } finally {
+        setIsRefreshing(false);
+        refreshPromiseRef.current = null;
+      }
+    })();
+
+    return refreshPromiseRef.current;
+  }, []);
+
+  // Handle auth errors by attempting to refresh and optionally retrying
+  const handleAuthError = useCallback(async (error, retryFn = null) => {
+    // Check if this is a token expiration error
+    const isTokenExpired =
+      error?.status === 401 ||
+      error?.code === 'PGRST301' || // PostgREST JWT expired
+      error?.message?.toLowerCase().includes('jwt expired') ||
+      error?.message?.toLowerCase().includes('token expired') ||
+      error?.message?.toLowerCase().includes('invalid jwt') ||
+      error?.message?.toLowerCase().includes('not authenticated');
+
+    if (!isTokenExpired) {
+      return { handled: false, error };
+    }
+
+    // Attempt to refresh the session
+    const refreshResult = await refreshSession();
+
+    if (refreshResult.success && retryFn) {
+      // Session refreshed successfully, retry the operation
+      try {
+        const result = await retryFn();
+        return { handled: true, result };
+      } catch (retryError) {
+        return { handled: true, error: retryError };
+      }
+    }
+
+    if (refreshResult.needsReauth) {
+      return { handled: true, needsReauth: true };
+    }
+
+    return { handled: false, error };
+  }, [refreshSession]);
 
   // Initialize auth state and listen for changes
   useEffect(() => {
@@ -51,15 +145,40 @@ const useAuth = () => {
     // Listen for auth state changes
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       async (event, currentSession) => {
-        setSession(currentSession);
-        setUser(currentSession?.user ?? null);
-        setLoading(false);
-        setError(null);
+        // Handle different auth events
+        switch (event) {
+          case 'SIGNED_IN':
+            setSession(currentSession);
+            setUser(currentSession?.user ?? null);
+            setError(null);
+            break;
 
-        if (event === 'SIGNED_OUT') {
-          setUser(null);
-          setSession(null);
+          case 'SIGNED_OUT':
+            setUser(null);
+            setSession(null);
+            break;
+
+          case 'TOKEN_REFRESHED':
+            // Token was automatically refreshed by Supabase
+            setSession(currentSession);
+            setUser(currentSession?.user ?? null);
+            setError(null);
+            if (process.env.NODE_ENV === 'development') {
+              console.log('Session token refreshed automatically');
+            }
+            break;
+
+          case 'USER_UPDATED':
+            setSession(currentSession);
+            setUser(currentSession?.user ?? null);
+            break;
+
+          default:
+            setSession(currentSession);
+            setUser(currentSession?.user ?? null);
         }
+
+        setLoading(false);
       }
     );
 
@@ -123,8 +242,11 @@ const useAuth = () => {
     session,
     loading,
     error,
+    isRefreshing,
     signInWithGoogle,
     signOut,
+    refreshSession,
+    handleAuthError,
   };
 };
 

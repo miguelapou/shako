@@ -11,8 +11,11 @@ const AuthContext = createContext({
   session: null,
   loading: true,
   error: null,
+  isRefreshing: false,
   signInWithGoogle: async () => {},
   signOut: async () => {},
+  refreshSession: async () => {},
+  handleAuthError: async () => {},
 });
 
 /**
