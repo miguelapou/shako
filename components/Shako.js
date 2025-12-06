@@ -484,20 +484,42 @@ const Shako = () => {
   // EFFECTS
   // ========================================
 
-  // Load parts, projects, and vendors from Supabase on mount
-  useEffect(() => {
-    loadParts();
-    loadProjects();
-    loadVendors();
-    // Don't load vehicles on initial mount, only when tab is accessed
-  }, []);
+  // Track previous userId to detect user changes
+  const prevUserIdRef = useRef(null);
 
-  // Load vehicles when the vehicles tab is accessed
+  // Load parts, projects, and vendors from Supabase when user is authenticated
+  // Also reset state when user changes (logout + login as different user)
   useEffect(() => {
-    if (activeTab === 'vehicles' && vehicles.length === 0) {
+    if (userId) {
+      const userChanged = prevUserIdRef.current !== null && prevUserIdRef.current !== userId;
+
+      // If user changed, clear all cached data before loading new user's data
+      if (userChanged) {
+        setParts([]);
+        setProjects([]);
+        setVehicles([]);
+      }
+
+      loadParts();
+      loadProjects();
+      loadVendors();
+
+      // Also load vehicles if user changed (to clear stale data)
+      if (userChanged && activeTab === 'vehicles') {
+        loadVehicles();
+      }
+    }
+
+    prevUserIdRef.current = userId;
+    // Don't load vehicles on initial mount, only when tab is accessed
+  }, [userId]);
+
+  // Load vehicles when the vehicles tab is accessed and user is authenticated
+  useEffect(() => {
+    if (userId && activeTab === 'vehicles' && vehicles.length === 0) {
       loadVehicles();
     }
-  }, [activeTab]);
+  }, [activeTab, userId]);
 
   // Update underline position when active tab changes
   useEffect(() => {
