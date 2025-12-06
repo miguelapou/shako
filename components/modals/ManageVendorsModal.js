@@ -1,5 +1,5 @@
 import React from 'react';
-import { X, Package, Edit2, Trash2, Check } from 'lucide-react';
+import { X, Package, Edit2, Trash2, Check, Wrench } from 'lucide-react';
 import PrimaryButton from '../ui/PrimaryButton';
 import {
   getVendorColor,
@@ -120,6 +120,15 @@ const ManageVendorsModal = ({
                                 newName: e.target.value
                               })
                             }
+                            onBlur={() => setEditingVendor(null)}
+                            onKeyDown={(e) => {
+                              if (e.key === 'Enter' && editingVendor.newName.trim() && editingVendor.newName !== vendor) {
+                                renameVendor(vendor, editingVendor.newName);
+                                setEditingVendor(null);
+                              } else if (e.key === 'Escape') {
+                                setEditingVendor(null);
+                              }
+                            }}
                             className={`w-1/2 px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
                               darkMode
                                 ? 'bg-gray-800 border-gray-600 text-gray-100'
@@ -159,13 +168,14 @@ const ManageVendorsModal = ({
                               </span>
                             )}
                             <span
-                              className={`text-sm ${
+                              className={`text-sm flex items-center gap-1 ${
                                 darkMode
                                   ? 'text-gray-400'
                                   : 'text-slate-600'
                               }`}
                             >
-                              {partCount} {partCount === 1 ? 'part' : 'parts'}
+                              {partCount}
+                              <Wrench className="w-3.5 h-3.5" />
                             </span>
                           </>
                         )}
