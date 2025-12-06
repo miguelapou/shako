@@ -202,7 +202,7 @@ const ProjectsTab = ({
                 {/* Progress Bar */}
                 <div className="mb-4">
                   <p className={`text-sm font-semibold mb-2 ${
-                    darkMode ? 'text-gray-300' : 'text-gray-300'
+                    darkMode ? 'text-gray-300' : 'text-black'
                   }`}>Budget Used</p>
                   <div className="flex justify-between items-center mb-2">
                     <span className="text-sm font-medium">
