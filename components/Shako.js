@@ -1117,14 +1117,18 @@ const Shako = () => {
               }`} style={{ fontFamily: "'FoundationOne', 'Courier New', monospace" }}>Shako</h1>
             </div>
             <div className="flex items-center gap-2 sm:gap-3 min-h-[44px]">
-              {/* Filter Dropdowns - Animated on tab change */}
+              {/* Filter Dropdowns - Animated on tab change only when filter is not 'all' */}
               {(activeTab === 'projects' || activeTab === 'parts') && (
-                <div key={activeTab} className={(() => {
-                  const tabOrder = ['vehicles', 'projects', 'parts'];
-                  const prevIndex = tabOrder.indexOf(previousTab);
-                  const currIndex = tabOrder.indexOf(activeTab);
-                  return currIndex >= prevIndex ? 'slide-in-right' : 'slide-in-left';
-                })()}>
+                <div
+                  key={projectVehicleFilter === 'all' && partsDateFilter === 'all' ? 'filter-all' : activeTab}
+                  className={(() => {
+                    // Only animate if a filter is active (not 'all')
+                    if (projectVehicleFilter === 'all' && partsDateFilter === 'all') return '';
+                    const tabOrder = ['vehicles', 'projects', 'parts'];
+                    const prevIndex = tabOrder.indexOf(previousTab);
+                    const currIndex = tabOrder.indexOf(activeTab);
+                    return currIndex >= prevIndex ? 'slide-in-right' : 'slide-in-left';
+                  })()}>
               {/* Vehicle Filter - Only visible on Projects tab */}
               {activeTab === 'projects' && (
                 <div className="relative">
