@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useCallback } from 'react';
 import * as documentsService from '../services/documentsService';
 
 /**
@@ -17,6 +17,7 @@ const useDocuments = (userId) => {
   const [loadingDocuments, setLoadingDocuments] = useState(false);
   const [uploadingDocument, setUploadingDocument] = useState(false);
   const [showAddDocumentModal, setShowAddDocumentModal] = useState(false);
+  const [isDocumentModalClosing, setIsDocumentModalClosing] = useState(false);
   const [newDocumentTitle, setNewDocumentTitle] = useState('');
   const [newDocumentFile, setNewDocumentFile] = useState(null);
   const [isDraggingDocument, setIsDraggingDocument] = useState(false);
@@ -173,6 +174,18 @@ const useDocuments = (userId) => {
     setNewDocumentTitle('');
   };
 
+  /**
+   * Handle closing the add document modal with animation
+   */
+  const handleCloseDocumentModal = useCallback(() => {
+    setIsDocumentModalClosing(true);
+    setTimeout(() => {
+      setIsDocumentModalClosing(false);
+      setShowAddDocumentModal(false);
+      clearDocumentSelection();
+    }, 150);
+  }, []);
+
   // ========================================
   // DOCUMENT DRAG AND DROP HANDLERS
   // ========================================
@@ -248,6 +261,7 @@ const useDocuments = (userId) => {
     uploadingDocument,
     showAddDocumentModal,
     setShowAddDocumentModal,
+    isDocumentModalClosing,
     newDocumentTitle,
     setNewDocumentTitle,
     newDocumentFile,
@@ -261,6 +275,7 @@ const useDocuments = (userId) => {
     deleteDocument,
     handleDocumentFileChange,
     clearDocumentSelection,
+    handleCloseDocumentModal,
     openDocument,
 
     // Drag and drop handlers

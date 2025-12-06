@@ -89,6 +89,8 @@ const VehicleDetailModal = ({
   uploadingDocument,
   showAddDocumentModal,
   setShowAddDocumentModal,
+  isDocumentModalClosing,
+  handleCloseDocumentModal,
   newDocumentTitle,
   setNewDocumentTitle,
   newDocumentFile,
@@ -521,17 +523,6 @@ const VehicleDetailModal = ({
                   }`}>
                     Documents ({documents.length})
                   </h3>
-                  <button
-                    onClick={() => setShowAddDocumentModal(true)}
-                    className={`flex items-center gap-1 px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${
-                      darkMode
-                        ? 'bg-blue-600 hover:bg-blue-700 text-white'
-                        : 'bg-blue-600 hover:bg-blue-700 text-white'
-                    }`}
-                  >
-                    <Plus className="w-4 h-4" />
-                    Add
-                  </button>
                 </div>
                 {loadingDocuments ? (
                   <div className={`text-center py-8 ${
@@ -539,7 +530,7 @@ const VehicleDetailModal = ({
                   }`}>
                     Loading documents...
                   </div>
-                ) : documents.length > 0 ? (
+                ) : (
                   <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
                     {documents.map((doc) => (
                       <div
@@ -594,31 +585,48 @@ const VehicleDetailModal = ({
                         }`} />
                       </div>
                     ))}
-                  </div>
-                ) : (
-                  <div className={`text-center py-8 rounded-lg border ${
-                    darkMode ? 'bg-gray-700/30 border-gray-600 text-gray-400' : 'bg-gray-50 border-gray-200 text-gray-500'
-                  }`}>
-                    <FileText className="w-12 h-12 mx-auto mb-2 opacity-40" />
-                    <p className="text-sm">
-                      No documents uploaded yet
-                    </p>
+                    {/* Add new document card */}
+                    <div
+                      onClick={() => setShowAddDocumentModal(true)}
+                      className={`group relative rounded-lg p-3 border-2 border-dashed transition-all cursor-pointer hover:shadow-md ${
+                        darkMode
+                          ? 'border-gray-600 hover:border-blue-500 hover:bg-gray-700/50'
+                          : 'border-gray-300 hover:border-blue-500 hover:bg-blue-50/50'
+                      }`}
+                    >
+                      <div className="flex items-start gap-2">
+                        <Plus className={`w-8 h-8 flex-shrink-0 ${
+                          darkMode ? 'text-gray-500 group-hover:text-blue-400' : 'text-gray-400 group-hover:text-blue-600'
+                        } transition-colors`} />
+                        <div className="flex-1 min-w-0">
+                          <p className={`text-sm font-medium ${
+                            darkMode ? 'text-gray-400 group-hover:text-gray-200' : 'text-gray-500 group-hover:text-gray-700'
+                          } transition-colors`}>
+                            Add document
+                          </p>
+                          <p className={`text-xs ${
+                            darkMode ? 'text-gray-600' : 'text-gray-400'
+                          }`}>
+                            Click to upload
+                          </p>
+                        </div>
+                      </div>
+                    </div>
                   </div>
                 )}
 
                 {/* Add Document Modal */}
                 {showAddDocumentModal && (
                   <div
-                    className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-[60]"
-                    onClick={() => {
-                      setShowAddDocumentModal(false);
-                      clearDocumentSelection();
-                    }}
+                    className={`fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-[60] modal-backdrop ${
+                      isDocumentModalClosing ? 'modal-backdrop-exit' : 'modal-backdrop-enter'
+                    }`}
+                    onClick={handleCloseDocumentModal}
                   >
                     <div
-                      className={`rounded-lg shadow-xl max-w-md w-full mx-4 ${
-                        darkMode ? 'bg-gray-800' : 'bg-slate-200'
-                      }`}
+                      className={`rounded-lg shadow-xl max-w-md w-full mx-4 modal-content ${
+                        isDocumentModalClosing ? 'modal-popup-exit' : 'modal-popup-enter'
+                      } ${darkMode ? 'bg-gray-800' : 'bg-slate-200'}`}
                       onClick={(e) => e.stopPropagation()}
                     >
                       <div className={`px-6 py-4 border-b flex items-center justify-between ${
@@ -630,10 +638,7 @@ const VehicleDetailModal = ({
                           Add Document
                         </h3>
                         <button
-                          onClick={() => {
-                            setShowAddDocumentModal(false);
-                            clearDocumentSelection();
-                          }}
+                          onClick={handleCloseDocumentModal}
                           className={`p-1 rounded transition-colors ${
                             darkMode ? 'hover:bg-gray-700 text-gray-400' : 'hover:bg-gray-100 text-gray-600'
                           }`}
@@ -747,10 +752,7 @@ const VehicleDetailModal = ({
                         darkMode ? 'border-gray-700' : 'border-gray-200'
                       }`}>
                         <button
-                          onClick={() => {
-                            setShowAddDocumentModal(false);
-                            clearDocumentSelection();
-                          }}
+                          onClick={handleCloseDocumentModal}
                           className={`px-4 py-2 rounded-lg font-medium transition-colors ${
                             darkMode
                               ? 'bg-gray-700 hover:bg-gray-600 text-gray-100'

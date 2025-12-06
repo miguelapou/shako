@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useCallback } from 'react';
 import { X } from 'lucide-react';
 
 const TrackingModal = ({
@@ -10,17 +10,29 @@ const TrackingModal = ({
   saveTrackingInfo,
   onClose
 }) => {
+  const [isClosing, setIsClosing] = useState(false);
+
+  const handleClose = useCallback(() => {
+    setIsClosing(true);
+    setTimeout(() => {
+      setIsClosing(false);
+      onClose();
+    }, 150);
+  }, [onClose]);
+
   if (!isOpen) return null;
 
   return (
     <div
-      className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4 modal-backdrop-enter modal-backdrop"
-      onClick={onClose}
+      className={`fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4 modal-backdrop ${
+        isClosing ? 'modal-backdrop-exit' : 'modal-backdrop-enter'
+      }`}
+      onClick={handleClose}
     >
       <div
-        className={`rounded-lg shadow-xl max-w-md w-full modal-popup-enter ${
-          darkMode ? 'bg-gray-800' : 'bg-slate-200'
-        }`}
+        className={`rounded-lg shadow-xl max-w-md w-full modal-content ${
+          isClosing ? 'modal-popup-exit' : 'modal-popup-enter'
+        } ${darkMode ? 'bg-gray-800' : 'bg-slate-200'}`}
         onClick={(e) => e.stopPropagation()}
       >
         <div className={`border-b px-6 py-4 flex items-center justify-between rounded-t-lg ${
@@ -30,7 +42,7 @@ const TrackingModal = ({
             darkMode ? 'text-gray-100' : 'text-gray-800'
           }`} style={{ fontFamily: "'FoundationOne', 'Courier New', monospace" }}>Add Tracking Info</h2>
           <button
-            onClick={onClose}
+            onClick={handleClose}
             className={`transition-colors ${
               darkMode ? 'text-gray-400 hover:text-gray-300' : 'text-gray-400 hover:text-gray-600'
             }`}
