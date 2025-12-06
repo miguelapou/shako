@@ -10,14 +10,16 @@ import { supabase } from '../lib/supabase';
 
 /**
  * Load all projects for the authenticated user
+ * @param {string} userId - User ID to filter by (defense-in-depth with RLS)
  * @returns {Promise<Array>} Array of projects
  * @throws {Error} With context about the failed operation
  */
-export const getAllProjects = async () => {
+export const getAllProjects = async (userId) => {
   try {
     const { data, error } = await supabase
       .from('projects')
       .select('*')
+      .eq('user_id', userId)
       .order('display_order', { ascending: true, nullsFirst: false })
       .order('id', { ascending: true });
 

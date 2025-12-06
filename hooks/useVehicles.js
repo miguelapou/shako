@@ -45,8 +45,9 @@ const useVehicles = (userId) => {
    * Load vehicles from Supabase and resolve image URLs
    */
   const loadVehicles = async () => {
+    if (!userId) return;
     try {
-      const data = await vehiclesService.getAllVehicles();
+      const data = await vehiclesService.getAllVehicles(userId);
       if (data) {
         // Sort so archived vehicles are always at the end
         const sorted = data.sort((a, b) => {

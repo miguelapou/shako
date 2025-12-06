@@ -29,8 +29,9 @@ const useProjects = (userId) => {
    * Load projects from Supabase
    */
   const loadProjects = async () => {
+    if (!userId) return;
     try {
-      const data = await projectsService.getAllProjects();
+      const data = await projectsService.getAllProjects(userId);
 
       if (data && data.length > 0) {
         setProjects(data);
