@@ -272,7 +272,7 @@ const ProjectsTab = ({
                       </div>
                       {linkedParts.length > 0 ? (
                         <div className={`grid grid-cols-2 gap-1 ${
-                          linkedParts.length === 6 ? 'pb-6' : ''
+                          linkedParts.length <= 6 ? 'pb-6' : ''
                         }`}>
                           {linkedParts.slice(0, 6).map((part) => (
                             <div
