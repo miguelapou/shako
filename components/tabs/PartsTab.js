@@ -475,42 +475,54 @@ const PartsTab = ({
                 className="status-card"
                 onClick={(e) => {
                   e.stopPropagation();
-                  const isActivating = statusFilter !== 'purchased';
+                  const isGoingToAll = statusFilter === 'pending'; // Next click goes to 'all'
 
                   if (typeof window !== 'undefined' && window.innerWidth < 948) {
-                    if (isActivating) {
+                    if (!isGoingToAll) {
                       // Set page height when activating filter to prevent scroll jumping
                       const currentHeight = document.documentElement.scrollHeight;
                       setContainerMinHeight(`${currentHeight}px`);
                     } else {
-                      // Reset height when deactivating filter (going back to 'all')
+                      // Reset height when going back to 'all'
                       setContainerMinHeight('auto');
                     }
                   }
 
                   setIsStatusFiltering(true);
-                  setStatusFilter(statusFilter === 'purchased' ? 'all' : 'purchased');
+                  // Cycle through: all -> purchased -> pending -> all
+                  setStatusFilter(prev =>
+                    prev === 'all' || (prev !== 'purchased' && prev !== 'pending') ? 'purchased' :
+                    prev === 'purchased' ? 'pending' : 'all'
+                  );
                   setDeliveredFilter('all');
                   setTimeout(() => setIsStatusFiltering(false), 900);
 
                   // Let page shrink to fit filtered content immediately after filter applies
-                  if (isActivating && typeof window !== 'undefined' && window.innerWidth < 948) {
+                  if (!isGoingToAll && typeof window !== 'undefined' && window.innerWidth < 948) {
                     setTimeout(() => setContainerMinHeight('auto'), 50);
                   }
                 }}
-                className={`rounded-lg shadow-md p-4 border-l-4 border-yellow-500 relative overflow-hidden cursor-pointer transition-all duration-200 hover:shadow-lg hover:scale-[1.02] ${
-                  darkMode ? 'bg-gray-800 hover:bg-gray-750' : 'bg-slate-100 hover:bg-slate-200'
-                } ${statusFilter === 'purchased' ? 'ring-2 ring-yellow-500' : ''}`}
+                className={`rounded-lg shadow-md p-4 border-l-4 ${
+                  statusFilter === 'pending' ? 'border-gray-400' : 'border-yellow-500'
+                } relative overflow-hidden cursor-pointer transition-all duration-200 hover:shadow-lg hover:scale-[1.02] ${
+                  statusFilter === 'pending'
+                    ? (darkMode ? 'bg-gray-900' : 'bg-slate-300')
+                    : (darkMode ? 'bg-gray-800 hover:bg-gray-750' : 'bg-slate-100 hover:bg-slate-200')
+                } ${(statusFilter === 'purchased' || statusFilter === 'pending') ? `ring-2 ${statusFilter === 'pending' ? 'ring-gray-400' : 'ring-yellow-500'}` : ''}`}
                 style={{ touchAction: 'manipulation' }}
               >
-                <ShoppingCart className={`w-6 h-6 text-yellow-500 absolute top-2 right-2 transition-opacity ${statusFilter === 'purchased' ? 'opacity-70' : 'opacity-20'}`} />
-                <div>
+                {statusFilter === 'pending' ? (
+                  <Clock className={`w-6 h-6 text-gray-400 absolute top-2 right-2 transition-opacity ${statusFilter === 'pending' ? 'opacity-70' : 'opacity-20'}`} />
+                ) : (
+                  <ShoppingCart className={`w-6 h-6 text-yellow-500 absolute top-2 right-2 transition-opacity ${statusFilter === 'purchased' ? 'opacity-70' : 'opacity-20'}`} />
+                )}
+                <div key={statusFilter === 'pending' ? 'pending' : 'ordered'}>
                   <p className={`text-xs mb-1 ${
                     darkMode ? 'text-gray-400' : 'text-slate-600'
-                  }`}>Ordered</p>
+                  }`}>{statusFilter === 'pending' ? 'Unordered' : 'Ordered'}</p>
                   <p className={`text-xl font-bold truncate ${
                     darkMode ? 'text-gray-100' : 'text-gray-800'
-                  }`}>{stats.purchased}</p>
+                  }`}>{statusFilter === 'pending' ? stats.pending : stats.purchased}</p>
                 </div>
               </div>
 
