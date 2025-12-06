@@ -201,6 +201,9 @@ const useAuth = () => {
           redirectTo: typeof window !== 'undefined'
             ? `${window.location.origin}/`
             : undefined,
+          queryParams: {
+            prompt: 'select_account',
+          },
         },
       });
 
