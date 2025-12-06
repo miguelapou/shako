@@ -1,5 +1,5 @@
 import React, { useState, useMemo, useEffect, useRef } from 'react';
-import { Search, Package, PackageOpen, BadgeDollarSign, TrendingUp, Truck, CheckCircle, Clock, ChevronDown, Plus, X, ExternalLink, ChevronUp, Edit2, Trash2, Moon, Sun, Wrench, GripVertical, ShoppingCart, Car, Upload, Gauge, Settings, Check, Archive, ChevronRight, Pause, Play } from 'lucide-react';
+import { Search, Package, PackageOpen, BadgeDollarSign, TrendingUp, Truck, CheckCircle, Clock, ChevronDown, Plus, X, ExternalLink, ChevronUp, Edit2, Trash2, Moon, Sun, Wrench, GripVertical, ShoppingCart, Car, Upload, Gauge, Settings, Check, Archive, ChevronRight, Pause, Play, LogOut } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 
 // Utilities
@@ -65,6 +65,7 @@ import useParts from '../hooks/useParts';
 import useProjects from '../hooks/useProjects';
 import useVehicles from '../hooks/useVehicles';
 import useDocuments from '../hooks/useDocuments';
+import { useAuthContext } from './AuthProvider';
 
 // ========================================
 // MAIN SHAKO COMPONENT
@@ -77,6 +78,9 @@ const Shako = () => {
 
   // Dark mode hook
   const { darkMode, setDarkMode, darkModeInitialized, mounted } = useDarkMode();
+
+  // Auth hook
+  const { signOut } = useAuthContext();
 
   // Parts hook
   const {
@@ -1202,13 +1206,26 @@ const Shako = () => {
                 className={`p-2 sm:p-3 rounded-lg shadow-md transition-colors ${
                   activeTab !== 'vehicles' ? 'hidden' : ''
                 } ${
-                  darkMode 
-                    ? 'bg-gray-700 hover:bg-gray-600 text-yellow-300' 
+                  darkMode
+                    ? 'bg-gray-700 hover:bg-gray-600 text-yellow-300'
                     : 'bg-slate-100 hover:bg-slate-200 text-slate-700'
                 }`}
                 title={darkMode ? 'Switch to Light Mode' : 'Switch to Dark Mode'}
               >
                 {darkMode ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
+              </button>
+              <button
+                onClick={signOut}
+                className={`p-2 sm:p-3 rounded-lg shadow-md transition-colors ${
+                  activeTab !== 'vehicles' ? 'hidden' : ''
+                } ${
+                  darkMode
+                    ? 'bg-gray-700 hover:bg-gray-600 text-gray-300'
+                    : 'bg-slate-100 hover:bg-slate-200 text-slate-700'
+                }`}
+                title="Sign Out"
+              >
+                <LogOut className="w-5 h-5" />
               </button>
               <button
                 onClick={() => {
