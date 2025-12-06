@@ -224,7 +224,7 @@ const VehiclesTab = ({
                   }`}>
                     {vehicle.nickname || [vehicle.year, vehicle.make, vehicle.name].filter(Boolean).join(' ')}
                   </h3>
-                  {vehicle.nickname && (
+                  {vehicle.nickname && [vehicle.year, vehicle.make, vehicle.name].filter(Boolean).length > 0 && (
                     <span
                       className="inline-block px-2.5 py-1 rounded-full text-xs font-medium whitespace-nowrap flex-shrink-0 text-white"
                       style={{ backgroundColor: vehicle.color || '#3B82F6' }}
@@ -513,7 +513,7 @@ const VehiclesTab = ({
                     }`}>
                       {vehicle.nickname || [vehicle.year, vehicle.make, vehicle.name].filter(Boolean).join(' ')}
                     </h3>
-                    {vehicle.nickname && (
+                    {vehicle.nickname && [vehicle.year, vehicle.make, vehicle.name].filter(Boolean).length > 0 && (
                       <span className={`inline-block px-2 py-0.5 rounded-full text-xs font-medium whitespace-nowrap mt-1 ${
                         darkMode ? 'bg-gray-600 text-gray-300' : 'bg-gray-300 text-gray-700'
                       }`}>
