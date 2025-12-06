@@ -14,8 +14,36 @@ export const ErrorType = {
   VALIDATION: 'VALIDATION',
   AUTHENTICATION: 'AUTHENTICATION',
   AUTHORIZATION: 'AUTHORIZATION',
+  TOKEN_EXPIRED: 'TOKEN_EXPIRED',
   NOT_FOUND: 'NOT_FOUND',
   UNKNOWN: 'UNKNOWN'
+};
+
+/**
+ * Check if an error is a token expiration error
+ * @param {Error} error - The error object
+ * @returns {boolean} True if the error is due to token expiration
+ */
+export const isTokenExpiredError = (error) => {
+  if (!error) return false;
+
+  const message = error.message?.toLowerCase() || '';
+  const code = error.code || '';
+
+  return (
+    error.status === 401 ||
+    code === 'PGRST301' || // PostgREST JWT expired
+    message.includes('jwt expired') ||
+    message.includes('token expired') ||
+    message.includes('invalid jwt') ||
+    message.includes('not authenticated') ||
+    message.includes('session expired') ||
+    message.includes('refresh token') ||
+    message.includes('invalid claim') ||
+    // Supabase-specific error messages
+    message.includes('invalid refresh token') ||
+    message.includes('refresh token not found')
+  );
 };
 
 /**
@@ -28,6 +56,10 @@ const getErrorType = (error) => {
 
   const message = error.message?.toLowerCase() || '';
 
+  // Check for token expiration first (before general auth errors)
+  if (isTokenExpiredError(error)) {
+    return ErrorType.TOKEN_EXPIRED;
+  }
   if (message.includes('network') || message.includes('fetch')) {
     return ErrorType.NETWORK;
   }
@@ -65,6 +97,7 @@ export const getUserFriendlyMessage = (error, operation = 'completing the operat
     [ErrorType.VALIDATION]: `Invalid data provided while ${operation}. Please check your input and try again.`,
     [ErrorType.AUTHENTICATION]: `Authentication required for ${operation}. Please sign in and try again.`,
     [ErrorType.AUTHORIZATION]: `You don't have permission for ${operation}.`,
+    [ErrorType.TOKEN_EXPIRED]: `Your session has expired. Please sign in again to continue.`,
     [ErrorType.NOT_FOUND]: `The requested resource was not found while ${operation}.`,
     [ErrorType.UNKNOWN]: `An unexpected error occurred while ${operation}. Please try again.`
   };
@@ -179,6 +212,7 @@ export const retryWithBackoff = async (fn, options = {}) => {
 
 /**
  * Check if error is retryable (typically network errors)
+ * Note: TOKEN_EXPIRED errors are not directly retryable - they need session refresh first
  * @param {Error} error - The error to check
  * @returns {boolean} True if the error is retryable
  */
@@ -186,3 +220,10 @@ export const isRetryableError = (error) => {
   const errorType = getErrorType(error);
   return errorType === ErrorType.NETWORK || errorType === ErrorType.DATABASE;
 };
+
+/**
+ * Get the error type from an error object (exported wrapper)
+ * @param {Error} error - The error object
+ * @returns {string} Error type from ErrorType enum
+ */
+export const getErrorTypeFromError = getErrorType;
