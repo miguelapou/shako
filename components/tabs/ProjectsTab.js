@@ -201,11 +201,14 @@ const ProjectsTab = ({
 
                 {/* Progress Bar */}
                 <div className="mb-4">
+                  <p className={`text-sm font-medium mb-2 ${
+                    darkMode ? 'text-gray-400' : 'text-slate-600'
+                  }`}>Budget Used</p>
                   <div className="flex justify-between items-center mb-2">
                     <span className={`text-sm font-medium ${
                       darkMode ? 'text-gray-300' : 'text-slate-700'
                     }`}>
-                      Budget Used
+                      ${linkedPartsTotal.toFixed(2)} / ${Math.round(project.budget || 0)}
                     </span>
                     <span className={`text-sm font-bold ${
                       darkMode ? 'text-gray-200' : 'text-gray-900'
@@ -226,38 +229,6 @@ const ProjectsTab = ({
                       }`}
                       style={{ width: `${Math.min(progress, 100)}%` }}
                     />
-                  </div>
-                </div>
-
-                {/* Budget Info */}
-                <div className={`grid grid-cols-2 gap-4 mb-4 p-3 rounded-lg ${
-                  darkMode ? 'bg-gray-700' : 'bg-gray-50'
-                }`}>
-                  <div>
-                    <p className={`text-xs mb-1 ${
-                      darkMode ? 'text-gray-400' : 'text-slate-600'
-                    }`}>
-                      Spent
-                    </p>
-                    <p className={`text-lg font-bold ${
-                      linkedPartsTotal > project.budget
-                        ? (darkMode ? 'text-red-400' : 'text-red-600')
-                        : (darkMode ? 'text-green-400' : 'text-green-600')
-                    }`}>
-                      ${linkedPartsTotal.toFixed(2)}
-                    </p>
-                  </div>
-                  <div>
-                    <p className={`text-xs mb-1 ${
-                      darkMode ? 'text-gray-400' : 'text-slate-600'
-                    }`}>
-                      Budget
-                    </p>
-                    <p className={`text-lg font-bold ${
-                      darkMode ? 'text-gray-100' : 'text-slate-800'
-                    }`}>
-                      ${Math.round(project.budget || 0)}
-                    </p>
                   </div>
                 </div>
 
