@@ -326,6 +326,34 @@ const VehiclesTab = ({
           </div>
         )}
 
+        {/* Empty State - No vehicles at all */}
+        {vehicles.length === 0 && (
+          <div className={`text-center py-12 rounded-lg ${
+            darkMode ? 'bg-gray-800' : 'bg-slate-100'
+          }`}>
+            <Car className={`w-16 h-16 mx-auto mb-4 ${
+              darkMode ? 'text-gray-600' : 'text-gray-400'
+            }`} />
+            <h3 className={`text-xl font-semibold mb-2 ${
+              darkMode ? 'text-gray-300' : 'text-slate-700'
+            }`}>
+              No Vehicles Yet
+            </h3>
+            <p className={`mb-4 ${
+              darkMode ? 'text-gray-400' : 'text-slate-600'
+            }`}>
+              Add your first vehicle to track maintenance and information
+            </p>
+            <button
+              onClick={() => setShowAddVehicleModal(true)}
+              className="inline-flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg shadow-md transition-colors font-medium"
+            >
+              <Plus className="w-5 h-5" />
+              Add a vehicle
+            </button>
+          </div>
+        )}
+
         {/* Archived Vehicles Section */}
         <>
           <div className={`my-8 border-t ${
@@ -508,34 +536,6 @@ const VehiclesTab = ({
             )}
           </div>
         </>
-
-        {/* Empty State */}
-        {vehicles.length === 0 && (
-          <div className={`text-center py-12 rounded-lg ${
-            darkMode ? 'bg-gray-800' : 'bg-slate-100'
-          }`}>
-            <Car className={`w-16 h-16 mx-auto mb-4 ${
-              darkMode ? 'text-gray-600' : 'text-gray-400'
-            }`} />
-            <h3 className={`text-xl font-semibold mb-2 ${
-              darkMode ? 'text-gray-300' : 'text-slate-700'
-            }`}>
-              No Vehicles Yet
-            </h3>
-            <p className={`mb-4 ${
-              darkMode ? 'text-gray-400' : 'text-slate-600'
-            }`}>
-              Add your first vehicle to track maintenance and information
-            </p>
-            <button
-              onClick={() => setShowAddVehicleModal(true)}
-              className="inline-flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg shadow-md transition-colors font-medium"
-            >
-              <Plus className="w-5 h-5" />
-              Add a vehicle
-            </button>
-          </div>
-        )}
 
         {/* Add Vehicle Modal */}
         <AddVehicleModal
