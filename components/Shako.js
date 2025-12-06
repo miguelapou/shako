@@ -1165,8 +1165,9 @@ const Shako = () => {
                 <div
                   key={projectVehicleFilter === 'all' && partsDateFilter === 'all' ? 'filter-all' : activeTab}
                   className={(() => {
-                    // Only animate if a filter is active (not 'all')
-                    if (projectVehicleFilter === 'all' && partsDateFilter === 'all') return '';
+                    // Always animate when coming from vehicles tab (filters are appearing)
+                    // Otherwise only animate if a filter is active (not 'all')
+                    if (previousTab !== 'vehicles' && projectVehicleFilter === 'all' && partsDateFilter === 'all') return '';
                     const tabOrder = ['vehicles', 'projects', 'parts'];
                     const prevIndex = tabOrder.indexOf(previousTab);
                     const currIndex = tabOrder.indexOf(activeTab);

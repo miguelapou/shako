@@ -10,14 +10,16 @@ import { supabase } from '../lib/supabase';
 
 /**
  * Load all parts for the authenticated user
+ * @param {string} userId - User ID to filter by (defense-in-depth with RLS)
  * @returns {Promise<Array>} Array of parts
  * @throws {Error} With context about the failed operation
  */
-export const getAllParts = async () => {
+export const getAllParts = async (userId) => {
   try {
     const { data, error } = await supabase
       .from('parts')
       .select('*')
+      .eq('user_id', userId)
       .order('id', { ascending: true });
 
     if (error) throw error;
@@ -96,15 +98,17 @@ export const deletePart = async (partId) => {
  * Update all parts with a specific vendor name
  * @param {string} oldVendorName - Current vendor name
  * @param {string} newVendorName - New vendor name
+ * @param {string} userId - User ID to filter by (prevents cross-user updates)
  * @returns {Promise<void>}
  * @throws {Error} With context about the failed operation
  */
-export const updatePartsVendor = async (oldVendorName, newVendorName) => {
+export const updatePartsVendor = async (oldVendorName, newVendorName, userId) => {
   try {
     const { error } = await supabase
       .from('parts')
       .update({ vendor: newVendorName })
-      .eq('vendor', oldVendorName);
+      .eq('vendor', oldVendorName)
+      .eq('user_id', userId);
 
     if (error) throw error;
   } catch (error) {
@@ -116,15 +120,17 @@ export const updatePartsVendor = async (oldVendorName, newVendorName) => {
 /**
  * Remove vendor from all parts
  * @param {string} vendorName - Vendor name to remove
+ * @param {string} userId - User ID to filter by (prevents cross-user updates)
  * @returns {Promise<void>}
  * @throws {Error} With context about the failed operation
  */
-export const removeVendorFromParts = async (vendorName) => {
+export const removeVendorFromParts = async (vendorName, userId) => {
   try {
     const { error } = await supabase
       .from('parts')
       .update({ vendor: '' })
-      .eq('vendor', vendorName);
+      .eq('vendor', vendorName)
+      .eq('user_id', userId);
 
     if (error) throw error;
   } catch (error) {

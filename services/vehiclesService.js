@@ -11,14 +11,16 @@ import { deleteAllVehicleDocuments } from './documentsService';
 
 /**
  * Load all vehicles for the authenticated user
+ * @param {string} userId - User ID to filter by (defense-in-depth with RLS)
  * @returns {Promise<Array>} Array of vehicles
  * @throws {Error} With context about the failed operation
  */
-export const getAllVehicles = async () => {
+export const getAllVehicles = async (userId) => {
   try {
     const { data, error } = await supabase
       .from('vehicles')
       .select('*')
+      .eq('user_id', userId)
       .order('display_order', { ascending: true })
       .order('id', { ascending: true });
 

@@ -37,9 +37,10 @@ const useParts = (userId) => {
    * Load parts from Supabase
    */
   const loadParts = async () => {
+    if (!userId) return;
     try {
       setLoading(true);
-      const data = await partsService.getAllParts();
+      const data = await partsService.getAllParts(userId);
 
       if (data && data.length > 0) {
         // Convert database format to app format
@@ -74,8 +75,9 @@ const useParts = (userId) => {
    * Load vendors from Supabase
    */
   const loadVendors = async () => {
+    if (!userId) return;
     try {
-      const data = await vendorsService.getAllVendors();
+      const data = await vendorsService.getAllVendors(userId);
 
       if (data && data.length > 0) {
         setVendors(data);
@@ -344,6 +346,7 @@ const useParts = (userId) => {
    * Rename a vendor
    */
   const renameVendor = async (oldName, newName, editingPart, setEditingPart, setEditingVendor) => {
+    if (!userId) return;
     if (!newName || !newName.trim()) {
       alert('Vendor name cannot be empty');
       return;
@@ -351,7 +354,7 @@ const useParts = (userId) => {
 
     try {
       // Update all parts in database
-      await partsService.updatePartsVendor(oldName, newName.trim());
+      await partsService.updatePartsVendor(oldName, newName.trim(), userId);
       // Update local state
       setParts(prevParts => prevParts.map(part =>
         part.vendor === oldName ? { ...part, vendor: newName.trim() } : part
@@ -370,9 +373,10 @@ const useParts = (userId) => {
    * Delete a vendor
    */
   const deleteVendor = async (vendorName, editingPart, setEditingPart) => {
+    if (!userId) return;
     try {
       // Update all parts in database to have empty vendor
-      await partsService.removeVendorFromParts(vendorName);
+      await partsService.removeVendorFromParts(vendorName, userId);
       // Update local state
       setParts(prevParts => prevParts.map(part =>
         part.vendor === vendorName ? { ...part, vendor: '' } : part

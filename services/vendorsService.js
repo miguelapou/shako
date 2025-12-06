@@ -10,14 +10,16 @@ import { supabase } from '../lib/supabase';
 
 /**
  * Load all vendors for the authenticated user
+ * @param {string} userId - User ID to filter by (defense-in-depth with RLS)
  * @returns {Promise<Array>} Array of vendors
  * @throws {Error} With context about the failed operation
  */
-export const getAllVendors = async () => {
+export const getAllVendors = async (userId) => {
   try {
     const { data, error } = await supabase
       .from('vendors')
       .select('*')
+      .eq('user_id', userId)
       .order('name', { ascending: true });
 
     if (error) throw error;
@@ -84,15 +86,17 @@ export const upsertVendor = async (vendorName, color, userId) => {
 /**
  * Delete a vendor by name
  * @param {string} vendorName - Vendor name to delete
+ * @param {string} userId - User ID to filter by (prevents cross-user deletes)
  * @returns {Promise<void>}
  * @throws {Error} With context about the failed operation
  */
-export const deleteVendor = async (vendorName) => {
+export const deleteVendor = async (vendorName, userId) => {
   try {
     const { error } = await supabase
       .from('vendors')
       .delete()
-      .eq('name', vendorName);
+      .eq('name', vendorName)
+      .eq('user_id', userId);
 
     if (error) throw error;
   } catch (error) {
@@ -105,15 +109,17 @@ export const deleteVendor = async (vendorName) => {
  * Rename a vendor
  * @param {string} oldName - Current vendor name
  * @param {string} newName - New vendor name
+ * @param {string} userId - User ID to filter by (prevents cross-user updates)
  * @returns {Promise<void>}
  * @throws {Error} With context about the failed operation
  */
-export const renameVendor = async (oldName, newName) => {
+export const renameVendor = async (oldName, newName, userId) => {
   try {
     const { error } = await supabase
       .from('vendors')
       .update({ name: newName })
-      .eq('name', oldName);
+      .eq('name', oldName)
+      .eq('user_id', userId);
 
     if (error) throw error;
   } catch (error) {
