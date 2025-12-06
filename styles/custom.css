@@ -182,21 +182,6 @@ input[type="number"] {
   }
 }
 
-@keyframes toolbarSlideIn {
-  0% {
-    opacity: 0;
-    transform: translateY(-12px);
-  }
-  100% {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-.toolbar-animate {
-  animation: toolbarSlideIn 0.35s cubic-bezier(0.16, 1, 0.3, 1);
-}
-
 @keyframes openGarage {
   0% { transform: translateY(0) scaleY(1); opacity: 1; }
   50% { opacity: 1; }

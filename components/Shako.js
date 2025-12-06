@@ -1116,7 +1116,14 @@ const Shako = () => {
                 darkMode ? 'text-gray-100' : 'text-slate-800'
               }`} style={{ fontFamily: "'FoundationOne', 'Courier New', monospace" }}>Shako</h1>
             </div>
-            <div key={activeTab} className="flex items-center gap-2 sm:gap-3 min-h-[44px] toolbar-animate">
+            <div key={activeTab} className={`flex items-center gap-2 sm:gap-3 min-h-[44px] ${
+              (() => {
+                const tabOrder = ['vehicles', 'projects', 'parts'];
+                const prevIndex = tabOrder.indexOf(previousTab);
+                const currIndex = tabOrder.indexOf(activeTab);
+                return currIndex >= prevIndex ? 'slide-in-right' : 'slide-in-left';
+              })()
+            }`}>
               {/* Vehicle Filter - Only visible on Projects tab */}
               {activeTab === 'projects' && (
                 <div className="relative">
