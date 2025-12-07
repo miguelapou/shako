@@ -447,16 +447,24 @@ const VehicleDetailModal = ({
                   </div>
                 ) : (
                   <div className="relative">
-                    {/* Timeline line */}
+                    {/* Timeline line - only show if there are events, positioned to not cut through circles */}
                     {serviceEvents && serviceEvents.length > 0 && (
-                      <div className={`absolute left-[19px] top-8 bottom-8 w-0.5 ${
-                        darkMode ? 'bg-gray-600' : 'bg-gray-300'
-                      }`} />
+                      <div
+                        className={`absolute left-[19px] w-0.5 ${
+                          darkMode ? 'bg-gray-600' : 'bg-gray-300'
+                        }`}
+                        style={{
+                          top: '40px',
+                          height: `calc(${serviceEvents.length - 1} * 64px + 24px)`
+                        }}
+                      />
                     )}
 
                     {/* Timeline items */}
                     <div className="space-y-0">
-                      {serviceEvents && serviceEvents.map((event, index) => {
+                      {serviceEvents && [...serviceEvents].sort((a, b) =>
+                        new Date(b.event_date) - new Date(a.event_date)
+                      ).map((event, index) => {
                         const eventDate = new Date(event.event_date);
                         const formattedDate = eventDate.toLocaleDateString('en-US', {
                           month: 'short',
@@ -550,30 +558,30 @@ const VehicleDetailModal = ({
                       })}
 
                       {/* Add new service event card */}
-                      <div className="relative flex items-start gap-4">
-                        {/* Timeline dot for add card */}
+                      <div
+                        onClick={openAddServiceEventModal}
+                        className="relative flex items-start gap-4 cursor-pointer group"
+                      >
+                        {/* Timeline dot for add card - with background to cover line */}
                         <div className={`relative z-10 flex-shrink-0 w-10 h-10 rounded-full flex items-center justify-center border-2 border-dashed ${
-                          darkMode ? 'border-gray-600 hover:border-blue-500' : 'border-gray-300 hover:border-blue-500'
-                        } transition-colors cursor-pointer group`}
-                          onClick={openAddServiceEventModal}
-                        >
+                          darkMode
+                            ? 'bg-gray-800 border-gray-600 group-hover:border-blue-500'
+                            : 'bg-slate-200 border-gray-300 group-hover:border-blue-500'
+                        } transition-colors`}>
                           <Plus className={`w-4 h-4 ${
                             darkMode ? 'text-gray-500 group-hover:text-blue-400' : 'text-gray-400 group-hover:text-blue-600'
                           } transition-colors`} />
                         </div>
 
                         {/* Add card content */}
-                        <div
-                          onClick={openAddServiceEventModal}
-                          className={`flex-1 rounded-lg p-3 border-2 border-dashed transition-all cursor-pointer ${
-                            darkMode
-                              ? 'border-gray-600 hover:border-blue-500 hover:bg-gray-700/30'
-                              : 'border-gray-300 hover:border-blue-500 hover:bg-blue-50/30'
-                          }`}
-                        >
+                        <div className={`flex-1 rounded-lg p-3 border-2 border-dashed transition-all ${
+                          darkMode
+                            ? 'border-gray-600 group-hover:border-blue-500 group-hover:bg-gray-700/30'
+                            : 'border-gray-300 group-hover:border-blue-500 group-hover:bg-blue-50/30'
+                        }`}>
                           <p className={`text-sm font-medium ${
-                            darkMode ? 'text-gray-400 hover:text-gray-200' : 'text-gray-500 hover:text-gray-700'
-                          }`}>
+                            darkMode ? 'text-gray-400 group-hover:text-gray-200' : 'text-gray-500 group-hover:text-gray-700'
+                          } transition-colors`}>
                             Add service event
                           </p>
                           <p className={`text-xs mt-0.5 ${
