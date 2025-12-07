@@ -16,6 +16,7 @@ import * as projectsService from '../services/projectsService';
  */
 const useProjects = (userId) => {
   const [projects, setProjects] = useState([]);
+  const [loading, setLoading] = useState(true);
   const [newProject, setNewProject] = useState({
     name: '',
     description: '',
@@ -31,6 +32,7 @@ const useProjects = (userId) => {
   const loadProjects = async () => {
     if (!userId) return;
     try {
+      setLoading(true);
       const data = await projectsService.getAllProjects(userId);
 
       if (data && data.length > 0) {
@@ -40,6 +42,8 @@ const useProjects = (userId) => {
       }
     } catch (error) {
       // Error loading projects
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -157,6 +161,7 @@ const useProjects = (userId) => {
     // State
     projects,
     setProjects,
+    loading,
     newProject,
     setNewProject,
 
