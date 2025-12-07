@@ -93,7 +93,7 @@ const ManageVendorsModal = ({
               </p>
             </div>
           ) : (
-            <div className="space-y-3">
+            <div className="space-y-3 max-h-[420px] sm:max-h-none overflow-y-auto">
               {uniqueVendors.map((vendor) => {
                 const partCount = parts.filter(
                   (p) => p.vendor === vendor
