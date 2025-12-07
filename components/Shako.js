@@ -1,5 +1,5 @@
 import React, { useState, useMemo, useEffect, useRef } from 'react';
-import { Search, Package, PackageOpen, BadgeDollarSign, TrendingUp, Truck, CheckCircle, Clock, ChevronDown, Plus, X, ExternalLink, ChevronUp, Edit2, Trash2, Moon, Sun, Wrench, GripVertical, ShoppingCart, Car, Upload, Gauge, Settings, Check, Archive, ChevronRight, Pause, Play, LogOut } from 'lucide-react';
+import { Search, Package, PackageOpen, BadgeDollarSign, TrendingUp, Truck, CheckCircle, Clock, ChevronDown, Plus, X, ExternalLink, ChevronUp, Edit2, Trash2, Moon, Sun, ListChecks, GripVertical, ShoppingCart, Car, Upload, Gauge, Settings, Check, Archive, ChevronRight, Pause, Play, LogOut } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 
 // Utilities
@@ -1522,7 +1522,7 @@ const Shako = () => {
                     : 'text-slate-600'
               }`}
             >
-              <Wrench className="w-5 h-5" />
+              <ListChecks className="w-5 h-5" />
               <span className="text-sm sm:text-base">Projects</span>
             </button>
             <button

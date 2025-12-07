@@ -1,5 +1,5 @@
 import React from 'react';
-import { X, Package, Edit2, Trash2, Check, Wrench } from 'lucide-react';
+import { X, Package, Edit2, Trash2, Check } from 'lucide-react';
 import PrimaryButton from '../ui/PrimaryButton';
 import {
   getVendorColor,
@@ -149,7 +149,7 @@ const ManageVendorsModal = ({
                               }`}
                             >
                               {partCount}
-                              <Wrench className="w-3.5 h-3.5" />
+                              <Package className="w-3.5 h-3.5" />
                             </span>
                             {vendorColors[vendor] ? (
                               (() => {
