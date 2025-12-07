@@ -80,7 +80,10 @@ const ManageVendorsModal = ({
         </div>
 
         {/* CONTENT */}
-        <div className="p-6 modal-scrollable" style={{ maxHeight: 'calc(100vh - 12rem)', overflowY: 'auto' }}>
+        <div
+          className="p-6 modal-scrollable"
+          style={{ maxHeight: 'calc(100vh - 12rem)', overflowY: 'auto', overscrollBehavior: 'contain' }}
+        >
           {uniqueVendors.length === 0 ? (
             <div
               className={`text-center py-12 ${
@@ -93,7 +96,7 @@ const ManageVendorsModal = ({
               </p>
             </div>
           ) : (
-            <div className="space-y-3 max-h-[420px] sm:max-h-none overflow-y-auto">
+            <div className="space-y-3 max-h-[420px] sm:max-h-none overflow-y-auto overscroll-contain">
               {uniqueVendors.map((vendor) => {
                 const partCount = parts.filter(
                   (p) => p.vendor === vendor
