@@ -140,6 +140,7 @@ const Shako = () => {
     deleteVendor,
     unlinkPartFromProject,
     updatePartProject,
+    updatePartTrackingData,
     getUniqueVendors,
     importPartsFromCSV
   } = useParts(userId, toast);
@@ -1576,6 +1577,7 @@ const Shako = () => {
           getStatusColor={getStatusColor}
           getStatusIcon={getStatusIcon}
           getStatusText={getStatusText}
+          onRefreshTracking={updatePartTrackingData}
         />
 
         {/* PARTS TAB CONTENT */}

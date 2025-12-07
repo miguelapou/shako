@@ -442,6 +442,16 @@ const useParts = (userId, toast) => {
   };
 
   /**
+   * Update part tracking data in local state
+   * Used after refreshing tracking from AfterShip API
+   */
+  const updatePartTrackingData = (partId, trackingData) => {
+    setParts(prevParts => prevParts.map(part =>
+      part.id === partId ? { ...part, ...trackingData } : part
+    ));
+  };
+
+  /**
    * Get unique vendors from parts
    */
   const getUniqueVendors = () => {
@@ -538,6 +548,7 @@ const useParts = (userId, toast) => {
     deleteVendor,
     unlinkPartFromProject,
     updatePartProject,
+    updatePartTrackingData,
     getUniqueVendors,
     importPartsFromCSV
   };
