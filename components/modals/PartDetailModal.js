@@ -1,14 +1,17 @@
-import React from 'react';
+import React, { useState } from 'react';
 import {
   X,
   Car,
   Edit2,
   Trash2,
   ChevronDown,
-  ExternalLink
+  ExternalLink,
+  RefreshCw
 } from 'lucide-react';
 import PrimaryButton from '../ui/PrimaryButton';
 import VendorSelect from '../ui/VendorSelect';
+import TrackingBadge from '../ui/TrackingBadge';
+import TrackingTimeline from '../ui/TrackingTimeline';
 import {
   getVendorColor,
   getVendorDisplayColor
@@ -39,8 +42,43 @@ const PartDetailModal = ({
   setViewingPart,
   getStatusColor,
   getStatusIcon,
-  getStatusText
+  getStatusText,
+  onRefreshTracking
 }) => {
+  const [isRefreshingTracking, setIsRefreshingTracking] = useState(false);
+
+  const handleRefreshTracking = async () => {
+    if (!viewingPart?.id || !viewingPart?.tracking || isRefreshingTracking) return;
+
+    // Skip URL tracking
+    if (viewingPart.tracking.startsWith('http')) return;
+
+    setIsRefreshingTracking(true);
+    try {
+      const response = await fetch(`/api/tracking/${viewingPart.id}`);
+      const data = await response.json();
+
+      if (data.success && data.tracking) {
+        // Update the viewing part with new tracking data
+        setViewingPart({
+          ...viewingPart,
+          ...data.tracking,
+          // Auto-update delivered status if tracking shows delivered
+          delivered: data.tracking.tracking_status === 'Delivered' ? true : viewingPart.delivered
+        });
+
+        // Notify parent to refresh if callback provided
+        if (onRefreshTracking) {
+          onRefreshTracking(viewingPart.id, data.tracking);
+        }
+      }
+    } catch (error) {
+      console.error('Failed to refresh tracking:', error);
+    } finally {
+      setIsRefreshingTracking(false);
+    }
+  };
+
   if (!isOpen || !viewingPart) return null;
 
   return (
@@ -386,44 +424,117 @@ const PartDetailModal = ({
                   darkMode ? 'border-gray-700' : 'border-slate-200'
                 }`}
               >
-                <h3
-                  className={`text-lg font-semibold mb-3 ${
-                    darkMode ? 'text-gray-200' : 'text-gray-800'
-                  }`}
-                >
-                  Tracking Information
-                </h3>
-                <div className="flex items-center gap-3">
-                  <span
-                    className={`text-sm ${
-                      darkMode ? 'text-gray-400' : 'text-slate-600'
+                <div className="flex items-center justify-between mb-4">
+                  <h3
+                    className={`text-lg font-semibold ${
+                      darkMode ? 'text-gray-200' : 'text-gray-800'
                     }`}
                   >
-                    Carrier:
-                  </span>
-                  {getTrackingUrl(viewingPart.tracking) ? (
-                    <a
-                      href={getTrackingUrl(viewingPart.tracking)}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-lg transition-colors"
-                      onClick={(e) => e.stopPropagation()}
-                    >
-                      Track via {getCarrierName(viewingPart.tracking)}
-                      <ExternalLink className="w-4 h-4" />
-                    </a>
-                  ) : (
-                    <span
-                      className={`inline-block px-4 py-2 rounded-lg text-sm font-medium ${
-                        darkMode
-                          ? 'bg-gray-700 text-gray-300'
-                          : 'bg-gray-200 text-gray-700'
+                    Tracking Information
+                  </h3>
+                  {/* Refresh button - only show for non-URL tracking */}
+                  {!viewingPart.tracking.startsWith('http') && (
+                    <button
+                      onClick={handleRefreshTracking}
+                      disabled={isRefreshingTracking}
+                      className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${
+                        isRefreshingTracking
+                          ? darkMode
+                            ? 'bg-gray-700 text-gray-500 cursor-not-allowed'
+                            : 'bg-gray-200 text-gray-400 cursor-not-allowed'
+                          : darkMode
+                            ? 'bg-gray-700 hover:bg-gray-600 text-gray-300'
+                            : 'bg-gray-200 hover:bg-gray-300 text-gray-700'
                       }`}
                     >
-                      {getCarrierName(viewingPart.tracking)}
-                    </span>
+                      <RefreshCw className={`w-4 h-4 ${isRefreshingTracking ? 'animate-spin' : ''}`} />
+                      {isRefreshingTracking ? 'Updating...' : 'Refresh'}
+                    </button>
                   )}
                 </div>
+
+                {/* AfterShip tracking status and timeline */}
+                {viewingPart.tracking_status && !viewingPart.tracking.startsWith('http') ? (
+                  <div className="space-y-4">
+                    {/* Status badge with details */}
+                    <div className="flex items-start justify-between gap-4">
+                      <TrackingBadge
+                        status={viewingPart.tracking_status}
+                        location={viewingPart.tracking_location}
+                        eta={viewingPart.tracking_eta}
+                        updatedAt={viewingPart.tracking_updated_at}
+                        darkMode={darkMode}
+                        size="large"
+                        showLocation={true}
+                        showEta={true}
+                        showUpdatedAt={true}
+                      />
+                      {/* Carrier link */}
+                      {getTrackingUrl(viewingPart.tracking) && (
+                        <a
+                          href={getTrackingUrl(viewingPart.tracking)}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-lg transition-colors flex-shrink-0"
+                          onClick={(e) => e.stopPropagation()}
+                        >
+                          {getCarrierName(viewingPart.tracking)}
+                          <ExternalLink className="w-3.5 h-3.5" />
+                        </a>
+                      )}
+                    </div>
+
+                    {/* Tracking timeline */}
+                    {viewingPart.tracking_checkpoints && viewingPart.tracking_checkpoints.length > 0 && (
+                      <div
+                        className={`rounded-lg p-4 ${
+                          darkMode ? 'bg-gray-700' : 'bg-gray-50'
+                        }`}
+                      >
+                        <TrackingTimeline
+                          checkpoints={viewingPart.tracking_checkpoints}
+                          status={viewingPart.tracking_status}
+                          darkMode={darkMode}
+                          maxVisible={4}
+                          showProgress={true}
+                        />
+                      </div>
+                    )}
+                  </div>
+                ) : (
+                  /* Fallback for URL tracking or no AfterShip data */
+                  <div className="flex items-center gap-3">
+                    <span
+                      className={`text-sm ${
+                        darkMode ? 'text-gray-400' : 'text-slate-600'
+                      }`}
+                    >
+                      Carrier:
+                    </span>
+                    {getTrackingUrl(viewingPart.tracking) ? (
+                      <a
+                        href={getTrackingUrl(viewingPart.tracking)}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-lg transition-colors"
+                        onClick={(e) => e.stopPropagation()}
+                      >
+                        Track via {getCarrierName(viewingPart.tracking)}
+                        <ExternalLink className="w-4 h-4" />
+                      </a>
+                    ) : (
+                      <span
+                        className={`inline-block px-4 py-2 rounded-lg text-sm font-medium ${
+                          darkMode
+                            ? 'bg-gray-700 text-gray-300'
+                            : 'bg-gray-200 text-gray-700'
+                        }`}
+                      >
+                        {getCarrierName(viewingPart.tracking)}
+                      </span>
+                    )}
+                  </div>
+                )}
               </div>
             )}
           </div>
