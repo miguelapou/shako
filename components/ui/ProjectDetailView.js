@@ -67,7 +67,8 @@ const ProjectDetailView = ({
   // Sort todos:
   // - Checked first, then unchecked
   // - Within checked: by completed_at (oldest first, newest at bottom)
-  // - Within unchecked: recently unchecked at top, then by original_created_at (oldest first = new at bottom)
+  // - Within unchecked: by created_at (newest first, so unchecked items go to top)
+  // - Use id as tiebreaker to ensure stable sorting
   const sortedTodos = useMemo(() => {
     if (!project.todos) return [];
     return [...project.todos].sort((a, b) => {
@@ -78,15 +79,17 @@ const ProjectDetailView = ({
       // Both have same completion status
       if (a.completed) {
         // Both completed: sort by completed_at (oldest first, newest at bottom)
-        const aCompletedAt = a.completed_at ? new Date(a.completed_at) : new Date(a.created_at);
-        const bCompletedAt = b.completed_at ? new Date(b.completed_at) : new Date(b.created_at);
-        return aCompletedAt - bCompletedAt;
+        const aCompletedAt = a.completed_at ? new Date(a.completed_at).getTime() : new Date(a.created_at).getTime();
+        const bCompletedAt = b.completed_at ? new Date(b.completed_at).getTime() : new Date(b.created_at).getTime();
+        if (aCompletedAt !== bCompletedAt) return aCompletedAt - bCompletedAt;
+        return a.id - b.id; // Stable tiebreaker
       } else {
         // Both uncompleted: sort by created_at (most recent first)
         // When a todo is unchecked, its created_at is updated to now, so it goes to top
-        const aCreatedAt = new Date(a.created_at);
-        const bCreatedAt = new Date(b.created_at);
-        return bCreatedAt - aCreatedAt;
+        const aCreatedAt = new Date(a.created_at).getTime();
+        const bCreatedAt = new Date(b.created_at).getTime();
+        if (aCreatedAt !== bCreatedAt) return bCreatedAt - aCreatedAt;
+        return b.id - a.id; // Stable tiebreaker (higher id = newer = top)
       }
     });
   }, [project.todos]);
