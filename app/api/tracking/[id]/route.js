@@ -76,6 +76,35 @@ export async function GET(request, { params }) {
     });
   } catch (error) {
     console.error('Error fetching tracking:', error);
+
+    // Handle rate limit error - return cached data if available
+    if (error.code === 'TOO_MANY_REQUEST' || error.meta_code === 429) {
+      const { id } = await params;
+      const partId = parseInt(id, 10);
+
+      // Get cached tracking data from database
+      const { data: part } = await supabase
+        .from('parts')
+        .select('tracking_status, tracking_carrier, tracking_location, tracking_checkpoints, tracking_updated_at, delivered')
+        .eq('id', partId)
+        .single();
+
+      if (part?.tracking_status) {
+        return NextResponse.json({
+          success: true,
+          tracking: part,
+          rateLimited: true,
+          rateLimitMessage: 'API rate limit reached. Showing cached data.'
+        });
+      }
+
+      return NextResponse.json({
+        success: false,
+        error: 'API rate limit reached. Please try again tomorrow.',
+        rateLimited: true
+      }, { status: 429 });
+    }
+
     return NextResponse.json(
       { error: error.message || 'Failed to fetch tracking' },
       { status: 500 }
