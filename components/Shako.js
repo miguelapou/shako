@@ -173,8 +173,6 @@ const Shako = () => {
     uploadingDocument,
     showAddDocumentModal,
     setShowAddDocumentModal,
-    isDocumentModalClosing,
-    setIsDocumentModalClosing,
     newDocumentTitle,
     setNewDocumentTitle,
     newDocumentFile,
@@ -185,8 +183,6 @@ const Shako = () => {
     updateDocumentTitle,
     deleteDocument,
     handleDocumentFileChange,
-    clearDocumentSelection,
-    handleCloseDocumentModal,
     openDocument,
     handleDocumentDragEnter,
     handleDocumentDragLeave,
@@ -1860,9 +1856,6 @@ const Shako = () => {
             uploadingDocument={uploadingDocument}
             showAddDocumentModal={showAddDocumentModal}
             setShowAddDocumentModal={setShowAddDocumentModal}
-            isDocumentModalClosing={isDocumentModalClosing}
-            setIsDocumentModalClosing={setIsDocumentModalClosing}
-            handleCloseDocumentModal={handleCloseDocumentModal}
             newDocumentTitle={newDocumentTitle}
             setNewDocumentTitle={setNewDocumentTitle}
             newDocumentFile={newDocumentFile}
@@ -1872,7 +1865,6 @@ const Shako = () => {
             addDocument={addDocument}
             deleteDocument={deleteDocument}
             handleDocumentFileChange={handleDocumentFileChange}
-            clearDocumentSelection={clearDocumentSelection}
             openDocument={openDocument}
             handleDocumentDragEnter={handleDocumentDragEnter}
             handleDocumentDragLeave={handleDocumentDragLeave}
