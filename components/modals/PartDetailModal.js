@@ -10,14 +10,13 @@ import {
 } from 'lucide-react';
 import PrimaryButton from '../ui/PrimaryButton';
 import VendorSelect from '../ui/VendorSelect';
-import TrackingBadge from '../ui/TrackingBadge';
 import TrackingTimeline from '../ui/TrackingTimeline';
 import {
   getVendorColor,
   getVendorDisplayColor
 } from '../../utils/colorUtils';
 import { selectDropdownStyle } from '../../utils/styleUtils';
-import { getTrackingUrl, getCarrierName } from '../../utils/trackingUtils';
+import { getTrackingUrl } from '../../utils/trackingUtils';
 
 const PartDetailModal = ({
   isOpen,
@@ -180,16 +179,8 @@ const PartDetailModal = ({
         {/* DETAIL VIEW */}
         {partDetailView === 'detail' && (
           <div className="p-4 sm:p-6 modal-scrollable slide-in-left">
-            {/* Status Badge (left) and Vehicle Badge (right) on same row */}
-            <div className="flex items-center justify-between mb-6 gap-3">
-              <div
-                className={`inline-flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium border ${getStatusColor(
-                  viewingPart
-                )}`}
-              >
-                {getStatusIcon(viewingPart)}
-                <span>{getStatusText(viewingPart)}</span>
-              </div>
+            {/* Vehicle Badge - top right */}
+            <div className="flex items-center justify-end mb-6">
               {(() => {
                 const partProject = viewingPart.projectId
                   ? projects.find((p) => p.id === viewingPart.projectId)
@@ -453,23 +444,20 @@ const PartDetailModal = ({
                   )}
                 </div>
 
-                {/* AfterShip tracking status and timeline */}
-                {viewingPart.tracking_status && !viewingPart.tracking.startsWith('http') ? (
+                {/* Tracking status and timeline */}
+                {!viewingPart.tracking.startsWith('http') ? (
                   <div className="space-y-4">
-                    {/* Status badge with details */}
+                    {/* Order status badge with track link */}
                     <div className="flex items-start justify-between gap-4">
-                      <TrackingBadge
-                        status={viewingPart.tracking_status}
-                        location={viewingPart.tracking_location}
-                        eta={viewingPart.tracking_eta}
-                        updatedAt={viewingPart.tracking_updated_at}
-                        darkMode={darkMode}
-                        size="large"
-                        showLocation={true}
-                        showEta={true}
-                        showUpdatedAt={true}
-                      />
-                      {/* Carrier link */}
+                      <div
+                        className={`inline-flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium border ${getStatusColor(
+                          viewingPart
+                        )}`}
+                      >
+                        {getStatusIcon(viewingPart)}
+                        <span>{getStatusText(viewingPart)}</span>
+                      </div>
+                      {/* Track link */}
                       {getTrackingUrl(viewingPart.tracking) && (
                         <a
                           href={getTrackingUrl(viewingPart.tracking)}
@@ -478,7 +466,7 @@ const PartDetailModal = ({
                           className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-lg transition-colors flex-shrink-0"
                           onClick={(e) => e.stopPropagation()}
                         >
-                          {getCarrierName(viewingPart.tracking)}
+                          Track
                           <ExternalLink className="w-3.5 h-3.5" />
                         </a>
                       )}
@@ -502,36 +490,27 @@ const PartDetailModal = ({
                     )}
                   </div>
                 ) : (
-                  /* Fallback for URL tracking or no AfterShip data */
-                  <div className="flex items-center gap-3">
-                    <span
-                      className={`text-sm ${
-                        darkMode ? 'text-gray-400' : 'text-slate-600'
-                      }`}
+                  /* Fallback for URL tracking */
+                  <div className="flex items-start justify-between gap-4">
+                    <div
+                      className={`inline-flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium border ${getStatusColor(
+                        viewingPart
+                      )}`}
                     >
-                      Carrier:
-                    </span>
-                    {getTrackingUrl(viewingPart.tracking) ? (
+                      {getStatusIcon(viewingPart)}
+                      <span>{getStatusText(viewingPart)}</span>
+                    </div>
+                    {getTrackingUrl(viewingPart.tracking) && (
                       <a
                         href={getTrackingUrl(viewingPart.tracking)}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-lg transition-colors"
+                        className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-lg transition-colors flex-shrink-0"
                         onClick={(e) => e.stopPropagation()}
                       >
-                        Track via {getCarrierName(viewingPart.tracking)}
-                        <ExternalLink className="w-4 h-4" />
+                        Track
+                        <ExternalLink className="w-3.5 h-3.5" />
                       </a>
-                    ) : (
-                      <span
-                        className={`inline-block px-4 py-2 rounded-lg text-sm font-medium ${
-                          darkMode
-                            ? 'bg-gray-700 text-gray-300'
-                            : 'bg-gray-200 text-gray-700'
-                        }`}
-                      >
-                        {getCarrierName(viewingPart.tracking)}
-                      </span>
                     )}
                   </div>
                 )}
