@@ -69,6 +69,7 @@ import useParts from '../hooks/useParts';
 import useProjects from '../hooks/useProjects';
 import useVehicles from '../hooks/useVehicles';
 import useDocuments from '../hooks/useDocuments';
+import useServiceEvents from '../hooks/useServiceEvents';
 import { useAuthContext } from './AuthProvider';
 
 // ========================================
@@ -189,6 +190,30 @@ const Shako = () => {
     handleDocumentDragOver,
     handleDocumentDrop
   } = useDocuments(userId);
+
+  // Service events hook
+  const {
+    serviceEvents,
+    setServiceEvents,
+    loadingServiceEvents,
+    savingServiceEvent,
+    showAddServiceEventModal,
+    setShowAddServiceEventModal,
+    newEventDate,
+    setNewEventDate,
+    newEventDescription,
+    setNewEventDescription,
+    newEventOdometer,
+    setNewEventOdometer,
+    editingServiceEvent,
+    loadServiceEvents,
+    addServiceEvent,
+    updateServiceEvent,
+    deleteServiceEvent,
+    openAddModal: openAddServiceEventModal,
+    openEditModal: openEditServiceEventModal,
+    handleCloseServiceEventModal
+  } = useServiceEvents(userId);
 
   // Filters hook
   const {
@@ -679,10 +704,11 @@ const Shako = () => {
     window.scrollTo({ top: 0, behavior: 'instant' });
   }, [activeTab]);
 
-  // Load documents when viewing a vehicle
+  // Load documents and service events when viewing a vehicle
   useEffect(() => {
     if (viewingVehicle?.id && showVehicleDetailModal) {
       loadDocuments(viewingVehicle.id);
+      loadServiceEvents(viewingVehicle.id);
     }
   }, [viewingVehicle?.id, showVehicleDetailModal]);
 
@@ -1870,6 +1896,25 @@ const Shako = () => {
             handleDocumentDragLeave={handleDocumentDragLeave}
             handleDocumentDragOver={handleDocumentDragOver}
             handleDocumentDrop={handleDocumentDrop}
+            // Service events props
+            serviceEvents={serviceEvents}
+            loadingServiceEvents={loadingServiceEvents}
+            savingServiceEvent={savingServiceEvent}
+            showAddServiceEventModal={showAddServiceEventModal}
+            setShowAddServiceEventModal={setShowAddServiceEventModal}
+            newEventDate={newEventDate}
+            setNewEventDate={setNewEventDate}
+            newEventDescription={newEventDescription}
+            setNewEventDescription={setNewEventDescription}
+            newEventOdometer={newEventOdometer}
+            setNewEventOdometer={setNewEventOdometer}
+            editingServiceEvent={editingServiceEvent}
+            addServiceEvent={addServiceEvent}
+            updateServiceEvent={updateServiceEvent}
+            deleteServiceEvent={deleteServiceEvent}
+            openAddServiceEventModal={openAddServiceEventModal}
+            openEditServiceEventModal={openEditServiceEventModal}
+            handleCloseServiceEventModal={handleCloseServiceEventModal}
           />
         )}
 

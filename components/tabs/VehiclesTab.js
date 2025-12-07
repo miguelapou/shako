@@ -103,7 +103,26 @@ const VehiclesTab = ({
   handleDocumentDragEnter,
   handleDocumentDragLeave,
   handleDocumentDragOver,
-  handleDocumentDrop
+  handleDocumentDrop,
+  // Service events props
+  serviceEvents,
+  loadingServiceEvents,
+  savingServiceEvent,
+  showAddServiceEventModal,
+  setShowAddServiceEventModal,
+  newEventDate,
+  setNewEventDate,
+  newEventDescription,
+  setNewEventDescription,
+  newEventOdometer,
+  setNewEventOdometer,
+  editingServiceEvent,
+  addServiceEvent,
+  updateServiceEvent,
+  deleteServiceEvent,
+  openAddServiceEventModal,
+  openEditServiceEventModal,
+  handleCloseServiceEventModal
 }) => {
   return (
     <div
@@ -632,6 +651,25 @@ const VehiclesTab = ({
           handleDocumentDragLeave={handleDocumentDragLeave}
           handleDocumentDragOver={handleDocumentDragOver}
           handleDocumentDrop={handleDocumentDrop}
+          // Service events props
+          serviceEvents={serviceEvents}
+          loadingServiceEvents={loadingServiceEvents}
+          savingServiceEvent={savingServiceEvent}
+          showAddServiceEventModal={showAddServiceEventModal}
+          setShowAddServiceEventModal={setShowAddServiceEventModal}
+          newEventDate={newEventDate}
+          setNewEventDate={setNewEventDate}
+          newEventDescription={newEventDescription}
+          setNewEventDescription={setNewEventDescription}
+          newEventOdometer={newEventOdometer}
+          setNewEventOdometer={setNewEventOdometer}
+          editingServiceEvent={editingServiceEvent}
+          addServiceEvent={addServiceEvent}
+          updateServiceEvent={updateServiceEvent}
+          deleteServiceEvent={deleteServiceEvent}
+          openAddServiceEventModal={openAddServiceEventModal}
+          openEditServiceEventModal={openEditServiceEventModal}
+          handleCloseServiceEventModal={handleCloseServiceEventModal}
         />
       </>
     </div>

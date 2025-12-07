@@ -18,12 +18,14 @@ import {
   FileText,
   Plus,
   ExternalLink,
-  MoreVertical
+  MoreVertical,
+  Calendar
 } from 'lucide-react';
 import ProjectDetailView from '../ui/ProjectDetailView';
 import ProjectEditForm from '../ui/ProjectEditForm';
 import LinkedPartsSection from '../ui/LinkedPartsSection';
 import AddDocumentModal from './AddDocumentModal';
+import AddServiceEventModal from './AddServiceEventModal';
 import {
   calculateVehicleTotalSpent,
   calculateProjectTotal
@@ -104,7 +106,26 @@ const VehicleDetailModal = ({
   handleDocumentDragEnter,
   handleDocumentDragLeave,
   handleDocumentDragOver,
-  handleDocumentDrop
+  handleDocumentDrop,
+  // Service events props
+  serviceEvents,
+  loadingServiceEvents,
+  savingServiceEvent,
+  showAddServiceEventModal,
+  setShowAddServiceEventModal,
+  newEventDate,
+  setNewEventDate,
+  newEventDescription,
+  setNewEventDescription,
+  newEventOdometer,
+  setNewEventOdometer,
+  editingServiceEvent,
+  addServiceEvent,
+  updateServiceEvent,
+  deleteServiceEvent,
+  openAddServiceEventModal,
+  openEditServiceEventModal,
+  handleCloseServiceEventModal
 }) => {
   if (!isOpen || !viewingVehicle) return null;
 
@@ -405,6 +426,199 @@ const VehicleDetailModal = ({
                     </p>
                   </div>
                 )}
+              </div>
+
+              {/* Service Events Timeline Section */}
+              <div className={`pt-6 border-t ${
+                darkMode ? 'border-gray-700' : 'border-slate-200'
+              }`}>
+                <div className="flex items-center justify-between mb-3">
+                  <h3 className={`text-lg font-semibold ${
+                    darkMode ? 'text-gray-200' : 'text-gray-800'
+                  }`}>
+                    Service History ({serviceEvents?.length || 0})
+                  </h3>
+                </div>
+                {loadingServiceEvents ? (
+                  <div className={`text-center py-8 ${
+                    darkMode ? 'text-gray-400' : 'text-gray-500'
+                  }`}>
+                    Loading service history...
+                  </div>
+                ) : (
+                  <div className="relative">
+                    {/* Timeline line */}
+                    {serviceEvents && serviceEvents.length > 0 && (
+                      <div className={`absolute left-[19px] top-8 bottom-8 w-0.5 ${
+                        darkMode ? 'bg-gray-600' : 'bg-gray-300'
+                      }`} />
+                    )}
+
+                    {/* Timeline items */}
+                    <div className="space-y-0">
+                      {serviceEvents && serviceEvents.map((event, index) => {
+                        const eventDate = new Date(event.event_date);
+                        const formattedDate = eventDate.toLocaleDateString('en-US', {
+                          month: 'short',
+                          day: 'numeric',
+                          year: 'numeric'
+                        });
+
+                        return (
+                          <div
+                            key={event.id}
+                            className="relative flex items-start gap-4 group"
+                          >
+                            {/* Timeline dot */}
+                            <div className={`relative z-10 flex-shrink-0 w-10 h-10 rounded-full flex items-center justify-center ${
+                              darkMode ? 'bg-gray-700 border-2 border-gray-600' : 'bg-white border-2 border-gray-300'
+                            } group-hover:border-blue-500 transition-colors`}>
+                              <Wrench className={`w-4 h-4 ${
+                                darkMode ? 'text-gray-400' : 'text-gray-500'
+                              } group-hover:text-blue-500 transition-colors`} />
+                            </div>
+
+                            {/* Event content */}
+                            <div className={`flex-1 pb-6 ${
+                              index === serviceEvents.length - 1 ? 'pb-0' : ''
+                            }`}>
+                              <div className={`rounded-lg p-3 border transition-all ${
+                                darkMode
+                                  ? 'bg-gray-700/50 border-gray-600 hover:border-gray-500'
+                                  : 'bg-gray-50 border-gray-200 hover:border-gray-300'
+                              }`}>
+                                <div className="flex items-start justify-between gap-2">
+                                  <div className="flex-1 min-w-0">
+                                    <p className={`text-sm font-medium ${
+                                      darkMode ? 'text-gray-200' : 'text-gray-800'
+                                    }`}>
+                                      {event.description}
+                                    </p>
+                                    <div className="flex items-center gap-3 mt-1">
+                                      <span className={`text-xs flex items-center gap-1 ${
+                                        darkMode ? 'text-gray-400' : 'text-gray-500'
+                                      }`}>
+                                        <Calendar className="w-3 h-3" />
+                                        {formattedDate}
+                                      </span>
+                                      {event.odometer && (
+                                        <span className={`text-xs flex items-center gap-1 ${
+                                          darkMode ? 'text-gray-400' : 'text-gray-500'
+                                        }`}>
+                                          <Gauge className="w-3 h-3" />
+                                          {event.odometer.toLocaleString()} mi
+                                        </span>
+                                      )}
+                                    </div>
+                                  </div>
+                                  {/* Actions */}
+                                  <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                                    <button
+                                      onClick={() => openEditServiceEventModal(event)}
+                                      className={`p-1.5 rounded transition-colors ${
+                                        darkMode
+                                          ? 'hover:bg-gray-600 text-gray-400 hover:text-gray-200'
+                                          : 'hover:bg-gray-200 text-gray-500 hover:text-gray-700'
+                                      }`}
+                                    >
+                                      <Edit2 className="w-3.5 h-3.5" />
+                                    </button>
+                                    <button
+                                      onClick={() => {
+                                        setConfirmDialog({
+                                          isOpen: true,
+                                          title: 'Delete Service Event',
+                                          message: `Are you sure you want to delete "${event.description}"? This action cannot be undone.`,
+                                          confirmText: 'Delete',
+                                          onConfirm: () => deleteServiceEvent(event.id)
+                                        });
+                                      }}
+                                      className={`p-1.5 rounded transition-colors ${
+                                        darkMode
+                                          ? 'hover:bg-red-900/50 text-gray-400 hover:text-red-400'
+                                          : 'hover:bg-red-100 text-gray-500 hover:text-red-600'
+                                      }`}
+                                    >
+                                      <Trash2 className="w-3.5 h-3.5" />
+                                    </button>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        );
+                      })}
+
+                      {/* Add new service event card */}
+                      <div className="relative flex items-start gap-4">
+                        {/* Timeline dot for add card */}
+                        <div className={`relative z-10 flex-shrink-0 w-10 h-10 rounded-full flex items-center justify-center border-2 border-dashed ${
+                          darkMode ? 'border-gray-600 hover:border-blue-500' : 'border-gray-300 hover:border-blue-500'
+                        } transition-colors cursor-pointer group`}
+                          onClick={openAddServiceEventModal}
+                        >
+                          <Plus className={`w-4 h-4 ${
+                            darkMode ? 'text-gray-500 group-hover:text-blue-400' : 'text-gray-400 group-hover:text-blue-600'
+                          } transition-colors`} />
+                        </div>
+
+                        {/* Add card content */}
+                        <div
+                          onClick={openAddServiceEventModal}
+                          className={`flex-1 rounded-lg p-3 border-2 border-dashed transition-all cursor-pointer ${
+                            darkMode
+                              ? 'border-gray-600 hover:border-blue-500 hover:bg-gray-700/30'
+                              : 'border-gray-300 hover:border-blue-500 hover:bg-blue-50/30'
+                          }`}
+                        >
+                          <p className={`text-sm font-medium ${
+                            darkMode ? 'text-gray-400 hover:text-gray-200' : 'text-gray-500 hover:text-gray-700'
+                          }`}>
+                            Add service event
+                          </p>
+                          <p className={`text-xs mt-0.5 ${
+                            darkMode ? 'text-gray-600' : 'text-gray-400'
+                          }`}>
+                            Track maintenance and repairs
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                {/* Add Service Event Modal */}
+                <AddServiceEventModal
+                  isOpen={showAddServiceEventModal}
+                  onClose={handleCloseServiceEventModal}
+                  darkMode={darkMode}
+                  eventDate={newEventDate}
+                  setEventDate={setNewEventDate}
+                  description={newEventDescription}
+                  setDescription={setNewEventDescription}
+                  odometer={newEventOdometer}
+                  setOdometer={setNewEventOdometer}
+                  editingEvent={editingServiceEvent}
+                  onSave={async () => {
+                    if (editingServiceEvent) {
+                      const result = await updateServiceEvent(editingServiceEvent.id, {
+                        event_date: newEventDate,
+                        description: newEventDescription.trim(),
+                        odometer: newEventOdometer ? parseInt(newEventOdometer, 10) : null
+                      });
+                      return result;
+                    } else {
+                      const result = await addServiceEvent(
+                        viewingVehicle.id,
+                        newEventDate,
+                        newEventDescription,
+                        newEventOdometer
+                      );
+                      return result;
+                    }
+                  }}
+                  saving={savingServiceEvent}
+                />
               </div>
 
               {/* Maintenance Section (includes filters, oil, battery) */}
