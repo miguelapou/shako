@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { X } from 'lucide-react';
+import { X, Trash2 } from 'lucide-react';
 
 /**
  * Modal for adding/editing a service event for a vehicle
@@ -20,6 +20,7 @@ const AddServiceEventModal = ({
   editingEvent,
   // Handlers
   onSave,
+  onDelete,
   saving
 }) => {
   const [isClosing, setIsClosing] = useState(false);
@@ -148,30 +149,50 @@ const AddServiceEventModal = ({
         </div>
 
         {/* Footer */}
-        <div className={`px-6 py-4 border-t flex justify-end gap-3 ${
+        <div className={`px-6 py-4 border-t flex justify-between gap-3 ${
           darkMode ? 'border-gray-700' : 'border-gray-200'
         }`}>
-          <button
-            onClick={handleClose}
-            className={`px-4 py-2 rounded-lg font-medium transition-colors ${
-              darkMode
-                ? 'bg-gray-700 hover:bg-gray-600 text-gray-100'
-                : 'bg-gray-200 hover:bg-gray-300 text-gray-800'
-            }`}
-          >
-            Cancel
-          </button>
-          <button
-            onClick={handleSave}
-            disabled={saving || !eventDate || !description.trim()}
-            className={`px-4 py-2 rounded-lg font-medium transition-colors ${
-              saving || !eventDate || !description.trim()
-                ? 'bg-gray-600 cursor-not-allowed text-gray-300'
-                : 'bg-blue-600 hover:bg-blue-700 text-white'
-            }`}
-          >
-            {saving ? 'Saving...' : (isEditMode ? 'Update' : 'Add')}
-          </button>
+          {/* Delete button - mobile only, edit mode only */}
+          {isEditMode && onDelete ? (
+            <button
+              onClick={() => {
+                onDelete();
+                handleClose();
+              }}
+              className={`md:hidden px-4 py-2 rounded-lg font-medium transition-colors ${
+                darkMode
+                  ? 'bg-red-900/50 hover:bg-red-900 text-red-400'
+                  : 'bg-red-100 hover:bg-red-200 text-red-600'
+              }`}
+            >
+              <Trash2 className="w-4 h-4" />
+            </button>
+          ) : (
+            <div />
+          )}
+          <div className="flex gap-3">
+            <button
+              onClick={handleClose}
+              className={`px-4 py-2 rounded-lg font-medium transition-colors ${
+                darkMode
+                  ? 'bg-gray-700 hover:bg-gray-600 text-gray-100'
+                  : 'bg-gray-200 hover:bg-gray-300 text-gray-800'
+              }`}
+            >
+              Cancel
+            </button>
+            <button
+              onClick={handleSave}
+              disabled={saving || !eventDate || !description.trim()}
+              className={`px-4 py-2 rounded-lg font-medium transition-colors ${
+                saving || !eventDate || !description.trim()
+                  ? 'bg-gray-600 cursor-not-allowed text-gray-300'
+                  : 'bg-blue-600 hover:bg-blue-700 text-white'
+              }`}
+            >
+              {saving ? 'Saving...' : (isEditMode ? 'Update' : 'Add')}
+            </button>
+          </div>
         </div>
       </div>
     </div>

@@ -533,7 +533,7 @@ const VehicleDetailModal = ({
                                           onConfirm: () => deleteServiceEvent(event.id)
                                         });
                                       }}
-                                      className={`p-1.5 rounded transition-colors ${
+                                      className={`hidden md:block p-1.5 rounded transition-colors ${
                                         darkMode
                                           ? 'hover:bg-red-900/50 text-gray-400 hover:text-red-400'
                                           : 'hover:bg-red-100 text-gray-500 hover:text-red-600'
@@ -619,6 +619,15 @@ const VehicleDetailModal = ({
                       return result;
                     }
                   }}
+                  onDelete={editingServiceEvent ? () => {
+                    setConfirmDialog({
+                      isOpen: true,
+                      title: 'Delete Service Event',
+                      message: `Are you sure you want to delete "${editingServiceEvent.description}"? This action cannot be undone.`,
+                      confirmText: 'Delete',
+                      onConfirm: () => deleteServiceEvent(editingServiceEvent.id)
+                    });
+                  } : null}
                   saving={savingServiceEvent}
                 />
                 </div>
