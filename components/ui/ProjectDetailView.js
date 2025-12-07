@@ -198,19 +198,21 @@ const ProjectDetailView = ({
             todos: updatedTodos
           });
         }}
-        className={`flex-shrink-0 w-5 h-5 rounded border-2 flex items-center justify-center transition-colors ${
+        className={`flex-shrink-0 w-5 h-5 rounded border-2 flex items-center justify-center transition-all duration-150 active:scale-90 ${
           todo.completed
             ? darkMode
-              ? 'bg-green-600 border-green-600'
-              : 'bg-green-500 border-green-500'
+              ? 'bg-green-600 border-green-600 scale-100'
+              : 'bg-green-500 border-green-500 scale-100'
             : darkMode
-              ? 'border-gray-500 hover:border-gray-400'
-              : 'border-gray-400 hover:border-gray-500'
+              ? 'border-gray-500 hover:border-gray-400 scale-100'
+              : 'border-gray-400 hover:border-gray-500 scale-100'
         }`}
       >
-        {todo.completed && (
-          <CheckSquare className="w-4 h-4 text-white" />
-        )}
+        <CheckSquare
+          className={`w-4 h-4 text-white transition-all duration-150 ${
+            todo.completed ? 'opacity-100 scale-100' : 'opacity-0 scale-50'
+          }`}
+        />
       </button>
       {/* Todo Text - Click to edit inline */}
       {editingTodoId === todo.id ? (
