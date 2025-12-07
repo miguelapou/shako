@@ -86,10 +86,6 @@ const AddPartOptionsModal = ({
         </div>
 
         <div className="p-6">
-          <p className={`mb-6 ${darkMode ? 'text-gray-300' : 'text-gray-600'}`}>
-            Choose how you want to add parts:
-          </p>
-
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {/* Single Part Card */}
             <button
