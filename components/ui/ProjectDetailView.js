@@ -67,7 +67,7 @@ const ProjectDetailView = ({
   // Sort todos:
   // - Checked first, then unchecked
   // - Within checked: by completed_at (oldest first, newest at bottom)
-  // - Within unchecked: by created_at (newest first, so unchecked items go to top)
+  // - Within unchecked: unchecked items at top (by created_at desc), new items at bottom (by created_at asc)
   // - Use id as tiebreaker to ensure stable sorting
   const sortedTodos = useMemo(() => {
     if (!project.todos) return [];
@@ -84,12 +84,31 @@ const ProjectDetailView = ({
         if (aCompletedAt !== bCompletedAt) return aCompletedAt - bCompletedAt;
         return a.id - b.id; // Stable tiebreaker
       } else {
-        // Both uncompleted: sort by created_at (most recent first)
-        // When a todo is unchecked, its created_at is updated to now, so it goes to top
+        // Both uncompleted:
+        // - "Unchecked" todos (created_at != original_created_at) go to TOP, sorted by created_at desc
+        // - "New" todos (created_at == original_created_at) go to BOTTOM, sorted by created_at asc
         const aCreatedAt = new Date(a.created_at).getTime();
         const bCreatedAt = new Date(b.created_at).getTime();
-        if (aCreatedAt !== bCreatedAt) return bCreatedAt - aCreatedAt;
-        return b.id - a.id; // Stable tiebreaker (higher id = newer = top)
+        const aOriginalCreatedAt = a.original_created_at ? new Date(a.original_created_at).getTime() : aCreatedAt;
+        const bOriginalCreatedAt = b.original_created_at ? new Date(b.original_created_at).getTime() : bCreatedAt;
+
+        const aWasUnchecked = Math.abs(aCreatedAt - aOriginalCreatedAt) > 1000; // More than 1 second difference
+        const bWasUnchecked = Math.abs(bCreatedAt - bOriginalCreatedAt) > 1000;
+
+        // Unchecked items come before new items
+        if (aWasUnchecked !== bWasUnchecked) {
+          return aWasUnchecked ? -1 : 1;
+        }
+
+        if (aWasUnchecked) {
+          // Both were unchecked: most recently unchecked first
+          if (aCreatedAt !== bCreatedAt) return bCreatedAt - aCreatedAt;
+          return b.id - a.id;
+        } else {
+          // Both are new: oldest first (newest at bottom)
+          if (aCreatedAt !== bCreatedAt) return aCreatedAt - bCreatedAt;
+          return a.id - b.id;
+        }
       }
     });
   }, [project.todos]);
