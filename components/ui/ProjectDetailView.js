@@ -82,23 +82,11 @@ const ProjectDetailView = ({
         const bCompletedAt = b.completed_at ? new Date(b.completed_at) : new Date(b.created_at);
         return aCompletedAt - bCompletedAt;
       } else {
-        // Both uncompleted:
-        // Check if either was recently UNCHECKED (created_at is very recent AND different from original_created_at)
-        const now = Date.now();
-        const aCreatedMs = new Date(a.created_at).getTime();
-        const bCreatedMs = new Date(b.created_at).getTime();
-        const aOriginalMs = a.original_created_at ? new Date(a.original_created_at).getTime() : aCreatedMs;
-        const bOriginalMs = b.original_created_at ? new Date(b.original_created_at).getTime() : bCreatedMs;
-        // Only consider it "recently unchecked" if created_at is recent AND different from original_created_at
-        const aIsRecentlyUnchecked = (now - aCreatedMs < 1000) && (Math.abs(aCreatedMs - aOriginalMs) > 100);
-        const bIsRecentlyUnchecked = (now - bCreatedMs < 1000) && (Math.abs(bCreatedMs - bOriginalMs) > 100);
-        // If one is recently unchecked and other isn't, put recently unchecked one first
-        if (aIsRecentlyUnchecked && !bIsRecentlyUnchecked) return -1;
-        if (!aIsRecentlyUnchecked && bIsRecentlyUnchecked) return 1;
-        // Otherwise sort by original_created_at (oldest first = new todos at bottom)
-        const aOriginal = new Date(a.original_created_at || a.created_at);
-        const bOriginal = new Date(b.original_created_at || b.created_at);
-        return aOriginal - bOriginal;
+        // Both uncompleted: sort by created_at (most recent first)
+        // When a todo is unchecked, its created_at is updated to now, so it goes to top
+        const aCreatedAt = new Date(a.created_at);
+        const bCreatedAt = new Date(b.created_at);
+        return bCreatedAt - aCreatedAt;
       }
     });
   }, [project.todos]);
