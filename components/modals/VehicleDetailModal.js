@@ -507,7 +507,7 @@ const VehicleDetailModal = ({
                                           darkMode ? 'text-gray-400' : 'text-gray-500'
                                         }`}>
                                           <Gauge className="w-3 h-3 flex-shrink-0" />
-                                          {event.odometer.toLocaleString()} mi
+                                          {event.odometer.toLocaleString()}{viewingVehicle.odometer_unit ? ` ${viewingVehicle.odometer_unit}` : ''}
                                         </span>
                                       )}
                                     </div>
