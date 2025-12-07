@@ -65,10 +65,7 @@ const PartDetailModal = ({
         style={{
           gridTemplateRows:
             partDetailView === 'detail' ? 'auto 1fr auto' : 'auto 1fr auto',
-          maxHeight:
-            partDetailView === 'detail'
-              ? 'calc(100vh - 2rem)'
-              : 'calc(100vh - 2rem)',
+          maxHeight: 'calc(100vh - 4rem)',
           transition: 'max-height 0.7s ease-in-out'
         }}
         onClick={(e) => e.stopPropagation()}
