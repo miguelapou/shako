@@ -164,9 +164,6 @@ const useAuth = () => {
             setSession(currentSession);
             setUser(currentSession?.user ?? null);
             setError(null);
-            if (process.env.NODE_ENV === 'development') {
-              console.log('Session token refreshed automatically');
-            }
             break;
 
           case 'USER_UPDATED':
