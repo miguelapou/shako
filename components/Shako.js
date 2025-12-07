@@ -99,7 +99,7 @@ const Shako = () => {
     setParts,
     vendors,
     vendorColors,
-    loading,
+    loading: loadingParts,
     newPart,
     setNewPart,
     loadParts,
@@ -123,6 +123,7 @@ const Shako = () => {
   const {
     projects,
     setProjects,
+    loading: loadingProjects,
     newProject,
     setNewProject,
     loadProjects,
@@ -139,6 +140,7 @@ const Shako = () => {
   const {
     vehicles,
     setVehicles,
+    loading: loadingVehicles,
     newVehicle,
     setNewVehicle,
     vehicleImageFile,
@@ -344,6 +346,13 @@ const Shako = () => {
     loadVehicles,
     setConfirmDialog
   });
+
+  // ========================================
+  // COMBINED LOADING STATE
+  // ========================================
+
+  // Show loading screen until all data is loaded to prevent flash of empty content
+  const loading = loadingParts || loadingProjects || loadingVehicles;
 
   // ========================================
   // LOCAL COMPONENT STATE

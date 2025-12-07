@@ -16,6 +16,7 @@ import * as vehiclesService from '../services/vehiclesService';
  */
 const useVehicles = (userId) => {
   const [vehicles, setVehicles] = useState([]);
+  const [loading, setLoading] = useState(true);
   const [newVehicle, setNewVehicle] = useState({
     nickname: '',
     name: '',
@@ -47,6 +48,7 @@ const useVehicles = (userId) => {
   const loadVehicles = async () => {
     if (!userId) return;
     try {
+      setLoading(true);
       const data = await vehiclesService.getAllVehicles(userId);
       if (data) {
         // Sort so archived vehicles are always at the end
@@ -98,6 +100,8 @@ const useVehicles = (userId) => {
       }
     } catch (error) {
       // Error loading vehicles
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -272,6 +276,7 @@ const useVehicles = (userId) => {
     // State
     vehicles,
     setVehicles,
+    loading,
     newVehicle,
     setNewVehicle,
     vehicleImageFile,

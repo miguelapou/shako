@@ -34,7 +34,7 @@ const ProjectDetailView = ({
   // FLIP animation for todos
   const todoRefs = useRef({});
   const prevPositions = useRef({});
-  const [isAnimating, setIsAnimating] = useState(false);
+  const isAnimatingRef = useRef(false);
   const hasInitialized = useRef(false);
   const [isNewTodoFocused, setIsNewTodoFocused] = useState(false);
   const [showCompletedTodos, setShowCompletedTodos] = useState(false);
@@ -115,61 +115,141 @@ const ProjectDetailView = ({
 
   // FLIP animation with useLayoutEffect for synchronous execution
   useLayoutEffect(() => {
+    // Helper to get element position without any active transforms
+    const getCleanPosition = (element) => {
+      if (!element) return null;
+      // Temporarily clear transform to get true layout position
+      const currentTransform = element.style.transform;
+      element.style.transform = '';
+      const pos = element.getBoundingClientRect().top;
+      element.style.transform = currentTransform;
+      return pos;
+    };
+
     // On first render, capture positions synchronously
     if (!hasInitialized.current) {
       sortedTodos.forEach(todo => {
         const element = todoRefs.current[todo.id];
         if (element) {
-          const pos = element.getBoundingClientRect().top;
-          prevPositions.current[todo.id] = pos;
+          prevPositions.current[todo.id] = getCleanPosition(element);
         }
       });
       hasInitialized.current = true;
       return; // Don't animate on first render
     }
-    if (isAnimating) {
-      return; // Don't interrupt ongoing animations
+
+    // If animation is in progress, still update positions but skip new animation
+    if (isAnimatingRef.current) {
+      sortedTodos.forEach(todo => {
+        const element = todoRefs.current[todo.id];
+        if (element) {
+          prevPositions.current[todo.id] = getCleanPosition(element);
+        }
+      });
+      return;
     }
-    // Capture the old positions before React updates the DOM
+
+    // Capture the old positions
     const oldPositions = { ...prevPositions.current };
     const hasOldPositions = Object.keys(oldPositions).length > 0;
-    // Collect new positions first before any animations
+
+    // Collect new positions
     const newPositions = {};
     sortedTodos.forEach(todo => {
       const element = todoRefs.current[todo.id];
       if (element) {
-        newPositions[todo.id] = element.getBoundingClientRect().top;
+        newPositions[todo.id] = getCleanPosition(element);
       }
     });
+
+    // Calculate all deltas to detect layout shifts
+    const deltas = [];
+    sortedTodos.forEach(todo => {
+      const oldPos = oldPositions[todo.id];
+      const newPos = newPositions[todo.id];
+      if (oldPos !== undefined && newPos !== undefined) {
+        deltas.push(oldPos - newPos);
+      }
+    });
+
+    // Detect layout shift: if most items shifted by the same amount, subtract it
+    // This happens when the "Completed" section header appears/disappears
+    let layoutShift = 0;
+    if (deltas.length > 2) {
+      // Find the most common delta (mode) with some tolerance
+      const tolerance = 5;
+      const deltaCounts = {};
+      deltas.forEach(d => {
+        const rounded = Math.round(d / tolerance) * tolerance;
+        deltaCounts[rounded] = (deltaCounts[rounded] || 0) + 1;
+      });
+
+      let maxCount = 0;
+      let modeValue = 0;
+      Object.entries(deltaCounts).forEach(([val, count]) => {
+        if (count > maxCount) {
+          maxCount = count;
+          modeValue = parseFloat(val);
+        }
+      });
+
+      // If more than half the items shifted by the same amount, it's a layout shift
+      if (maxCount > deltas.length / 2 && Math.abs(modeValue) > 10) {
+        layoutShift = modeValue;
+      }
+    }
+
+    // Track if any animation will run
+    let willAnimate = false;
+
     // Now set up animations and update stored positions
     sortedTodos.forEach(todo => {
       const element = todoRefs.current[todo.id];
       if (element) {
         const newPos = newPositions[todo.id];
         const oldPos = oldPositions[todo.id];
+
         if (hasOldPositions && oldPos !== undefined && newPos !== oldPos) {
-          // Calculate how far the element has moved
-          const deltaY = oldPos - newPos;
-          // Immediately move it back to the old position
-          element.style.transform = `translateY(${deltaY}px)`;
-          element.style.transition = 'none';
-          setIsAnimating(true);
-          // Then animate it to the new position
-          requestAnimationFrame(() => {
-            element.style.transition = 'transform 0.3s ease-out';
-            element.style.transform = 'translateY(0)';
-            // Clear animation state after animation completes
-            setTimeout(() => {
-              setIsAnimating(false);
-              element.style.transition = '';
-            }, 300);
-          });
+          // Calculate delta, subtracting the layout shift
+          const rawDelta = oldPos - newPos;
+          const deltaY = rawDelta - layoutShift;
+
+          // Only animate if there's meaningful movement after accounting for layout shift
+          if (Math.abs(deltaY) > 5 && Math.abs(deltaY) < 500) {
+            willAnimate = true;
+            element.style.transform = `translateY(${deltaY}px)`;
+            element.style.transition = 'none';
+          }
         }
         // Store new position for next time
         prevPositions.current[todo.id] = newPos;
       }
     });
-  }, [sortedTodos, isAnimating]);
+
+    // Start animations if any elements need to move
+    if (willAnimate) {
+      isAnimatingRef.current = true;
+      requestAnimationFrame(() => {
+        sortedTodos.forEach(todo => {
+          const element = todoRefs.current[todo.id];
+          if (element && element.style.transform) {
+            element.style.transition = 'transform 0.3s ease-out';
+            element.style.transform = 'translateY(0)';
+          }
+        });
+        // Clear animation state after animation completes
+        setTimeout(() => {
+          isAnimatingRef.current = false;
+          sortedTodos.forEach(todo => {
+            const element = todoRefs.current[todo.id];
+            if (element) {
+              element.style.transition = '';
+            }
+          });
+        }, 300);
+      });
+    }
+  }, [sortedTodos]);
 
   const renderTodoItem = (todo) => (
     <div
