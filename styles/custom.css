@@ -386,6 +386,18 @@ body.dark-scrollbar *::-webkit-scrollbar-thumb:hover {
   background: #6b7280;
 }
 
+/* Hide scrollbars on mobile */
+@media (max-width: 640px) {
+  *::-webkit-scrollbar {
+    display: none;
+  }
+
+  * {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+}
+
 /* Line Clamp Utilities */
 .line-clamp-2 {
   display: -webkit-box;
