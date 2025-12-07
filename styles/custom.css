@@ -351,19 +351,20 @@ input[type="number"] {
 /* Garage Door - Desktop Scale Up */
 @media (min-width: 768px) {
   .garage-spinner {
-    width: 150px;
-    height: 180px;
-    border-width: 3px;
+    width: 200px;
+    height: 240px;
+    border-width: 4px;
   }
 
   .door-segment {
-    height: 45px;
+    height: 60px;
+    border-bottom-width: 2px;
   }
 
   .door-segment:nth-child(1) { bottom: 0px; }
-  .door-segment:nth-child(2) { bottom: 45px; }
-  .door-segment:nth-child(3) { bottom: 90px; }
-  .door-segment:nth-child(4) { bottom: 135px; }
+  .door-segment:nth-child(2) { bottom: 60px; }
+  .door-segment:nth-child(3) { bottom: 120px; }
+  .door-segment:nth-child(4) { bottom: 180px; }
 }
 
 /* Scrollbar Styles - WebKit */
