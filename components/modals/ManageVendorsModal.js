@@ -275,8 +275,8 @@ const ManageVendorsModal = ({
                               }}
                               className={`px-3 py-2 rounded-lg font-medium transition-colors flex items-center gap-2 text-sm ${
                                 darkMode
-                                  ? 'bg-red-900/30 hover:bg-red-900/50 text-red-400 border border-red-700'
-                                  : 'bg-red-50 hover:bg-red-100 text-red-600 border border-red-300'
+                                  ? 'hover:bg-red-900/50 text-red-400 border border-red-700'
+                                  : 'hover:bg-red-100 text-red-600 border border-red-300'
                               }`}
                             >
                               <Trash2 className="w-4 h-4" />
