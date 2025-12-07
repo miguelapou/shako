@@ -2,7 +2,7 @@ import React from 'react';
 
 // PriceDisplay Component - displays price with smaller decimal portion
 const PriceDisplay = ({ amount, className = '', darkMode }) => {
-  const formattedAmount = amount.toFixed(2);
+  const formattedAmount = (amount ?? 0).toFixed(2);
   const [dollars, cents] = formattedAmount.split('.');
 
   return (
