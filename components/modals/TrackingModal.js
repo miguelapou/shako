@@ -20,6 +20,22 @@ const TrackingModal = ({
     }, 150);
   }, [onClose]);
 
+  const handleSkip = useCallback(() => {
+    setIsClosing(true);
+    setTimeout(() => {
+      setIsClosing(false);
+      skipTrackingInfo();
+    }, 150);
+  }, [skipTrackingInfo]);
+
+  const handleSave = useCallback(() => {
+    setIsClosing(true);
+    setTimeout(() => {
+      setIsClosing(false);
+      saveTrackingInfo();
+    }, 150);
+  }, [saveTrackingInfo]);
+
   if (!isOpen) return null;
 
   return (
@@ -75,7 +91,7 @@ const TrackingModal = ({
           />
           <div className="flex gap-3 mt-6">
             <button
-              onClick={skipTrackingInfo}
+              onClick={handleSkip}
               className={`px-4 py-2 border rounded-lg font-medium transition-colors ${
                 darkMode
                   ? 'border-gray-600 text-gray-300 hover:bg-gray-700'
@@ -85,7 +101,7 @@ const TrackingModal = ({
               Skip
             </button>
             <button
-              onClick={saveTrackingInfo}
+              onClick={handleSave}
               className="flex-1 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-medium transition-colors"
             >
               Save
