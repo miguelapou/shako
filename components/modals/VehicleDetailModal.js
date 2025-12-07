@@ -18,12 +18,15 @@ import {
   FileText,
   Plus,
   ExternalLink,
-  MoreVertical
+  MoreVertical,
+  Calendar,
+  ListChecks
 } from 'lucide-react';
 import ProjectDetailView from '../ui/ProjectDetailView';
 import ProjectEditForm from '../ui/ProjectEditForm';
 import LinkedPartsSection from '../ui/LinkedPartsSection';
 import AddDocumentModal from './AddDocumentModal';
+import AddServiceEventModal from './AddServiceEventModal';
 import {
   calculateVehicleTotalSpent,
   calculateProjectTotal
@@ -104,7 +107,26 @@ const VehicleDetailModal = ({
   handleDocumentDragEnter,
   handleDocumentDragLeave,
   handleDocumentDragOver,
-  handleDocumentDrop
+  handleDocumentDrop,
+  // Service events props
+  serviceEvents,
+  loadingServiceEvents,
+  savingServiceEvent,
+  showAddServiceEventModal,
+  setShowAddServiceEventModal,
+  newEventDate,
+  setNewEventDate,
+  newEventDescription,
+  setNewEventDescription,
+  newEventOdometer,
+  setNewEventOdometer,
+  editingServiceEvent,
+  addServiceEvent,
+  updateServiceEvent,
+  deleteServiceEvent,
+  openAddServiceEventModal,
+  openEditServiceEventModal,
+  handleCloseServiceEventModal
 }) => {
   if (!isOpen || !viewingVehicle) return null;
 
@@ -242,7 +264,7 @@ const VehicleDetailModal = ({
                         }`}>
                           {vehicleProjects.length > 0 && (
                             <span className="flex items-center gap-1">
-                              <Wrench className="w-3.5 h-3.5" />
+                              <ListChecks className="w-3.5 h-3.5" />
                               {vehicleProjects.length}
                             </span>
                           )}
@@ -407,17 +429,238 @@ const VehicleDetailModal = ({
                 )}
               </div>
 
-              {/* Maintenance Section (includes filters, oil, battery) */}
-              <div className={`pt-6 border-t ${
+              {/* Service History and Maintenance - Side by side on desktop */}
+              <div className={`pt-6 border-t grid grid-cols-1 lg:grid-cols-2 gap-6 ${
                 darkMode ? 'border-gray-700' : 'border-slate-200'
               }`}>
-                <h3 className={`text-lg font-semibold mb-3 ${
+                {/* Service Events Timeline Section */}
+                <div className="order-2 lg:order-2">
+                <div className="flex items-center justify-between mb-3">
+                  <h3 className={`text-lg font-semibold ${
+                    darkMode ? 'text-gray-200' : 'text-gray-800'
+                  }`}>
+                    Service History ({serviceEvents?.length || 0})
+                  </h3>
+                </div>
+                <div className="relative">
+                    {/* Timeline items */}
+                    <div className="flex flex-col gap-4">
+                      {serviceEvents && [...serviceEvents].sort((a, b) =>
+                        new Date(a.event_date + 'T00:00:00') - new Date(b.event_date + 'T00:00:00')
+                      ).map((event, index, arr) => {
+                        const eventDate = new Date(event.event_date + 'T00:00:00');
+                        const formattedDate = eventDate.toLocaleDateString('en-US', {
+                          month: 'short',
+                          day: 'numeric',
+                          year: 'numeric'
+                        });
+                        const isLast = index === arr.length - 1;
+
+                        // Calculate mileage difference from previous event with same description
+                        let mileageDiff = null;
+                        if (event.odometer) {
+                          const previousSameEvent = arr
+                            .slice(0, index)
+                            .filter(e => e.description.toLowerCase() === event.description.toLowerCase() && e.odometer)
+                            .pop();
+                          if (previousSameEvent) {
+                            mileageDiff = event.odometer - previousSameEvent.odometer;
+                          }
+                        }
+
+                        return (
+                          <div
+                            key={event.id}
+                            className="relative flex items-stretch gap-4 group"
+                          >
+                            {/* Timeline column with icon and line */}
+                            <div className="relative flex flex-col items-center">
+                              {/* Timeline dot */}
+                              <div className={`relative z-10 flex-shrink-0 w-10 h-10 rounded-full flex items-center justify-center ${
+                                darkMode ? 'bg-gray-700 border-2 border-gray-600' : 'bg-white border-2 border-gray-300'
+                              } group-hover:border-blue-500 transition-colors`}>
+                                <Wrench className={`w-4 h-4 ${
+                                  darkMode ? 'text-gray-400' : 'text-gray-500'
+                                } group-hover:text-blue-500 transition-colors`} />
+                              </div>
+                              {/* Line extending down - mb-[-16px] extends into the gap to reach next icon */}
+                              <div
+                                className={`flex-1 w-0.5 -mb-4 ${
+                                  isLast
+                                    ? (darkMode ? 'border-l-2 border-dashed border-gray-600 bg-transparent' : 'border-l-2 border-dashed border-gray-300 bg-transparent')
+                                    : (darkMode ? 'bg-gray-600' : 'bg-gray-300')
+                                }`}
+                              />
+                            </div>
+
+                            {/* Event content */}
+                            <div className="flex-1 min-w-0 pb-0">
+                              <div className={`rounded-lg p-3 border transition-all ${
+                                darkMode
+                                  ? 'bg-gray-700/50 border-gray-600 hover:border-gray-500'
+                                  : 'bg-gray-50 border-gray-200 hover:border-gray-300'
+                              }`}>
+                                <div className="flex items-start justify-between gap-2">
+                                  <div className="flex-1 min-w-0">
+                                    <p className={`text-sm font-medium ${
+                                      darkMode ? 'text-gray-200' : 'text-gray-800'
+                                    }`}>
+                                      {event.description}
+                                    </p>
+                                    <div className="flex flex-wrap items-center gap-x-3 gap-y-1 mt-1">
+                                      <span className={`text-xs flex items-center gap-1 whitespace-nowrap ${
+                                        darkMode ? 'text-gray-400' : 'text-gray-500'
+                                      }`}>
+                                        <Calendar className="w-3 h-3 flex-shrink-0" />
+                                        {formattedDate}
+                                      </span>
+                                      {event.odometer && (
+                                        <span className={`text-xs flex items-center gap-1 whitespace-nowrap ${
+                                          darkMode ? 'text-gray-400' : 'text-gray-500'
+                                        }`}>
+                                          <Gauge className="w-3 h-3 flex-shrink-0" />
+                                          {event.odometer.toLocaleString()}{viewingVehicle.odometer_unit ? ` ${viewingVehicle.odometer_unit}` : ''}
+                                          {mileageDiff !== null && (
+                                            <span className={`${
+                                              darkMode ? 'text-gray-500' : 'text-gray-400'
+                                            }`}>
+                                              (+{mileageDiff.toLocaleString()})
+                                            </span>
+                                          )}
+                                        </span>
+                                      )}
+                                    </div>
+                                  </div>
+                                  {/* Actions */}
+                                  <div className="flex items-center gap-1 flex-shrink-0 opacity-0 group-hover:opacity-100 transition-opacity">
+                                    <button
+                                      onClick={() => openEditServiceEventModal(event)}
+                                      className={`p-1.5 rounded transition-colors ${
+                                        darkMode
+                                          ? 'hover:bg-gray-600 text-gray-400 hover:text-gray-200'
+                                          : 'hover:bg-gray-200 text-gray-500 hover:text-gray-700'
+                                      }`}
+                                    >
+                                      <Edit2 className="w-3.5 h-3.5" />
+                                    </button>
+                                    <button
+                                      onClick={() => {
+                                        setConfirmDialog({
+                                          isOpen: true,
+                                          title: 'Delete Service Event',
+                                          message: `Are you sure you want to delete "${event.description}"? This action cannot be undone.`,
+                                          confirmText: 'Delete',
+                                          onConfirm: () => deleteServiceEvent(event.id)
+                                        });
+                                      }}
+                                      className={`hidden md:block p-1.5 rounded transition-colors ${
+                                        darkMode
+                                          ? 'hover:bg-red-900/50 text-gray-400 hover:text-red-400'
+                                          : 'hover:bg-red-100 text-gray-500 hover:text-red-600'
+                                      }`}
+                                    >
+                                      <Trash2 className="w-3.5 h-3.5" />
+                                    </button>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        );
+                      })}
+
+                      {/* Add new service event card */}
+                      <div
+                        onClick={openAddServiceEventModal}
+                        className="relative flex items-stretch gap-4 cursor-pointer group"
+                      >
+                        {/* Timeline column with icon */}
+                        <div className="relative flex flex-col items-center">
+                          {/* Timeline dot for add card - with background to cover line */}
+                          <div className={`relative z-10 flex-shrink-0 w-10 h-10 rounded-full flex items-center justify-center border-2 border-dashed ${
+                            darkMode
+                              ? 'bg-gray-800 border-gray-600 group-hover:border-blue-500'
+                              : 'bg-slate-200 border-gray-300 group-hover:border-blue-500'
+                          } transition-colors`}>
+                            <Plus className={`w-4 h-4 ${
+                              darkMode ? 'text-gray-500 group-hover:text-blue-400' : 'text-gray-400 group-hover:text-blue-600'
+                            } transition-colors`} />
+                          </div>
+                        </div>
+
+                        {/* Add card content */}
+                        <div className={`flex-1 rounded-lg p-3 border-2 border-dashed transition-all ${
+                          darkMode
+                            ? 'border-gray-600 group-hover:border-blue-500 group-hover:bg-gray-700/30'
+                            : 'border-gray-300 group-hover:border-blue-500 group-hover:bg-blue-50/30'
+                        }`}>
+                          <p className={`text-sm font-medium ${
+                            darkMode ? 'text-gray-400 group-hover:text-gray-200' : 'text-gray-500 group-hover:text-gray-700'
+                          } transition-colors`}>
+                            Add service event
+                          </p>
+                          <p className={`text-xs mt-0.5 ${
+                            darkMode ? 'text-gray-600' : 'text-gray-400'
+                          }`}>
+                            Track maintenance and repairs
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                {/* Add Service Event Modal */}
+                <AddServiceEventModal
+                  isOpen={showAddServiceEventModal}
+                  onClose={handleCloseServiceEventModal}
+                  darkMode={darkMode}
+                  eventDate={newEventDate}
+                  setEventDate={setNewEventDate}
+                  description={newEventDescription}
+                  setDescription={setNewEventDescription}
+                  odometer={newEventOdometer}
+                  setOdometer={setNewEventOdometer}
+                  editingEvent={editingServiceEvent}
+                  onSave={async () => {
+                    if (editingServiceEvent) {
+                      const result = await updateServiceEvent(editingServiceEvent.id, {
+                        event_date: newEventDate,
+                        description: newEventDescription.trim(),
+                        odometer: newEventOdometer ? parseInt(newEventOdometer, 10) : null
+                      });
+                      return result;
+                    } else {
+                      const result = await addServiceEvent(
+                        viewingVehicle.id,
+                        newEventDate,
+                        newEventDescription,
+                        newEventOdometer
+                      );
+                      return result;
+                    }
+                  }}
+                  onDelete={editingServiceEvent ? () => {
+                    setConfirmDialog({
+                      isOpen: true,
+                      title: 'Delete Service Event',
+                      message: `Are you sure you want to delete "${editingServiceEvent.description}"? This action cannot be undone.`,
+                      confirmText: 'Delete',
+                      onConfirm: () => deleteServiceEvent(editingServiceEvent.id)
+                    });
+                  } : null}
+                  saving={savingServiceEvent}
+                />
+                </div>
+
+                {/* Maintenance Section (includes filters, oil, battery) */}
+                <div className="order-1 lg:order-1">
+                  <h3 className={`text-lg font-semibold mb-3 ${
                   darkMode ? 'text-gray-200' : 'text-gray-800'
                 }`}>
                   Maintenance
                 </h3>
                 {(viewingVehicle.fuel_filter || viewingVehicle.air_filter || viewingVehicle.oil_filter || viewingVehicle.oil_type || viewingVehicle.oil_capacity || viewingVehicle.oil_brand || viewingVehicle.drain_plug || viewingVehicle.battery) ? (
-                  <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+                  <div className="grid grid-cols-2 gap-4">
                     {/* Mobile two-column layout: Left (fuel filter, air filter, battery, drain plug) | Right (oil filter, oil capacity, oil type, oil brand) */}
                     {viewingVehicle.fuel_filter && (
                       <div>
@@ -510,6 +753,7 @@ const VehicleDetailModal = ({
                     </p>
                   </div>
                 )}
+                </div>
               </div>
 
               {/* Documents Section */}
@@ -652,7 +896,7 @@ const VehicleDetailModal = ({
                       darkMode ? 'text-gray-200' : 'text-gray-800'
                     }`}>
                       <div className="flex items-center gap-2">
-                        <Wrench className="w-5 h-5" />
+                        <ListChecks className="w-5 h-5" />
                         <span>Projects ({vehicleProjects.length})</span>
                       </div>
                     </h3>
@@ -739,7 +983,7 @@ const VehicleDetailModal = ({
                       <div className={`text-center py-8 rounded-lg border ${
                         darkMode ? 'bg-gray-700/30 border-gray-600 text-gray-400' : 'bg-gray-50 border-gray-200 text-gray-500'
                       }`}>
-                        <Wrench className="w-12 h-12 mx-auto mb-2 opacity-40" />
+                        <ListChecks className="w-12 h-12 mx-auto mb-2 opacity-40" />
                         <p className="text-sm">
                           No projects linked
                         </p>
