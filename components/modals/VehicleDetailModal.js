@@ -19,7 +19,8 @@ import {
   Plus,
   ExternalLink,
   MoreVertical,
-  Calendar
+  Calendar,
+  ListChecks
 } from 'lucide-react';
 import ProjectDetailView from '../ui/ProjectDetailView';
 import ProjectEditForm from '../ui/ProjectEditForm';
@@ -263,7 +264,7 @@ const VehicleDetailModal = ({
                         }`}>
                           {vehicleProjects.length > 0 && (
                             <span className="flex items-center gap-1">
-                              <Wrench className="w-3.5 h-3.5" />
+                              <ListChecks className="w-3.5 h-3.5" />
                               {vehicleProjects.length}
                             </span>
                           )}
@@ -433,7 +434,7 @@ const VehicleDetailModal = ({
                 darkMode ? 'border-gray-700' : 'border-slate-200'
               }`}>
                 {/* Service Events Timeline Section */}
-                <div className="lg:order-2">
+                <div className="order-2 lg:order-2">
                 <div className="flex items-center justify-between mb-3">
                   <h3 className={`text-lg font-semibold ${
                     darkMode ? 'text-gray-200' : 'text-gray-800'
@@ -633,7 +634,7 @@ const VehicleDetailModal = ({
                 </div>
 
                 {/* Maintenance Section (includes filters, oil, battery) */}
-                <div className="lg:order-1">
+                <div className="order-1 lg:order-1">
                   <h3 className={`text-lg font-semibold mb-3 ${
                   darkMode ? 'text-gray-200' : 'text-gray-800'
                 }`}>
@@ -876,7 +877,7 @@ const VehicleDetailModal = ({
                       darkMode ? 'text-gray-200' : 'text-gray-800'
                     }`}>
                       <div className="flex items-center gap-2">
-                        <Wrench className="w-5 h-5" />
+                        <ListChecks className="w-5 h-5" />
                         <span>Projects ({vehicleProjects.length})</span>
                       </div>
                     </h3>
@@ -963,7 +964,7 @@ const VehicleDetailModal = ({
                       <div className={`text-center py-8 rounded-lg border ${
                         darkMode ? 'bg-gray-700/30 border-gray-600 text-gray-400' : 'bg-gray-50 border-gray-200 text-gray-500'
                       }`}>
-                        <Wrench className="w-12 h-12 mx-auto mb-2 opacity-40" />
+                        <ListChecks className="w-12 h-12 mx-auto mb-2 opacity-40" />
                         <p className="text-sm">
                           No projects linked
                         </p>

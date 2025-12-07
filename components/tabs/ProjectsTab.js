@@ -1,7 +1,7 @@
 import React from 'react';
 import {
   Plus, ChevronDown, ChevronRight, Edit2, GripVertical,
-  Package, CheckCircle, Clock, Car, Archive, Wrench, FolderLock, FolderOpen
+  Package, CheckCircle, Clock, Car, Archive, ListChecks, FolderLock, FolderOpen
 } from 'lucide-react';
 import { getStatusColors, getPriorityColors, getMutedColor, getPriorityBorderColor } from '../../utils/colorUtils';
 import { calculateProjectTotal } from '../../utils/dataUtils';
@@ -366,7 +366,7 @@ const ProjectsTab = ({
           <div className={`text-center py-12 rounded-lg ${
             darkMode ? 'bg-gray-800' : 'bg-slate-100'
           }`}>
-            <Wrench className={`w-16 h-16 mx-auto mb-4 ${
+            <ListChecks className={`w-16 h-16 mx-auto mb-4 ${
               darkMode ? 'text-gray-600' : 'text-gray-400'
             }`} />
             <h3 className={`text-xl font-semibold mb-2 ${

@@ -1,7 +1,7 @@
 import React from 'react';
 import {
   Plus, ChevronDown, ChevronRight, Edit2, GripVertical,
-  Car, Archive, Package, Wrench, FolderLock, FolderOpen, Camera
+  Car, Archive, Package, ListChecks, FolderLock, FolderOpen, Camera
 } from 'lucide-react';
 import { getMutedColor, getPriorityBorderColor } from '../../utils/colorUtils';
 import AddVehicleModal from '../modals/AddVehicleModal';
@@ -280,7 +280,7 @@ const VehiclesTab = ({
                                     width: 'calc(50% - 4px)'
                                   }}
                                 >
-                                  <Wrench className="w-3 h-3 mr-1 flex-shrink-0" />
+                                  <ListChecks className="w-3 h-3 mr-1 flex-shrink-0" />
                                   <span className="truncate">{project.name}</span>
                                 </span>
                               ))}
@@ -296,7 +296,7 @@ const VehiclesTab = ({
                             </div>
                           ) : (
                             <div className="text-center py-2">
-                              <Wrench className={`w-6 h-6 mx-auto mb-1 opacity-40 ${
+                              <ListChecks className={`w-6 h-6 mx-auto mb-1 opacity-40 ${
                                 darkMode ? 'text-gray-400' : 'text-gray-500'
                               }`} />
                               <p className={`text-xs ${
