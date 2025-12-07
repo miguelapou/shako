@@ -232,35 +232,34 @@ const PartDetailModal = ({
                 <div className="grid grid-cols-2 gap-4">
                   {/* Column 1: Part Number, Vendor */}
                   <div className="space-y-4">
-                    {viewingPart.partNumber &&
-                      viewingPart.partNumber !== '-' && (
-                        <div>
-                          <p
-                            className={`text-sm font-medium mb-1 ${
-                              darkMode ? 'text-gray-400' : 'text-slate-600'
-                            }`}
-                          >
-                            Part Number
-                          </p>
-                          <p
-                            className={`text-base font-mono ${
-                              darkMode ? 'text-gray-100' : 'text-slate-800'
-                            }`}
-                          >
-                            {viewingPart.partNumber}
-                          </p>
-                        </div>
-                      )}
-                    {viewingPart.vendor && (
-                      <div>
-                        <p
-                          className={`text-sm font-medium mb-2 ${
-                            darkMode ? 'text-gray-400' : 'text-slate-600'
-                          }`}
-                        >
-                          Vendor
-                        </p>
-                        {vendorColors[viewingPart.vendor] ? (
+                    <div>
+                      <p
+                        className={`text-sm font-medium mb-1 ${
+                          darkMode ? 'text-gray-400' : 'text-slate-600'
+                        }`}
+                      >
+                        Part Number
+                      </p>
+                      <p
+                        className={`text-base font-mono ${
+                          darkMode ? 'text-gray-100' : 'text-slate-800'
+                        }`}
+                      >
+                        {viewingPart.partNumber && viewingPart.partNumber !== '-'
+                          ? viewingPart.partNumber
+                          : '--'}
+                      </p>
+                    </div>
+                    <div>
+                      <p
+                        className={`text-sm font-medium mb-1 ${
+                          darkMode ? 'text-gray-400' : 'text-slate-600'
+                        }`}
+                      >
+                        Vendor
+                      </p>
+                      {viewingPart.vendor ? (
+                        vendorColors[viewingPart.vendor] ? (
                           (() => {
                             const colors = getVendorDisplayColor(
                               vendorColors[viewingPart.vendor],
@@ -288,9 +287,17 @@ const PartDetailModal = ({
                           >
                             {viewingPart.vendor}
                           </span>
-                        )}
-                      </div>
-                    )}
+                        )
+                      ) : (
+                        <p
+                          className={`text-base ${
+                            darkMode ? 'text-gray-100' : 'text-slate-800'
+                          }`}
+                        >
+                          --
+                        </p>
+                      )}
+                    </div>
                   </div>
                   {/* Column 2: Vehicle, Project */}
                   <div className="space-y-4">
@@ -302,15 +309,15 @@ const PartDetailModal = ({
                         ? vehicles.find((v) => v.id === partProject.vehicle_id)
                         : null;
                       return (
-                        vehicle && (
-                          <div>
-                            <p
-                              className={`text-sm font-medium mb-2 ${
-                                darkMode ? 'text-gray-400' : 'text-slate-600'
-                              }`}
-                            >
-                              Vehicle
-                            </p>
+                        <div>
+                          <p
+                            className={`text-sm font-medium mb-1 ${
+                              darkMode ? 'text-gray-400' : 'text-slate-600'
+                            }`}
+                          >
+                            Vehicle
+                          </p>
+                          {vehicle ? (
                             <span
                               className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-medium border ${
                                 darkMode
@@ -323,40 +330,53 @@ const PartDetailModal = ({
                                 {vehicle.nickname || vehicle.name}
                               </span>
                             </span>
-                          </div>
-                        )
+                          ) : (
+                            <p
+                              className={`text-base ${
+                                darkMode ? 'text-gray-100' : 'text-slate-800'
+                              }`}
+                            >
+                              --
+                            </p>
+                          )}
+                        </div>
                       );
                     })()}
-                    {viewingPart.projectId &&
-                      (() => {
-                        const project = projects.find(
-                          (p) => p.id === viewingPart.projectId
-                        );
-                        return (
-                          project && (
-                            <div>
-                              <p
-                                className={`text-sm font-medium mb-2 ${
-                                  darkMode
-                                    ? 'text-gray-400'
-                                    : 'text-slate-600'
-                                }`}
-                              >
-                                Project
-                              </p>
-                              <span
-                                className={`inline-block px-3 py-1 rounded-full text-sm font-medium ${
-                                  darkMode
-                                    ? 'bg-blue-900/30 text-blue-200 border border-blue-700'
-                                    : 'bg-blue-50 text-blue-800 border border-blue-200'
-                                }`}
-                              >
-                                {project.name}
-                              </span>
-                            </div>
-                          )
-                        );
-                      })()}
+                    {(() => {
+                      const project = viewingPart.projectId
+                        ? projects.find((p) => p.id === viewingPart.projectId)
+                        : null;
+                      return (
+                        <div>
+                          <p
+                            className={`text-sm font-medium mb-1 ${
+                              darkMode ? 'text-gray-400' : 'text-slate-600'
+                            }`}
+                          >
+                            Project
+                          </p>
+                          {project ? (
+                            <span
+                              className={`inline-block px-3 py-1 rounded-full text-sm font-medium ${
+                                darkMode
+                                  ? 'bg-blue-900/30 text-blue-200 border border-blue-700'
+                                  : 'bg-blue-50 text-blue-800 border border-blue-200'
+                              }`}
+                            >
+                              {project.name}
+                            </span>
+                          ) : (
+                            <p
+                              className={`text-base ${
+                                darkMode ? 'text-gray-100' : 'text-slate-800'
+                              }`}
+                            >
+                              --
+                            </p>
+                          )}
+                        </div>
+                      );
+                    })()}
                   </div>
                 </div>
               </div>
