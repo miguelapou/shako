@@ -115,35 +115,59 @@ const ProjectDetailView = ({
 
   // FLIP animation with useLayoutEffect for synchronous execution
   useLayoutEffect(() => {
+    // Helper to get element position without any active transforms
+    const getCleanPosition = (element) => {
+      if (!element) return null;
+      // Temporarily clear transform to get true layout position
+      const currentTransform = element.style.transform;
+      element.style.transform = '';
+      const pos = element.getBoundingClientRect().top;
+      element.style.transform = currentTransform;
+      return pos;
+    };
+
     // On first render, capture positions synchronously
     if (!hasInitialized.current) {
       sortedTodos.forEach(todo => {
         const element = todoRefs.current[todo.id];
         if (element) {
-          const pos = element.getBoundingClientRect().top;
-          prevPositions.current[todo.id] = pos;
+          prevPositions.current[todo.id] = getCleanPosition(element);
         }
       });
       hasInitialized.current = true;
       return; // Don't animate on first render
     }
-    // Use ref for synchronous check - prevents race condition with rapid clicks
+
+    // If animation is in progress, still update positions but skip new animation
+    // This prevents stale positions on the next click
     if (isAnimatingRef.current) {
-      return; // Don't interrupt ongoing animations
+      sortedTodos.forEach(todo => {
+        const element = todoRefs.current[todo.id];
+        if (element) {
+          // Store the TARGET position (where element will be after current animation)
+          // We use clean position to get layout position without transform offset
+          prevPositions.current[todo.id] = getCleanPosition(element);
+        }
+      });
+      return;
     }
+
     // Capture the old positions before React updates the DOM
     const oldPositions = { ...prevPositions.current };
     const hasOldPositions = Object.keys(oldPositions).length > 0;
+
     // Collect new positions first before any animations
     const newPositions = {};
     sortedTodos.forEach(todo => {
       const element = todoRefs.current[todo.id];
       if (element) {
-        newPositions[todo.id] = element.getBoundingClientRect().top;
+        newPositions[todo.id] = getCleanPosition(element);
       }
     });
+
     // Track if any animation will run
     let willAnimate = false;
+
     // Now set up animations and update stored positions
     sortedTodos.forEach(todo => {
       const element = todoRefs.current[todo.id];
@@ -151,17 +175,22 @@ const ProjectDetailView = ({
         const newPos = newPositions[todo.id];
         const oldPos = oldPositions[todo.id];
         if (hasOldPositions && oldPos !== undefined && newPos !== oldPos) {
-          willAnimate = true;
           // Calculate how far the element has moved
           const deltaY = oldPos - newPos;
-          // Immediately move it back to the old position
-          element.style.transform = `translateY(${deltaY}px)`;
-          element.style.transition = 'none';
+          // Skip animation if the position change is too drastic (likely section change)
+          // This happens when todos move between completed/uncompleted sections
+          if (Math.abs(deltaY) < 500) {
+            willAnimate = true;
+            // Immediately move it back to the old position
+            element.style.transform = `translateY(${deltaY}px)`;
+            element.style.transition = 'none';
+          }
         }
         // Store new position for next time
         prevPositions.current[todo.id] = newPos;
       }
     });
+
     // Start animations if any elements need to move
     if (willAnimate) {
       isAnimatingRef.current = true;
