@@ -45,6 +45,7 @@ const PartDetailModal = ({
   onRefreshTracking
 }) => {
   const [isRefreshingTracking, setIsRefreshingTracking] = useState(false);
+  const [trackingError, setTrackingError] = useState(null);
 
   // Format relative time (just now, X minutes ago, etc.)
   const formatRelativeTime = (dateString) => {
@@ -70,6 +71,7 @@ const PartDetailModal = ({
     if (viewingPart.tracking.startsWith('http')) return;
 
     setIsRefreshingTracking(true);
+    setTrackingError(null);
     try {
       const response = await fetch(`/api/tracking/${viewingPart.id}`);
       const data = await response.json();
@@ -87,9 +89,19 @@ const PartDetailModal = ({
         if (onRefreshTracking) {
           onRefreshTracking(viewingPart.id, data.tracking);
         }
+
+        // Show rate limit warning if applicable
+        if (data.rateLimited) {
+          setTrackingError(data.rateLimitMessage || 'Rate limit reached. Showing cached data.');
+        }
+      } else if (data.rateLimited) {
+        setTrackingError(data.error || 'API rate limit reached. Try again tomorrow.');
+      } else if (data.error) {
+        setTrackingError(data.error);
       }
     } catch (error) {
       console.error('Failed to refresh tracking:', error);
+      setTrackingError('Failed to refresh tracking data.');
     } finally {
       setIsRefreshingTracking(false);
     }
@@ -97,6 +109,9 @@ const PartDetailModal = ({
 
   // Auto-refresh tracking when modal opens if data is stale (>8 hours old)
   useEffect(() => {
+    // Reset error state when modal opens or part changes
+    setTrackingError(null);
+
     if (
       isOpen &&
       viewingPart?.tracking &&
@@ -543,6 +558,19 @@ const PartDetailModal = ({
                         </div>
                       </div>
                     ) : null}
+
+                    {/* Error/Rate limit message */}
+                    {trackingError && (
+                      <div
+                        className={`text-xs px-3 py-2 rounded-lg ${
+                          darkMode
+                            ? 'bg-yellow-900/30 text-yellow-300 border border-yellow-700'
+                            : 'bg-yellow-50 text-yellow-700 border border-yellow-200'
+                        }`}
+                      >
+                        {trackingError}
+                      </div>
+                    )}
                   </div>
                 ) : (
                   /* Fallback for URL tracking */
