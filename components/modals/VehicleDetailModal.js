@@ -463,16 +463,17 @@ const VehicleDetailModal = ({
                         return (
                           <div
                             key={event.id}
-                            className="relative flex items-start gap-4 group"
+                            className="relative flex items-center gap-4 group"
                           >
                             {/* Timeline line segment - connects to next item */}
-                            {!isLast && (
-                              <div
-                                className={`absolute left-[19px] top-10 bottom-0 w-0.5 ${
-                                  darkMode ? 'bg-gray-600' : 'bg-gray-300'
-                                }`}
-                              />
-                            )}
+                            <div
+                              className={`absolute left-[19px] top-1/2 bottom-0 w-0.5 ${
+                                isLast
+                                  ? (darkMode ? 'border-l-2 border-dashed border-gray-600' : 'border-l-2 border-dashed border-gray-300')
+                                  : (darkMode ? 'bg-gray-600' : 'bg-gray-300')
+                              }`}
+                              style={isLast ? { background: 'none' } : {}}
+                            />
 
                             {/* Timeline dot */}
                             <div className={`relative z-10 flex-shrink-0 w-10 h-10 rounded-full flex items-center justify-center ${
@@ -555,7 +556,7 @@ const VehicleDetailModal = ({
                       {/* Add new service event card */}
                       <div
                         onClick={openAddServiceEventModal}
-                        className="relative flex items-start gap-4 cursor-pointer group"
+                        className="relative flex items-center gap-4 cursor-pointer group pt-6"
                       >
                         {/* Timeline dot for add card - with background to cover line */}
                         <div className={`relative z-10 flex-shrink-0 w-10 h-10 rounded-full flex items-center justify-center border-2 border-dashed ${
