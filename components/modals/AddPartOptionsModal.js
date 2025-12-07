@@ -1,5 +1,6 @@
 import React, { useRef, useState } from 'react';
 import { X, Package, FileSpreadsheet, Upload } from 'lucide-react';
+import { useUI } from '../../contexts';
 
 const AddPartOptionsModal = ({
   isOpen,
@@ -12,6 +13,7 @@ const AddPartOptionsModal = ({
 }) => {
   const fileInputRef = useRef(null);
   const [isDragging, setIsDragging] = useState(false);
+  const { toast } = useUI();
 
   if (!isOpen) return null;
 
@@ -38,7 +40,7 @@ const AddPartOptionsModal = ({
       if (file.type === 'text/csv' || file.name.endsWith('.csv')) {
         onCSVUpload(file);
       } else {
-        alert('Please upload a CSV file');
+        toast?.warning('Please upload a CSV file');
       }
     }
   };
@@ -49,7 +51,7 @@ const AddPartOptionsModal = ({
       if (file.type === 'text/csv' || file.name.endsWith('.csv')) {
         onCSVUpload(file);
       } else {
-        alert('Please upload a CSV file');
+        toast?.warning('Please upload a CSV file');
       }
     }
     // Reset the input so the same file can be selected again

@@ -24,11 +24,11 @@ import { ServiceEventProvider } from './ServiceEventContext';
  * const { documents, addDocument, loadDocuments } = useDocuments();
  * const { serviceEvents, addServiceEvent } = useServiceEvents();
  */
-export const AppProviders = ({ children, darkMode, setDarkMode, userId }) => {
+export const AppProviders = ({ children, darkMode, setDarkMode, userId, toast }) => {
   return (
-    <UIProvider darkMode={darkMode} setDarkMode={setDarkMode}>
-      <DocumentProvider userId={userId}>
-        <ServiceEventProvider userId={userId}>
+    <UIProvider darkMode={darkMode} setDarkMode={setDarkMode} toast={toast}>
+      <DocumentProvider userId={userId} toast={toast}>
+        <ServiceEventProvider userId={userId} toast={toast}>
           {children}
         </ServiceEventProvider>
       </DocumentProvider>

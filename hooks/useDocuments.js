@@ -10,9 +10,10 @@ import * as documentsService from '../services/documentsService';
  * - File upload to Supabase storage
  *
  * @param {string} userId - Current user's ID for data isolation
+ * @param {Object} toast - Toast notification functions { error, success, warning, info }
  * @returns {Object} Documents state and operations
  */
-const useDocuments = (userId) => {
+const useDocuments = (userId, toast) => {
   const [documents, setDocuments] = useState([]);
   const [loadingDocuments, setLoadingDocuments] = useState(false);
   const [uploadingDocument, setUploadingDocument] = useState(false);
@@ -111,7 +112,7 @@ const useDocuments = (userId) => {
 
       return newDocument;
     } catch (error) {
-      alert('Error uploading document. Please try again.');
+      toast?.error('Error uploading document. Please try again.');
       return null;
     } finally {
       setUploadingDocument(false);
@@ -132,7 +133,7 @@ const useDocuments = (userId) => {
         )
       );
     } catch (error) {
-      alert('Error updating document');
+      toast?.error('Error updating document');
     }
   };
 
@@ -146,7 +147,7 @@ const useDocuments = (userId) => {
       await documentsService.deleteDocument(documentId, fileUrl);
       setDocuments(prev => prev.filter(doc => doc.id !== documentId));
     } catch (error) {
-      alert('Error deleting document');
+      toast?.error('Error deleting document');
     }
   };
 
@@ -159,7 +160,7 @@ const useDocuments = (userId) => {
     if (file) {
       // Validate file size (max 10MB for documents)
       if (file.size > 10 * 1024 * 1024) {
-        alert('Document size must be less than 10MB');
+        toast?.warning('Document size must be less than 10MB');
         return;
       }
       setNewDocumentFile(file);
@@ -218,7 +219,7 @@ const useDocuments = (userId) => {
     if (file) {
       // Validate file size (max 10MB for documents)
       if (file.size > 10 * 1024 * 1024) {
-        alert('Document size must be less than 10MB');
+        toast?.warning('Document size must be less than 10MB');
         return;
       }
       setNewDocumentFile(file);
@@ -249,7 +250,7 @@ const useDocuments = (userId) => {
           const signedUrl = await documentsService.getDocumentFileUrl(document.file_url);
           window.open(signedUrl, '_blank');
         } catch (error) {
-          alert('Error opening document');
+          toast?.error('Error opening document');
         }
       }
     }

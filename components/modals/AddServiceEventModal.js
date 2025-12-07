@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { X, Trash2 } from 'lucide-react';
+import { useUI } from '../../contexts';
 
 /**
  * Modal for adding/editing a service event for a vehicle
@@ -24,6 +25,7 @@ const AddServiceEventModal = ({
   saving
 }) => {
   const [isClosing, setIsClosing] = useState(false);
+  const { toast } = useUI();
 
   const handleClose = () => {
     setIsClosing(true);
@@ -35,11 +37,11 @@ const AddServiceEventModal = ({
 
   const handleSave = async () => {
     if (!eventDate) {
-      alert('Please select a date');
+      toast?.warning('Please select a date');
       return;
     }
     if (!description.trim()) {
-      alert('Please enter a description');
+      toast?.warning('Please enter a description');
       return;
     }
     const result = await onSave();

@@ -35,6 +35,7 @@ import {
 
 // UI Components
 import ConfirmDialog from './ui/ConfirmDialog';
+import ToastContainer from './ui/ToastContainer';
 import PrimaryButton from './ui/PrimaryButton';
 import PriceDisplay from './ui/PriceDisplay';
 import VendorSelect from './ui/VendorSelect';
@@ -73,6 +74,7 @@ import { useAuthContext } from './AuthProvider';
 // Context Providers
 import { AppProviders } from '../contexts';
 
+
 // ========================================
 // MAIN SHAKO COMPONENT
 // ========================================
@@ -88,6 +90,27 @@ const Shako = () => {
   // Auth hook
   const { user, signOut, deleteAccount } = useAuthContext();
   const userId = user?.id;
+
+  // Toast notification state (created here so hooks can use it)
+  const [toasts, setToasts] = useState([]);
+
+  const showToast = React.useCallback((message, options = {}) => {
+    const { type = 'info', duration = 5000 } = options;
+    const id = `toast-${Date.now()}-${Math.random()}`;
+    setToasts(prev => [...prev, { id, message, type, duration }]);
+    return id;
+  }, []);
+
+  const toast = React.useMemo(() => ({
+    success: (message, options = {}) => showToast(message, { ...options, type: 'success' }),
+    error: (message, options = {}) => showToast(message, { ...options, type: 'error', duration: options.duration || 7000 }),
+    warning: (message, options = {}) => showToast(message, { ...options, type: 'warning' }),
+    info: (message, options = {}) => showToast(message, { ...options, type: 'info' }),
+  }), [showToast]);
+
+  const dismissToast = React.useCallback((id) => {
+    setToasts(prev => prev.filter(t => t.id !== id));
+  }, []);
 
   // Delete account modal state
   const [showDeleteAccountModal, setShowDeleteAccountModal] = useState(false);
@@ -119,7 +142,7 @@ const Shako = () => {
     updatePartProject,
     getUniqueVendors,
     importPartsFromCSV
-  } = useParts(userId);
+  } = useParts(userId, toast);
 
   // Projects hook
   const {
@@ -136,7 +159,7 @@ const Shako = () => {
     calculateProjectStatus,
     getVehicleProjects,
     getVehicleProjectCount
-  } = useProjects(userId);
+  } = useProjects(userId, toast);
 
   // Vehicles hook
   const {
@@ -165,7 +188,7 @@ const Shako = () => {
     handleImageDragLeave,
     handleImageDragOver,
     handleImageDrop
-  } = useVehicles(userId);
+  } = useVehicles(userId, toast);
 
   // Note: Document and service event state is now managed via context (DocumentContext, ServiceEventContext)
   // and consumed directly by VehicleDetailModal
@@ -880,7 +903,7 @@ const Shako = () => {
   }
 
   return (
-    <AppProviders darkMode={darkMode} setDarkMode={setDarkMode} userId={userId}>
+    <AppProviders darkMode={darkMode} setDarkMode={setDarkMode} userId={userId} toast={toast}>
     <div className={`min-h-screen p-3 sm:p-6 transition-colors duration-200 ${
       darkMode
         ? 'bg-gray-900 dark-scrollbar'
@@ -1494,7 +1517,7 @@ const Shako = () => {
             setShowCSVImportModal(false);
             setCsvFile(null);
             if (importedCount > 0) {
-              alert(`Successfully imported ${importedCount} part${importedCount !== 1 ? 's' : ''}`);
+              toast.success(`Successfully imported ${importedCount} part${importedCount !== 1 ? 's' : ''}`);
             }
           }}
         />
@@ -1792,6 +1815,7 @@ const Shako = () => {
         handleCloseModal={handleCloseModal}
       />
     </div>
+    <ToastContainer toasts={toasts} onDismiss={dismissToast} darkMode={darkMode} />
     </AppProviders>
   );
 };

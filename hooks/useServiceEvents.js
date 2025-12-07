@@ -10,9 +10,10 @@ import * as serviceEventsService from '../services/serviceEventsService';
  * - Timeline display support
  *
  * @param {string} userId - Current user's ID for data isolation
+ * @param {Object} toast - Toast notification functions { error, success, warning, info }
  * @returns {Object} Service events state and operations
  */
-const useServiceEvents = (userId) => {
+const useServiceEvents = (userId, toast) => {
   const [serviceEvents, setServiceEvents] = useState([]);
   const [loadingServiceEvents, setLoadingServiceEvents] = useState(false);
   const [savingServiceEvent, setSavingServiceEvent] = useState(false);
@@ -74,7 +75,7 @@ const useServiceEvents = (userId) => {
 
       return newEvent;
     } catch (error) {
-      alert('Error creating service event. Please try again.');
+      toast?.error('Error creating service event. Please try again.');
       return null;
     } finally {
       setSavingServiceEvent(false);
@@ -100,7 +101,7 @@ const useServiceEvents = (userId) => {
 
       return updatedEvent;
     } catch (error) {
-      alert('Error updating service event');
+      toast?.error('Error updating service event');
       return null;
     } finally {
       setSavingServiceEvent(false);
@@ -116,7 +117,7 @@ const useServiceEvents = (userId) => {
       await serviceEventsService.deleteServiceEvent(eventId);
       setServiceEvents(prev => prev.filter(event => event.id !== eventId));
     } catch (error) {
-      alert('Error deleting service event');
+      toast?.error('Error deleting service event');
     }
   };
 

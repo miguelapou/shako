@@ -2,7 +2,7 @@ import React, { createContext, useContext, useState, useCallback } from 'react';
 
 const UIContext = createContext(null);
 
-export const UIProvider = ({ children, darkMode, setDarkMode }) => {
+export const UIProvider = ({ children, darkMode, setDarkMode, toast }) => {
   // Confirm dialog state
   const [confirmDialog, setConfirmDialog] = useState({
     isOpen: false,
@@ -46,6 +46,8 @@ export const UIProvider = ({ children, darkMode, setDarkMode }) => {
     // Dark mode
     darkMode,
     setDarkMode,
+    // Toast notifications (passed from Shako)
+    toast,
     // Confirm dialog
     confirmDialog,
     setConfirmDialog,

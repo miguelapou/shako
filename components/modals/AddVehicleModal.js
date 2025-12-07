@@ -1,6 +1,7 @@
 import React from 'react';
 import { X, Upload } from 'lucide-react';
 import { inputClasses } from '../../utils/styleUtils';
+import { useUI } from '../../contexts';
 
 const AddVehicleModal = ({
   isOpen,
@@ -23,6 +24,8 @@ const AddVehicleModal = ({
   handleImageDrop,
   onClose,
 }) => {
+  const { toast } = useUI();
+
   if (!isOpen) {
     return null;
   }
@@ -484,7 +487,7 @@ const AddVehicleModal = ({
             <button
               onClick={async () => {
                 if (!newVehicle.nickname) {
-                  alert('Please enter a nickname');
+                  toast?.warning('Please enter a nickname');
                   return;
                 }
                 // Upload image if one is selected

@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { X, Upload, FileText } from 'lucide-react';
+import { useUI } from '../../contexts';
 
 /**
  * Modal for adding a new document to a vehicle
@@ -26,6 +27,7 @@ const AddDocumentModal = ({
   handleDocumentDrop
 }) => {
   const [isClosing, setIsClosing] = useState(false);
+  const { toast } = useUI();
 
   const handleClose = () => {
     setIsClosing(true);
@@ -39,11 +41,11 @@ const AddDocumentModal = ({
 
   const handleUpload = async () => {
     if (!newDocumentTitle.trim()) {
-      alert('Please enter a document title');
+      toast?.warning('Please enter a document title');
       return;
     }
     if (!newDocumentFile) {
-      alert('Please select a file to upload');
+      toast?.warning('Please select a file to upload');
       return;
     }
     const result = await onUpload();

@@ -3,7 +3,7 @@ import * as documentsService from '../services/documentsService';
 
 const DocumentContext = createContext(null);
 
-export const DocumentProvider = ({ children, userId }) => {
+export const DocumentProvider = ({ children, userId, toast }) => {
   const [documents, setDocuments] = useState([]);
   const [loadingDocuments, setLoadingDocuments] = useState(false);
   const [uploadingDocument, setUploadingDocument] = useState(false);
@@ -83,12 +83,12 @@ export const DocumentProvider = ({ children, userId }) => {
       setDocuments(prev => [newDocument, ...prev]);
       return newDocument;
     } catch (error) {
-      alert('Error uploading document. Please try again.');
+      toast?.error('Error uploading document. Please try again.');
       return null;
     } finally {
       setUploadingDocument(false);
     }
-  }, [userId]);
+  }, [userId, toast]);
 
   // Delete a document
   const deleteDocument = useCallback(async (documentId, fileUrl) => {
@@ -96,21 +96,21 @@ export const DocumentProvider = ({ children, userId }) => {
       await documentsService.deleteDocument(documentId, fileUrl);
       setDocuments(prev => prev.filter(doc => doc.id !== documentId));
     } catch (error) {
-      alert('Error deleting document');
+      toast?.error('Error deleting document');
     }
-  }, []);
+  }, [toast]);
 
   // Handle document file selection
   const handleDocumentFileChange = useCallback((e) => {
     const file = e.target.files[0];
     if (file) {
       if (file.size > 10 * 1024 * 1024) {
-        alert('Document size must be less than 10MB');
+        toast?.warning('Document size must be less than 10MB');
         return;
       }
       setNewDocumentFile(file);
     }
-  }, []);
+  }, [toast]);
 
   // Clear document selection
   const clearDocumentSelection = useCallback(() => {
@@ -135,11 +135,11 @@ export const DocumentProvider = ({ children, userId }) => {
           const signedUrl = await documentsService.getDocumentFileUrl(document.file_url);
           window.open(signedUrl, '_blank');
         } catch (error) {
-          alert('Error opening document');
+          toast?.error('Error opening document');
         }
       }
     }
-  }, []);
+  }, [toast]);
 
   // Drag and drop handlers
   const handleDocumentDragEnter = useCallback((e) => {
@@ -167,12 +167,12 @@ export const DocumentProvider = ({ children, userId }) => {
     const file = e.dataTransfer.files[0];
     if (file) {
       if (file.size > 10 * 1024 * 1024) {
-        alert('Document size must be less than 10MB');
+        toast?.warning('Document size must be less than 10MB');
         return;
       }
       setNewDocumentFile(file);
     }
-  }, []);
+  }, [toast]);
 
   const value = {
     // State

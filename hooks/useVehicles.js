@@ -12,9 +12,10 @@ import * as vehiclesService from '../services/vehiclesService';
  * - Update vehicle display order (for drag and drop)
  *
  * @param {string} userId - Current user's ID for data isolation
+ * @param {Object} toast - Toast notification functions { error, success, warning, info }
  * @returns {Object} Vehicles state and operations
  */
-const useVehicles = (userId) => {
+const useVehicles = (userId, toast) => {
   const [vehicles, setVehicles] = useState([]);
   const [loading, setLoading] = useState(true);
   const [newVehicle, setNewVehicle] = useState({
@@ -99,7 +100,7 @@ const useVehicles = (userId) => {
         setVehicles([]);
       }
     } catch (error) {
-      // Error loading vehicles
+      // Error loading vehicles - silent fail
     } finally {
       setLoading(false);
     }
@@ -114,7 +115,7 @@ const useVehicles = (userId) => {
       await vehiclesService.createVehicle(vehicleData, userId);
       await loadVehicles();
     } catch (error) {
-      alert('Error adding vehicle');
+      toast?.error('Error adding vehicle');
     }
   };
 
@@ -126,7 +127,7 @@ const useVehicles = (userId) => {
       await vehiclesService.updateVehicle(vehicleId, updates);
       await loadVehicles();
     } catch (error) {
-      alert('Error updating vehicle');
+      toast?.error('Error updating vehicle');
     }
   };
 
@@ -138,7 +139,7 @@ const useVehicles = (userId) => {
       await vehiclesService.deleteVehicle(vehicleId);
       await loadVehicles();
     } catch (error) {
-      alert('Error deleting vehicle');
+      toast?.error('Error deleting vehicle');
     }
   };
 
@@ -152,7 +153,7 @@ const useVehicles = (userId) => {
         await vehiclesService.updateVehicleDisplayOrder(orderedVehicles[i].id, i);
       }
     } catch (error) {
-      // Error updating vehicle order
+      // Error updating vehicle order - silent fail
     }
   };
 
@@ -168,7 +169,7 @@ const useVehicles = (userId) => {
       return publicUrl;
     } catch (error) {
       setUploadingImage(false);
-      alert('Error uploading image. Please try again.');
+      toast?.error('Error uploading image. Please try again.');
       return null;
     }
   };
@@ -181,12 +182,12 @@ const useVehicles = (userId) => {
     if (file) {
       // Validate file type
       if (!file.type.startsWith('image/')) {
-        alert('Please select an image file');
+        toast?.warning('Please select an image file');
         return;
       }
       // Validate file size (max 5MB)
       if (file.size > 5 * 1024 * 1024) {
-        alert('Image size must be less than 5MB');
+        toast?.warning('Image size must be less than 5MB');
         return;
       }
 
@@ -238,12 +239,12 @@ const useVehicles = (userId) => {
     if (file) {
       // Validate file type
       if (!file.type.startsWith('image/')) {
-        alert('Please select an image file');
+        toast?.warning('Please select an image file');
         return;
       }
       // Validate file size (max 5MB)
       if (file.size > 5 * 1024 * 1024) {
-        alert('Image size must be less than 5MB');
+        toast?.warning('Image size must be less than 5MB');
         return;
       }
 

@@ -14,9 +14,10 @@ import * as vendorsService from '../services/vendorsService';
  * - Vendor management (rename, delete vendors)
  *
  * @param {string} userId - Current user's ID for data isolation
+ * @param {Object} toast - Toast notification functions { error, success, warning, info }
  * @returns {Object} Parts state and operations
  */
-const useParts = (userId) => {
+const useParts = (userId, toast) => {
   const [parts, setParts] = useState([]);
   const [vendors, setVendors] = useState([]);
   const [vendorColors, setVendorColors] = useState({});
@@ -65,7 +66,7 @@ const useParts = (userId) => {
         setParts([]);
       }
     } catch (error) {
-      alert('Error loading parts from database');
+      toast?.error('Error loading parts from database');
     } finally {
       setLoading(false);
     }
@@ -89,7 +90,7 @@ const useParts = (userId) => {
         setVendorColors(colorsMap);
       }
     } catch (error) {
-      // Error loading vendors
+      // Error loading vendors - silent fail
     }
   };
 
@@ -108,7 +109,7 @@ const useParts = (userId) => {
       }));
       await loadVendors();
     } catch (error) {
-      alert('Error saving vendor color');
+      toast?.error('Error saving vendor color');
     }
   };
 
@@ -172,7 +173,7 @@ const useParts = (userId) => {
         projectId: null
       });
     } catch (error) {
-      alert('Error adding part. Please try again.');
+      toast?.error('Error adding part. Please try again.');
     }
   };
 
@@ -205,7 +206,7 @@ const useParts = (userId) => {
       }));
       if (setOpenDropdown) setOpenDropdown(null);
     } catch (error) {
-      alert('Error updating part status. Please try again.');
+      toast?.error('Error updating part status. Please try again.');
     }
   };
 
@@ -238,7 +239,7 @@ const useParts = (userId) => {
       if (setTrackingModalPartId) setTrackingModalPartId(null);
       if (setTrackingInput) setTrackingInput('');
     } catch (error) {
-      alert('Error saving tracking info. Please try again.');
+      toast?.error('Error saving tracking info. Please try again.');
     }
   };
 
@@ -269,7 +270,7 @@ const useParts = (userId) => {
       if (setTrackingModalPartId) setTrackingModalPartId(null);
       if (setTrackingInput) setTrackingInput('');
     } catch (error) {
-      alert('Error updating status. Please try again.');
+      toast?.error('Error updating status. Please try again.');
     }
   };
 
@@ -324,7 +325,7 @@ const useParts = (userId) => {
       if (setEditingPart) setEditingPart(null);
       if (setPartModalView) setPartModalView(null);
     } catch (error) {
-      alert('Error saving part. Please try again.');
+      toast?.error('Error saving part. Please try again.');
     }
   };
 
@@ -338,7 +339,7 @@ const useParts = (userId) => {
       // Update local state
       setParts(prevParts => prevParts.filter(part => part.id !== partId));
     } catch (error) {
-      alert('Error deleting part. Please try again.');
+      toast?.error('Error deleting part. Please try again.');
     }
   };
 
@@ -348,7 +349,7 @@ const useParts = (userId) => {
   const renameVendor = async (oldName, newName, editingPart, setEditingPart, setEditingVendor) => {
     if (!userId) return;
     if (!newName || !newName.trim()) {
-      alert('Vendor name cannot be empty');
+      toast?.warning('Vendor name cannot be empty');
       return;
     }
 
@@ -365,7 +366,7 @@ const useParts = (userId) => {
       }
       if (setEditingVendor) setEditingVendor(null);
     } catch (error) {
-      alert('Error renaming vendor. Please try again.');
+      toast?.error('Error renaming vendor. Please try again.');
     }
   };
 
@@ -386,7 +387,7 @@ const useParts = (userId) => {
         setEditingPart({ ...editingPart, vendor: '' });
       }
     } catch (error) {
-      alert('Error deleting vendor. Please try again.');
+      toast?.error('Error deleting vendor. Please try again.');
     }
   };
 
@@ -402,7 +403,7 @@ const useParts = (userId) => {
         part.id === partId ? { ...part, projectId: null } : part
       ));
     } catch (error) {
-      alert('Error unlinking part. Please try again.');
+      toast?.error('Error unlinking part. Please try again.');
     }
   };
 
@@ -418,7 +419,7 @@ const useParts = (userId) => {
         part.id === partId ? { ...part, projectId: projectId || null } : part
       ));
     } catch (error) {
-      alert('Error updating part project. Please try again.');
+      toast?.error('Error updating part project. Please try again.');
     }
   };
 

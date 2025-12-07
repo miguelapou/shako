@@ -1,5 +1,6 @@
 import React, { useRef, useState, useCallback } from 'react';
 import { X, Car, ChevronDown } from 'lucide-react';
+import { useUI } from '../../contexts';
 
 const AddProjectModal = ({
   isOpen,
@@ -17,6 +18,7 @@ const AddProjectModal = ({
   const vehicleButtonRef = useRef(null);
   const [dropdownPosition, setDropdownPosition] = useState({ top: 0, left: 0 });
   const [isDropdownClosing, setIsDropdownClosing] = useState(false);
+  const { toast } = useUI();
 
   const closeDropdownWithAnimation = useCallback(() => {
     setIsDropdownClosing(true);
@@ -46,7 +48,7 @@ const AddProjectModal = ({
 
   const handleAddProject = async () => {
     if (!newProject.name) {
-      alert('Please enter a project name');
+      toast?.warning('Please enter a project name');
       return;
     }
     await addProject(newProject);
