@@ -95,7 +95,7 @@ const PartDetailModal = ({
     }
   };
 
-  // Auto-refresh tracking when modal opens with tracking number
+  // Auto-refresh tracking when modal opens if data is stale (>8 hours old)
   useEffect(() => {
     if (
       isOpen &&
@@ -103,7 +103,13 @@ const PartDetailModal = ({
       !viewingPart.tracking.startsWith('http') &&
       !isRefreshingTracking
     ) {
-      handleRefreshTracking();
+      // Check if tracking data is stale (older than 8 hours or never fetched)
+      const isStale = !viewingPart.tracking_updated_at ||
+        (Date.now() - new Date(viewingPart.tracking_updated_at).getTime()) > 8 * 60 * 60 * 1000;
+
+      if (isStale) {
+        handleRefreshTracking();
+      }
     }
   }, [isOpen, viewingPart?.id]);
 
