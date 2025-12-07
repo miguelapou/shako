@@ -1118,44 +1118,44 @@ const PartsTab = ({
             darkMode ? 'bg-gray-700 border-gray-600' : 'bg-slate-50 border-slate-200'
           }`}>
             <div className="flex items-center justify-between flex-wrap gap-4">
-              {/* Left: Showing text and rows per page dropdown */}
-              <div className="flex items-center gap-4">
-                <p className={`text-sm ${
+              {/* Left: Rows per page dropdown */}
+              <div className="flex items-center gap-2">
+                <label htmlFor="rowsPerPage" className={`text-sm ${
                   darkMode ? 'text-gray-400' : 'text-slate-600'
                 }`}>
-                  <span className="font-semibold">{startIndex + 1}-{Math.min(endIndex, filteredParts.length)}</span> of <span className="font-semibold">{filteredParts.length}</span> parts
-                </p>
-                <div className="flex items-center gap-2">
-                  <label htmlFor="rowsPerPage" className={`text-sm ${
-                    darkMode ? 'text-gray-400' : 'text-slate-600'
-                  }`}>
-                    Rows per page:
-                  </label>
-                  <select
-                    id="rowsPerPage"
-                    value={rowsPerPage}
-                    onChange={(e) => {
-                      setIsPaginating(true);
-                      setRowsPerPage(Number(e.target.value));
-                      setCurrentPage(1);
-                      setTimeout(() => setIsPaginating(false), 600);
-                    }}
-                    className={`px-3 py-2 pr-8 rounded border text-sm appearance-none ${
-                      darkMode
-                        ? 'bg-gray-600 border-gray-500 text-gray-200'
-                        : 'bg-white border-slate-300 text-slate-700'
-                    } cursor-pointer focus:outline-none focus:ring-2 focus:ring-blue-500`}
-                  >
-                    <option value="10">10</option>
-                    <option value="25">25</option>
-                    <option value="50">50</option>
-                    <option value="100">100</option>
-                  </select>
-                </div>
+                  Rows per page:
+                </label>
+                <select
+                  id="rowsPerPage"
+                  value={rowsPerPage}
+                  onChange={(e) => {
+                    setIsPaginating(true);
+                    setRowsPerPage(Number(e.target.value));
+                    setCurrentPage(1);
+                    setTimeout(() => setIsPaginating(false), 600);
+                  }}
+                  className={`px-3 py-2 pr-8 rounded border text-sm appearance-none ${
+                    darkMode
+                      ? 'bg-gray-600 border-gray-500 text-gray-200'
+                      : 'bg-white border-slate-300 text-slate-700'
+                  } cursor-pointer focus:outline-none focus:ring-2 focus:ring-blue-500`}
+                >
+                  <option value="10">10</option>
+                  <option value="25">25</option>
+                  <option value="50">50</option>
+                  <option value="100">100</option>
+                </select>
               </div>
 
-              {/* Right: Pagination controls */}
-              {totalPages > 1 && (
+              {/* Center: Total parts count */}
+              <p className={`text-sm ${
+                darkMode ? 'text-gray-400' : 'text-slate-600'
+              }`}>
+                <span className="font-semibold">{filteredParts.length}</span> parts
+              </p>
+
+              {/* Right: Pagination controls (or empty placeholder to keep parts count centered) */}
+              {totalPages > 1 ? (
                 <div className="flex items-center gap-2">
                   {/* Previous button */}
                   <button
@@ -1216,6 +1216,8 @@ const PartsTab = ({
                     <ChevronRight className="w-5 h-5" />
                   </button>
                 </div>
+              ) : (
+                <div className="w-[200px]"></div>
               )}
             </div>
           </div>
