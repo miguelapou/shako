@@ -449,13 +449,28 @@ const PartDetailModal = ({
                   <div className="space-y-4">
                     {/* Order status badge with track link */}
                     <div className="flex items-start justify-between gap-4">
-                      <div
-                        className={`inline-flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium border ${getStatusColor(
-                          viewingPart
-                        )}`}
-                      >
-                        {getStatusIcon(viewingPart)}
-                        <span>{getStatusText(viewingPart)}</span>
+                      <div className="flex flex-col gap-1">
+                        <div
+                          className={`inline-flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium border ${getStatusColor(
+                            viewingPart
+                          )}`}
+                        >
+                          {getStatusIcon(viewingPart)}
+                          <span>{getStatusText(viewingPart)}</span>
+                        </div>
+                        {/* Location and updated at info */}
+                        {(viewingPart.tracking_location || viewingPart.tracking_updated_at) && (
+                          <div className={`text-xs space-y-0.5 mt-1 ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>
+                            {viewingPart.tracking_location && (
+                              <div>{viewingPart.tracking_location}</div>
+                            )}
+                            {viewingPart.tracking_updated_at && (
+                              <div>
+                                Updated: {new Date(viewingPart.tracking_updated_at).toLocaleString()}
+                              </div>
+                            )}
+                          </div>
+                        )}
                       </div>
                       {/* Track link */}
                       {getTrackingUrl(viewingPart.tracking) && (
