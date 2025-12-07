@@ -71,6 +71,7 @@ const LoginPage = () => {
             className={`text-3xl font-bold mb-2 ${
               darkMode ? 'text-gray-100' : 'text-gray-900'
             }`}
+            style={{ fontFamily: "'FoundationOne', 'Courier New', monospace" }}
           >
             Shako
           </h1>

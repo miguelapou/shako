@@ -139,14 +139,11 @@ const ProjectDetailModal = ({
                 parts={parts}
                 darkMode={darkMode}
                 vehicle={viewingProject.vehicle_id ? vehicles.find(v => v.id === viewingProject.vehicle_id) : null}
-                updateProject={async (projectId, updates) => {
-                  await updateProject(projectId, updates);
-                  // Refresh the viewing project with the latest data
-                  await loadProjects();
-                  const updatedProject = projects.find(p => p.id === projectId);
-                  if (updatedProject) {
-                    setViewingProject({ ...updatedProject, ...updates });
-                  }
+                updateProject={(projectId, updates) => {
+                  // Optimistic update: update viewingProject immediately for snappy UI
+                  setViewingProject(prev => ({ ...prev, ...updates }));
+                  // Persist to database in background (hook handles optimistic update on projects array)
+                  updateProject(projectId, updates);
                 }}
                 getStatusColors={getStatusColors}
                 getPriorityColors={getPriorityColors}

@@ -85,18 +85,31 @@ const useProjects = (userId) => {
   };
 
   /**
-   * Update a project
+   * Update a project with optimistic updates for snappy UI
    */
   const updateProject = async (projectId, updates) => {
+    // Auto-calculate status based on todos unless it's being set to on_hold
+    if (updates.todos && updates.status !== 'on_hold') {
+      const currentProject = projects.find(p => p.id === projectId);
+      updates.status = calculateProjectStatus(updates.todos, currentProject?.status);
+    }
+
+    // Optimistic update: update local state immediately
+    setProjects(prevProjects =>
+      prevProjects.map(project =>
+        project.id === projectId
+          ? { ...project, ...updates }
+          : project
+      )
+    );
+
+    // Persist to database in background
     try {
-      // Auto-calculate status based on todos unless it's being set to on_hold
-      if (updates.todos && updates.status !== 'on_hold') {
-        updates.status = calculateProjectStatus(updates.todos, updates.status);
-      }
       await projectsService.updateProject(projectId, updates);
-      await loadProjects();
     } catch (error) {
+      // On error, reload from database to get true state
       alert('Error updating project');
+      await loadProjects();
     }
   };
 

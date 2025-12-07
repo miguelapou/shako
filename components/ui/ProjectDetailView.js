@@ -67,7 +67,8 @@ const ProjectDetailView = ({
   // Sort todos:
   // - Checked first, then unchecked
   // - Within checked: by completed_at (oldest first, newest at bottom)
-  // - Within unchecked: recently unchecked at top, then by original_created_at (oldest first = new at bottom)
+  // - Within unchecked: unchecked items at top (by created_at desc), new items at bottom (by created_at asc)
+  // - Use id as tiebreaker to ensure stable sorting
   const sortedTodos = useMemo(() => {
     if (!project.todos) return [];
     return [...project.todos].sort((a, b) => {
@@ -78,27 +79,36 @@ const ProjectDetailView = ({
       // Both have same completion status
       if (a.completed) {
         // Both completed: sort by completed_at (oldest first, newest at bottom)
-        const aCompletedAt = a.completed_at ? new Date(a.completed_at) : new Date(a.created_at);
-        const bCompletedAt = b.completed_at ? new Date(b.completed_at) : new Date(b.created_at);
-        return aCompletedAt - bCompletedAt;
+        const aCompletedAt = a.completed_at ? new Date(a.completed_at).getTime() : new Date(a.created_at).getTime();
+        const bCompletedAt = b.completed_at ? new Date(b.completed_at).getTime() : new Date(b.created_at).getTime();
+        if (aCompletedAt !== bCompletedAt) return aCompletedAt - bCompletedAt;
+        return a.id - b.id; // Stable tiebreaker
       } else {
         // Both uncompleted:
-        // Check if either was recently UNCHECKED (created_at is very recent AND different from original_created_at)
-        const now = Date.now();
-        const aCreatedMs = new Date(a.created_at).getTime();
-        const bCreatedMs = new Date(b.created_at).getTime();
-        const aOriginalMs = a.original_created_at ? new Date(a.original_created_at).getTime() : aCreatedMs;
-        const bOriginalMs = b.original_created_at ? new Date(b.original_created_at).getTime() : bCreatedMs;
-        // Only consider it "recently unchecked" if created_at is recent AND different from original_created_at
-        const aIsRecentlyUnchecked = (now - aCreatedMs < 1000) && (Math.abs(aCreatedMs - aOriginalMs) > 100);
-        const bIsRecentlyUnchecked = (now - bCreatedMs < 1000) && (Math.abs(bCreatedMs - bOriginalMs) > 100);
-        // If one is recently unchecked and other isn't, put recently unchecked one first
-        if (aIsRecentlyUnchecked && !bIsRecentlyUnchecked) return -1;
-        if (!aIsRecentlyUnchecked && bIsRecentlyUnchecked) return 1;
-        // Otherwise sort by original_created_at (oldest first = new todos at bottom)
-        const aOriginal = new Date(a.original_created_at || a.created_at);
-        const bOriginal = new Date(b.original_created_at || b.created_at);
-        return aOriginal - bOriginal;
+        // - "Unchecked" todos (created_at != original_created_at) go to TOP, sorted by created_at desc
+        // - "New" todos (created_at == original_created_at) go to BOTTOM, sorted by created_at asc
+        const aCreatedAt = new Date(a.created_at).getTime();
+        const bCreatedAt = new Date(b.created_at).getTime();
+        const aOriginalCreatedAt = a.original_created_at ? new Date(a.original_created_at).getTime() : aCreatedAt;
+        const bOriginalCreatedAt = b.original_created_at ? new Date(b.original_created_at).getTime() : bCreatedAt;
+
+        const aWasUnchecked = Math.abs(aCreatedAt - aOriginalCreatedAt) > 1000; // More than 1 second difference
+        const bWasUnchecked = Math.abs(bCreatedAt - bOriginalCreatedAt) > 1000;
+
+        // Unchecked items come before new items
+        if (aWasUnchecked !== bWasUnchecked) {
+          return aWasUnchecked ? -1 : 1;
+        }
+
+        if (aWasUnchecked) {
+          // Both were unchecked: most recently unchecked first
+          if (aCreatedAt !== bCreatedAt) return bCreatedAt - aCreatedAt;
+          return b.id - a.id;
+        } else {
+          // Both are new: oldest first (newest at bottom)
+          if (aCreatedAt !== bCreatedAt) return aCreatedAt - bCreatedAt;
+          return a.id - b.id;
+        }
       }
     });
   }, [project.todos]);
@@ -198,19 +208,21 @@ const ProjectDetailView = ({
             todos: updatedTodos
           });
         }}
-        className={`flex-shrink-0 w-5 h-5 rounded border-2 flex items-center justify-center transition-colors ${
+        className={`flex-shrink-0 w-5 h-5 rounded border-2 flex items-center justify-center transition-all duration-150 active:scale-90 ${
           todo.completed
             ? darkMode
-              ? 'bg-green-600 border-green-600'
-              : 'bg-green-500 border-green-500'
+              ? 'bg-green-600 border-green-600 scale-100'
+              : 'bg-green-500 border-green-500 scale-100'
             : darkMode
-              ? 'border-gray-500 hover:border-gray-400'
-              : 'border-gray-400 hover:border-gray-500'
+              ? 'border-gray-500 hover:border-gray-400 scale-100'
+              : 'border-gray-400 hover:border-gray-500 scale-100'
         }`}
       >
-        {todo.completed && (
-          <CheckSquare className="w-4 h-4 text-white" />
-        )}
+        <CheckSquare
+          className={`w-4 h-4 text-white transition-all duration-150 ${
+            todo.completed ? 'opacity-100 scale-100' : 'opacity-0 scale-50'
+          }`}
+        />
       </button>
       {/* Todo Text - Click to edit inline */}
       {editingTodoId === todo.id ? (
@@ -434,7 +446,7 @@ const ProjectDetailView = ({
             <div>
               <p className={`text-xs mb-1 ${
                 darkMode ? 'text-gray-400' : 'text-slate-600'
-              }`}>Parts Linked</p>
+              }`}>Linked Parts</p>
               <p className={`text-lg font-bold ${
                 darkMode ? 'text-gray-100' : 'text-slate-800'
               }`}>
