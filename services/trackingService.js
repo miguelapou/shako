@@ -129,26 +129,43 @@ export const getAfterShipTracking = async (trackingId) => {
 
 /**
  * Get tracking by tracking number and slug
+ * Uses direct API call since SDK method doesn't exist
  * @param {string} trackingNumber - Tracking number
  * @param {string} slug - Carrier slug
  * @returns {Promise<Object>} Tracking data
  */
 export const getAfterShipTrackingByNumber = async (trackingNumber, slug = null) => {
-  const client = getClient();
-  if (!client) {
+  const apiKey = process.env.AFTERSHIP_API_KEY;
+  if (!apiKey) {
     throw new Error('AfterShip API key not configured');
   }
 
   try {
     const detectedSlug = slug || detectCarrierSlug(trackingNumber);
 
-    // SDK 2025-07 format - pass slug and tracking_number as separate params
-    const response = await client.tracking.getTrackingBySlugAndTrackingNumber(
-      detectedSlug,
-      trackingNumber
+    if (!detectedSlug) {
+      throw new Error('Could not determine carrier for tracking number');
+    }
+
+    // Use direct API call since SDK method doesn't exist
+    const response = await fetch(
+      `https://api.aftership.com/tracking/2025-07/trackings/${detectedSlug}/${trackingNumber}`,
+      {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          'as-api-key': apiKey
+        }
+      }
     );
 
-    return response.data?.tracking || response.data;
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData.meta?.message || 'Failed to get tracking');
+    }
+
+    const data = await response.json();
+    return data.data?.tracking || data.data;
   } catch (error) {
     error.message = `Failed to get AfterShip tracking: ${error.message}`;
     throw error;
