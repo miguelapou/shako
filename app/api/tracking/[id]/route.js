@@ -58,16 +58,21 @@ export async function GET(request, { params }) {
     const trackingData = await syncPartTracking(part);
 
     // Check if package was delivered and auto-update part status
+    let isDelivered = part.delivered;
     if (trackingData?.tracking_status === 'Delivered' && !part.delivered) {
       await supabase
         .from('parts')
         .update({ delivered: true })
         .eq('id', partId);
+      isDelivered = true;
     }
 
     return NextResponse.json({
       success: true,
-      tracking: trackingData
+      tracking: {
+        ...trackingData,
+        delivered: isDelivered
+      }
     });
   } catch (error) {
     console.error('Error fetching tracking:', error);
