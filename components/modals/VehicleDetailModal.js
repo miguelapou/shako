@@ -1544,7 +1544,7 @@ const VehicleDetailModal = ({
         </div>
 
         {/* Footer with Edit Button */}
-        <div className={`sticky bottom-0 border-t p-4 flex items-center justify-between ${
+        <div className={`sticky bottom-0 z-10 border-t p-4 flex items-center justify-between ${
           darkMode ? 'border-gray-700 bg-gray-800' : 'border-slate-200 bg-slate-100'
         }`}>
           {vehicleModalEditMode ? (
