@@ -428,10 +428,12 @@ const VehicleDetailModal = ({
                 )}
               </div>
 
-              {/* Service Events Timeline Section */}
-              <div className={`pt-6 border-t ${
+              {/* Service History and Maintenance - Side by side on desktop */}
+              <div className={`pt-6 border-t grid grid-cols-1 lg:grid-cols-2 gap-6 ${
                 darkMode ? 'border-gray-700' : 'border-slate-200'
               }`}>
+                {/* Service Events Timeline Section */}
+                <div>
                 <div className="flex items-center justify-between mb-3">
                   <h3 className={`text-lg font-semibold ${
                     darkMode ? 'text-gray-200' : 'text-gray-800'
@@ -627,19 +629,17 @@ const VehicleDetailModal = ({
                   }}
                   saving={savingServiceEvent}
                 />
-              </div>
+                </div>
 
-              {/* Maintenance Section (includes filters, oil, battery) */}
-              <div className={`pt-6 border-t ${
-                darkMode ? 'border-gray-700' : 'border-slate-200'
-              }`}>
-                <h3 className={`text-lg font-semibold mb-3 ${
+                {/* Maintenance Section (includes filters, oil, battery) */}
+                <div>
+                  <h3 className={`text-lg font-semibold mb-3 ${
                   darkMode ? 'text-gray-200' : 'text-gray-800'
                 }`}>
                   Maintenance
                 </h3>
                 {(viewingVehicle.fuel_filter || viewingVehicle.air_filter || viewingVehicle.oil_filter || viewingVehicle.oil_type || viewingVehicle.oil_capacity || viewingVehicle.oil_brand || viewingVehicle.drain_plug || viewingVehicle.battery) ? (
-                  <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+                  <div className="grid grid-cols-2 gap-4">
                     {/* Mobile two-column layout: Left (fuel filter, air filter, battery, drain plug) | Right (oil filter, oil capacity, oil type, oil brand) */}
                     {viewingVehicle.fuel_filter && (
                       <div>
@@ -732,6 +732,7 @@ const VehicleDetailModal = ({
                     </p>
                   </div>
                 )}
+                </div>
               </div>
 
               {/* Documents Section */}
