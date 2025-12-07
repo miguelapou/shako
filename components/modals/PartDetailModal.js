@@ -46,6 +46,23 @@ const PartDetailModal = ({
 }) => {
   const [isRefreshingTracking, setIsRefreshingTracking] = useState(false);
 
+  // Format relative time (just now, X minutes ago, etc.)
+  const formatRelativeTime = (dateString) => {
+    if (!dateString) return null;
+    const date = new Date(dateString);
+    const now = new Date();
+    const diffMs = now - date;
+    const diffMins = Math.floor(diffMs / 60000);
+    const diffHours = Math.floor(diffMs / 3600000);
+    const diffDays = Math.floor(diffMs / 86400000);
+
+    if (diffMins < 1) return 'just now';
+    if (diffMins < 60) return `${diffMins} minute${diffMins === 1 ? '' : 's'} ago`;
+    if (diffHours < 24) return `${diffHours} hour${diffHours === 1 ? '' : 's'} ago`;
+    if (diffDays < 7) return `${diffDays} day${diffDays === 1 ? '' : 's'} ago`;
+    return date.toLocaleDateString();
+  };
+
   const handleRefreshTracking = async () => {
     if (!viewingPart?.id || !viewingPart?.tracking || isRefreshingTracking) return;
 
@@ -449,9 +466,9 @@ const PartDetailModal = ({
                   <div className="space-y-4">
                     {/* Order status badge with track link */}
                     <div className="flex items-start justify-between gap-4">
-                      <div className="flex flex-col gap-1">
+                      <div className="flex flex-col items-start gap-1">
                         <div
-                          className={`inline-flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium border ${getStatusColor(
+                          className={`inline-flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium border w-fit ${getStatusColor(
                             viewingPart
                           )}`}
                         >
@@ -466,7 +483,7 @@ const PartDetailModal = ({
                             )}
                             {viewingPart.tracking_updated_at && (
                               <div>
-                                Updated: {new Date(viewingPart.tracking_updated_at).toLocaleString()}
+                                Updated {formatRelativeTime(viewingPart.tracking_updated_at)}
                               </div>
                             )}
                           </div>
