@@ -475,9 +475,9 @@ const VehicleDetailModal = ({
                                   darkMode ? 'text-gray-400' : 'text-gray-500'
                                 } group-hover:text-blue-500 transition-colors`} />
                               </div>
-                              {/* Line extending down */}
+                              {/* Line extending down - mb-[-16px] extends into the gap to reach next icon */}
                               <div
-                                className={`flex-1 w-0.5 ${
+                                className={`flex-1 w-0.5 -mb-4 ${
                                   isLast
                                     ? (darkMode ? 'border-l-2 border-dashed border-gray-600 bg-transparent' : 'border-l-2 border-dashed border-gray-300 bg-transparent')
                                     : (darkMode ? 'bg-gray-600' : 'bg-gray-300')
