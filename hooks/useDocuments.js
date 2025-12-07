@@ -177,14 +177,16 @@ const useDocuments = (userId) => {
   /**
    * Handle closing the add document modal with animation
    */
-  const handleCloseDocumentModal = useCallback(() => {
+  const handleCloseDocumentModal = () => {
+    // Start closing animation
     setIsDocumentModalClosing(true);
     setTimeout(() => {
       setIsDocumentModalClosing(false);
       setShowAddDocumentModal(false);
-      clearDocumentSelection();
+      setNewDocumentFile(null);
+      setNewDocumentTitle('');
     }, 150);
-  }, []);
+  };
 
   // ========================================
   // DOCUMENT DRAG AND DROP HANDLERS
@@ -262,6 +264,7 @@ const useDocuments = (userId) => {
     showAddDocumentModal,
     setShowAddDocumentModal,
     isDocumentModalClosing,
+    setIsDocumentModalClosing,
     newDocumentTitle,
     setNewDocumentTitle,
     newDocumentFile,

@@ -51,10 +51,6 @@ const useAuthenticatedFetch = () => {
     } catch (error) {
       // Check if this is a token expiration error
       if (isTokenExpiredError(error) && maxRetries > 0) {
-        if (process.env.NODE_ENV === 'development') {
-          console.log(`Token expired during ${context}, attempting refresh via hook...`);
-        }
-
         // Use the context's handleAuthError for retry
         const result = await handleAuthError(error, serviceFn);
 
