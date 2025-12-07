@@ -296,7 +296,7 @@ const AddProjectModal = ({
 
         {/* Footer - natural height only */}
         <div className={`p-6 border-t ${
-          darkMode ? 'border-gray-700' : 'border-slate-200'
+          darkMode ? 'border-gray-700 bg-gray-800' : 'border-slate-200 bg-slate-100'
         }`}>
           <div className="flex gap-3">
             <button

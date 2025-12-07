@@ -299,10 +299,9 @@ const AddPartModal = ({
             </div>
           </div>
         </div>
-        <div className={`border-t ${
-          darkMode ? 'border-gray-700' : 'border-slate-200'
-        }`}></div>
-        <div className="p-6">
+        <div className={`p-6 border-t ${
+          darkMode ? 'border-gray-700 bg-gray-800' : 'border-slate-200 bg-slate-100'
+        }`}>
           <div className="flex gap-3">
             <button
               onClick={onClose}
