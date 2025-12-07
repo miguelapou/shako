@@ -211,62 +211,28 @@ const PartDetailModal = ({
                 >
                   Part Info
                 </h3>
-                <div className="space-y-4">
-                  {viewingPart.partNumber &&
-                    viewingPart.partNumber !== '-' && (
-                      <div>
-                        <p
-                          className={`text-sm font-medium mb-1 ${
-                            darkMode ? 'text-gray-400' : 'text-slate-600'
-                          }`}
-                        >
-                          Part Number
-                        </p>
-                        <p
-                          className={`text-base font-mono ${
-                            darkMode ? 'text-gray-100' : 'text-slate-800'
-                          }`}
-                        >
-                          {viewingPart.partNumber}
-                        </p>
-                      </div>
-                    )}
-                  {/* Vehicle */}
-                  {(() => {
-                    const partProject = viewingPart.projectId
-                      ? projects.find((p) => p.id === viewingPart.projectId)
-                      : null;
-                    const vehicle = partProject?.vehicle_id
-                      ? vehicles.find((v) => v.id === partProject.vehicle_id)
-                      : null;
-                    return (
-                      vehicle && (
+                <div className="grid grid-cols-2 gap-4">
+                  {/* Column 1: Part Number, Vendor */}
+                  <div className="space-y-4">
+                    {viewingPart.partNumber &&
+                      viewingPart.partNumber !== '-' && (
                         <div>
                           <p
-                            className={`text-sm font-medium mb-2 ${
+                            className={`text-sm font-medium mb-1 ${
                               darkMode ? 'text-gray-400' : 'text-slate-600'
                             }`}
                           >
-                            Vehicle
+                            Part Number
                           </p>
-                          <span
-                            className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-medium border ${
-                              darkMode
-                                ? 'bg-gray-600 text-gray-200 border-gray-500'
-                                : 'bg-gray-100 text-gray-700 border-gray-300'
+                          <p
+                            className={`text-base font-mono ${
+                              darkMode ? 'text-gray-100' : 'text-slate-800'
                             }`}
                           >
-                            <Car className="w-3.5 h-3.5 mr-1.5" />
-                            <span style={{ color: vehicle.color || '#3B82F6' }}>
-                              {vehicle.nickname || vehicle.name}
-                            </span>
-                          </span>
+                            {viewingPart.partNumber}
+                          </p>
                         </div>
-                      )
-                    );
-                  })()}
-                  {/* Vendor and Project on same row */}
-                  <div className="grid grid-cols-2 gap-4">
+                      )}
                     {viewingPart.vendor && (
                       <div>
                         <p
@@ -307,6 +273,42 @@ const PartDetailModal = ({
                         )}
                       </div>
                     )}
+                  </div>
+                  {/* Column 2: Vehicle, Project */}
+                  <div className="space-y-4">
+                    {(() => {
+                      const partProject = viewingPart.projectId
+                        ? projects.find((p) => p.id === viewingPart.projectId)
+                        : null;
+                      const vehicle = partProject?.vehicle_id
+                        ? vehicles.find((v) => v.id === partProject.vehicle_id)
+                        : null;
+                      return (
+                        vehicle && (
+                          <div>
+                            <p
+                              className={`text-sm font-medium mb-2 ${
+                                darkMode ? 'text-gray-400' : 'text-slate-600'
+                              }`}
+                            >
+                              Vehicle
+                            </p>
+                            <span
+                              className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-medium border ${
+                                darkMode
+                                  ? 'bg-gray-600 text-gray-200 border-gray-500'
+                                  : 'bg-gray-100 text-gray-700 border-gray-300'
+                              }`}
+                            >
+                              <Car className="w-3.5 h-3.5 mr-1.5" />
+                              <span style={{ color: vehicle.color || '#3B82F6' }}>
+                                {vehicle.nickname || vehicle.name}
+                              </span>
+                            </span>
+                          </div>
+                        )
+                      );
+                    })()}
                     {viewingPart.projectId &&
                       (() => {
                         const project = projects.find(
