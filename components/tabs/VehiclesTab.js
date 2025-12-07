@@ -82,47 +82,8 @@ const VehiclesTab = ({
   getStatusText,
   getStatusTextColor,
   getVendorColor,
-  calculateProjectTotal,
-  // Document props
-  documents,
-  loadingDocuments,
-  uploadingDocument,
-  showAddDocumentModal,
-  setShowAddDocumentModal,
-  newDocumentTitle,
-  setNewDocumentTitle,
-  newDocumentFile,
-  setNewDocumentFile,
-  isDraggingDocument,
-  loadDocuments,
-  addDocument,
-  deleteDocument,
-  handleDocumentFileChange,
-  clearDocumentSelection,
-  openDocument,
-  handleDocumentDragEnter,
-  handleDocumentDragLeave,
-  handleDocumentDragOver,
-  handleDocumentDrop,
-  // Service events props
-  serviceEvents,
-  loadingServiceEvents,
-  savingServiceEvent,
-  showAddServiceEventModal,
-  setShowAddServiceEventModal,
-  newEventDate,
-  setNewEventDate,
-  newEventDescription,
-  setNewEventDescription,
-  newEventOdometer,
-  setNewEventOdometer,
-  editingServiceEvent,
-  addServiceEvent,
-  updateServiceEvent,
-  deleteServiceEvent,
-  openAddServiceEventModal,
-  openEditServiceEventModal,
-  handleCloseServiceEventModal
+  calculateProjectTotal
+  // Document and service event props removed - now handled via context in VehicleDetailModal
 }) => {
   return (
     <div
@@ -630,46 +591,6 @@ const VehiclesTab = ({
           getStatusTextColor={getStatusTextColor}
           getVendorColor={getVendorColor}
           calculateProjectTotal={calculateProjectTotal}
-          // Document props
-          documents={documents}
-          loadingDocuments={loadingDocuments}
-          uploadingDocument={uploadingDocument}
-          showAddDocumentModal={showAddDocumentModal}
-          setShowAddDocumentModal={setShowAddDocumentModal}
-          newDocumentTitle={newDocumentTitle}
-          setNewDocumentTitle={setNewDocumentTitle}
-          newDocumentFile={newDocumentFile}
-          setNewDocumentFile={setNewDocumentFile}
-          isDraggingDocument={isDraggingDocument}
-          loadDocuments={loadDocuments}
-          addDocument={addDocument}
-          deleteDocument={deleteDocument}
-          handleDocumentFileChange={handleDocumentFileChange}
-          clearDocumentSelection={clearDocumentSelection}
-          openDocument={openDocument}
-          handleDocumentDragEnter={handleDocumentDragEnter}
-          handleDocumentDragLeave={handleDocumentDragLeave}
-          handleDocumentDragOver={handleDocumentDragOver}
-          handleDocumentDrop={handleDocumentDrop}
-          // Service events props
-          serviceEvents={serviceEvents}
-          loadingServiceEvents={loadingServiceEvents}
-          savingServiceEvent={savingServiceEvent}
-          showAddServiceEventModal={showAddServiceEventModal}
-          setShowAddServiceEventModal={setShowAddServiceEventModal}
-          newEventDate={newEventDate}
-          setNewEventDate={setNewEventDate}
-          newEventDescription={newEventDescription}
-          setNewEventDescription={setNewEventDescription}
-          newEventOdometer={newEventOdometer}
-          setNewEventOdometer={setNewEventOdometer}
-          editingServiceEvent={editingServiceEvent}
-          addServiceEvent={addServiceEvent}
-          updateServiceEvent={updateServiceEvent}
-          deleteServiceEvent={deleteServiceEvent}
-          openAddServiceEventModal={openAddServiceEventModal}
-          openEditServiceEventModal={openEditServiceEventModal}
-          handleCloseServiceEventModal={handleCloseServiceEventModal}
         />
       </>
     </div>

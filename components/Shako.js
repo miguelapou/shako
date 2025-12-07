@@ -68,9 +68,10 @@ import useDragDrop from '../hooks/useDragDrop';
 import useParts from '../hooks/useParts';
 import useProjects from '../hooks/useProjects';
 import useVehicles from '../hooks/useVehicles';
-import useDocuments from '../hooks/useDocuments';
-import useServiceEvents from '../hooks/useServiceEvents';
 import { useAuthContext } from './AuthProvider';
+
+// Context Providers
+import { AppProviders } from '../contexts';
 
 // ========================================
 // MAIN SHAKO COMPONENT
@@ -166,54 +167,8 @@ const Shako = () => {
     handleImageDrop
   } = useVehicles(userId);
 
-  // Documents hook
-  const {
-    documents,
-    setDocuments,
-    loadingDocuments,
-    uploadingDocument,
-    showAddDocumentModal,
-    setShowAddDocumentModal,
-    newDocumentTitle,
-    setNewDocumentTitle,
-    newDocumentFile,
-    setNewDocumentFile,
-    isDraggingDocument,
-    loadDocuments,
-    addDocument,
-    updateDocumentTitle,
-    deleteDocument,
-    handleDocumentFileChange,
-    openDocument,
-    handleDocumentDragEnter,
-    handleDocumentDragLeave,
-    handleDocumentDragOver,
-    handleDocumentDrop
-  } = useDocuments(userId);
-
-  // Service events hook
-  const {
-    serviceEvents,
-    setServiceEvents,
-    loadingServiceEvents,
-    savingServiceEvent,
-    showAddServiceEventModal,
-    setShowAddServiceEventModal,
-    newEventDate,
-    setNewEventDate,
-    newEventDescription,
-    setNewEventDescription,
-    newEventOdometer,
-    setNewEventOdometer,
-    editingServiceEvent,
-    loadServiceEvents,
-    addServiceEvent,
-    updateServiceEvent,
-    deleteServiceEvent,
-    openAddModal: openAddServiceEventModal,
-    openEditModal: openEditServiceEventModal,
-    handleCloseServiceEventModal
-  } = useServiceEvents(userId);
+  // Note: Document and service event state is now managed via context (DocumentContext, ServiceEventContext)
+  // and consumed directly by VehicleDetailModal
 
   // Filters hook
   const {
@@ -704,14 +659,7 @@ const Shako = () => {
     window.scrollTo({ top: 0, behavior: 'instant' });
   }, [activeTab]);
 
-  // Load documents and service events when viewing a vehicle
-  useEffect(() => {
-    if (viewingVehicle?.id && showVehicleDetailModal) {
-      loadDocuments(viewingVehicle.id);
-      loadServiceEvents(viewingVehicle.id);
-    }
-  }, [viewingVehicle?.id, showVehicleDetailModal]);
-
+  // Note: Document and service event loading is now handled in VehicleDetailModal via context
 
   const handleSort = (field) => {
     // Trigger animation
@@ -932,6 +880,7 @@ const Shako = () => {
   }
 
   return (
+    <AppProviders darkMode={darkMode} setDarkMode={setDarkMode} userId={userId}>
     <div className={`min-h-screen p-3 sm:p-6 transition-colors duration-200 ${
       darkMode
         ? 'bg-gray-900 dark-scrollbar'
@@ -1799,45 +1748,6 @@ const Shako = () => {
             unlinkPartFromProject={unlinkPartFromProject}
             loadProjects={loadProjects}
             updateProject={updateProject}
-            // Document props
-            documents={documents}
-            loadingDocuments={loadingDocuments}
-            uploadingDocument={uploadingDocument}
-            showAddDocumentModal={showAddDocumentModal}
-            setShowAddDocumentModal={setShowAddDocumentModal}
-            newDocumentTitle={newDocumentTitle}
-            setNewDocumentTitle={setNewDocumentTitle}
-            newDocumentFile={newDocumentFile}
-            setNewDocumentFile={setNewDocumentFile}
-            isDraggingDocument={isDraggingDocument}
-            loadDocuments={loadDocuments}
-            addDocument={addDocument}
-            deleteDocument={deleteDocument}
-            handleDocumentFileChange={handleDocumentFileChange}
-            openDocument={openDocument}
-            handleDocumentDragEnter={handleDocumentDragEnter}
-            handleDocumentDragLeave={handleDocumentDragLeave}
-            handleDocumentDragOver={handleDocumentDragOver}
-            handleDocumentDrop={handleDocumentDrop}
-            // Service events props
-            serviceEvents={serviceEvents}
-            loadingServiceEvents={loadingServiceEvents}
-            savingServiceEvent={savingServiceEvent}
-            showAddServiceEventModal={showAddServiceEventModal}
-            setShowAddServiceEventModal={setShowAddServiceEventModal}
-            newEventDate={newEventDate}
-            setNewEventDate={setNewEventDate}
-            newEventDescription={newEventDescription}
-            setNewEventDescription={setNewEventDescription}
-            newEventOdometer={newEventOdometer}
-            setNewEventOdometer={setNewEventOdometer}
-            editingServiceEvent={editingServiceEvent}
-            addServiceEvent={addServiceEvent}
-            updateServiceEvent={updateServiceEvent}
-            deleteServiceEvent={deleteServiceEvent}
-            openAddServiceEventModal={openAddServiceEventModal}
-            openEditServiceEventModal={openEditServiceEventModal}
-            handleCloseServiceEventModal={handleCloseServiceEventModal}
           />
         )}
 
@@ -1882,6 +1792,7 @@ const Shako = () => {
         handleCloseModal={handleCloseModal}
       />
     </div>
+    </AppProviders>
   );
 };
 

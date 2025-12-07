@@ -20,14 +20,14 @@ import { ServiceEventProvider } from './ServiceEventContext';
  *
  * Then in child components:
  *
- * const { darkMode, showConfirm } = useUI();
- * const { documents, addDocument } = useDocuments();
+ * const { darkMode, showConfirm, isModalClosing, handleCloseModal } = useUI();
+ * const { documents, addDocument, loadDocuments } = useDocuments();
  * const { serviceEvents, addServiceEvent } = useServiceEvents();
  */
 export const AppProviders = ({ children, darkMode, setDarkMode, userId }) => {
   return (
     <UIProvider darkMode={darkMode} setDarkMode={setDarkMode}>
-      <DocumentProvider>
+      <DocumentProvider userId={userId}>
         <ServiceEventProvider userId={userId}>
           {children}
         </ServiceEventProvider>

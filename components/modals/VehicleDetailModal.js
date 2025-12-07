@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import {
   X,
   Wrench,
@@ -38,6 +38,7 @@ import {
   getVendorColor
 } from '../../utils/colorUtils';
 import { inputClasses } from '../../utils/styleUtils';
+import { useDocuments, useServiceEvents } from '../../contexts';
 
 const VehicleDetailModal = ({
   isOpen,
@@ -87,47 +88,62 @@ const VehicleDetailModal = ({
   getStatusText,
   getStatusTextColor,
   getVendorColor,
-  calculateProjectTotal,
-  // Document props
-  documents,
-  loadingDocuments,
-  uploadingDocument,
-  showAddDocumentModal,
-  setShowAddDocumentModal,
-  newDocumentTitle,
-  setNewDocumentTitle,
-  newDocumentFile,
-  setNewDocumentFile,
-  isDraggingDocument,
-  loadDocuments,
-  addDocument,
-  deleteDocument,
-  handleDocumentFileChange,
-  openDocument,
-  handleDocumentDragEnter,
-  handleDocumentDragLeave,
-  handleDocumentDragOver,
-  handleDocumentDrop,
-  // Service events props
-  serviceEvents,
-  loadingServiceEvents,
-  savingServiceEvent,
-  showAddServiceEventModal,
-  setShowAddServiceEventModal,
-  newEventDate,
-  setNewEventDate,
-  newEventDescription,
-  setNewEventDescription,
-  newEventOdometer,
-  setNewEventOdometer,
-  editingServiceEvent,
-  addServiceEvent,
-  updateServiceEvent,
-  deleteServiceEvent,
-  openAddServiceEventModal,
-  openEditServiceEventModal,
-  handleCloseServiceEventModal
+  calculateProjectTotal
 }) => {
+  // Get document state and actions from context
+  const {
+    documents,
+    loadingDocuments,
+    uploadingDocument,
+    showAddDocumentModal,
+    setShowAddDocumentModal,
+    newDocumentTitle,
+    setNewDocumentTitle,
+    newDocumentFile,
+    setNewDocumentFile,
+    isDraggingDocument,
+    loadDocuments,
+    addDocument,
+    deleteDocument,
+    handleDocumentFileChange,
+    openDocument,
+    handleDocumentDragEnter,
+    handleDocumentDragLeave,
+    handleDocumentDragOver,
+    handleDocumentDrop
+  } = useDocuments();
+
+  // Get service events state and actions from context
+  const {
+    serviceEvents,
+    loadingServiceEvents,
+    savingServiceEvent,
+    showAddServiceEventModal,
+    setShowAddServiceEventModal,
+    newEventDate,
+    setNewEventDate,
+    newEventDescription,
+    setNewEventDescription,
+    newEventOdometer,
+    setNewEventOdometer,
+    editingServiceEvent,
+    loadServiceEvents,
+    addServiceEvent,
+    updateServiceEvent,
+    deleteServiceEvent,
+    openAddServiceEventModal,
+    openEditServiceEventModal,
+    handleCloseServiceEventModal
+  } = useServiceEvents();
+
+  // Load documents and service events when modal opens
+  useEffect(() => {
+    if (isOpen && viewingVehicle?.id) {
+      loadDocuments(viewingVehicle.id);
+      loadServiceEvents(viewingVehicle.id);
+    }
+  }, [isOpen, viewingVehicle?.id, loadDocuments, loadServiceEvents]);
+
   if (!isOpen || !viewingVehicle) return null;
 
   return (
