@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   X,
   Car,
@@ -10,14 +10,13 @@ import {
 } from 'lucide-react';
 import PrimaryButton from '../ui/PrimaryButton';
 import VendorSelect from '../ui/VendorSelect';
-import TrackingBadge from '../ui/TrackingBadge';
 import TrackingTimeline from '../ui/TrackingTimeline';
 import {
   getVendorColor,
   getVendorDisplayColor
 } from '../../utils/colorUtils';
 import { selectDropdownStyle } from '../../utils/styleUtils';
-import { getTrackingUrl, getCarrierName } from '../../utils/trackingUtils';
+import { getTrackingUrl } from '../../utils/trackingUtils';
 
 const PartDetailModal = ({
   isOpen,
@@ -46,6 +45,23 @@ const PartDetailModal = ({
   onRefreshTracking
 }) => {
   const [isRefreshingTracking, setIsRefreshingTracking] = useState(false);
+
+  // Format relative time (just now, X minutes ago, etc.)
+  const formatRelativeTime = (dateString) => {
+    if (!dateString) return null;
+    const date = new Date(dateString);
+    const now = new Date();
+    const diffMs = now - date;
+    const diffMins = Math.floor(diffMs / 60000);
+    const diffHours = Math.floor(diffMs / 3600000);
+    const diffDays = Math.floor(diffMs / 86400000);
+
+    if (diffMins < 1) return 'just now';
+    if (diffMins < 60) return `${diffMins} minute${diffMins === 1 ? '' : 's'} ago`;
+    if (diffHours < 24) return `${diffHours} hour${diffHours === 1 ? '' : 's'} ago`;
+    if (diffDays < 7) return `${diffDays} day${diffDays === 1 ? '' : 's'} ago`;
+    return date.toLocaleDateString();
+  };
 
   const handleRefreshTracking = async () => {
     if (!viewingPart?.id || !viewingPart?.tracking || isRefreshingTracking) return;
@@ -78,6 +94,24 @@ const PartDetailModal = ({
       setIsRefreshingTracking(false);
     }
   };
+
+  // Auto-refresh tracking when modal opens if data is stale (>8 hours old)
+  useEffect(() => {
+    if (
+      isOpen &&
+      viewingPart?.tracking &&
+      !viewingPart.tracking.startsWith('http') &&
+      !isRefreshingTracking
+    ) {
+      // Check if tracking data is stale (older than 8 hours or never fetched)
+      const isStale = !viewingPart.tracking_updated_at ||
+        (Date.now() - new Date(viewingPart.tracking_updated_at).getTime()) > 8 * 60 * 60 * 1000;
+
+      if (isStale) {
+        handleRefreshTracking();
+      }
+    }
+  }, [isOpen, viewingPart?.id]);
 
   if (!isOpen || !viewingPart) return null;
 
@@ -180,42 +214,6 @@ const PartDetailModal = ({
         {/* DETAIL VIEW */}
         {partDetailView === 'detail' && (
           <div className="p-4 sm:p-6 modal-scrollable slide-in-left">
-            {/* Status Badge (left) and Vehicle Badge (right) on same row */}
-            <div className="flex items-center justify-between mb-6 gap-3">
-              <div
-                className={`inline-flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium border ${getStatusColor(
-                  viewingPart
-                )}`}
-              >
-                {getStatusIcon(viewingPart)}
-                <span>{getStatusText(viewingPart)}</span>
-              </div>
-              {(() => {
-                const partProject = viewingPart.projectId
-                  ? projects.find((p) => p.id === viewingPart.projectId)
-                  : null;
-                const vehicle = partProject?.vehicle_id
-                  ? vehicles.find((v) => v.id === partProject.vehicle_id)
-                  : null;
-                return (
-                  vehicle && (
-                    <span
-                      className={`inline-flex items-center px-2 py-1 rounded text-xs font-medium border ${
-                        darkMode
-                          ? 'bg-gray-700 text-gray-300 border-gray-600'
-                          : 'bg-gray-100 text-gray-700 border-gray-300'
-                      }`}
-                    >
-                      <Car className="w-3 h-3 mr-1" />
-                      <span style={{ color: vehicle.color || '#3B82F6' }}>
-                        {vehicle.nickname || vehicle.name}
-                      </span>
-                    </span>
-                  )
-                );
-              })()}
-            </div>
-
             {/* Part Details Grid */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
               {/* Left Column */}
@@ -231,28 +229,28 @@ const PartDetailModal = ({
                 >
                   Part Info
                 </h3>
-                <div className="space-y-4">
-                  {viewingPart.partNumber &&
-                    viewingPart.partNumber !== '-' && (
-                      <div>
-                        <p
-                          className={`text-sm font-medium mb-1 ${
-                            darkMode ? 'text-gray-400' : 'text-slate-600'
-                          }`}
-                        >
-                          Part Number
-                        </p>
-                        <p
-                          className={`text-base font-mono ${
-                            darkMode ? 'text-gray-100' : 'text-slate-800'
-                          }`}
-                        >
-                          {viewingPart.partNumber}
-                        </p>
-                      </div>
-                    )}
-                  {/* Vendor and Project on same row */}
-                  <div className="grid grid-cols-2 gap-4">
+                <div className="grid grid-cols-2 gap-4">
+                  {/* Column 1: Part Number, Vendor */}
+                  <div className="space-y-4">
+                    {viewingPart.partNumber &&
+                      viewingPart.partNumber !== '-' && (
+                        <div>
+                          <p
+                            className={`text-sm font-medium mb-1 ${
+                              darkMode ? 'text-gray-400' : 'text-slate-600'
+                            }`}
+                          >
+                            Part Number
+                          </p>
+                          <p
+                            className={`text-base font-mono ${
+                              darkMode ? 'text-gray-100' : 'text-slate-800'
+                            }`}
+                          >
+                            {viewingPart.partNumber}
+                          </p>
+                        </div>
+                      )}
                     {viewingPart.vendor && (
                       <div>
                         <p
@@ -293,6 +291,42 @@ const PartDetailModal = ({
                         )}
                       </div>
                     )}
+                  </div>
+                  {/* Column 2: Vehicle, Project */}
+                  <div className="space-y-4">
+                    {(() => {
+                      const partProject = viewingPart.projectId
+                        ? projects.find((p) => p.id === viewingPart.projectId)
+                        : null;
+                      const vehicle = partProject?.vehicle_id
+                        ? vehicles.find((v) => v.id === partProject.vehicle_id)
+                        : null;
+                      return (
+                        vehicle && (
+                          <div>
+                            <p
+                              className={`text-sm font-medium mb-2 ${
+                                darkMode ? 'text-gray-400' : 'text-slate-600'
+                              }`}
+                            >
+                              Vehicle
+                            </p>
+                            <span
+                              className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-medium border ${
+                                darkMode
+                                  ? 'bg-gray-600 text-gray-200 border-gray-500'
+                                  : 'bg-gray-100 text-gray-700 border-gray-300'
+                              }`}
+                            >
+                              <Car className="w-3.5 h-3.5 mr-1.5" />
+                              <span style={{ color: vehicle.color || '#3B82F6' }}>
+                                {vehicle.nickname || vehicle.name}
+                              </span>
+                            </span>
+                          </div>
+                        )
+                      );
+                    })()}
                     {viewingPart.projectId &&
                       (() => {
                         const project = projects.find(
@@ -424,63 +458,39 @@ const PartDetailModal = ({
                   darkMode ? 'border-gray-700' : 'border-slate-200'
                 }`}
               >
-                <div className="flex items-center justify-between mb-4">
-                  <h3
-                    className={`text-lg font-semibold ${
-                      darkMode ? 'text-gray-200' : 'text-gray-800'
-                    }`}
-                  >
-                    Tracking Information
-                  </h3>
-                  {/* Refresh button - only show for non-URL tracking */}
-                  {!viewingPart.tracking.startsWith('http') && (
-                    <button
-                      onClick={handleRefreshTracking}
-                      disabled={isRefreshingTracking}
-                      className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${
-                        isRefreshingTracking
-                          ? darkMode
-                            ? 'bg-gray-700 text-gray-500 cursor-not-allowed'
-                            : 'bg-gray-200 text-gray-400 cursor-not-allowed'
-                          : darkMode
-                            ? 'bg-gray-700 hover:bg-gray-600 text-gray-300'
-                            : 'bg-gray-200 hover:bg-gray-300 text-gray-700'
-                      }`}
-                    >
-                      <RefreshCw className={`w-4 h-4 ${isRefreshingTracking ? 'animate-spin' : ''}`} />
-                      {isRefreshingTracking ? 'Updating...' : 'Refresh'}
-                    </button>
-                  )}
-                </div>
+                <h3
+                  className={`text-lg font-semibold mb-4 ${
+                    darkMode ? 'text-gray-200' : 'text-gray-800'
+                  }`}
+                >
+                  Tracking Information
+                </h3>
 
-                {/* AfterShip tracking status and timeline */}
-                {viewingPart.tracking_status && !viewingPart.tracking.startsWith('http') ? (
+                {/* Tracking status and timeline */}
+                {!viewingPart.tracking.startsWith('http') ? (
                   <div className="space-y-4">
-                    {/* Status badge with details */}
-                    <div className="flex items-start justify-between gap-4">
-                      <TrackingBadge
-                        status={viewingPart.tracking_status}
-                        location={viewingPart.tracking_location}
-                        eta={viewingPart.tracking_eta}
-                        updatedAt={viewingPart.tracking_updated_at}
-                        darkMode={darkMode}
-                        size="large"
-                        showLocation={true}
-                        showEta={true}
-                        showUpdatedAt={true}
-                      />
-                      {/* Carrier link */}
-                      {getTrackingUrl(viewingPart.tracking) && (
-                        <a
-                          href={getTrackingUrl(viewingPart.tracking)}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-lg transition-colors flex-shrink-0"
-                          onClick={(e) => e.stopPropagation()}
-                        >
-                          {getCarrierName(viewingPart.tracking)}
-                          <ExternalLink className="w-3.5 h-3.5" />
-                        </a>
+                    {/* Order status badge */}
+                    <div className="flex flex-col items-start gap-1">
+                      <div
+                        className={`inline-flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium border w-fit ${getStatusColor(
+                          viewingPart
+                        )}`}
+                      >
+                        {getStatusIcon(viewingPart)}
+                        <span>{getStatusText(viewingPart)}</span>
+                      </div>
+                      {/* Location and updated at info */}
+                      {(viewingPart.tracking_location || viewingPart.tracking_updated_at) && (
+                        <div className={`text-xs space-y-0.5 mt-1 ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>
+                          {viewingPart.tracking_location && (
+                            <div>{viewingPart.tracking_location}</div>
+                          )}
+                          {viewingPart.tracking_updated_at && (
+                            <div>
+                              Updated {formatRelativeTime(viewingPart.tracking_updated_at)}
+                            </div>
+                          )}
+                        </div>
                       )}
                     </div>
 
@@ -502,37 +512,14 @@ const PartDetailModal = ({
                     )}
                   </div>
                 ) : (
-                  /* Fallback for URL tracking or no AfterShip data */
-                  <div className="flex items-center gap-3">
-                    <span
-                      className={`text-sm ${
-                        darkMode ? 'text-gray-400' : 'text-slate-600'
-                      }`}
-                    >
-                      Carrier:
-                    </span>
-                    {getTrackingUrl(viewingPart.tracking) ? (
-                      <a
-                        href={getTrackingUrl(viewingPart.tracking)}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-lg transition-colors"
-                        onClick={(e) => e.stopPropagation()}
-                      >
-                        Track via {getCarrierName(viewingPart.tracking)}
-                        <ExternalLink className="w-4 h-4" />
-                      </a>
-                    ) : (
-                      <span
-                        className={`inline-block px-4 py-2 rounded-lg text-sm font-medium ${
-                          darkMode
-                            ? 'bg-gray-700 text-gray-300'
-                            : 'bg-gray-200 text-gray-700'
-                        }`}
-                      >
-                        {getCarrierName(viewingPart.tracking)}
-                      </span>
-                    )}
+                  /* Fallback for URL tracking */
+                  <div
+                    className={`inline-flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium border w-fit ${getStatusColor(
+                      viewingPart
+                    )}`}
+                  >
+                    {getStatusIcon(viewingPart)}
+                    <span>{getStatusText(viewingPart)}</span>
                   </div>
                 )}
               </div>
@@ -543,32 +530,68 @@ const PartDetailModal = ({
         {/* DETAIL VIEW FOOTER */}
         {partDetailView === 'detail' && (
           <div
-            className={`sticky bottom-0 border-t p-4 flex justify-end ${
+            className={`sticky bottom-0 border-t p-4 flex justify-between items-center ${
               darkMode
                 ? 'border-gray-700 bg-gray-800'
                 : 'border-slate-200 bg-slate-100'
             }`}
           >
-            <PrimaryButton
-              onClick={() => {
-                const partData = {
-                  ...viewingPart,
-                  status: viewingPart.delivered
-                    ? 'delivered'
-                    : viewingPart.shipped
-                      ? 'shipped'
-                      : viewingPart.purchased
-                        ? 'purchased'
-                        : 'pending'
-                };
-                setEditingPart(partData);
-                setOriginalPartData({ ...partData });
-                setPartDetailView('edit');
-              }}
-              icon={Edit2}
-            >
-              Edit
-            </PrimaryButton>
+            {/* Track button on the left */}
+            <div>
+              {viewingPart.tracking && getTrackingUrl(viewingPart.tracking) && (
+                <a
+                  href={getTrackingUrl(viewingPart.tracking)}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-lg transition-colors"
+                  onClick={(e) => e.stopPropagation()}
+                >
+                  Track
+                  <ExternalLink className="w-3.5 h-3.5" />
+                </a>
+              )}
+            </div>
+            {/* Refresh and Edit buttons on the right */}
+            <div className="flex items-center gap-2">
+              {viewingPart.tracking && !viewingPart.tracking.startsWith('http') && (
+                <button
+                  onClick={handleRefreshTracking}
+                  disabled={isRefreshingTracking}
+                  className={`inline-flex items-center justify-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${
+                    isRefreshingTracking
+                      ? darkMode
+                        ? 'bg-gray-700 text-gray-500 cursor-not-allowed'
+                        : 'bg-gray-200 text-gray-400 cursor-not-allowed'
+                      : darkMode
+                        ? 'bg-gray-700 hover:bg-gray-600 text-gray-300'
+                        : 'bg-gray-200 hover:bg-gray-300 text-gray-700'
+                  }`}
+                >
+                  <RefreshCw className={`w-4 h-4 ${isRefreshingTracking ? 'animate-spin' : ''}`} />
+                  {isRefreshingTracking ? 'Updating...' : 'Refresh'}
+                </button>
+              )}
+              <PrimaryButton
+                onClick={() => {
+                  const partData = {
+                    ...viewingPart,
+                    status: viewingPart.delivered
+                      ? 'delivered'
+                      : viewingPart.shipped
+                        ? 'shipped'
+                        : viewingPart.purchased
+                          ? 'purchased'
+                          : 'pending'
+                  };
+                  setEditingPart(partData);
+                  setOriginalPartData({ ...partData });
+                  setPartDetailView('edit');
+                }}
+                icon={Edit2}
+              >
+                Edit
+              </PrimaryButton>
+            </div>
           </div>
         )}
 
@@ -1010,9 +1033,14 @@ const PartDetailModal = ({
             <div className="flex items-center gap-2">
               <button
                 onClick={async () => {
+                  const trackingChanged = editingPart.tracking &&
+                    editingPart.tracking !== viewingPart.tracking &&
+                    !editingPart.tracking.startsWith('http');
+
                   await saveEditedPart();
+
                   // Update viewingPart with the saved changes
-                  setViewingPart({
+                  const updatedPart = {
                     ...viewingPart,
                     ...editingPart,
                     price: parseFloat(editingPart.price) || 0,
@@ -1030,8 +1058,29 @@ const PartDetailModal = ({
                       editingPart.status === 'delivered' ||
                       editingPart.status === 'shipped' ||
                       editingPart.status === 'purchased'
-                  });
+                  };
+                  setViewingPart(updatedPart);
                   setPartDetailView('detail');
+
+                  // Auto-refresh tracking if tracking number was added/changed
+                  if (trackingChanged) {
+                    try {
+                      const response = await fetch(`/api/tracking/${viewingPart.id}`);
+                      const data = await response.json();
+                      if (data.success && data.tracking) {
+                        setViewingPart(prev => ({
+                          ...prev,
+                          ...data.tracking,
+                          delivered: data.tracking.tracking_status === 'Delivered' ? true : prev.delivered
+                        }));
+                        if (onRefreshTracking) {
+                          onRefreshTracking(viewingPart.id, data.tracking);
+                        }
+                      }
+                    } catch (error) {
+                      console.error('Failed to refresh tracking:', error);
+                    }
+                  }
                 }}
                 disabled={!editingPart.part}
                 className={`px-4 py-2 rounded-lg font-medium transition-colors text-sm ${

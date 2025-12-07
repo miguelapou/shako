@@ -15,24 +15,24 @@ const TrackingModal = ({
   const handleClose = useCallback(() => {
     setIsClosing(true);
     setTimeout(() => {
-      setIsClosing(false);
       onClose();
+      setIsClosing(false);
     }, 150);
   }, [onClose]);
 
   const handleSkip = useCallback(() => {
     setIsClosing(true);
     setTimeout(() => {
-      setIsClosing(false);
       skipTrackingInfo();
+      // Don't reset isClosing - modal will unmount
     }, 150);
   }, [skipTrackingInfo]);
 
   const handleSave = useCallback(() => {
     setIsClosing(true);
     setTimeout(() => {
-      setIsClosing(false);
       saveTrackingInfo();
+      // Don't reset isClosing - modal will unmount
     }, 150);
   }, [saveTrackingInfo]);
 

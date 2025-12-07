@@ -248,6 +248,28 @@ const useParts = (userId, toast) => {
       if (setShowTrackingModal) setShowTrackingModal(false);
       if (setTrackingModalPartId) setTrackingModalPartId(null);
       if (setTrackingInput) setTrackingInput('');
+
+      // Auto-refresh tracking from AfterShip if not a URL
+      if (trackingInput && !trackingInput.startsWith('http')) {
+        try {
+          const response = await fetch(`/api/tracking/${trackingModalPartId}`);
+          const data = await response.json();
+          if (data.success && data.tracking) {
+            setParts(prevParts => prevParts.map(part => {
+              if (part.id === trackingModalPartId) {
+                return {
+                  ...part,
+                  ...data.tracking,
+                  delivered: data.tracking.tracking_status === 'Delivered' ? true : part.delivered
+                };
+              }
+              return part;
+            }));
+          }
+        } catch (trackingError) {
+          console.error('Failed to refresh tracking:', trackingError);
+        }
+      }
     } catch (error) {
       toast?.error('Error saving tracking info. Please try again.');
     }
@@ -442,6 +464,16 @@ const useParts = (userId, toast) => {
   };
 
   /**
+   * Update part tracking data in local state
+   * Used after refreshing tracking from AfterShip API
+   */
+  const updatePartTrackingData = (partId, trackingData) => {
+    setParts(prevParts => prevParts.map(part =>
+      part.id === partId ? { ...part, ...trackingData } : part
+    ));
+  };
+
+  /**
    * Get unique vendors from parts
    */
   const getUniqueVendors = () => {
@@ -538,6 +570,7 @@ const useParts = (userId, toast) => {
     deleteVendor,
     unlinkPartFromProject,
     updatePartProject,
+    updatePartTrackingData,
     getUniqueVendors,
     importPartsFromCSV
   };
