@@ -446,7 +446,7 @@ const ProjectDetailView = ({
             <div>
               <p className={`text-xs mb-1 ${
                 darkMode ? 'text-gray-400' : 'text-slate-600'
-              }`}>Parts Linked</p>
+              }`}>Linked Parts</p>
               <p className={`text-lg font-bold ${
                 darkMode ? 'text-gray-100' : 'text-slate-800'
               }`}>
