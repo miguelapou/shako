@@ -1,91 +1,145 @@
 import React, { createContext, useContext, useState, useCallback } from 'react';
-import {
-  fetchDocuments,
-  uploadDocument,
-  removeDocument,
-  getDocumentUrl
-} from '../services/documentsService';
+import * as documentsService from '../services/documentsService';
 
 const DocumentContext = createContext(null);
 
-export const DocumentProvider = ({ children }) => {
-  // Document list state
+export const DocumentProvider = ({ children, userId }) => {
   const [documents, setDocuments] = useState([]);
   const [loadingDocuments, setLoadingDocuments] = useState(false);
   const [uploadingDocument, setUploadingDocument] = useState(false);
-
-  // Add document modal state
   const [showAddDocumentModal, setShowAddDocumentModal] = useState(false);
   const [newDocumentTitle, setNewDocumentTitle] = useState('');
   const [newDocumentFile, setNewDocumentFile] = useState(null);
   const [isDraggingDocument, setIsDraggingDocument] = useState(false);
 
-  // Load documents for a vehicle
+  // Load documents for a specific vehicle and resolve file URLs
   const loadDocuments = useCallback(async (vehicleId) => {
-    if (!vehicleId) return;
-    setLoadingDocuments(true);
+    if (!vehicleId) {
+      setDocuments([]);
+      return;
+    }
     try {
-      const docs = await fetchDocuments(vehicleId);
-      setDocuments(docs);
+      setLoadingDocuments(true);
+      const data = await documentsService.getVehicleDocuments(vehicleId);
+
+      if (data && data.length > 0) {
+        const filePaths = data
+          .map(doc => doc.file_url)
+          .filter(url => url && !url.startsWith('http'));
+
+        if (filePaths.length > 0) {
+          try {
+            const urlMap = await documentsService.getDocumentFileUrls(filePaths);
+            const withResolvedUrls = data.map(doc => {
+              if (doc.file_url && !doc.file_url.startsWith('http')) {
+                return {
+                  ...doc,
+                  file_url_resolved: urlMap[doc.file_url] || doc.file_url
+                };
+              }
+              return {
+                ...doc,
+                file_url_resolved: doc.file_url
+              };
+            });
+            setDocuments(withResolvedUrls);
+          } catch (urlError) {
+            setDocuments(data);
+          }
+        } else {
+          const withResolvedUrls = data.map(doc => ({
+            ...doc,
+            file_url_resolved: doc.file_url
+          }));
+          setDocuments(withResolvedUrls);
+        }
+      } else {
+        setDocuments([]);
+      }
     } catch (error) {
-      console.error('Error loading documents:', error);
+      setDocuments([]);
     } finally {
       setLoadingDocuments(false);
     }
   }, []);
 
-  // Add a new document
-  const addDocument = useCallback(async (vehicleId) => {
-    if (!newDocumentFile || !vehicleId) return;
+  // Add a new document - matches original hook signature
+  const addDocument = useCallback(async (vehicleId, title, file) => {
+    if (!vehicleId || !title || !file || !userId) return null;
 
-    setUploadingDocument(true);
     try {
-      const title = newDocumentTitle.trim() || newDocumentFile.name;
-      await uploadDocument(vehicleId, newDocumentFile, title);
-      await loadDocuments(vehicleId);
-      // Reset form
-      setShowAddDocumentModal(false);
-      setNewDocumentTitle('');
-      setNewDocumentFile(null);
+      setUploadingDocument(true);
+      const fileUrl = await documentsService.uploadDocumentFile(file, userId);
+      const documentData = {
+        vehicle_id: vehicleId,
+        title: title,
+        file_url: fileUrl,
+        file_name: file.name,
+        file_type: file.type,
+        file_size: file.size
+      };
+
+      const newDocument = await documentsService.createDocument(documentData, userId);
+      setDocuments(prev => [newDocument, ...prev]);
+      return newDocument;
     } catch (error) {
-      alert('Error uploading document: ' + error.message);
+      alert('Error uploading document. Please try again.');
+      return null;
     } finally {
       setUploadingDocument(false);
     }
-  }, [newDocumentFile, newDocumentTitle, loadDocuments]);
+  }, [userId]);
 
   // Delete a document
-  const deleteDocument = useCallback(async (documentId, vehicleId) => {
+  const deleteDocument = useCallback(async (documentId, fileUrl) => {
     try {
-      await removeDocument(documentId);
-      await loadDocuments(vehicleId);
+      await documentsService.deleteDocument(documentId, fileUrl);
+      setDocuments(prev => prev.filter(doc => doc.id !== documentId));
     } catch (error) {
-      alert('Error deleting document: ' + error.message);
-    }
-  }, [loadDocuments]);
-
-  // Open document in new tab
-  const openDocument = useCallback(async (document) => {
-    try {
-      const url = await getDocumentUrl(document.file_path);
-      if (url) {
-        window.open(url, '_blank');
-      }
-    } catch (error) {
-      alert('Error opening document: ' + error.message);
+      alert('Error deleting document');
     }
   }, []);
 
-  // File input change handler
+  // Handle document file selection
   const handleDocumentFileChange = useCallback((e) => {
-    const file = e.target.files?.[0];
+    const file = e.target.files[0];
     if (file) {
+      if (file.size > 10 * 1024 * 1024) {
+        alert('Document size must be less than 10MB');
+        return;
+      }
       setNewDocumentFile(file);
-      if (!newDocumentTitle) {
-        setNewDocumentTitle(file.name.replace(/\.[^/.]+$/, ''));
+    }
+  }, []);
+
+  // Clear document selection
+  const clearDocumentSelection = useCallback(() => {
+    setNewDocumentFile(null);
+    setNewDocumentTitle('');
+  }, []);
+
+  // Open document in new tab
+  const openDocument = useCallback(async (document) => {
+    if (!document) return;
+
+    if (document.file_url_resolved) {
+      window.open(document.file_url_resolved, '_blank');
+      return;
+    }
+
+    if (document.file_url) {
+      if (document.file_url.startsWith('http')) {
+        window.open(document.file_url, '_blank');
+      } else {
+        try {
+          const signedUrl = await documentsService.getDocumentFileUrl(document.file_url);
+          window.open(signedUrl, '_blank');
+        } catch (error) {
+          alert('Error opening document');
+        }
       }
     }
-  }, [newDocumentTitle]);
+  }, []);
 
   // Drag and drop handlers
   const handleDocumentDragEnter = useCallback((e) => {
@@ -109,47 +163,41 @@ export const DocumentProvider = ({ children }) => {
     e.preventDefault();
     e.stopPropagation();
     setIsDraggingDocument(false);
-    const file = e.dataTransfer.files?.[0];
-    if (file) {
-      setNewDocumentFile(file);
-      if (!newDocumentTitle) {
-        setNewDocumentTitle(file.name.replace(/\.[^/.]+$/, ''));
-      }
-    }
-  }, [newDocumentTitle]);
 
-  // Reset form state
-  const resetDocumentForm = useCallback(() => {
-    setShowAddDocumentModal(false);
-    setNewDocumentTitle('');
-    setNewDocumentFile(null);
-    setIsDraggingDocument(false);
+    const file = e.dataTransfer.files[0];
+    if (file) {
+      if (file.size > 10 * 1024 * 1024) {
+        alert('Document size must be less than 10MB');
+        return;
+      }
+      setNewDocumentFile(file);
+    }
   }, []);
 
   const value = {
     // State
     documents,
+    setDocuments,
     loadingDocuments,
     uploadingDocument,
     showAddDocumentModal,
-    newDocumentTitle,
-    newDocumentFile,
-    isDraggingDocument,
-    // Setters
     setShowAddDocumentModal,
+    newDocumentTitle,
     setNewDocumentTitle,
+    newDocumentFile,
     setNewDocumentFile,
+    isDraggingDocument,
     // Actions
     loadDocuments,
     addDocument,
     deleteDocument,
-    openDocument,
     handleDocumentFileChange,
+    clearDocumentSelection,
+    openDocument,
     handleDocumentDragEnter,
     handleDocumentDragLeave,
     handleDocumentDragOver,
-    handleDocumentDrop,
-    resetDocumentForm
+    handleDocumentDrop
   };
 
   return <DocumentContext.Provider value={value}>{children}</DocumentContext.Provider>;
