@@ -77,23 +77,26 @@ export const createAfterShipTracking = async (trackingNumber, carrier = null, ti
   try {
     const slug = carrier ? CARRIER_SLUGS[carrier] : detectCarrierSlug(trackingNumber);
 
-    const trackingData = {
-      tracking_number: trackingNumber,
-      title: title || undefined
+    // Build request body - SDK 2025-07 format (no wrapper object)
+    const requestBody = {
+      tracking_number: trackingNumber
     };
 
     if (slug) {
-      trackingData.slug = slug;
+      requestBody.slug = slug;
     }
 
-    const response = await client.tracking.createTracking({
-      tracking: trackingData
-    });
+    if (title) {
+      requestBody.title = title;
+    }
+
+    const response = await client.tracking.createTracking(requestBody);
 
     return response.data?.tracking || response.data;
   } catch (error) {
-    // Handle duplicate tracking
-    if (error.message?.includes('duplicate') || error.code === 4003) {
+    // Handle duplicate tracking (error code 4003)
+    if (error.code === 4003 || error.meta_code === 4003 || error.message?.includes('duplicate')) {
+      const slug = carrier ? CARRIER_SLUGS[carrier] : detectCarrierSlug(trackingNumber);
       // Try to get existing tracking instead
       return getAfterShipTrackingByNumber(trackingNumber, slug);
     }
@@ -114,9 +117,8 @@ export const getAfterShipTracking = async (trackingId) => {
   }
 
   try {
-    const response = await client.tracking.getTrackingById({
-      tracking_id: trackingId
-    });
+    // SDK 2025-07 format - pass tracking_id directly
+    const response = await client.tracking.getTrackingById(trackingId);
 
     return response.data?.tracking || response.data;
   } catch (error) {
@@ -126,26 +128,45 @@ export const getAfterShipTracking = async (trackingId) => {
 };
 
 /**
- * Get tracking by tracking number and slug
+ * Get tracking by tracking number using list endpoint
+ * Uses list endpoint to search by tracking number regardless of carrier slug
  * @param {string} trackingNumber - Tracking number
- * @param {string} slug - Carrier slug
+ * @param {string} slug - Carrier slug (optional, not used but kept for compatibility)
  * @returns {Promise<Object>} Tracking data
  */
 export const getAfterShipTrackingByNumber = async (trackingNumber, slug = null) => {
-  const client = getClient();
-  if (!client) {
+  const apiKey = process.env.AFTERSHIP_API_KEY;
+  if (!apiKey) {
     throw new Error('AfterShip API key not configured');
   }
 
   try {
-    const detectedSlug = slug || detectCarrierSlug(trackingNumber);
+    // Use list endpoint to search by tracking number - this works regardless of slug
+    const response = await fetch(
+      `https://api.aftership.com/tracking/2025-07/trackings?tracking_numbers=${encodeURIComponent(trackingNumber)}`,
+      {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          'as-api-key': apiKey
+        }
+      }
+    );
 
-    const response = await client.tracking.getTrackingByTrackingNumber({
-      tracking_number: trackingNumber,
-      slug: detectedSlug
-    });
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData.meta?.message || 'Failed to get tracking');
+    }
 
-    return response.data?.tracking || response.data;
+    const data = await response.json();
+    const trackings = data.data?.trackings || [];
+
+    if (trackings.length === 0) {
+      throw new Error('Tracking not found');
+    }
+
+    // Return the first matching tracking
+    return trackings[0];
   } catch (error) {
     error.message = `Failed to get AfterShip tracking: ${error.message}`;
     throw error;
@@ -164,9 +185,8 @@ export const deleteAfterShipTracking = async (trackingId) => {
   }
 
   try {
-    await client.tracking.deleteTrackingById({
-      tracking_id: trackingId
-    });
+    // SDK 2025-07 format - pass tracking_id directly
+    await client.tracking.deleteTrackingById(trackingId);
   } catch (error) {
     // Ignore if tracking doesn't exist
     if (!error.message?.includes('not found')) {

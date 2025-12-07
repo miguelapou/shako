@@ -963,9 +963,6 @@ const PartsTab = ({
                       {getSortIcon('total')}
                     </div>
                   </th>
-                  <th className={`px-6 py-4 text-center text-xs font-semibold uppercase tracking-wider ${
-                    darkMode ? 'text-gray-300' : 'text-slate-700'
-                  }`}>Tracking</th>
                 </tr>
               </thead>
               <tbody className={`divide-y ${
@@ -1072,53 +1069,12 @@ const PartsTab = ({
                         darkMode ? 'text-gray-100' : 'text-slate-900'
                       }`}>${part.total.toFixed(2)}</div>
                     </td>
-                    <td className="px-6 py-4">
-                      {part.tracking ? (
-                        <div className="flex flex-col items-start gap-1">
-                          {/* AfterShip status badge when available */}
-                          {part.tracking_status && !part.tracking.startsWith('http') && (
-                            <TrackingBadge
-                              status={part.tracking_status}
-                              darkMode={darkMode}
-                              size="small"
-                            />
-                          )}
-                          {/* Carrier link */}
-                          {getTrackingUrl(part.tracking) ? (
-                            <a
-                              href={getTrackingUrl(part.tracking)}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              className="inline-flex items-center justify-center gap-1.5 px-3 py-1.5 bg-blue-400 hover:bg-blue-500 text-white text-sm font-medium rounded-md transition-colors w-28"
-                              onClick={(e) => e.stopPropagation()}
-                            >
-                              {getCarrierName(part.tracking)}
-                              <ExternalLink className="w-3.5 h-3.5" />
-                            </a>
-                          ) : (
-                            <div className={`inline-flex items-center justify-center px-3 py-1.5 text-sm font-medium rounded-md w-28 ${
-                              darkMode ? 'bg-gray-700 text-gray-300' : 'bg-gray-200 text-gray-700'
-                            }`}>
-                              {getCarrierName(part.tracking)}
-                            </div>
-                          )}
-                        </div>
-                      ) : (
-                        <span className={`inline-flex items-center justify-center px-3 py-1.5 text-xs font-medium rounded-md w-28 border ${
-                          darkMode
-                            ? 'bg-gray-700/50 text-gray-500 border-gray-600'
-                            : 'bg-gray-100 text-gray-500 border-gray-300'
-                        }`}>
-                          No Tracking
-                        </span>
-                      )}
-                    </td>
                   </tr>
                 ))}
                 {/* Add empty rows on last page to maintain consistent height when there are multiple pages */}
                 {totalPages > 1 && paginatedParts.length < rowsPerPage && Array.from({ length: rowsPerPage - paginatedParts.length }).map((_, index) => (
                   <tr key={`empty-${index}`}>
-                    <td colSpan="8" className="px-6 py-4">
+                    <td colSpan="7" className="px-6 py-4">
                       <div className="h-[2rem]"></div>
                     </td>
                   </tr>
