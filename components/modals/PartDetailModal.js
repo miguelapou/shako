@@ -440,34 +440,13 @@ const PartDetailModal = ({
                   darkMode ? 'border-gray-700' : 'border-slate-200'
                 }`}
               >
-                <div className="flex items-center justify-between mb-4">
-                  <h3
-                    className={`text-lg font-semibold ${
-                      darkMode ? 'text-gray-200' : 'text-gray-800'
-                    }`}
-                  >
-                    Tracking Information
-                  </h3>
-                  {/* Refresh button - only show for non-URL tracking */}
-                  {!viewingPart.tracking.startsWith('http') && (
-                    <button
-                      onClick={handleRefreshTracking}
-                      disabled={isRefreshingTracking}
-                      className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${
-                        isRefreshingTracking
-                          ? darkMode
-                            ? 'bg-gray-700 text-gray-500 cursor-not-allowed'
-                            : 'bg-gray-200 text-gray-400 cursor-not-allowed'
-                          : darkMode
-                            ? 'bg-gray-700 hover:bg-gray-600 text-gray-300'
-                            : 'bg-gray-200 hover:bg-gray-300 text-gray-700'
-                      }`}
-                    >
-                      <RefreshCw className={`w-4 h-4 ${isRefreshingTracking ? 'animate-spin' : ''}`} />
-                      {isRefreshingTracking ? 'Updating...' : 'Refresh'}
-                    </button>
-                  )}
-                </div>
+                <h3
+                  className={`text-lg font-semibold mb-4 ${
+                    darkMode ? 'text-gray-200' : 'text-gray-800'
+                  }`}
+                >
+                  Tracking Information
+                </h3>
 
                 {/* Tracking status and timeline */}
                 {!viewingPart.tracking.startsWith('http') ? (
@@ -497,19 +476,37 @@ const PartDetailModal = ({
                           </div>
                         )}
                       </div>
-                      {/* Track link */}
-                      {getTrackingUrl(viewingPart.tracking) && (
-                        <a
-                          href={getTrackingUrl(viewingPart.tracking)}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-lg transition-colors flex-shrink-0"
-                          onClick={(e) => e.stopPropagation()}
+                      {/* Track link and Refresh button */}
+                      <div className="flex flex-col gap-2 flex-shrink-0">
+                        {getTrackingUrl(viewingPart.tracking) && (
+                          <a
+                            href={getTrackingUrl(viewingPart.tracking)}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="inline-flex items-center justify-center gap-1.5 px-3 py-1.5 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-lg transition-colors"
+                            onClick={(e) => e.stopPropagation()}
+                          >
+                            Track
+                            <ExternalLink className="w-3.5 h-3.5" />
+                          </a>
+                        )}
+                        <button
+                          onClick={handleRefreshTracking}
+                          disabled={isRefreshingTracking}
+                          className={`inline-flex items-center justify-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${
+                            isRefreshingTracking
+                              ? darkMode
+                                ? 'bg-gray-700 text-gray-500 cursor-not-allowed'
+                                : 'bg-gray-200 text-gray-400 cursor-not-allowed'
+                              : darkMode
+                                ? 'bg-gray-700 hover:bg-gray-600 text-gray-300'
+                                : 'bg-gray-200 hover:bg-gray-300 text-gray-700'
+                          }`}
                         >
-                          Track
-                          <ExternalLink className="w-3.5 h-3.5" />
-                        </a>
-                      )}
+                          <RefreshCw className={`w-4 h-4 ${isRefreshingTracking ? 'animate-spin' : ''}`} />
+                          {isRefreshingTracking ? 'Updating...' : 'Refresh'}
+                        </button>
+                      </div>
                     </div>
 
                     {/* Tracking timeline */}
