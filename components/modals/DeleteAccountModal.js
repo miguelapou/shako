@@ -15,6 +15,7 @@ const DeleteAccountModal = ({
   const [confirmText, setConfirmText] = useState('');
   const [isDeleting, setIsDeleting] = useState(false);
   const [error, setError] = useState(null);
+  const [isClosing, setIsClosing] = useState(false);
 
   const CONFIRMATION_TEXT = 'delete my account';
   const isConfirmEnabled = confirmText.toLowerCase() === CONFIRMATION_TEXT;
@@ -40,19 +41,28 @@ const DeleteAccountModal = ({
 
   const handleClose = () => {
     if (isDeleting) return; // Prevent closing while deleting
-    setConfirmText('');
-    setError(null);
-    onClose();
+    setIsClosing(true);
+    setTimeout(() => {
+      setConfirmText('');
+      setError(null);
+      setIsClosing(false);
+      onClose();
+    }, 150);
   };
 
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black bg-opacity-50 backdrop-blur-sm">
+    <div
+      className={`fixed inset-0 z-50 flex items-center justify-center p-4 bg-black bg-opacity-50 backdrop-blur-sm modal-backdrop ${
+        isClosing ? 'modal-backdrop-exit' : 'modal-backdrop-enter'
+      }`}
+      onClick={handleClose}
+    >
       <div
-        className={`w-full max-w-md rounded-xl shadow-2xl overflow-hidden transition-all ${
-          darkMode ? 'bg-gray-800 border border-gray-700' : 'bg-slate-50 border border-slate-200'
-        }`}
+        className={`w-full max-w-md rounded-xl shadow-2xl overflow-hidden modal-content ${
+          isClosing ? 'modal-popup-exit' : 'modal-popup-enter'
+        } ${darkMode ? 'bg-gray-800 border border-gray-700' : 'bg-slate-50 border border-slate-200'}`}
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header */}
