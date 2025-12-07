@@ -1117,9 +1117,9 @@ const PartsTab = ({
           <div className={`px-6 py-4 border-t parts-table-footer ${
             darkMode ? 'bg-gray-700 border-gray-600' : 'bg-slate-50 border-slate-200'
           }`}>
-            <div className="flex items-center justify-between flex-wrap gap-4">
+            <div className="grid grid-cols-3 items-center gap-4">
               {/* Left: Rows per page dropdown */}
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-2 justify-self-start">
                 <label htmlFor="rowsPerPage" className={`text-sm ${
                   darkMode ? 'text-gray-400' : 'text-slate-600'
                 }`}>
@@ -1148,15 +1148,15 @@ const PartsTab = ({
               </div>
 
               {/* Center: Total parts count */}
-              <p className={`text-sm ${
+              <p className={`text-sm justify-self-center ${
                 darkMode ? 'text-gray-400' : 'text-slate-600'
               }`}>
                 <span className="font-semibold">{filteredParts.length}</span> parts
               </p>
 
-              {/* Right: Pagination controls (or empty placeholder to keep parts count centered) */}
+              {/* Right: Pagination controls */}
               {totalPages > 1 ? (
-                <div className="flex items-center gap-2">
+                <div className="flex items-center gap-2 justify-self-end">
                   {/* Previous button */}
                   <button
                     onClick={() => handlePageChange(currentPage - 1)}
@@ -1217,7 +1217,7 @@ const PartsTab = ({
                   </button>
                 </div>
               ) : (
-                <div className="w-[200px]"></div>
+                <div></div>
               )}
             </div>
           </div>
