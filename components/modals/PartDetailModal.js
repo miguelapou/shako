@@ -95,18 +95,17 @@ const PartDetailModal = ({
     }
   };
 
-  // Auto-refresh tracking when modal opens with tracking but no status
+  // Auto-refresh tracking when modal opens with tracking number
   useEffect(() => {
     if (
       isOpen &&
       viewingPart?.tracking &&
       !viewingPart.tracking.startsWith('http') &&
-      !viewingPart.tracking_status &&
       !isRefreshingTracking
     ) {
       handleRefreshTracking();
     }
-  }, [isOpen, viewingPart?.id, viewingPart?.tracking]);
+  }, [isOpen, viewingPart?.id]);
 
   if (!isOpen || !viewingPart) return null;
 
