@@ -447,36 +447,33 @@ const VehicleDetailModal = ({
                   </div>
                 ) : (
                   <div className="relative">
-                    {/* Timeline line - only show if there are events, positioned to not cut through circles */}
-                    {serviceEvents && serviceEvents.length > 0 && (
-                      <div
-                        className={`absolute left-[19px] w-0.5 ${
-                          darkMode ? 'bg-gray-600' : 'bg-gray-300'
-                        }`}
-                        style={{
-                          top: '40px',
-                          height: `calc(${serviceEvents.length - 1} * 64px + 24px)`
-                        }}
-                      />
-                    )}
-
                     {/* Timeline items */}
                     <div className="space-y-0">
                       {serviceEvents && [...serviceEvents].sort((a, b) =>
                         new Date(b.event_date) - new Date(a.event_date)
-                      ).map((event, index) => {
+                      ).map((event, index, arr) => {
                         const eventDate = new Date(event.event_date);
                         const formattedDate = eventDate.toLocaleDateString('en-US', {
                           month: 'short',
                           day: 'numeric',
                           year: 'numeric'
                         });
+                        const isLast = index === arr.length - 1;
 
                         return (
                           <div
                             key={event.id}
                             className="relative flex items-start gap-4 group"
                           >
+                            {/* Timeline line segment - connects to next item */}
+                            {!isLast && (
+                              <div
+                                className={`absolute left-[19px] top-10 bottom-0 w-0.5 ${
+                                  darkMode ? 'bg-gray-600' : 'bg-gray-300'
+                                }`}
+                              />
+                            )}
+
                             {/* Timeline dot */}
                             <div className={`relative z-10 flex-shrink-0 w-10 h-10 rounded-full flex items-center justify-center ${
                               darkMode ? 'bg-gray-700 border-2 border-gray-600' : 'bg-white border-2 border-gray-300'
@@ -487,9 +484,7 @@ const VehicleDetailModal = ({
                             </div>
 
                             {/* Event content */}
-                            <div className={`flex-1 pb-6 ${
-                              index === serviceEvents.length - 1 ? 'pb-0' : ''
-                            }`}>
+                            <div className={`flex-1 min-w-0 ${isLast ? 'pb-0' : 'pb-6'}`}>
                               <div className={`rounded-lg p-3 border transition-all ${
                                 darkMode
                                   ? 'bg-gray-700/50 border-gray-600 hover:border-gray-500'
@@ -502,25 +497,25 @@ const VehicleDetailModal = ({
                                     }`}>
                                       {event.description}
                                     </p>
-                                    <div className="flex items-center gap-3 mt-1">
-                                      <span className={`text-xs flex items-center gap-1 ${
+                                    <div className="flex flex-wrap items-center gap-x-3 gap-y-1 mt-1">
+                                      <span className={`text-xs flex items-center gap-1 whitespace-nowrap ${
                                         darkMode ? 'text-gray-400' : 'text-gray-500'
                                       }`}>
-                                        <Calendar className="w-3 h-3" />
+                                        <Calendar className="w-3 h-3 flex-shrink-0" />
                                         {formattedDate}
                                       </span>
                                       {event.odometer && (
-                                        <span className={`text-xs flex items-center gap-1 ${
+                                        <span className={`text-xs flex items-center gap-1 whitespace-nowrap ${
                                           darkMode ? 'text-gray-400' : 'text-gray-500'
                                         }`}>
-                                          <Gauge className="w-3 h-3" />
+                                          <Gauge className="w-3 h-3 flex-shrink-0" />
                                           {event.odometer.toLocaleString()} mi
                                         </span>
                                       )}
                                     </div>
                                   </div>
                                   {/* Actions */}
-                                  <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                                  <div className="flex items-center gap-1 flex-shrink-0 opacity-0 group-hover:opacity-100 transition-opacity">
                                     <button
                                       onClick={() => openEditServiceEventModal(event)}
                                       className={`p-1.5 rounded transition-colors ${
