@@ -1103,14 +1103,6 @@ const PartsTab = ({
                     </td>
                   </tr>
                 ))}
-                {/* Empty rows to maintain consistent height */}
-                {Array.from({ length: rowsPerPage - paginatedParts.length }).map((_, index) => (
-                  <tr key={`empty-${index}`}>
-                    <td colSpan="8" className="px-6 py-4">
-                      <div className="h-[2rem]"></div>
-                    </td>
-                  </tr>
-                ))}
               </tbody>
             </table>
           </div>
