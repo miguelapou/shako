@@ -348,6 +348,25 @@ input[type="number"] {
 .door-segment:nth-child(3) { bottom: 60px; animation-delay: 0.2s; }
 .door-segment:nth-child(4) { bottom: 90px; animation-delay: 0.3s; }
 
+/* Garage Door - Desktop Scale Up */
+@media (min-width: 768px) {
+  .garage-spinner {
+    width: 200px;
+    height: 240px;
+    border-width: 4px;
+  }
+
+  .door-segment {
+    height: 60px;
+    border-bottom-width: 2px;
+  }
+
+  .door-segment:nth-child(1) { bottom: 0px; }
+  .door-segment:nth-child(2) { bottom: 60px; }
+  .door-segment:nth-child(3) { bottom: 120px; }
+  .door-segment:nth-child(4) { bottom: 180px; }
+}
+
 /* Scrollbar Styles - WebKit */
 *::-webkit-scrollbar {
   width: 12px;
