@@ -5,6 +5,7 @@ import {
   ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight
 } from 'lucide-react';
 import PriceDisplay from '../ui/PriceDisplay';
+import TrackingBadge from '../ui/TrackingBadge';
 import { getVendorDisplayColor } from '../../utils/colorUtils';
 import { getTrackingUrl, getCarrierName } from '../../utils/trackingUtils';
 
@@ -1073,24 +1074,35 @@ const PartsTab = ({
                     </td>
                     <td className="px-6 py-4">
                       {part.tracking ? (
-                        getTrackingUrl(part.tracking) ? (
-                          <a
-                            href={getTrackingUrl(part.tracking)}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="inline-flex items-center justify-center gap-1.5 px-3 py-1.5 bg-blue-400 hover:bg-blue-500 text-white text-sm font-medium rounded-md transition-colors w-28"
-                            onClick={(e) => e.stopPropagation()}
-                          >
-                            {getCarrierName(part.tracking)}
-                            <ExternalLink className="w-3.5 h-3.5" />
-                          </a>
-                        ) : (
-                          <div className={`inline-flex items-center justify-center px-3 py-1.5 text-sm font-medium rounded-md w-28 ${
-                            darkMode ? 'bg-gray-700 text-gray-300' : 'bg-gray-200 text-gray-700'
-                          }`}>
-                            {getCarrierName(part.tracking)}
-                          </div>
-                        )
+                        <div className="flex flex-col items-start gap-1">
+                          {/* AfterShip status badge when available */}
+                          {part.tracking_status && !part.tracking.startsWith('http') && (
+                            <TrackingBadge
+                              status={part.tracking_status}
+                              darkMode={darkMode}
+                              size="small"
+                            />
+                          )}
+                          {/* Carrier link */}
+                          {getTrackingUrl(part.tracking) ? (
+                            <a
+                              href={getTrackingUrl(part.tracking)}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="inline-flex items-center justify-center gap-1.5 px-3 py-1.5 bg-blue-400 hover:bg-blue-500 text-white text-sm font-medium rounded-md transition-colors w-28"
+                              onClick={(e) => e.stopPropagation()}
+                            >
+                              {getCarrierName(part.tracking)}
+                              <ExternalLink className="w-3.5 h-3.5" />
+                            </a>
+                          ) : (
+                            <div className={`inline-flex items-center justify-center px-3 py-1.5 text-sm font-medium rounded-md w-28 ${
+                              darkMode ? 'bg-gray-700 text-gray-300' : 'bg-gray-200 text-gray-700'
+                            }`}>
+                              {getCarrierName(part.tracking)}
+                            </div>
+                          )}
+                        </div>
                       ) : (
                         <span className={`inline-flex items-center justify-center px-3 py-1.5 text-xs font-medium rounded-md w-28 border ${
                           darkMode
@@ -1414,7 +1426,15 @@ const PartsTab = ({
                 {/* Tracking and Total Price Row (Mobile Only) */}
                 <div className="flex items-center justify-between gap-3">
                   {/* Tracking on Left */}
-                  <div className="inline-block" onClick={(e) => e.stopPropagation()}>
+                  <div className="flex flex-col items-start gap-1" onClick={(e) => e.stopPropagation()}>
+                    {/* AfterShip status badge when available */}
+                    {part.tracking && part.tracking_status && !part.tracking.startsWith('http') && (
+                      <TrackingBadge
+                        status={part.tracking_status}
+                        darkMode={darkMode}
+                        size="small"
+                      />
+                    )}
                     {part.tracking ? (
                       getTrackingUrl(part.tracking) ? (
                         <a
