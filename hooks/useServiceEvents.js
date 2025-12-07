@@ -17,7 +17,6 @@ const useServiceEvents = (userId) => {
   const [loadingServiceEvents, setLoadingServiceEvents] = useState(false);
   const [savingServiceEvent, setSavingServiceEvent] = useState(false);
   const [showAddServiceEventModal, setShowAddServiceEventModal] = useState(false);
-  const [isServiceEventModalClosing, setIsServiceEventModalClosing] = useState(false);
   const [editingServiceEvent, setEditingServiceEvent] = useState(null);
 
   // Form state
@@ -154,15 +153,11 @@ const useServiceEvents = (userId) => {
   };
 
   /**
-   * Handle closing the modal with animation
+   * Handle closing the modal - animation is handled by the modal itself
    */
   const handleCloseServiceEventModal = () => {
-    setIsServiceEventModalClosing(true);
-    setTimeout(() => {
-      setIsServiceEventModalClosing(false);
-      setShowAddServiceEventModal(false);
-      resetForm();
-    }, 150);
+    setShowAddServiceEventModal(false);
+    resetForm();
   };
 
   /**
@@ -190,7 +185,6 @@ const useServiceEvents = (userId) => {
     savingServiceEvent,
     showAddServiceEventModal,
     setShowAddServiceEventModal,
-    isServiceEventModalClosing,
     editingServiceEvent,
 
     // Form state
