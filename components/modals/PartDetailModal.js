@@ -476,37 +476,23 @@ const PartDetailModal = ({
                           </div>
                         )}
                       </div>
-                      {/* Track link and Refresh button */}
-                      <div className="flex flex-col gap-2 flex-shrink-0">
-                        {getTrackingUrl(viewingPart.tracking) && (
-                          <a
-                            href={getTrackingUrl(viewingPart.tracking)}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="inline-flex items-center justify-center gap-1.5 px-3 py-1.5 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-lg transition-colors"
-                            onClick={(e) => e.stopPropagation()}
-                          >
-                            Track
-                            <ExternalLink className="w-3.5 h-3.5" />
-                          </a>
-                        )}
-                        <button
-                          onClick={handleRefreshTracking}
-                          disabled={isRefreshingTracking}
-                          className={`inline-flex items-center justify-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${
-                            isRefreshingTracking
-                              ? darkMode
-                                ? 'bg-gray-700 text-gray-500 cursor-not-allowed'
-                                : 'bg-gray-200 text-gray-400 cursor-not-allowed'
-                              : darkMode
-                                ? 'bg-gray-700 hover:bg-gray-600 text-gray-300'
-                                : 'bg-gray-200 hover:bg-gray-300 text-gray-700'
-                          }`}
-                        >
-                          <RefreshCw className={`w-4 h-4 ${isRefreshingTracking ? 'animate-spin' : ''}`} />
-                          {isRefreshingTracking ? 'Updating...' : 'Refresh'}
-                        </button>
-                      </div>
+                      {/* Refresh button */}
+                      <button
+                        onClick={handleRefreshTracking}
+                        disabled={isRefreshingTracking}
+                        className={`inline-flex items-center justify-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-medium transition-colors flex-shrink-0 ${
+                          isRefreshingTracking
+                            ? darkMode
+                              ? 'bg-gray-700 text-gray-500 cursor-not-allowed'
+                              : 'bg-gray-200 text-gray-400 cursor-not-allowed'
+                            : darkMode
+                              ? 'bg-gray-700 hover:bg-gray-600 text-gray-300'
+                              : 'bg-gray-200 hover:bg-gray-300 text-gray-700'
+                        }`}
+                      >
+                        <RefreshCw className={`w-4 h-4 ${isRefreshingTracking ? 'animate-spin' : ''}`} />
+                        {isRefreshingTracking ? 'Updating...' : 'Refresh'}
+                      </button>
                     </div>
 
                     {/* Tracking timeline */}
@@ -528,27 +514,13 @@ const PartDetailModal = ({
                   </div>
                 ) : (
                   /* Fallback for URL tracking */
-                  <div className="flex items-start justify-between gap-4">
-                    <div
-                      className={`inline-flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium border ${getStatusColor(
-                        viewingPart
-                      )}`}
-                    >
-                      {getStatusIcon(viewingPart)}
-                      <span>{getStatusText(viewingPart)}</span>
-                    </div>
-                    {getTrackingUrl(viewingPart.tracking) && (
-                      <a
-                        href={getTrackingUrl(viewingPart.tracking)}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-lg transition-colors flex-shrink-0"
-                        onClick={(e) => e.stopPropagation()}
-                      >
-                        Track
-                        <ExternalLink className="w-3.5 h-3.5" />
-                      </a>
-                    )}
+                  <div
+                    className={`inline-flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium border w-fit ${getStatusColor(
+                      viewingPart
+                    )}`}
+                  >
+                    {getStatusIcon(viewingPart)}
+                    <span>{getStatusText(viewingPart)}</span>
                   </div>
                 )}
               </div>
@@ -559,12 +531,27 @@ const PartDetailModal = ({
         {/* DETAIL VIEW FOOTER */}
         {partDetailView === 'detail' && (
           <div
-            className={`sticky bottom-0 border-t p-4 flex justify-end ${
+            className={`sticky bottom-0 border-t p-4 flex justify-between items-center ${
               darkMode
                 ? 'border-gray-700 bg-gray-800'
                 : 'border-slate-200 bg-slate-100'
             }`}
           >
+            {/* Track button on the left */}
+            <div>
+              {viewingPart.tracking && getTrackingUrl(viewingPart.tracking) && (
+                <a
+                  href={getTrackingUrl(viewingPart.tracking)}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-lg transition-colors"
+                  onClick={(e) => e.stopPropagation()}
+                >
+                  Track
+                  <ExternalLink className="w-3.5 h-3.5" />
+                </a>
+              )}
+            </div>
             <PrimaryButton
               onClick={() => {
                 const partData = {
