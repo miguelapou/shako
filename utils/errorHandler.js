@@ -197,11 +197,6 @@ export const retryWithBackoff = async (fn, options = {}) => {
       // Calculate delay with exponential backoff
       const delay = initialDelay * Math.pow(2, attempt);
 
-      // Log retry attempt
-      if (process.env.NODE_ENV === 'development') {
-        console.log(`Retry attempt ${attempt + 1}/${maxRetries} after ${delay}ms`);
-      }
-
       // Wait before retrying
       await new Promise(resolve => setTimeout(resolve, delay));
     }

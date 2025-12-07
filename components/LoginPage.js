@@ -35,6 +35,7 @@ const LoginPage = () => {
   const { signInWithGoogle, loading, error } = useAuthContext();
   const [darkMode, setDarkMode] = useState(false);
   const [mounted, setMounted] = useState(false);
+  const [fontLoaded, setFontLoaded] = useState(false);
 
   // Initialize dark mode preference
   useEffect(() => {
@@ -46,6 +47,36 @@ const LoginPage = () => {
       } else {
         setDarkMode(window.matchMedia('(prefers-color-scheme: dark)').matches);
       }
+    }
+  }, []);
+
+  // Wait for FoundationOne font to load before showing title
+  useEffect(() => {
+    if (typeof document !== 'undefined' && document.fonts) {
+      // Check if font is already loaded
+      if (document.fonts.check("1em 'FoundationOne'")) {
+        setFontLoaded(true);
+        return;
+      }
+
+      // Wait for fonts to be ready
+      document.fonts.ready.then(() => {
+        // Double-check the specific font loaded
+        if (document.fonts.check("1em 'FoundationOne'")) {
+          setFontLoaded(true);
+        } else {
+          // Font might still be loading, use load() to trigger it
+          document.fonts.load("1em 'FoundationOne'").then(() => {
+            setFontLoaded(true);
+          }).catch(() => {
+            // Font failed to load, show title anyway with fallback
+            setFontLoaded(true);
+          });
+        }
+      });
+    } else {
+      // Fallback for browsers without fonts API
+      setFontLoaded(true);
     }
   }, []);
 
@@ -68,9 +99,9 @@ const LoginPage = () => {
         {/* Logo/Title */}
         <div className="text-center mb-8">
           <h1
-            className={`text-3xl font-bold mb-2 ${
+            className={`text-3xl font-bold mb-2 transition-opacity duration-200 ${
               darkMode ? 'text-gray-100' : 'text-gray-900'
-            }`}
+            } ${fontLoaded ? 'opacity-100' : 'opacity-0'}`}
             style={{ fontFamily: "'FoundationOne', 'Courier New', monospace" }}
           >
             Shako

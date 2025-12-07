@@ -88,17 +88,10 @@ export const withAuthRetry = async (serviceFn, options = {}) => {
 
       // Check if this is a token expiration error
       if (isTokenExpiredError(error) && attempt < maxRetries) {
-        if (process.env.NODE_ENV === 'development') {
-          console.log(`Token expired during ${context}, attempting refresh...`);
-        }
-
         // Attempt to refresh the session
         const refreshResult = await refreshSession();
 
         if (refreshResult.success) {
-          if (process.env.NODE_ENV === 'development') {
-            console.log(`Session refreshed, retrying ${context}...`);
-          }
           // Continue to next iteration to retry
           continue;
         } else {
@@ -164,9 +157,6 @@ export const checkSessionValidity = async () => {
 
       if (expiresAtMs - now < bufferMs) {
         // Token is about to expire, proactively refresh
-        if (process.env.NODE_ENV === 'development') {
-          console.log('Token expiring soon, proactively refreshing...');
-        }
         const refreshResult = await refreshSession();
         if (refreshResult.success) {
           const { data: { session: newSession } } = await supabase.auth.getSession();

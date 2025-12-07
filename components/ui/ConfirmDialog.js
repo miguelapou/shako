@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 
 // ConfirmDialog - Custom styled confirmation modal
 const ConfirmDialog = ({
@@ -12,14 +12,38 @@ const ConfirmDialog = ({
   darkMode,
   isDangerous = true
 }) => {
+  const [isClosing, setIsClosing] = useState(false);
+
+  const handleClose = () => {
+    setIsClosing(true);
+    setTimeout(() => {
+      setIsClosing(false);
+      onClose();
+    }, 150);
+  };
+
+  const handleConfirm = () => {
+    setIsClosing(true);
+    setTimeout(() => {
+      setIsClosing(false);
+      onConfirm();
+      onClose();
+    }, 150);
+  };
+
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-[60] flex items-center justify-center p-4 bg-black bg-opacity-50 backdrop-blur-sm">
+    <div
+      className={`fixed inset-0 z-[60] flex items-center justify-center p-4 bg-black bg-opacity-50 backdrop-blur-sm modal-backdrop ${
+        isClosing ? 'modal-backdrop-exit' : 'modal-backdrop-enter'
+      }`}
+      onClick={handleClose}
+    >
       <div
-        className={`w-full max-w-md rounded-xl shadow-2xl overflow-hidden transition-all ${
-          darkMode ? 'bg-gray-800 border border-gray-700' : 'bg-slate-50 border border-slate-200'
-        }`}
+        className={`w-full max-w-md rounded-xl shadow-2xl overflow-hidden modal-content ${
+          isClosing ? 'modal-popup-exit' : 'modal-popup-enter'
+        } ${darkMode ? 'bg-gray-800 border border-gray-700' : 'bg-slate-50 border border-slate-200'}`}
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header */}
@@ -38,7 +62,7 @@ const ConfirmDialog = ({
         {/* Footer */}
         <div className={`px-6 py-4 flex justify-end gap-3 border-t ${darkMode ? 'border-gray-700' : 'border-slate-200'}`}>
           <button
-            onClick={onClose}
+            onClick={handleClose}
             className={`px-4 py-2 rounded-lg font-medium transition-colors ${
               darkMode
                 ? 'bg-gray-700 hover:bg-gray-600 text-gray-100'
@@ -48,10 +72,7 @@ const ConfirmDialog = ({
             {cancelText}
           </button>
           <button
-            onClick={() => {
-              onConfirm();
-              onClose();
-            }}
+            onClick={handleConfirm}
             className={`px-4 py-2 rounded-lg font-medium transition-colors ${
               isDangerous
                 ? 'bg-red-600 hover:bg-red-700 text-white'
