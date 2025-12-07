@@ -174,6 +174,7 @@ const Shako = () => {
     showAddDocumentModal,
     setShowAddDocumentModal,
     isDocumentModalClosing,
+    setIsDocumentModalClosing,
     newDocumentTitle,
     setNewDocumentTitle,
     newDocumentFile,
@@ -1860,6 +1861,7 @@ const Shako = () => {
             showAddDocumentModal={showAddDocumentModal}
             setShowAddDocumentModal={setShowAddDocumentModal}
             isDocumentModalClosing={isDocumentModalClosing}
+            setIsDocumentModalClosing={setIsDocumentModalClosing}
             handleCloseDocumentModal={handleCloseDocumentModal}
             newDocumentTitle={newDocumentTitle}
             setNewDocumentTitle={setNewDocumentTitle}

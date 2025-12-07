@@ -90,6 +90,7 @@ const VehicleDetailModal = ({
   showAddDocumentModal,
   setShowAddDocumentModal,
   isDocumentModalClosing,
+  setIsDocumentModalClosing,
   handleCloseDocumentModal,
   newDocumentTitle,
   setNewDocumentTitle,
@@ -107,6 +108,16 @@ const VehicleDetailModal = ({
   handleDocumentDragOver,
   handleDocumentDrop
 }) => {
+  // Local handler for closing document modal with animation
+  const closeDocumentModal = () => {
+    setIsDocumentModalClosing(true);
+    setTimeout(() => {
+      setIsDocumentModalClosing(false);
+      setShowAddDocumentModal(false);
+      clearDocumentSelection();
+    }, 150);
+  };
+
   if (!isOpen || !viewingVehicle) return null;
 
   return (
@@ -621,7 +632,7 @@ const VehicleDetailModal = ({
                     className={`fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-[60] modal-backdrop ${
                       isDocumentModalClosing ? 'modal-backdrop-exit' : 'modal-backdrop-enter'
                     }`}
-                    onClick={handleCloseDocumentModal}
+                    onClick={closeDocumentModal}
                   >
                     <div
                       className={`rounded-lg shadow-xl max-w-md w-full mx-4 modal-content ${
@@ -638,7 +649,7 @@ const VehicleDetailModal = ({
                           Add Document
                         </h3>
                         <button
-                          onClick={handleCloseDocumentModal}
+                          onClick={closeDocumentModal}
                           className={`p-1 rounded transition-colors ${
                             darkMode ? 'hover:bg-gray-700 text-gray-400' : 'hover:bg-gray-100 text-gray-600'
                           }`}
@@ -752,7 +763,7 @@ const VehicleDetailModal = ({
                         darkMode ? 'border-gray-700' : 'border-gray-200'
                       }`}>
                         <button
-                          onClick={handleCloseDocumentModal}
+                          onClick={closeDocumentModal}
                           className={`px-4 py-2 rounded-lg font-medium transition-colors ${
                             darkMode
                               ? 'bg-gray-700 hover:bg-gray-600 text-gray-100'
@@ -777,7 +788,7 @@ const VehicleDetailModal = ({
                               newDocumentFile
                             );
                             if (result) {
-                              handleCloseDocumentModal();
+                              closeDocumentModal();
                             }
                           }}
                           disabled={uploadingDocument || !newDocumentTitle.trim() || !newDocumentFile}

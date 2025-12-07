@@ -264,6 +264,7 @@ const useDocuments = (userId) => {
     showAddDocumentModal,
     setShowAddDocumentModal,
     isDocumentModalClosing,
+    setIsDocumentModalClosing,
     newDocumentTitle,
     setNewDocumentTitle,
     newDocumentFile,
