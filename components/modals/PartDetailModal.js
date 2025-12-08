@@ -1,10 +1,12 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import {
   X,
   Car,
   Edit2,
   Trash2,
   ChevronDown,
+  ChevronLeft,
+  ChevronRight,
   ExternalLink,
   RefreshCw
 } from 'lucide-react';
@@ -57,19 +59,19 @@ const PartDetailModal = ({
   const hasPrev = currentIndex > 0;
   const hasNext = currentIndex < filteredParts.length - 1 && currentIndex !== -1;
 
-  const goToPrevPart = () => {
+  const goToPrevPart = useCallback(() => {
     if (hasPrev) {
       checkedPartsRef.current.clear(); // Reset tracking check for new part
       setViewingPart(filteredParts[currentIndex - 1]);
     }
-  };
+  }, [hasPrev, filteredParts, currentIndex, setViewingPart]);
 
-  const goToNextPart = () => {
+  const goToNextPart = useCallback(() => {
     if (hasNext) {
       checkedPartsRef.current.clear(); // Reset tracking check for new part
       setViewingPart(filteredParts[currentIndex + 1]);
     }
-  };
+  }, [hasNext, filteredParts, currentIndex, setViewingPart]);
 
   // Touch handlers for swipe gestures
   const handleTouchStart = (e) => {
@@ -228,6 +230,29 @@ const PartDetailModal = ({
     handleRefreshTracking();
   }, [isOpen, viewingPart?.id]);
 
+  // Keyboard navigation (left/right arrow keys)
+  useEffect(() => {
+    if (!isOpen || partDetailView !== 'detail') return;
+
+    const handleKeyDown = (e) => {
+      // Don't navigate if user is typing in an input
+      if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA' || e.target.tagName === 'SELECT') {
+        return;
+      }
+
+      if (e.key === 'ArrowLeft' && hasPrev) {
+        e.preventDefault();
+        goToPrevPart();
+      } else if (e.key === 'ArrowRight' && hasNext) {
+        e.preventDefault();
+        goToNextPart();
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [isOpen, partDetailView, hasPrev, hasNext, goToPrevPart, goToNextPart]);
+
   if (!isOpen || !viewingPart) return null;
 
   return (
@@ -307,11 +332,51 @@ const PartDetailModal = ({
                     )
                   );
                 })()}
-              {/* Position indicator - hidden on mobile */}
-              {filteredParts.length > 1 && currentIndex !== -1 && (
-                <span className={`hidden md:inline text-xs font-medium ${darkMode ? 'text-gray-500' : 'text-gray-400'}`}>
-                  {currentIndex + 1} of {filteredParts.length}
-                </span>
+              {/* Navigation buttons and position indicator - hidden on mobile */}
+              {filteredParts.length > 1 && currentIndex !== -1 && partDetailView === 'detail' && (
+                <div className="hidden md:flex items-center gap-2">
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      goToPrevPart();
+                    }}
+                    disabled={!hasPrev}
+                    className={`p-1.5 rounded transition-colors ${
+                      hasPrev
+                        ? darkMode
+                          ? 'text-gray-400 hover:text-gray-200 hover:bg-gray-700'
+                          : 'text-gray-500 hover:text-gray-700 hover:bg-gray-200'
+                        : darkMode
+                          ? 'text-gray-600 cursor-not-allowed'
+                          : 'text-gray-300 cursor-not-allowed'
+                    }`}
+                    title="Previous part (←)"
+                  >
+                    <ChevronLeft className="w-5 h-5" />
+                  </button>
+                  <span className={`text-xs font-medium min-w-[4rem] text-center ${darkMode ? 'text-gray-500' : 'text-gray-400'}`}>
+                    {currentIndex + 1} of {filteredParts.length}
+                  </span>
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      goToNextPart();
+                    }}
+                    disabled={!hasNext}
+                    className={`p-1.5 rounded transition-colors ${
+                      hasNext
+                        ? darkMode
+                          ? 'text-gray-400 hover:text-gray-200 hover:bg-gray-700'
+                          : 'text-gray-500 hover:text-gray-700 hover:bg-gray-200'
+                        : darkMode
+                          ? 'text-gray-600 cursor-not-allowed'
+                          : 'text-gray-300 cursor-not-allowed'
+                    }`}
+                    title="Next part (→)"
+                  >
+                    <ChevronRight className="w-5 h-5" />
+                  </button>
+                </div>
               )}
               <button
                 onClick={() =>
