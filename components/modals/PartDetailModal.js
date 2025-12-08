@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import {
   X,
   Car,
@@ -46,22 +46,44 @@ const PartDetailModal = ({
 }) => {
   const [isRefreshingTracking, setIsRefreshingTracking] = useState(false);
   const [trackingError, setTrackingError] = useState(null);
+  const checkedPartsRef = useRef(new Set()); // Track part IDs we've already checked this session
+
+  // Parse date string ensuring UTC interpretation
+  // Supabase may return timestamps without 'Z' suffix, which JavaScript
+  // would incorrectly parse as local time instead of UTC
+  const parseAsUTC = (dateString) => {
+    if (!dateString) return null;
+    // If no timezone indicator, append 'Z' to treat as UTC
+    if (!dateString.endsWith('Z') && !dateString.includes('+') && !dateString.match(/T.*-\d{2}:\d{2}$/)) {
+      return new Date(dateString + 'Z');
+    }
+    return new Date(dateString);
+  };
 
   // Format relative time (just now, X minutes ago, etc.)
   const formatRelativeTime = (dateString) => {
-    if (!dateString) return null;
-    const date = new Date(dateString);
+    const date = parseAsUTC(dateString);
+    if (!date) return null;
     const now = new Date();
     const diffMs = now - date;
     const diffMins = Math.floor(diffMs / 60000);
     const diffHours = Math.floor(diffMs / 3600000);
     const diffDays = Math.floor(diffMs / 86400000);
 
+    // Handle future timestamps (shouldn't happen, but just in case)
+    if (diffMs < 0) return 'just now';
     if (diffMins < 1) return 'just now';
     if (diffMins < 60) return `${diffMins} minute${diffMins === 1 ? '' : 's'} ago`;
     if (diffHours < 24) return `${diffHours} hour${diffHours === 1 ? '' : 's'} ago`;
     if (diffDays < 7) return `${diffDays} day${diffDays === 1 ? '' : 's'} ago`;
     return date.toLocaleDateString();
+  };
+
+  // Format time as HH:MM am/pm in user's local timezone
+  const formatTime = (dateString) => {
+    const date = parseAsUTC(dateString);
+    if (!date) return null;
+    return date.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true }).toLowerCase();
   };
 
   const handleRefreshTracking = async () => {
@@ -107,25 +129,48 @@ const PartDetailModal = ({
     }
   };
 
-  // Auto-refresh tracking when modal opens if data is stale (>8 hours old)
+  // Auto-refresh tracking when modal opens if data is stale (>24 hours old)
   useEffect(() => {
-    // Reset error state when modal opens or part changes
     setTrackingError(null);
 
-    if (
-      isOpen &&
-      viewingPart?.tracking &&
-      !viewingPart.tracking.startsWith('http') &&
-      !isRefreshingTracking
-    ) {
-      // Check if tracking data is stale (older than 8 hours or never fetched)
-      const isStale = !viewingPart.tracking_updated_at ||
-        (Date.now() - new Date(viewingPart.tracking_updated_at).getTime()) > 8 * 60 * 60 * 1000;
+    // Reset checked set when modal closes
+    if (!isOpen) {
+      checkedPartsRef.current.clear();
+      return;
+    }
 
-      if (isStale) {
-        handleRefreshTracking();
+    // Need a valid part with a tracking number
+    if (!viewingPart?.id || !viewingPart?.tracking) {
+      return;
+    }
+
+    // Skip URL tracking
+    if (viewingPart.tracking.startsWith('http')) {
+      return;
+    }
+
+    // Only check once per part per modal session (prevents duplicate calls)
+    if (checkedPartsRef.current.has(viewingPart.id)) {
+      return;
+    }
+
+    // Mark this part as checked immediately to prevent race conditions
+    checkedPartsRef.current.add(viewingPart.id);
+
+    // Check if tracking data is fresh (less than 24 hours old)
+    if (viewingPart.tracking_updated_at) {
+      const lastUpdateMs = new Date(viewingPart.tracking_updated_at).getTime();
+      const ageMs = Date.now() - lastUpdateMs;
+      const twentyFourHoursMs = 24 * 60 * 60 * 1000;
+
+      if (ageMs < twentyFourHoursMs) {
+        // Data is fresh, no need to auto-refresh
+        return;
       }
     }
+
+    // Data is stale or never fetched - auto-refresh
+    handleRefreshTracking();
   }, [isOpen, viewingPart?.id]);
 
   if (!isOpen || !viewingPart) return null;
@@ -521,8 +566,11 @@ const PartDetailModal = ({
                             <div>{viewingPart.tracking_location}</div>
                           )}
                           {viewingPart.tracking_updated_at && (
-                            <div>
-                              Updated {formatRelativeTime(viewingPart.tracking_updated_at)}
+                            <div className="flex items-center gap-1.5">
+                              <span>Updated {formatRelativeTime(viewingPart.tracking_updated_at)} ({formatTime(viewingPart.tracking_updated_at)})</span>
+                              {isRefreshingTracking && (
+                                <RefreshCw className="w-3 h-3 animate-spin" />
+                              )}
                             </div>
                           )}
                         </div>

@@ -64,6 +64,7 @@ const TrackingBadge = ({
 
   const formattedEta = eta ? formatETA(eta) : null;
   const formattedUpdated = updatedAt ? formatRelativeTime(updatedAt) : null;
+  const formattedTime = updatedAt ? new Date(updatedAt).toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true }).toLowerCase() : null;
 
   return (
     <div className={`inline-flex flex-col gap-0.5 ${className}`}>
@@ -89,7 +90,7 @@ const TrackingBadge = ({
           )}
           {showUpdatedAt && formattedUpdated && (
             <span className={darkMode ? 'text-gray-500' : 'text-gray-400'}>
-              Updated {formattedUpdated}
+              Updated {formattedUpdated}{formattedTime && ` (${formattedTime})`}
             </span>
           )}
         </div>
