@@ -630,7 +630,7 @@ const PartDetailModal = ({
                             <div>{viewingPart.tracking_location}</div>
                           )}
                           {viewingPart.tracking_updated_at && (
-                            <div className="flex items-center justify-between gap-2">
+                            <div className="flex items-center justify-between w-full">
                               <div className="flex items-center gap-1.5">
                                 <span>Updated {formatRelativeTime(viewingPart.tracking_updated_at)} ({formatTime(viewingPart.tracking_updated_at)})</span>
                                 {isRefreshingTracking && (
@@ -638,7 +638,7 @@ const PartDetailModal = ({
                                 )}
                               </div>
                               {viewingPart.tracking && (
-                                <span>{getCarrierName(viewingPart.tracking)}</span>
+                                <span className="ml-auto">{getCarrierName(viewingPart.tracking)}</span>
                               )}
                             </div>
                           )}
