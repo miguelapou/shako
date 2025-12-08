@@ -3,7 +3,8 @@
 // ========================================
 
 /**
- * Map AfterShip tag to display configuration
+ * Map tracking status tag to display configuration
+ * Ship24 statusMilestone values are normalized to PascalCase in trackingService.js
  */
 export const TRACKING_STATUS_CONFIG = {
   Pending: {
@@ -109,7 +110,7 @@ export const TRACKING_STATUS_CONFIG = {
 
 /**
  * Get status configuration for a tracking tag
- * @param {string} tag - AfterShip tracking tag
+ * @param {string} tag - Tracking status tag (normalized from Ship24 statusMilestone)
  * @returns {Object} Status configuration
  */
 export const getTrackingStatusConfig = (tag) => {
@@ -118,7 +119,7 @@ export const getTrackingStatusConfig = (tag) => {
 
 /**
  * Get CSS classes for a tracking status badge
- * @param {string} tag - AfterShip tracking tag
+ * @param {string} tag - Tracking status tag
  * @param {boolean} darkMode - Whether dark mode is enabled
  * @returns {string} Tailwind CSS classes
  */
@@ -193,7 +194,7 @@ export const formatCheckpointTime = (date) => {
 
 /**
  * Check if tracking should auto-update part status
- * @param {string} tag - AfterShip tracking tag
+ * @param {string} tag - Tracking status tag
  * @returns {Object} Status update recommendations
  */
 export const getStatusUpdateRecommendation = (tag) => {
@@ -210,7 +211,7 @@ export const getStatusUpdateRecommendation = (tag) => {
 
 /**
  * Get progress percentage for tracking status
- * @param {string} tag - AfterShip tracking tag
+ * @param {string} tag - Tracking status tag
  * @returns {number} Progress percentage (0-100)
  */
 export const getTrackingProgress = (tag) => {

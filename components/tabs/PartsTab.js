@@ -1383,7 +1383,7 @@ const PartsTab = ({
                 <div className="flex items-center justify-between gap-3">
                   {/* Tracking on Left */}
                   <div className="flex flex-col items-start gap-1" onClick={(e) => e.stopPropagation()}>
-                    {/* AfterShip status badge when available */}
+                    {/* Ship24 status badge when available */}
                     {part.tracking && part.tracking_status && !part.tracking.startsWith('http') && (
                       <TrackingBadge
                         status={part.tracking_status}

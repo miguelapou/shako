@@ -1,224 +1,180 @@
-import { AfterShip } from '@aftership/tracking-sdk';
 import { supabase } from '../lib/supabase';
 
 /**
- * Service layer for AfterShip tracking operations
+ * Service layer for Ship24 tracking operations
  * Handles creating, fetching, and managing shipment tracking
  */
 
-// Initialize AfterShip client (only on server-side)
-let aftershipClient = null;
-
-const getClient = () => {
-  if (!aftershipClient && process.env.AFTERSHIP_API_KEY) {
-    aftershipClient = new AfterShip({
-      api_key: process.env.AFTERSHIP_API_KEY
-    });
-  }
-  return aftershipClient;
-};
+const SHIP24_API_BASE = 'https://api.ship24.com/public/v1';
 
 /**
- * Map carrier names to AfterShip slugs
+ * Get authorization headers for Ship24 API
  */
-const CARRIER_SLUGS = {
-  'UPS': 'ups',
-  'FedEx': 'fedex',
-  'USPS': 'usps',
-  'DHL': 'dhl',
-  'Orange Connex': 'orange-connex',
-  'ECMS': 'ecmsglobal',
-  'Amazon': 'amazon'
-};
-
-/**
- * Detect carrier slug from tracking number
- * @param {string} tracking - Tracking number
- * @returns {string|null} Carrier slug or null for auto-detection
- */
-export const detectCarrierSlug = (tracking) => {
-  if (!tracking) return null;
-
-  // UPS - starts with 1Z
-  if (tracking.startsWith('1Z')) return 'ups';
-
-  // FedEx - 12-14 digits
-  if (/^\d{12,14}$/.test(tracking)) return 'fedex';
-
-  // USPS - 20-22 digits or specific patterns
-  if (/^\d{20,22}$/.test(tracking) || /^(94|92|93)\d{20}$/.test(tracking)) return 'usps';
-
-  // DHL - 10-11 digits
-  if (/^\d{10,11}$/.test(tracking)) return 'dhl';
-
-  // Orange Connex - starts with EX
-  if (tracking.startsWith('EX')) return 'orange-connex';
-
-  // ECMS - starts with ECSDT
-  if (tracking.startsWith('ECSDT')) return 'ecmsglobal';
-
-  // Let AfterShip auto-detect
-  return null;
-};
-
-/**
- * Create a new tracking in AfterShip
- * @param {string} trackingNumber - The tracking number
- * @param {string} carrier - Optional carrier name
- * @param {string} title - Optional title (part name)
- * @returns {Promise<Object>} AfterShip tracking response
- */
-export const createAfterShipTracking = async (trackingNumber, carrier = null, title = null) => {
-  const client = getClient();
-  if (!client) {
-    throw new Error('AfterShip API key not configured');
-  }
-
-  try {
-    const slug = carrier ? CARRIER_SLUGS[carrier] : detectCarrierSlug(trackingNumber);
-
-    // Build request body - SDK 2025-07 format (no wrapper object)
-    const requestBody = {
-      tracking_number: trackingNumber
-    };
-
-    if (slug) {
-      requestBody.slug = slug;
-    }
-
-    if (title) {
-      requestBody.title = title;
-    }
-
-    const response = await client.tracking.createTracking(requestBody);
-
-    return response.data?.tracking || response.data;
-  } catch (error) {
-    // Handle duplicate tracking (error code 4003)
-    if (error.code === 4003 || error.meta_code === 4003 || error.message?.includes('duplicate')) {
-      const slug = carrier ? CARRIER_SLUGS[carrier] : detectCarrierSlug(trackingNumber);
-      // Try to get existing tracking instead
-      return getAfterShipTrackingByNumber(trackingNumber, slug);
-    }
-    error.message = `Failed to create AfterShip tracking: ${error.message}`;
-    throw error;
-  }
-};
-
-/**
- * Get tracking by AfterShip tracking ID
- * @param {string} trackingId - AfterShip tracking ID
- * @returns {Promise<Object>} Tracking data
- */
-export const getAfterShipTracking = async (trackingId) => {
-  const client = getClient();
-  if (!client) {
-    throw new Error('AfterShip API key not configured');
-  }
-
-  try {
-    // SDK 2025-07 format - pass tracking_id directly
-    const response = await client.tracking.getTrackingById(trackingId);
-
-    return response.data?.tracking || response.data;
-  } catch (error) {
-    error.message = `Failed to get AfterShip tracking: ${error.message}`;
-    throw error;
-  }
-};
-
-/**
- * Get tracking by tracking number using list endpoint
- * Uses list endpoint to search by tracking number regardless of carrier slug
- * @param {string} trackingNumber - Tracking number
- * @param {string} slug - Carrier slug (optional, not used but kept for compatibility)
- * @returns {Promise<Object>} Tracking data
- */
-export const getAfterShipTrackingByNumber = async (trackingNumber, slug = null) => {
-  const apiKey = process.env.AFTERSHIP_API_KEY;
+const getHeaders = () => {
+  const apiKey = process.env.SHIP24_API_KEY;
   if (!apiKey) {
-    throw new Error('AfterShip API key not configured');
+    throw new Error('Ship24 API key not configured');
   }
-
-  try {
-    // Use list endpoint to search by tracking number - this works regardless of slug
-    const response = await fetch(
-      `https://api.aftership.com/tracking/2025-07/trackings?tracking_numbers=${encodeURIComponent(trackingNumber)}`,
-      {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-          'as-api-key': apiKey
-        }
-      }
-    );
-
-    if (!response.ok) {
-      const errorData = await response.json();
-      throw new Error(errorData.meta?.message || 'Failed to get tracking');
-    }
-
-    const data = await response.json();
-    const trackings = data.data?.trackings || [];
-
-    if (trackings.length === 0) {
-      throw new Error('Tracking not found');
-    }
-
-    // Return the first matching tracking
-    return trackings[0];
-  } catch (error) {
-    error.message = `Failed to get AfterShip tracking: ${error.message}`;
-    throw error;
-  }
-};
-
-/**
- * Delete tracking from AfterShip
- * @param {string} trackingId - AfterShip tracking ID
- * @returns {Promise<void>}
- */
-export const deleteAfterShipTracking = async (trackingId) => {
-  const client = getClient();
-  if (!client) {
-    throw new Error('AfterShip API key not configured');
-  }
-
-  try {
-    // SDK 2025-07 format - pass tracking_id directly
-    await client.tracking.deleteTrackingById(trackingId);
-  } catch (error) {
-    // Ignore if tracking doesn't exist
-    if (!error.message?.includes('not found')) {
-      error.message = `Failed to delete AfterShip tracking: ${error.message}`;
-      throw error;
-    }
-  }
-};
-
-/**
- * Normalize AfterShip tracking data for our database
- * @param {Object} tracking - AfterShip tracking response
- * @returns {Object} Normalized tracking data for parts table
- */
-export const normalizeTrackingData = (tracking) => {
-  if (!tracking) return null;
-
-  const lastCheckpoint = tracking.checkpoints?.[tracking.checkpoints.length - 1];
-
   return {
-    aftership_id: tracking.id,
-    tracking_status: tracking.tag || 'Pending',
-    tracking_substatus: tracking.subtag || null,
-    tracking_location: lastCheckpoint?.location || lastCheckpoint?.city || null,
-    tracking_eta: tracking.expected_delivery || null,
-    tracking_updated_at: new Date().toISOString(),
-    tracking_checkpoints: tracking.checkpoints || []
+    'Authorization': `Bearer ${apiKey}`,
+    'Content-Type': 'application/json'
   };
 };
 
 /**
- * Update part with tracking data from AfterShip
+ * Create a new tracking in Ship24 and get results synchronously
+ * @param {string} trackingNumber - The tracking number
+ * @param {string} title - Optional title (part name)
+ * @returns {Promise<Object>} Ship24 tracking response
+ */
+export const createShip24Tracking = async (trackingNumber, title = null) => {
+  try {
+    const body = {
+      trackingNumber
+    };
+
+    if (title) {
+      body.shipmentReference = title;
+    }
+
+    const response = await fetch(`${SHIP24_API_BASE}/trackers/track`, {
+      method: 'POST',
+      headers: getHeaders(),
+      body: JSON.stringify(body)
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json().catch(() => ({}));
+      throw new Error(errorData.message || `Ship24 API error: ${response.status}`);
+    }
+
+    const data = await response.json();
+    return data.data;
+  } catch (error) {
+    error.message = `Failed to create Ship24 tracking: ${error.message}`;
+    throw error;
+  }
+};
+
+/**
+ * Get tracking results by Ship24 tracker ID
+ * @param {string} trackerId - Ship24 tracker ID
+ * @returns {Promise<Object>} Tracking data
+ */
+export const getShip24Tracking = async (trackerId) => {
+  try {
+    const response = await fetch(`${SHIP24_API_BASE}/trackers/${trackerId}/results`, {
+      method: 'GET',
+      headers: getHeaders()
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json().catch(() => ({}));
+      throw new Error(errorData.message || `Ship24 API error: ${response.status}`);
+    }
+
+    const data = await response.json();
+    return data.data;
+  } catch (error) {
+    error.message = `Failed to get Ship24 tracking: ${error.message}`;
+    throw error;
+  }
+};
+
+/**
+ * Get tracking by tracking number using the sync track endpoint
+ * @param {string} trackingNumber - Tracking number
+ * @returns {Promise<Object>} Tracking data
+ */
+export const getShip24TrackingByNumber = async (trackingNumber) => {
+  try {
+    const response = await fetch(`${SHIP24_API_BASE}/trackers/track`, {
+      method: 'POST',
+      headers: getHeaders(),
+      body: JSON.stringify({ trackingNumber })
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json().catch(() => ({}));
+      throw new Error(errorData.message || `Ship24 API error: ${response.status}`);
+    }
+
+    const data = await response.json();
+    return data.data;
+  } catch (error) {
+    error.message = `Failed to get Ship24 tracking: ${error.message}`;
+    throw error;
+  }
+};
+
+/**
+ * Delete tracking from Ship24
+ * Note: Ship24 doesn't have a delete endpoint - trackers expire automatically
+ * @param {string} trackerId - Ship24 tracker ID
+ * @returns {Promise<void>}
+ */
+export const deleteShip24Tracking = async (trackerId) => {
+  // Ship24 doesn't support deleting trackers - they expire automatically
+  // This is a no-op for API compatibility
+  console.log(`Ship24 tracker ${trackerId} will expire automatically`);
+};
+
+/**
+ * Map Ship24 statusMilestone to our display format (PascalCase for compatibility)
+ * @param {string} statusMilestone - Ship24 status milestone
+ * @returns {string} Normalized status tag
+ */
+const normalizeStatusMilestone = (statusMilestone) => {
+  const statusMap = {
+    'pending': 'Pending',
+    'info_received': 'InfoReceived',
+    'in_transit': 'InTransit',
+    'out_for_delivery': 'OutForDelivery',
+    'attempt_fail': 'AttemptFail',
+    'delivered': 'Delivered',
+    'available_for_pickup': 'AvailableForPickup',
+    'exception': 'Exception',
+    'expired': 'Expired'
+  };
+  return statusMap[statusMilestone] || 'Pending';
+};
+
+/**
+ * Normalize Ship24 tracking data for our database
+ * @param {Object} trackingData - Ship24 tracking response
+ * @returns {Object} Normalized tracking data for parts table
+ */
+export const normalizeTrackingData = (trackingData) => {
+  if (!trackingData) return null;
+
+  const tracker = trackingData.trackings?.[0] || trackingData;
+  const shipment = tracker.shipment || {};
+  const events = tracker.events || [];
+  const lastEvent = events[0]; // Ship24 returns events in reverse chronological order
+
+  // Get the overall status milestone
+  const statusMilestone = shipment.statusMilestone || lastEvent?.statusMilestone || 'pending';
+
+  return {
+    ship24_id: tracker.tracker?.trackerId || trackingData.trackerId,
+    tracking_status: normalizeStatusMilestone(statusMilestone),
+    tracking_substatus: lastEvent?.statusCode || null,
+    tracking_location: lastEvent?.location?.city || lastEvent?.location?.country || null,
+    tracking_carrier: shipment.originCountryCode || tracker.tracker?.courierCode?.[0] || null,
+    tracking_eta: shipment.delivery?.estimatedDeliveryDate || null,
+    tracking_updated_at: new Date().toISOString(),
+    tracking_checkpoints: events.map(event => ({
+      checkpoint_time: event.datetime,
+      message: event.status,
+      location: event.location?.city || event.location?.country,
+      status: event.statusMilestone,
+      statusCode: event.statusCode
+    }))
+  };
+};
+
+/**
+ * Update part with tracking data from Ship24
  * @param {number} partId - Part ID to update
  * @param {Object} trackingData - Normalized tracking data
  * @returns {Promise<void>}
@@ -262,7 +218,7 @@ export const getPartByTrackingNumber = async (trackingNumber, userId) => {
 
 /**
  * Sync tracking status for a part
- * Creates tracking in AfterShip if needed, then updates part with status
+ * Creates tracking in Ship24 if needed, then updates part with status
  * @param {Object} part - Part object with tracking number
  * @returns {Promise<Object>} Updated tracking data
  */
@@ -271,17 +227,17 @@ export const syncPartTracking = async (part) => {
     return null; // Skip URLs and empty tracking
   }
 
-  let tracking;
+  let trackingData;
 
-  if (part.aftership_id) {
-    // Get existing tracking
-    tracking = await getAfterShipTracking(part.aftership_id);
+  if (part.ship24_id) {
+    // Get existing tracking results
+    trackingData = await getShip24Tracking(part.ship24_id);
   } else {
-    // Create new tracking
-    tracking = await createAfterShipTracking(part.tracking, null, part.part);
+    // Create new tracking (idempotent - will return existing if already tracked)
+    trackingData = await createShip24Tracking(part.tracking, part.part);
   }
 
-  const normalizedData = normalizeTrackingData(tracking);
+  const normalizedData = normalizeTrackingData(trackingData);
   await updatePartTracking(part.id, normalizedData);
 
   return normalizedData;
@@ -324,3 +280,9 @@ export const refreshAllActiveTrackings = async (userId) => {
     throw error;
   }
 };
+
+// Legacy exports for backward compatibility during migration
+export const createAfterShipTracking = createShip24Tracking;
+export const getAfterShipTracking = getShip24Tracking;
+export const getAfterShipTrackingByNumber = getShip24TrackingByNumber;
+export const deleteAfterShipTracking = deleteShip24Tracking;

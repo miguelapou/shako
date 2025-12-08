@@ -249,7 +249,7 @@ const useParts = (userId, toast) => {
       if (setTrackingModalPartId) setTrackingModalPartId(null);
       if (setTrackingInput) setTrackingInput('');
 
-      // Auto-refresh tracking from AfterShip if not a URL
+      // Auto-refresh tracking from Ship24 if not a URL
       if (trackingInput && !trackingInput.startsWith('http')) {
         try {
           const response = await fetch(`/api/tracking/${trackingModalPartId}`);
@@ -465,7 +465,7 @@ const useParts = (userId, toast) => {
 
   /**
    * Update part tracking data in local state
-   * Used after refreshing tracking from AfterShip API
+   * Used after refreshing tracking from Ship24 API
    */
   const updatePartTrackingData = (partId, trackingData) => {
     setParts(prevParts => prevParts.map(part =>
