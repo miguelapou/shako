@@ -6,10 +6,9 @@ import { jsPDF } from 'jspdf';
  * @param {Array} projects - All projects (will be filtered for this vehicle)
  * @param {Array} parts - All parts (will be filtered for linked projects)
  * @param {Array} serviceEvents - Service events for this vehicle
- * @param {Array} documents - Documents for this vehicle
  * @returns {Object} { blob: Blob, filename: string }
  */
-export const generateVehicleReportPDF = (vehicle, projects, parts, serviceEvents, documents) => {
+export const generateVehicleReportPDF = (vehicle, projects, parts, serviceEvents) => {
   const doc = new jsPDF();
   const pageWidth = doc.internal.pageSize.getWidth();
   const pageHeight = doc.internal.pageSize.getHeight();
@@ -48,10 +47,11 @@ export const generateVehicleReportPDF = (vehicle, projects, parts, serviceEvents
     doc.setFontSize(10);
     doc.setFont('helvetica', 'bold');
     doc.setTextColor(100, 100, 100);
-    doc.text(label + ':', margin, yPos);
+    const labelText = label + ':';
+    doc.text(labelText, margin, yPos);
     doc.setFont('helvetica', 'normal');
     doc.setTextColor(40, 40, 40);
-    const labelWidth = doc.getTextWidth(label + ': ');
+    const labelWidth = doc.getTextWidth(labelText) + 3; // Add 3pt gap after colon
     doc.text(String(value), margin + labelWidth, yPos);
     yPos += 6;
     return true;
@@ -66,21 +66,23 @@ export const generateVehicleReportPDF = (vehicle, projects, parts, serviceEvents
     if (value1) {
       doc.setFont('helvetica', 'bold');
       doc.setTextColor(100, 100, 100);
-      doc.text(label1 + ':', margin, yPos);
+      const labelText1 = label1 + ':';
+      doc.text(labelText1, margin, yPos);
       doc.setFont('helvetica', 'normal');
       doc.setTextColor(40, 40, 40);
-      const labelWidth = doc.getTextWidth(label1 + ': ');
-      doc.text(String(value1), margin + labelWidth, yPos);
+      const labelWidth1 = doc.getTextWidth(labelText1) + 3; // Add 3pt gap after colon
+      doc.text(String(value1), margin + labelWidth1, yPos);
     }
 
     if (value2) {
       doc.setFont('helvetica', 'bold');
       doc.setTextColor(100, 100, 100);
-      doc.text(label2 + ':', margin + halfWidth, yPos);
+      const labelText2 = label2 + ':';
+      doc.text(labelText2, margin + halfWidth, yPos);
       doc.setFont('helvetica', 'normal');
       doc.setTextColor(40, 40, 40);
-      const labelWidth = doc.getTextWidth(label2 + ': ');
-      doc.text(String(value2), margin + halfWidth + labelWidth, yPos);
+      const labelWidth2 = doc.getTextWidth(labelText2) + 3; // Add 3pt gap after colon
+      doc.text(String(value2), margin + halfWidth + labelWidth2, yPos);
     }
 
     if (value1 || value2) {
@@ -339,23 +341,6 @@ export const generateVehicleReportPDF = (vehicle, projects, parts, serviceEvents
       doc.text(`Total Investment: $${grandTotal.toFixed(2)}`, pageWidth - margin - 50, yPos);
       yPos += 10;
     }
-  }
-
-  // --- DOCUMENTS ---
-  if (documents && documents.length > 0) {
-    addSectionHeader('Attached Documents');
-
-    doc.setFontSize(9);
-    doc.setFont('helvetica', 'normal');
-    doc.setTextColor(40, 40, 40);
-
-    documents.forEach((doc_item, index) => {
-      checkPageBreak(6);
-      doc.text(`${index + 1}. ${doc_item.title} (${doc_item.file_name})`, margin, yPos);
-      yPos += 5;
-    });
-
-    yPos += 5;
   }
 
   // --- FOOTER ---

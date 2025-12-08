@@ -28,6 +28,7 @@ import ProjectEditForm from '../ui/ProjectEditForm';
 import LinkedPartsSection from '../ui/LinkedPartsSection';
 import AddDocumentModal from './AddDocumentModal';
 import AddServiceEventModal from './AddServiceEventModal';
+import ExportReportModal from './ExportReportModal';
 import {
   calculateVehicleTotalSpent,
   calculateProjectTotal
@@ -95,6 +96,7 @@ const VehicleDetailModal = ({
 }) => {
   // State for report generation
   const [generatingReport, setGeneratingReport] = useState(false);
+  const [showExportModal, setShowExportModal] = useState(false);
 
   // Get document state and actions from context
   const {
@@ -151,7 +153,7 @@ const VehicleDetailModal = ({
   }, [isOpen, viewingVehicle?.id, loadDocuments, loadServiceEvents]);
 
   // Handle generating vehicle report PDF
-  const handleGenerateReport = async () => {
+  const handleGenerateReport = async (saveToDocuments) => {
     if (!viewingVehicle || generatingReport) return;
 
     try {
@@ -162,35 +164,42 @@ const VehicleDetailModal = ({
         viewingVehicle,
         projects,
         parts,
-        serviceEvents,
-        documents
+        serviceEvents
       );
 
       // Download the PDF immediately
       downloadBlob(blob, filename);
 
-      // Create a File object from the blob for upload
-      const file = new File([blob], filename, { type: 'application/pdf' });
+      // Optionally save to documents section
+      if (saveToDocuments) {
+        // Create a File object from the blob for upload
+        const file = new File([blob], filename, { type: 'application/pdf' });
 
-      // Generate a title for the document
-      const make = viewingVehicle.make || '';
-      const model = viewingVehicle.name || '';
-      const year = viewingVehicle.year || '';
-      const today = new Date();
-      const dateStr = today.toLocaleDateString('en-US', {
-        month: 'short',
-        day: 'numeric',
-        year: 'numeric'
-      });
-      const title = `Vehicle Report - ${year} ${make} ${model} (${dateStr})`.trim().replace(/\s+/g, ' ');
+        // Generate a title for the document
+        const make = viewingVehicle.make || '';
+        const model = viewingVehicle.name || '';
+        const year = viewingVehicle.year || '';
+        const today = new Date();
+        const dateStr = today.toLocaleDateString('en-US', {
+          month: 'short',
+          day: 'numeric',
+          year: 'numeric'
+        });
+        const title = `Vehicle Report - ${year} ${make} ${model} (${dateStr})`.trim().replace(/\s+/g, ' ');
 
-      // Upload to documents section
-      await addDocument(viewingVehicle.id, title, file);
+        // Upload to documents section
+        await addDocument(viewingVehicle.id, title, file);
 
-      // Reload documents to show the new one
-      await loadDocuments(viewingVehicle.id);
+        // Reload documents to show the new one
+        await loadDocuments(viewingVehicle.id);
 
-      toast?.success('Report generated and saved to documents');
+        toast?.success('Report generated and saved to documents');
+      } else {
+        toast?.success('Report generated');
+      }
+
+      // Close the export modal
+      setShowExportModal(false);
     } catch (error) {
       console.error('Error generating report:', error);
       toast?.error('Failed to generate report');
@@ -1828,25 +1837,16 @@ const VehicleDetailModal = ({
           ) : (
             <div className="flex items-center justify-between w-full gap-2">
               <button
-                onClick={handleGenerateReport}
-                disabled={generatingReport}
+                onClick={() => setShowExportModal(true)}
                 className={`px-4 py-2 rounded-lg font-medium transition-colors flex items-center gap-2 text-sm border ${
-                  generatingReport
-                    ? 'bg-gray-600 cursor-not-allowed text-gray-300 border-gray-600'
-                    : darkMode
+                  darkMode
                     ? 'bg-gray-700 hover:bg-gray-600 text-gray-100 border-gray-600 hover:border-gray-500'
                     : 'bg-gray-200 hover:bg-gray-300 text-gray-800 border-gray-300 hover:border-gray-400'
                 }`}
               >
                 <FileDown className="w-4 h-4" />
-                {generatingReport ? (
-                  'Generating...'
-                ) : (
-                  <>
-                    <span className="sm:hidden">Report</span>
-                    <span className="hidden sm:inline">Generate Report</span>
-                  </>
-                )}
+                <span className="sm:hidden">Report</span>
+                <span className="hidden sm:inline">Generate Report</span>
               </button>
               <button
                 onClick={() => {
@@ -1861,6 +1861,16 @@ const VehicleDetailModal = ({
           )}
         </div>
       </div>
+
+      {/* Export Report Modal */}
+      <ExportReportModal
+        isOpen={showExportModal}
+        onClose={() => setShowExportModal(false)}
+        onConfirm={handleGenerateReport}
+        darkMode={darkMode}
+        vehicleName={viewingVehicle?.nickname || `${viewingVehicle?.year || ''} ${viewingVehicle?.make || ''} ${viewingVehicle?.name || ''}`.trim()}
+        generating={generatingReport}
+      />
     </div>
   );
 };
