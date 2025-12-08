@@ -83,7 +83,7 @@ export async function GET(request, { params }) {
       // Get cached tracking data from database
       const { data: part } = await supabase
         .from('parts')
-        .select('tracking_status, tracking_carrier, tracking_location, tracking_checkpoints, tracking_updated_at, delivered')
+        .select('tracking_status, tracking_location, tracking_checkpoints, tracking_updated_at, delivered')
         .eq('id', partId)
         .single();
 

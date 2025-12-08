@@ -160,7 +160,6 @@ export const normalizeTrackingData = (trackingData) => {
     tracking_status: normalizeStatusMilestone(statusMilestone),
     tracking_substatus: lastEvent?.statusCode || null,
     tracking_location: lastEvent?.location?.city || lastEvent?.location?.country || null,
-    tracking_carrier: shipment.originCountryCode || tracker.tracker?.courierCode?.[0] || null,
     tracking_eta: shipment.delivery?.estimatedDeliveryDate || null,
     tracking_updated_at: new Date().toISOString(),
     tracking_checkpoints: events.map(event => ({
@@ -280,9 +279,3 @@ export const refreshAllActiveTrackings = async (userId) => {
     throw error;
   }
 };
-
-// Legacy exports for backward compatibility during migration
-export const createAfterShipTracking = createShip24Tracking;
-export const getAfterShipTracking = getShip24Tracking;
-export const getAfterShipTrackingByNumber = getShip24TrackingByNumber;
-export const deleteAfterShipTracking = deleteShip24Tracking;
