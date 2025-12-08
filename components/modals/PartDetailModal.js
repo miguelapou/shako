@@ -64,6 +64,12 @@ const PartDetailModal = ({
     return date.toLocaleDateString();
   };
 
+  // Format time as HH:MM
+  const formatTime = (dateString) => {
+    if (!dateString) return null;
+    return new Date(dateString).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: false });
+  };
+
   const handleRefreshTracking = async () => {
     if (!viewingPart?.id || !viewingPart?.tracking || isRefreshingTracking) return;
 
@@ -522,7 +528,7 @@ const PartDetailModal = ({
                           )}
                           {viewingPart.tracking_updated_at && (
                             <div>
-                              Updated {formatRelativeTime(viewingPart.tracking_updated_at)}
+                              Updated {formatRelativeTime(viewingPart.tracking_updated_at)} ({formatTime(viewingPart.tracking_updated_at)})
                             </div>
                           )}
                         </div>
