@@ -97,7 +97,7 @@ const CheckpointItem = ({ checkpoint, isFirst, isLast, darkMode }) => {
         {!isLast && (
           <div
             className={`w-0.5 flex-1 min-h-[24px] ${
-              darkMode ? 'bg-gray-700' : 'bg-gray-200'
+              darkMode ? 'bg-gray-500' : 'bg-gray-300'
             }`}
           />
         )}
