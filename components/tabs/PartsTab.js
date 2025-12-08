@@ -986,7 +986,7 @@ const PartsTab = ({
                     <td className="px-6 py-4 whitespace-nowrap">
                       <StatusDropdown part={part} />
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
+                    <td className="px-6 py-4 whitespace-nowrap text-center">
                       {(() => {
                         const tracking = part.tracking;
                         const trackingUpdatedAt = part.tracking_updated_at;
@@ -1034,23 +1034,17 @@ const PartsTab = ({
                             // Green if fresh, yellow if stale
                             if (isFresh) {
                               return (
-                                <div className="flex justify-center" title="Tracking synced (< 24hrs)">
-                                  <PackageCheck className="w-5 h-5 text-green-500" />
-                                </div>
+                                <PackageCheck className="w-5 h-5 text-green-500 inline-block" title="Tracking synced (< 24hrs)" />
                               );
                             } else {
                               return (
-                                <div className="flex justify-center" title="Tracking data > 24hrs old">
-                                  <PackageSearch className="w-5 h-5 text-yellow-500" />
-                                </div>
+                                <PackageSearch className="w-5 h-5 text-yellow-500 inline-block" title="Tracking data > 24hrs old" />
                               );
                             }
                           } else {
                             // Has tracking number but no API data yet
                             return (
-                              <div className="flex justify-center" title="No tracking data from API">
-                                <PackageX className="w-5 h-5 text-red-500" />
-                              </div>
+                              <PackageX className="w-5 h-5 text-red-500 inline-block" title="No tracking data from API" />
                             );
                           }
                         }
