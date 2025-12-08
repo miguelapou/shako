@@ -16,7 +16,7 @@ import {
   getVendorDisplayColor
 } from '../../utils/colorUtils';
 import { selectDropdownStyle } from '../../utils/styleUtils';
-import { getTrackingUrl, shouldSkipShip24 } from '../../utils/trackingUtils';
+import { getTrackingUrl, shouldSkipShip24, getCarrierName } from '../../utils/trackingUtils';
 
 const PartDetailModal = ({
   isOpen,
@@ -630,10 +630,15 @@ const PartDetailModal = ({
                             <div>{viewingPart.tracking_location}</div>
                           )}
                           {viewingPart.tracking_updated_at && (
-                            <div className="flex items-center gap-1.5">
-                              <span>Updated {formatRelativeTime(viewingPart.tracking_updated_at)} ({formatTime(viewingPart.tracking_updated_at)})</span>
-                              {isRefreshingTracking && (
-                                <RefreshCw className="w-3 h-3 animate-spin" />
+                            <div className="flex items-center justify-between gap-2">
+                              <div className="flex items-center gap-1.5">
+                                <span>Updated {formatRelativeTime(viewingPart.tracking_updated_at)} ({formatTime(viewingPart.tracking_updated_at)})</span>
+                                {isRefreshingTracking && (
+                                  <RefreshCw className="w-3 h-3 animate-spin" />
+                                )}
+                              </div>
+                              {viewingPart.tracking && (
+                                <span>{getCarrierName(viewingPart.tracking)}</span>
                               )}
                             </div>
                           )}
