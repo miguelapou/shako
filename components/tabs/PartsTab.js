@@ -3,7 +3,7 @@ import {
   Search, Package, Receipt, Truck, CheckCircle, Clock,
   ChevronDown, Plus, X, ExternalLink, ShoppingCart, Car,
   ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight,
-  PackageCheck, PackageSearch, PackageX
+  PackageCheck, PackageSearch, PackageX, BadgeCheck
 } from 'lucide-react';
 import PriceDisplay from '../ui/PriceDisplay';
 import TrackingBadge from '../ui/TrackingBadge';
@@ -994,6 +994,15 @@ const PartsTab = ({
                         const skipApi = shouldSkipShip24(tracking);
                         const trackingUrl = tracking ? getTrackingUrl(tracking) : null;
 
+                        // Delivered - show blue badge check
+                        if (part.delivered) {
+                          return (
+                            <span title="Delivered">
+                              <BadgeCheck className="w-5 h-5 text-blue-500 inline-block" />
+                            </span>
+                          );
+                        }
+
                         // Check if tracking data is fresh (less than 24 hours old)
                         const isFresh = trackingUpdatedAt && (() => {
                           const updatedDate = new Date(trackingUpdatedAt.endsWith('Z') ? trackingUpdatedAt : trackingUpdatedAt + 'Z');
@@ -1031,10 +1040,10 @@ const PartsTab = ({
                         // Has tracking with API data - show status icon
                         if (tracking && !skipApi) {
                           if (trackingUpdatedAt) {
-                            // Green if fresh OR if delivered (no need to update after delivery)
-                            if (isFresh || part.delivered) {
+                            // Green if fresh
+                            if (isFresh) {
                               return (
-                                <span title={part.delivered ? "Delivered" : "Tracking synced (< 24hrs)"}>
+                                <span title="Tracking synced (< 24hrs)">
                                   <PackageCheck className="w-5 h-5 text-green-500 inline-block" />
                                 </span>
                               );
