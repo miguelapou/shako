@@ -307,9 +307,9 @@ const PartDetailModal = ({
                     )
                   );
                 })()}
-              {/* Position indicator */}
+              {/* Position indicator - hidden on mobile */}
               {filteredParts.length > 1 && currentIndex !== -1 && (
-                <span className={`text-xs font-medium ${darkMode ? 'text-gray-500' : 'text-gray-400'}`}>
+                <span className={`hidden md:inline text-xs font-medium ${darkMode ? 'text-gray-500' : 'text-gray-400'}`}>
                   {currentIndex + 1} of {filteredParts.length}
                 </span>
               )}
