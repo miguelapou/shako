@@ -16,7 +16,7 @@ import {
   getVendorDisplayColor
 } from '../../utils/colorUtils';
 import { selectDropdownStyle } from '../../utils/styleUtils';
-import { getTrackingUrl } from '../../utils/trackingUtils';
+import { getTrackingUrl, shouldSkipShip24 } from '../../utils/trackingUtils';
 
 const PartDetailModal = ({
   isOpen,
@@ -89,8 +89,8 @@ const PartDetailModal = ({
   const handleRefreshTracking = async () => {
     if (!viewingPart?.id || !viewingPart?.tracking || isRefreshingTracking) return;
 
-    // Skip URL tracking
-    if (viewingPart.tracking.startsWith('http')) return;
+    // Skip URLs and Amazon tracking
+    if (shouldSkipShip24(viewingPart.tracking)) return;
 
     setIsRefreshingTracking(true);
     setTrackingError(null);
@@ -144,8 +144,8 @@ const PartDetailModal = ({
       return;
     }
 
-    // Skip URL tracking
-    if (viewingPart.tracking.startsWith('http')) {
+    // Skip URLs and Amazon tracking
+    if (shouldSkipShip24(viewingPart.tracking)) {
       return;
     }
 
@@ -546,8 +546,8 @@ const PartDetailModal = ({
                   Tracking Information
                 </h3>
 
-                {/* Tracking status and timeline */}
-                {!viewingPart.tracking.startsWith('http') ? (
+                {/* Tracking status and timeline (only for Ship24-supported tracking) */}
+                {!shouldSkipShip24(viewingPart.tracking) ? (
                   <div className="space-y-4">
                     {/* Order status badge */}
                     <div className="flex flex-col items-start gap-1">
@@ -662,7 +662,7 @@ const PartDetailModal = ({
             </div>
             {/* Refresh and Edit buttons on the right */}
             <div className="flex items-center gap-2">
-              {viewingPart.tracking && !viewingPart.tracking.startsWith('http') && (
+              {viewingPart.tracking && !shouldSkipShip24(viewingPart.tracking) && (
                 <button
                   onClick={handleRefreshTracking}
                   disabled={isRefreshingTracking}
@@ -1144,7 +1144,7 @@ const PartDetailModal = ({
                 onClick={async () => {
                   const trackingChanged = editingPart.tracking &&
                     editingPart.tracking !== viewingPart.tracking &&
-                    !editingPart.tracking.startsWith('http');
+                    !shouldSkipShip24(editingPart.tracking);
 
                   await saveEditedPart();
 

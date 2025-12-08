@@ -2,6 +2,7 @@ import { useState } from 'react';
 import * as partsService from '../services/partsService';
 import * as vendorsService from '../services/vendorsService';
 import { validatePartCosts } from '../utils/validationUtils';
+import { shouldSkipShip24 } from '../utils/trackingUtils';
 
 /**
  * Custom hook for managing parts data and CRUD operations
@@ -257,8 +258,8 @@ const useParts = (userId, toast) => {
       if (setTrackingModalPartId) setTrackingModalPartId(null);
       if (setTrackingInput) setTrackingInput('');
 
-      // Auto-refresh tracking from Ship24 if not a URL
-      if (trackingInput && !trackingInput.startsWith('http')) {
+      // Auto-refresh tracking from Ship24 if supported
+      if (trackingInput && !shouldSkipShip24(trackingInput)) {
         try {
           const response = await fetch(`/api/tracking/${trackingModalPartId}`);
           const data = await response.json();

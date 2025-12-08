@@ -7,7 +7,7 @@ import {
 import PriceDisplay from '../ui/PriceDisplay';
 import TrackingBadge from '../ui/TrackingBadge';
 import { getVendorDisplayColor } from '../../utils/colorUtils';
-import { getTrackingUrl, getCarrierName } from '../../utils/trackingUtils';
+import { getTrackingUrl, getCarrierName, shouldSkipShip24 } from '../../utils/trackingUtils';
 
 const PartsTab = ({
   tabContentRef,
@@ -1384,7 +1384,7 @@ const PartsTab = ({
                   {/* Tracking on Left */}
                   <div className="flex flex-col items-start gap-1" onClick={(e) => e.stopPropagation()}>
                     {/* Ship24 status badge when available */}
-                    {part.tracking && part.tracking_status && !part.tracking.startsWith('http') && (
+                    {part.tracking && part.tracking_status && !shouldSkipShip24(part.tracking) && (
                       <TrackingBadge
                         status={part.tracking_status}
                         darkMode={darkMode}
