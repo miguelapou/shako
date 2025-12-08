@@ -1,5 +1,5 @@
-import React from 'react';
-import { X, Edit2, Trash2, Archive, Pause, Play, ChevronDown } from 'lucide-react';
+import React, { useEffect, useCallback, useMemo } from 'react';
+import { X, Edit2, Trash2, Archive, Pause, Play, ChevronDown, ChevronLeft, ChevronRight } from 'lucide-react';
 import ProjectDetailView from '../ui/ProjectDetailView';
 import ProjectEditForm from '../ui/ProjectEditForm';
 import LinkedPartsSection from '../ui/LinkedPartsSection';
@@ -40,6 +40,52 @@ const ProjectDetailModal = ({
   setConfirmDialog,
   onClose
 }) => {
+  // Filter to non-archived projects for navigation
+  const navigableProjects = useMemo(() =>
+    projects.filter(p => !p.archived),
+    [projects]
+  );
+
+  // Get current index and navigation state
+  const currentIndex = navigableProjects.findIndex(p => p.id === viewingProject?.id);
+  const hasPrev = currentIndex > 0;
+  const hasNext = currentIndex < navigableProjects.length - 1 && currentIndex !== -1;
+
+  const goToPrevProject = useCallback(() => {
+    if (hasPrev) {
+      setViewingProject(navigableProjects[currentIndex - 1]);
+    }
+  }, [hasPrev, navigableProjects, currentIndex, setViewingProject]);
+
+  const goToNextProject = useCallback(() => {
+    if (hasNext) {
+      setViewingProject(navigableProjects[currentIndex + 1]);
+    }
+  }, [hasNext, navigableProjects, currentIndex, setViewingProject]);
+
+  // Keyboard navigation (left/right arrow keys)
+  useEffect(() => {
+    if (!isOpen || projectModalEditMode) return;
+
+    const handleKeyDown = (e) => {
+      // Don't navigate if user is typing in an input
+      if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA' || e.target.tagName === 'SELECT') {
+        return;
+      }
+
+      if (e.key === 'ArrowLeft' && hasPrev) {
+        e.preventDefault();
+        goToPrevProject();
+      } else if (e.key === 'ArrowRight' && hasNext) {
+        e.preventDefault();
+        goToNextProject();
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [isOpen, projectModalEditMode, hasPrev, hasNext, goToPrevProject, goToNextProject]);
+
   if (!isOpen || !viewingProject) {
     return null;
   }
@@ -92,34 +138,82 @@ const ProjectDetailModal = ({
             }`} style={{ fontFamily: "'FoundationOne', 'Courier New', monospace" }}>
               {viewingProject.name}
             </h2>
-            <button
-              onClick={() => handleCloseModal(() => {
-                // Check for unsaved changes
-                if (hasUnsavedProjectChanges()) {
-                  setConfirmDialog({
-                    isOpen: true,
-                    title: 'Unsaved Changes',
-                    message: 'You have unsaved changes. Are you sure you want to close without saving?',
-                    confirmText: 'Discard',
-                    cancelText: 'Go Back',
-                    onConfirm: () => {
-                      setProjectModalEditMode(false);
-                      setOriginalProjectData(null);
-                      onClose();
-                    }
-                  });
-                  return;
-                }
-                setProjectModalEditMode(false);
-                setOriginalProjectData(null);
-                onClose();
-              })}
-              className={`p-2 rounded-md transition-colors flex-shrink-0 ${
-                darkMode ? 'hover:bg-gray-700 text-gray-400' : 'hover:bg-gray-100 text-gray-600'
-              }`}
-            >
-              <X className="w-5 h-5" />
-            </button>
+            <div className="flex items-center gap-3">
+              {/* Navigation buttons and position indicator - hidden on mobile, hidden in edit mode */}
+              {navigableProjects.length > 1 && currentIndex !== -1 && !projectModalEditMode && (
+                <div className="hidden md:flex items-center gap-2">
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      goToPrevProject();
+                    }}
+                    disabled={!hasPrev}
+                    className={`p-1.5 rounded transition-colors ${
+                      hasPrev
+                        ? darkMode
+                          ? 'text-gray-400 hover:text-gray-200 hover:bg-gray-700'
+                          : 'text-gray-500 hover:text-gray-700 hover:bg-gray-200'
+                        : darkMode
+                          ? 'text-gray-600 cursor-not-allowed'
+                          : 'text-gray-300 cursor-not-allowed'
+                    }`}
+                    title="Previous project (←)"
+                  >
+                    <ChevronLeft className="w-5 h-5" />
+                  </button>
+                  <span className={`text-xs font-medium min-w-[4rem] text-center ${darkMode ? 'text-gray-500' : 'text-gray-400'}`}>
+                    {currentIndex + 1} of {navigableProjects.length}
+                  </span>
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      goToNextProject();
+                    }}
+                    disabled={!hasNext}
+                    className={`p-1.5 rounded transition-colors ${
+                      hasNext
+                        ? darkMode
+                          ? 'text-gray-400 hover:text-gray-200 hover:bg-gray-700'
+                          : 'text-gray-500 hover:text-gray-700 hover:bg-gray-200'
+                        : darkMode
+                          ? 'text-gray-600 cursor-not-allowed'
+                          : 'text-gray-300 cursor-not-allowed'
+                    }`}
+                    title="Next project (→)"
+                  >
+                    <ChevronRight className="w-5 h-5" />
+                  </button>
+                </div>
+              )}
+              <button
+                onClick={() => handleCloseModal(() => {
+                  // Check for unsaved changes
+                  if (hasUnsavedProjectChanges()) {
+                    setConfirmDialog({
+                      isOpen: true,
+                      title: 'Unsaved Changes',
+                      message: 'You have unsaved changes. Are you sure you want to close without saving?',
+                      confirmText: 'Discard',
+                      cancelText: 'Go Back',
+                      onConfirm: () => {
+                        setProjectModalEditMode(false);
+                        setOriginalProjectData(null);
+                        onClose();
+                      }
+                    });
+                    return;
+                  }
+                  setProjectModalEditMode(false);
+                  setOriginalProjectData(null);
+                  onClose();
+                })}
+                className={`p-2 rounded-md transition-colors flex-shrink-0 ${
+                  darkMode ? 'hover:bg-gray-700 text-gray-400' : 'hover:bg-gray-100 text-gray-600'
+                }`}
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
           </div>
         </div>
 
@@ -133,7 +227,10 @@ const ProjectDetailModal = ({
                 : 'relative opacity-100'
             }`}
           >
-            <div className="p-6 space-y-6 max-h-[calc(90vh-180px)] overflow-y-auto">
+            <div
+              key={viewingProject.id}
+              className="p-6 space-y-6 max-h-[calc(90vh-180px)] overflow-y-auto animate-fade-in"
+            >
               <ProjectDetailView
                 project={viewingProject}
                 parts={parts}
