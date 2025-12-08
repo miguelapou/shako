@@ -1090,7 +1090,7 @@ const Shako = () => {
                             : 'hover:bg-slate-100 text-slate-700'
                         }`}
                       >
-                        {darkMode ? <Sun className="w-5 h-5 text-yellow-300" /> : <Moon className="w-5 h-5" />}
+                        {darkMode ? <Sun className="w-5 h-5 text-yellow-300" /> : <Moon className="w-5 h-5 text-indigo-500" />}
                         <span>{darkMode ? 'Light Mode' : 'Dark Mode'}</span>
                       </button>
                       {/* Manage Vendors */}
