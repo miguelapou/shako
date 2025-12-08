@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import {
   X,
   Car,
@@ -46,6 +46,7 @@ const PartDetailModal = ({
 }) => {
   const [isRefreshingTracking, setIsRefreshingTracking] = useState(false);
   const [trackingError, setTrackingError] = useState(null);
+  const hasCheckedStaleRef = useRef(null); // Track which part ID we've checked
 
   // Format relative time (just now, X minutes ago, etc.)
   const formatRelativeTime = (dateString) => {
@@ -118,12 +119,25 @@ const PartDetailModal = ({
     // Reset error state when modal opens or part changes
     setTrackingError(null);
 
+    // Reset the stale check ref when modal closes
+    if (!isOpen) {
+      hasCheckedStaleRef.current = null;
+      return;
+    }
+
+    // Only check once per part when modal opens
+    if (hasCheckedStaleRef.current === viewingPart?.id) {
+      return;
+    }
+
     if (
-      isOpen &&
       viewingPart?.tracking &&
       !viewingPart.tracking.startsWith('http') &&
       !isRefreshingTracking
     ) {
+      // Mark this part as checked
+      hasCheckedStaleRef.current = viewingPart.id;
+
       // Check if tracking data is stale (older than 24 hours or never fetched)
       const isStale = !viewingPart.tracking_updated_at ||
         (Date.now() - new Date(viewingPart.tracking_updated_at).getTime()) > 24 * 60 * 60 * 1000;
