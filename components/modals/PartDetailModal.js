@@ -623,25 +623,20 @@ const PartDetailModal = ({
                         {getStatusIcon(viewingPart)}
                         <span>{getStatusText(viewingPart)}</span>
                       </div>
-                      {/* Location and updated at info */}
-                      {(viewingPart.tracking_location || viewingPart.tracking_updated_at) && (
-                        <div className={`w-full text-xs space-y-0.5 mt-1 ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>
-                          {viewingPart.tracking_location && (
-                            <div>{viewingPart.tracking_location}</div>
-                          )}
-                          {viewingPart.tracking_updated_at && (
-                            <div className="flex items-center w-full">
-                              <div className="flex items-center gap-1.5">
-                                <span>Updated {formatRelativeTime(viewingPart.tracking_updated_at)} ({formatTime(viewingPart.tracking_updated_at)})</span>
-                                {isRefreshingTracking && (
-                                  <RefreshCw className="w-3 h-3 animate-spin" />
-                                )}
-                              </div>
-                              {viewingPart.tracking && (
-                                <span className="ml-auto">{getCarrierName(viewingPart.tracking)}</span>
+                      {/* Updated at info */}
+                      {viewingPart.tracking_updated_at && (
+                        <div className={`w-full text-xs mt-1 ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>
+                          <div className="flex items-center w-full">
+                            <div className="flex items-center gap-1.5">
+                              <span>Updated {formatRelativeTime(viewingPart.tracking_updated_at)} ({formatTime(viewingPart.tracking_updated_at)})</span>
+                              {isRefreshingTracking && (
+                                <RefreshCw className="w-3 h-3 animate-spin" />
                               )}
                             </div>
-                          )}
+                            {viewingPart.tracking && (
+                              <span className="ml-auto">{getCarrierName(viewingPart.tracking)}</span>
+                            )}
+                          </div>
                         </div>
                       )}
                     </div>
