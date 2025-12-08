@@ -136,6 +136,7 @@ const PartDetailModal = ({
 
     // Only check once per part per modal session (prevents duplicate calls)
     if (checkedPartsRef.current.has(viewingPart.id)) {
+      console.log('[Tracking] Already checked part', viewingPart.id, 'this session, skipping');
       return;
     }
 
@@ -143,15 +144,28 @@ const PartDetailModal = ({
     checkedPartsRef.current.add(viewingPart.id);
 
     // Check if tracking data is fresh (less than 24 hours old)
+    console.log('[Tracking] Checking staleness for part:', viewingPart.id);
+    console.log('[Tracking] tracking_updated_at value:', viewingPart.tracking_updated_at);
+    console.log('[Tracking] viewingPart keys:', Object.keys(viewingPart));
+
     if (viewingPart.tracking_updated_at) {
       const lastUpdateMs = new Date(viewingPart.tracking_updated_at).getTime();
       const ageMs = Date.now() - lastUpdateMs;
       const twentyFourHoursMs = 24 * 60 * 60 * 1000;
+      const ageHours = ageMs / (1000 * 60 * 60);
+
+      console.log('[Tracking] Last update:', new Date(viewingPart.tracking_updated_at).toISOString());
+      console.log('[Tracking] Age in hours:', ageHours.toFixed(2));
+      console.log('[Tracking] Is fresh (<24h)?', ageMs < twentyFourHoursMs);
 
       if (ageMs < twentyFourHoursMs) {
         // Data is fresh, no need to auto-refresh
+        console.log('[Tracking] Data is fresh, NOT auto-refreshing');
         return;
       }
+      console.log('[Tracking] Data is STALE, will auto-refresh');
+    } else {
+      console.log('[Tracking] No tracking_updated_at found, will auto-refresh');
     }
 
     // Data is stale or never fetched - auto-refresh
