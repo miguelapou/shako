@@ -64,10 +64,10 @@ const PartDetailModal = ({
     return date.toLocaleDateString();
   };
 
-  // Format time as HH:MM AM/PM
+  // Format time as HH:MM am/pm
   const formatTime = (dateString) => {
     if (!dateString) return null;
-    return new Date(dateString).toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true });
+    return new Date(dateString).toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true }).toLowerCase();
   };
 
   const handleRefreshTracking = async () => {
