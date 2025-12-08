@@ -1031,10 +1031,10 @@ const PartsTab = ({
                         // Has tracking with API data - show status icon
                         if (tracking && !skipApi) {
                           if (trackingUpdatedAt) {
-                            // Green if fresh, yellow if stale
-                            if (isFresh) {
+                            // Green if fresh OR if delivered (no need to update after delivery)
+                            if (isFresh || part.delivered) {
                               return (
-                                <PackageCheck className="w-5 h-5 text-green-500 inline-block" title="Tracking synced (< 24hrs)" />
+                                <PackageCheck className="w-5 h-5 text-green-500 inline-block" title={part.delivered ? "Delivered" : "Tracking synced (< 24hrs)"} />
                               );
                             } else {
                               return (
