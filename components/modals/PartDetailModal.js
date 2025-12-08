@@ -402,7 +402,10 @@ const PartDetailModal = ({
 
         {/* DETAIL VIEW */}
         {partDetailView === 'detail' && (
-          <div className="p-4 sm:p-6 modal-scrollable slide-in-left">
+          <div
+            key={viewingPart.id}
+            className="p-4 sm:p-6 modal-scrollable animate-fade-in"
+          >
             {/* Part Details Grid */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
               {/* Left Column */}
