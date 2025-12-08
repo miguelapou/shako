@@ -4,7 +4,7 @@
 
 /**
  * Check if tracking should skip Ship24 API
- * Returns true for URLs and Amazon tracking (which Ship24 can't track reliably)
+ * Returns true for URLs, Amazon tracking, and letter-only text (which Ship24 can't track)
  */
 export const shouldSkipShip24 = (tracking) => {
   if (!tracking) return true;
@@ -12,6 +12,8 @@ export const shouldSkipShip24 = (tracking) => {
   if (tracking.startsWith('http')) return true;
   // Skip Amazon Logistics tracking numbers (start with TBA)
   if (tracking.toUpperCase().startsWith('TBA')) return true;
+  // Skip letter-only strings (like "USPS", "FedEx", "Local", etc.)
+  if (/^[a-zA-Z\s]+$/.test(tracking.trim())) return true;
   return false;
 };
 
