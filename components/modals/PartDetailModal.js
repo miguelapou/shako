@@ -194,8 +194,13 @@ const PartDetailModal = ({
       return;
     }
 
-    // Skip URLs and Amazon tracking
+    // Skip URLs, Amazon tracking, and letter-only strings
     if (shouldSkipShip24(viewingPart.tracking)) {
+      return;
+    }
+
+    // Never auto-refresh delivered parts
+    if (viewingPart.delivered) {
       return;
     }
 
