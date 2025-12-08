@@ -104,7 +104,7 @@ export async function POST(request) {
     // Update all matching parts
     for (const part of parts) {
       const updateData = {
-        aftership_id: trackerId,
+        ship24_id: trackerId,
         tracking_status: normalizedStatus,
         tracking_substatus: lastEvent?.statusCode || null,
         tracking_location: lastEvent?.location?.city || lastEvent?.location?.country || null,
