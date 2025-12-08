@@ -913,9 +913,9 @@ const PartsTab = ({
                       {getSortIcon('status')}
                     </div>
                   </th>
-                  <th className={`px-6 py-4 text-center text-xs font-semibold uppercase tracking-wider ${
+                  <th className={`px-3 py-4 text-center text-xs font-semibold uppercase tracking-wider ${
                     darkMode ? 'text-gray-300' : 'text-slate-700'
-                  }`}>Tracking</th>
+                  }`} style={{ width: '100px', maxWidth: '100px' }}>Tracking</th>
                   <th className={`px-6 py-4 text-center text-xs font-semibold uppercase tracking-wider ${
                     darkMode ? 'text-gray-300' : 'text-slate-700'
                   }`}>Part</th>
@@ -985,7 +985,7 @@ const PartsTab = ({
                     <td className="px-6 py-4 whitespace-nowrap">
                       <StatusDropdown part={part} />
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-center">
+                    <td className="px-3 py-4 whitespace-nowrap text-center" style={{ width: '100px', maxWidth: '100px' }}>
                       {(() => {
                         const tracking = part.tracking;
                         const trackingUpdatedAt = part.tracking_updated_at;
@@ -996,7 +996,7 @@ const PartsTab = ({
                         // Delivered - show blue badge check
                         if (part.delivered) {
                           return (
-                            <span title="Delivered">
+                            <span className="instant-tooltip" data-tooltip="Delivered">
                               <BadgeCheck className="w-5 h-5 text-blue-500 inline-block" />
                             </span>
                           );
@@ -1042,13 +1042,13 @@ const PartsTab = ({
                             // Green if fresh
                             if (isFresh) {
                               return (
-                                <span title="Tracking synced (< 24hrs)">
+                                <span className="instant-tooltip" data-tooltip="Synced">
                                   <PackageCheck className="w-5 h-5 text-green-500 inline-block" />
                                 </span>
                               );
                             } else {
                               return (
-                                <span title="Tracking data > 24hrs old">
+                                <span className="instant-tooltip" data-tooltip="Stale">
                                   <PackageSearch className="w-5 h-5 text-yellow-500 inline-block" />
                                 </span>
                               );
@@ -1056,7 +1056,7 @@ const PartsTab = ({
                           } else {
                             // Has tracking number but no API data yet
                             return (
-                              <span title="No tracking data from API">
+                              <span className="instant-tooltip" data-tooltip="No Data">
                                 <PackageX className="w-5 h-5 text-red-500 inline-block" />
                               </span>
                             );
@@ -1091,7 +1091,7 @@ const PartsTab = ({
                         </span>
                       )}
                     </td>
-                    <td className="px-6 py-4">
+                    <td className="px-6 py-4 text-center">
                       {part.vendor ? (
                         vendorColors[part.vendor] ? (
                           (() => {
