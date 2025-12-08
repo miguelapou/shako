@@ -166,7 +166,9 @@ export const normalizeTrackingData = (trackingData) => {
     tracking_checkpoints: events.map(event => ({
       checkpoint_time: event.datetime,
       message: event.status,
-      location: event.location?.city || event.location?.country,
+      city: event.location?.city || null,
+      state: event.location?.state || event.location?.stateCode || null,
+      country: event.location?.country || event.location?.countryCode || null,
       status: event.statusMilestone,
       statusCode: event.statusCode
     }))

@@ -110,13 +110,13 @@ const CheckpointItem = ({ checkpoint, isFirst, isLast, darkMode }) => {
             >
               {checkpoint.subtag_message || checkpoint.message || config.label}
             </p>
-            {(checkpoint.city || checkpoint.state) && (
+            {(checkpoint.city || checkpoint.state || checkpoint.country || checkpoint.location) && (
               <p
                 className={`text-xs mt-0.5 ${
                   darkMode ? 'text-gray-500' : 'text-gray-400'
                 }`}
               >
-                {[checkpoint.city, checkpoint.state].filter(Boolean).join(', ')}
+                {[checkpoint.city, checkpoint.state, checkpoint.country].filter(Boolean).join(', ') || checkpoint.location}
               </p>
             )}
           </div>
