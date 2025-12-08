@@ -279,9 +279,3 @@ export const refreshAllActiveTrackings = async (userId) => {
     throw error;
   }
 };
-
-// Legacy exports for backward compatibility during migration
-export const createAfterShipTracking = createShip24Tracking;
-export const getAfterShipTracking = getShip24Tracking;
-export const getAfterShipTrackingByNumber = getShip24TrackingByNumber;
-export const deleteAfterShipTracking = deleteShip24Tracking;
