@@ -685,14 +685,24 @@ const PartDetailModal = ({
                     )}
                   </div>
                 ) : (
-                  /* Fallback for URL tracking */
-                  <div
-                    className={`inline-flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium border w-fit ${getStatusColor(
-                      viewingPart
-                    )}`}
-                  >
-                    {getStatusIcon(viewingPart)}
-                    <span>{getStatusText(viewingPart)}</span>
+                  /* Fallback for non-API tracking (URLs, Amazon, letter-only) */
+                  <div className="flex items-center justify-between w-full">
+                    <div
+                      className={`inline-flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium border w-fit ${getStatusColor(
+                        viewingPart
+                      )}`}
+                    >
+                      {getStatusIcon(viewingPart)}
+                      <span>{getStatusText(viewingPart)}</span>
+                    </div>
+                    {/* Gray badge for letter-only tracking */}
+                    {viewingPart.tracking && /^[a-zA-Z\s]+$/.test(viewingPart.tracking.trim()) && (
+                      <span className={`inline-flex items-center px-3 py-1.5 rounded text-sm font-medium ${
+                        darkMode ? 'bg-gray-700 text-gray-400' : 'bg-gray-200 text-gray-600'
+                      }`}>
+                        {viewingPart.tracking}
+                      </span>
+                    )}
                   </div>
                 )}
               </div>
