@@ -1578,6 +1578,7 @@ const Shako = () => {
           getStatusIcon={getStatusIcon}
           getStatusText={getStatusText}
           onRefreshTracking={updatePartTrackingData}
+          filteredParts={filteredParts}
         />
 
         {/* PARTS TAB CONTENT */}

@@ -42,11 +42,61 @@ const PartDetailModal = ({
   getStatusColor,
   getStatusIcon,
   getStatusText,
-  onRefreshTracking
+  onRefreshTracking,
+  filteredParts = []
 }) => {
   const [isRefreshingTracking, setIsRefreshingTracking] = useState(false);
   const [trackingError, setTrackingError] = useState(null);
   const checkedPartsRef = useRef(new Set()); // Track part IDs we've already checked this session
+  const touchStartRef = useRef(null);
+  const touchEndRef = useRef(null);
+  const minSwipeDistance = 50; // Minimum swipe distance in pixels
+
+  // Get current index and navigation functions
+  const currentIndex = filteredParts.findIndex(p => p.id === viewingPart?.id);
+  const hasPrev = currentIndex > 0;
+  const hasNext = currentIndex < filteredParts.length - 1 && currentIndex !== -1;
+
+  const goToPrevPart = () => {
+    if (hasPrev) {
+      checkedPartsRef.current.clear(); // Reset tracking check for new part
+      setViewingPart(filteredParts[currentIndex - 1]);
+    }
+  };
+
+  const goToNextPart = () => {
+    if (hasNext) {
+      checkedPartsRef.current.clear(); // Reset tracking check for new part
+      setViewingPart(filteredParts[currentIndex + 1]);
+    }
+  };
+
+  // Touch handlers for swipe gestures
+  const handleTouchStart = (e) => {
+    touchEndRef.current = null;
+    touchStartRef.current = e.targetTouches[0].clientX;
+  };
+
+  const handleTouchMove = (e) => {
+    touchEndRef.current = e.targetTouches[0].clientX;
+  };
+
+  const handleTouchEnd = () => {
+    if (!touchStartRef.current || !touchEndRef.current) return;
+
+    const distance = touchStartRef.current - touchEndRef.current;
+    const isLeftSwipe = distance > minSwipeDistance;
+    const isRightSwipe = distance < -minSwipeDistance;
+
+    if (isLeftSwipe && hasNext) {
+      goToNextPart();
+    } else if (isRightSwipe && hasPrev) {
+      goToPrevPart();
+    }
+
+    touchStartRef.current = null;
+    touchEndRef.current = null;
+  };
 
   // Parse date string ensuring UTC interpretation
   // Supabase may return timestamps without 'Z' suffix, which JavaScript
@@ -197,10 +247,13 @@ const PartDetailModal = ({
         style={{
           gridTemplateRows:
             partDetailView === 'detail' ? 'auto 1fr auto' : 'auto 1fr auto',
-          maxHeight: 'calc(100vh - 4rem)',
+          maxHeight: 'calc(100vh - 8rem)',
           transition: 'max-height 0.7s ease-in-out'
         }}
         onClick={(e) => e.stopPropagation()}
+        onTouchStart={handleTouchStart}
+        onTouchMove={handleTouchMove}
+        onTouchEnd={handleTouchEnd}
       >
         {/* HEADER */}
         <div
@@ -249,6 +302,12 @@ const PartDetailModal = ({
                     )
                   );
                 })()}
+              {/* Position indicator */}
+              {filteredParts.length > 1 && currentIndex !== -1 && (
+                <span className={`text-xs font-medium ${darkMode ? 'text-gray-500' : 'text-gray-400'}`}>
+                  {currentIndex + 1} of {filteredParts.length}
+                </span>
+              )}
               <button
                 onClick={() =>
                   handleCloseModal(() => {
