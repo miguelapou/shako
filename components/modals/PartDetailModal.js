@@ -75,33 +75,24 @@ const PartDetailModal = ({
 
   // Touch handlers for swipe gestures
   const handleTouchStart = (e) => {
-    console.log('[PartDetailModal] touchStart', e.targetTouches[0].clientX);
     touchEndRef.current = null;
     touchStartRef.current = e.targetTouches[0].clientX;
   };
 
   const handleTouchMove = (e) => {
-    console.log('[PartDetailModal] touchMove', e.targetTouches[0].clientX);
     touchEndRef.current = e.targetTouches[0].clientX;
   };
 
   const handleTouchEnd = () => {
-    console.log('[PartDetailModal] touchEnd', { start: touchStartRef.current, end: touchEndRef.current });
-    if (!touchStartRef.current || !touchEndRef.current) {
-      console.log('[PartDetailModal] early return - missing refs');
-      return;
-    }
+    if (!touchStartRef.current || !touchEndRef.current) return;
 
     const distance = touchStartRef.current - touchEndRef.current;
     const isLeftSwipe = distance > minSwipeDistance;
     const isRightSwipe = distance < -minSwipeDistance;
-    console.log('[PartDetailModal] swipe calc', { distance, isLeftSwipe, isRightSwipe, hasNext, hasPrev });
 
     if (isLeftSwipe && hasNext) {
-      console.log('[PartDetailModal] navigating to next');
       goToNextPart();
     } else if (isRightSwipe && hasPrev) {
-      console.log('[PartDetailModal] navigating to prev');
       goToPrevPart();
     }
 
@@ -350,15 +341,7 @@ const PartDetailModal = ({
                       goToPrevPart();
                     }}
                     disabled={!hasPrev}
-                    className={`p-1.5 rounded transition-colors ${
-                      hasPrev
-                        ? darkMode
-                          ? 'text-gray-400 hover:text-gray-200 hover:bg-gray-700'
-                          : 'text-gray-500 hover:text-gray-700 hover:bg-gray-200'
-                        : darkMode
-                          ? 'text-gray-600 cursor-not-allowed'
-                          : 'text-gray-300 cursor-not-allowed'
-                    }`}
+                    className={`nav-btn ${darkMode ? 'dark' : 'light'}`}
                     title="Previous part (←)"
                   >
                     <ChevronLeft className="w-5 h-5" />
@@ -372,15 +355,7 @@ const PartDetailModal = ({
                       goToNextPart();
                     }}
                     disabled={!hasNext}
-                    className={`p-1.5 rounded transition-colors ${
-                      hasNext
-                        ? darkMode
-                          ? 'text-gray-400 hover:text-gray-200 hover:bg-gray-700'
-                          : 'text-gray-500 hover:text-gray-700 hover:bg-gray-200'
-                        : darkMode
-                          ? 'text-gray-600 cursor-not-allowed'
-                          : 'text-gray-300 cursor-not-allowed'
-                    }`}
+                    className={`nav-btn ${darkMode ? 'dark' : 'light'}`}
                     title="Next part (→)"
                   >
                     <ChevronRight className="w-5 h-5" />
@@ -807,15 +782,7 @@ const PartDetailModal = ({
                       goToPrevPart();
                     }}
                     disabled={!hasPrev}
-                    className={`p-1.5 rounded transition-colors ${
-                      hasPrev
-                        ? darkMode
-                          ? 'text-gray-400 hover:text-gray-200 hover:bg-gray-700'
-                          : 'text-gray-500 hover:text-gray-700 hover:bg-gray-200'
-                        : darkMode
-                          ? 'text-gray-600 cursor-not-allowed'
-                          : 'text-gray-300 cursor-not-allowed'
-                    }`}
+                    className={`nav-btn ${darkMode ? 'dark' : 'light'}`}
                   >
                     <ChevronLeft className="w-5 h-5" />
                   </button>
@@ -828,15 +795,7 @@ const PartDetailModal = ({
                       goToNextPart();
                     }}
                     disabled={!hasNext}
-                    className={`p-1.5 rounded transition-colors ${
-                      hasNext
-                        ? darkMode
-                          ? 'text-gray-400 hover:text-gray-200 hover:bg-gray-700'
-                          : 'text-gray-500 hover:text-gray-700 hover:bg-gray-200'
-                        : darkMode
-                          ? 'text-gray-600 cursor-not-allowed'
-                          : 'text-gray-300 cursor-not-allowed'
-                    }`}
+                    className={`nav-btn ${darkMode ? 'dark' : 'light'}`}
                   >
                     <ChevronRight className="w-5 h-5" />
                   </button>

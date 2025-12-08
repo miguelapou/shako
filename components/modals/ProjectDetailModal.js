@@ -93,37 +93,25 @@ const ProjectDetailModal = ({
 
   // Touch handlers for swipe gestures (same pattern as PartDetailModal)
   const handleTouchStart = (e) => {
-    console.log('[ProjectDetailModal] touchStart', e.targetTouches[0].clientX);
     touchEndRef.current = null;
     touchStartRef.current = e.targetTouches[0].clientX;
   };
 
   const handleTouchMove = (e) => {
-    console.log('[ProjectDetailModal] touchMove', e.targetTouches[0].clientX);
     touchEndRef.current = e.targetTouches[0].clientX;
   };
 
   const handleTouchEnd = () => {
-    console.log('[ProjectDetailModal] touchEnd', { start: touchStartRef.current, end: touchEndRef.current });
-    if (!touchStartRef.current || !touchEndRef.current) {
-      console.log('[ProjectDetailModal] early return - missing refs');
-      return;
-    }
-    if (projectModalEditMode) {
-      console.log('[ProjectDetailModal] early return - edit mode');
-      return;
-    }
+    if (!touchStartRef.current || !touchEndRef.current) return;
+    if (projectModalEditMode) return;
 
     const distance = touchStartRef.current - touchEndRef.current;
     const isLeftSwipe = distance > minSwipeDistance;
     const isRightSwipe = distance < -minSwipeDistance;
-    console.log('[ProjectDetailModal] swipe calc', { distance, isLeftSwipe, isRightSwipe, hasNext, hasPrev });
 
     if (isLeftSwipe && hasNext) {
-      console.log('[ProjectDetailModal] navigating to next');
       goToNextProject();
     } else if (isRightSwipe && hasPrev) {
-      console.log('[ProjectDetailModal] navigating to prev');
       goToPrevProject();
     }
 
@@ -196,15 +184,7 @@ const ProjectDetailModal = ({
                       goToPrevProject();
                     }}
                     disabled={!hasPrev}
-                    className={`p-1.5 rounded transition-colors ${
-                      hasPrev
-                        ? darkMode
-                          ? 'text-gray-400 hover:text-gray-200 hover:bg-gray-700'
-                          : 'text-gray-500 hover:text-gray-700 hover:bg-gray-200'
-                        : darkMode
-                          ? 'text-gray-600 cursor-not-allowed'
-                          : 'text-gray-300 cursor-not-allowed'
-                    }`}
+                    className={`nav-btn ${darkMode ? 'dark' : 'light'}`}
                     title="Previous project (←)"
                   >
                     <ChevronLeft className="w-5 h-5" />
@@ -218,15 +198,7 @@ const ProjectDetailModal = ({
                       goToNextProject();
                     }}
                     disabled={!hasNext}
-                    className={`p-1.5 rounded transition-colors ${
-                      hasNext
-                        ? darkMode
-                          ? 'text-gray-400 hover:text-gray-200 hover:bg-gray-700'
-                          : 'text-gray-500 hover:text-gray-700 hover:bg-gray-200'
-                        : darkMode
-                          ? 'text-gray-600 cursor-not-allowed'
-                          : 'text-gray-300 cursor-not-allowed'
-                    }`}
+                    className={`nav-btn ${darkMode ? 'dark' : 'light'}`}
                     title="Next project (→)"
                   >
                     <ChevronRight className="w-5 h-5" />
@@ -504,15 +476,7 @@ const ProjectDetailModal = ({
                       goToPrevProject();
                     }}
                     disabled={!hasPrev}
-                    className={`p-1.5 rounded transition-colors ${
-                      hasPrev
-                        ? darkMode
-                          ? 'text-gray-400 hover:text-gray-200 hover:bg-gray-700'
-                          : 'text-gray-500 hover:text-gray-700 hover:bg-gray-200'
-                        : darkMode
-                          ? 'text-gray-600 cursor-not-allowed'
-                          : 'text-gray-300 cursor-not-allowed'
-                    }`}
+                    className={`nav-btn ${darkMode ? 'dark' : 'light'}`}
                   >
                     <ChevronLeft className="w-5 h-5" />
                   </button>
@@ -525,15 +489,7 @@ const ProjectDetailModal = ({
                       goToNextProject();
                     }}
                     disabled={!hasNext}
-                    className={`p-1.5 rounded transition-colors ${
-                      hasNext
-                        ? darkMode
-                          ? 'text-gray-400 hover:text-gray-200 hover:bg-gray-700'
-                          : 'text-gray-500 hover:text-gray-700 hover:bg-gray-200'
-                        : darkMode
-                          ? 'text-gray-600 cursor-not-allowed'
-                          : 'text-gray-300 cursor-not-allowed'
-                    }`}
+                    className={`nav-btn ${darkMode ? 'dark' : 'light'}`}
                   >
                     <ChevronRight className="w-5 h-5" />
                   </button>
