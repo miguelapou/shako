@@ -60,7 +60,15 @@ const useParts = (userId, toast) => {
           total: parseFloat(part.total) || 0,
           tracking: part.tracking || '',
           projectId: part.project_id || null,
-          createdAt: part.created_at || null
+          createdAt: part.created_at || null,
+          // Tracking data from Ship24
+          ship24_id: part.ship24_id || null,
+          tracking_status: part.tracking_status || null,
+          tracking_substatus: part.tracking_substatus || null,
+          tracking_location: part.tracking_location || null,
+          tracking_eta: part.tracking_eta || null,
+          tracking_updated_at: part.tracking_updated_at || null,
+          tracking_checkpoints: part.tracking_checkpoints || null
         }));
         setParts(formattedParts);
       } else {

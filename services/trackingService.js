@@ -229,8 +229,17 @@ export const syncPartTracking = async (part) => {
   let trackingData;
 
   if (part.ship24_id) {
-    // Get existing tracking results
-    trackingData = await getShip24Tracking(part.ship24_id);
+    try {
+      // Get existing tracking results
+      trackingData = await getShip24Tracking(part.ship24_id);
+    } catch (error) {
+      // If tracker not found (404), create a new one
+      if (error.message?.includes('404')) {
+        trackingData = await createShip24Tracking(part.tracking, part.part);
+      } else {
+        throw error;
+      }
+    }
   } else {
     // Create new tracking (idempotent - will return existing if already tracked)
     trackingData = await createShip24Tracking(part.tracking, part.part);
