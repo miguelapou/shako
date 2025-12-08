@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import {
   X,
   Car,
@@ -46,6 +46,7 @@ const PartDetailModal = ({
 }) => {
   const [isRefreshingTracking, setIsRefreshingTracking] = useState(false);
   const [trackingError, setTrackingError] = useState(null);
+  const checkedPartsRef = useRef(new Set()); // Track part IDs we've already checked this session
 
   // Format relative time (just now, X minutes ago, etc.)
   const formatRelativeTime = (dateString) => {
@@ -113,9 +114,48 @@ const PartDetailModal = ({
     }
   };
 
-  // Reset error state when modal opens or part changes
+  // Auto-refresh tracking when modal opens if data is stale (>24 hours old)
   useEffect(() => {
     setTrackingError(null);
+
+    // Reset checked set when modal closes
+    if (!isOpen) {
+      checkedPartsRef.current.clear();
+      return;
+    }
+
+    // Need a valid part with a tracking number
+    if (!viewingPart?.id || !viewingPart?.tracking) {
+      return;
+    }
+
+    // Skip URL tracking
+    if (viewingPart.tracking.startsWith('http')) {
+      return;
+    }
+
+    // Only check once per part per modal session (prevents duplicate calls)
+    if (checkedPartsRef.current.has(viewingPart.id)) {
+      return;
+    }
+
+    // Mark this part as checked immediately to prevent race conditions
+    checkedPartsRef.current.add(viewingPart.id);
+
+    // Check if tracking data is fresh (less than 24 hours old)
+    if (viewingPart.tracking_updated_at) {
+      const lastUpdateMs = new Date(viewingPart.tracking_updated_at).getTime();
+      const ageMs = Date.now() - lastUpdateMs;
+      const twentyFourHoursMs = 24 * 60 * 60 * 1000;
+
+      if (ageMs < twentyFourHoursMs) {
+        // Data is fresh, no need to auto-refresh
+        return;
+      }
+    }
+
+    // Data is stale or never fetched - auto-refresh
+    handleRefreshTracking();
   }, [isOpen, viewingPart?.id]);
 
   if (!isOpen || !viewingPart) return null;
