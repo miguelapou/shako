@@ -1051,11 +1051,7 @@ const PartsTab = ({
 
                         // No tracking at all
                         return (
-                          <span className={`inline-block px-2 py-1 rounded text-xs font-medium border ${
-                            darkMode
-                              ? 'bg-gray-700/50 text-gray-500 border-gray-600'
-                              : 'bg-gray-100 text-gray-500 border-gray-300'
-                          }`}>
+                          <span className={darkMode ? 'text-gray-500' : 'text-gray-400'}>
                             —
                           </span>
                         );
