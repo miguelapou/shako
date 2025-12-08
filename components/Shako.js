@@ -385,6 +385,12 @@ const Shako = () => {
 
   // Refs for swipe detection on tab content
   const tabContentRef = useRef(null);
+  const modalOpenRef = useRef(false);
+
+  // Keep modalOpenRef in sync with modal states
+  useEffect(() => {
+    modalOpenRef.current = showPartDetailModal || showProjectDetailModal || showVehicleDetailModal;
+  }, [showPartDetailModal, showProjectDetailModal, showVehicleDetailModal]);
 
   // Detect touch device on mount
   useEffect(() => {
@@ -636,8 +642,8 @@ const Shako = () => {
         console.log('[TabSwipe] touchEnd', { start: touchStartPos, end: touchEndPos, isScrolling });
         if (!touchStartPos || !touchEndPos) return;
 
-        // Don't trigger tab change if a modal is open
-        if (showPartDetailModal || showProjectDetailModal || showVehicleDetailModal) {
+        // Don't trigger tab change if a modal is open (use ref for current value)
+        if (modalOpenRef.current) {
           console.log('[TabSwipe] skipping - modal is open');
           touchStartPos = null;
           touchEndPos = null;
@@ -690,7 +696,7 @@ const Shako = () => {
     return () => {
       clearTimeout(timeoutId);
     };
-  }, [activeTab, loading, showPartDetailModal, showProjectDetailModal, showVehicleDetailModal]);
+  }, [activeTab, loading]);
 
   // Reset scroll position to top when switching tabs
   useEffect(() => {
