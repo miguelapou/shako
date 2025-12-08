@@ -6,7 +6,6 @@ import {
   PackageCheck, PackageSearch, PackageX, BadgeCheck
 } from 'lucide-react';
 import PriceDisplay from '../ui/PriceDisplay';
-import TrackingBadge from '../ui/TrackingBadge';
 import { getVendorDisplayColor } from '../../utils/colorUtils';
 import { getTrackingUrl, getCarrierName, shouldSkipShip24 } from '../../utils/trackingUtils';
 
@@ -1471,44 +1470,94 @@ const PartsTab = ({
 
                 {/* Tracking and Total Price Row (Mobile Only) */}
                 <div className="flex items-center justify-between gap-3">
-                  {/* Tracking on Left */}
-                  <div className="flex flex-col items-start gap-1" onClick={(e) => e.stopPropagation()}>
-                    {/* Ship24 status badge when available */}
-                    {part.tracking && part.tracking_status && !shouldSkipShip24(part.tracking) && (
-                      <TrackingBadge
-                        status={part.tracking_status}
-                        darkMode={darkMode}
-                        size="small"
-                      />
-                    )}
-                    {part.tracking ? (
-                      getTrackingUrl(part.tracking) ? (
-                        <a
-                          href={getTrackingUrl(part.tracking)}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="inline-flex items-center gap-2 px-3 py-1.5 bg-blue-600 hover:bg-blue-700 text-white text-xs font-medium rounded-lg transition-colors"
-                          onClick={(e) => e.stopPropagation()}
-                        >
-                          Track: {getCarrierName(part.tracking)}
-                          <ExternalLink className="w-3 h-3" />
-                        </a>
-                      ) : (
-                        <div className={`inline-flex items-center px-3 py-1.5 text-xs font-medium rounded-lg ${
-                          darkMode ? 'bg-gray-700 text-gray-300' : 'bg-gray-200 text-gray-700'
-                        }`}>
-                          {getCarrierName(part.tracking)}
-                        </div>
-                      )
-                    ) : (
-                      <span className={`inline-flex items-center px-3 py-1.5 text-xs font-medium rounded-lg border ${
-                        darkMode
-                          ? 'bg-gray-700/50 text-gray-500 border-gray-600'
-                          : 'bg-gray-100 text-gray-500 border-gray-300'
-                      }`}>
-                        No Tracking
-                      </span>
-                    )}
+                  {/* Tracking on Left - same logic as desktop table */}
+                  <div onClick={(e) => e.stopPropagation()}>
+                    {(() => {
+                      const tracking = part.tracking;
+                      const trackingUpdatedAt = part.tracking_updated_at;
+                      const isLetterOnly = tracking && /^[a-zA-Z\s]+$/.test(tracking.trim());
+                      const skipApi = shouldSkipShip24(tracking);
+                      const trackingUrl = tracking ? getTrackingUrl(tracking) : null;
+
+                      // Delivered - show blue badge check
+                      if (part.delivered) {
+                        return (
+                          <span title="Delivered" className="inline-flex items-center gap-1.5 px-2 py-1">
+                            <BadgeCheck className="w-5 h-5 text-blue-500" />
+                            <span className={`text-xs ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>Delivered</span>
+                          </span>
+                        );
+                      }
+
+                      // Check if tracking data is fresh (less than 24 hours old)
+                      const isFresh = trackingUpdatedAt && (() => {
+                        const updatedDate = new Date(trackingUpdatedAt.endsWith('Z') ? trackingUpdatedAt : trackingUpdatedAt + 'Z');
+                        const hoursAgo = (Date.now() - updatedDate.getTime()) / (1000 * 60 * 60);
+                        return hoursAgo < 24;
+                      })();
+
+                      // Letter-only tracking (like "USPS", "FedEx", "Local") - grey badge
+                      if (isLetterOnly) {
+                        return (
+                          <span className={`inline-flex items-center px-2 py-1 rounded text-xs font-medium ${
+                            darkMode ? 'bg-gray-700 text-gray-400' : 'bg-gray-200 text-gray-600'
+                          }`}>
+                            {tracking}
+                          </span>
+                        );
+                      }
+
+                      // URLs or Amazon tracking - show link button
+                      if (tracking && skipApi && trackingUrl) {
+                        return (
+                          <a
+                            href={trackingUrl}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            onClick={(e) => e.stopPropagation()}
+                            className="inline-flex items-center gap-1 px-2 py-1 bg-blue-600 hover:bg-blue-700 text-white text-xs font-medium rounded transition-colors"
+                          >
+                            {getCarrierName(tracking)}
+                            <ExternalLink className="w-3 h-3" />
+                          </a>
+                        );
+                      }
+
+                      // Has tracking with API data - show status icon with label
+                      if (tracking && !skipApi) {
+                        if (trackingUpdatedAt) {
+                          if (isFresh) {
+                            return (
+                              <span title="Tracking synced (< 24hrs)" className="inline-flex items-center gap-1.5 px-2 py-1">
+                                <PackageCheck className="w-5 h-5 text-green-500" />
+                                <span className={`text-xs ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>Synced</span>
+                              </span>
+                            );
+                          } else {
+                            return (
+                              <span title="Tracking data > 24hrs old" className="inline-flex items-center gap-1.5 px-2 py-1">
+                                <PackageSearch className="w-5 h-5 text-yellow-500" />
+                                <span className={`text-xs ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>Stale</span>
+                              </span>
+                            );
+                          }
+                        } else {
+                          return (
+                            <span title="No tracking data from API" className="inline-flex items-center gap-1.5 px-2 py-1">
+                              <PackageX className="w-5 h-5 text-red-500" />
+                              <span className={`text-xs ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>No Data</span>
+                            </span>
+                          );
+                        }
+                      }
+
+                      // No tracking at all
+                      return (
+                        <span className={`text-xs ${darkMode ? 'text-gray-500' : 'text-gray-400'}`}>
+                          No Tracking
+                        </span>
+                      );
+                    })()}
                   </div>
 
                   {/* Total Price on Right */}
@@ -1526,39 +1575,6 @@ const PartsTab = ({
                   </div>
                 </div>
 
-                {/* Desktop: Tracking Only */}
-                <div className="hidden">
-                  <div className="inline-block" onClick={(e) => e.stopPropagation()}>
-                    {part.tracking ? (
-                      getTrackingUrl(part.tracking) ? (
-                        <a
-                          href={getTrackingUrl(part.tracking)}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="inline-flex items-center gap-2 px-3 py-1.5 bg-blue-600 hover:bg-blue-700 text-white text-xs font-medium rounded-lg transition-colors"
-                          onClick={(e) => e.stopPropagation()}
-                        >
-                          Track: {getCarrierName(part.tracking)}
-                          <ExternalLink className="w-3 h-3" />
-                        </a>
-                      ) : (
-                        <div className={`inline-flex items-center px-3 py-1.5 text-xs font-medium rounded-lg ${
-                          darkMode ? 'bg-gray-700 text-gray-300' : 'bg-gray-200 text-gray-700'
-                        }`}>
-                          {getCarrierName(part.tracking)}
-                        </div>
-                      )
-                    ) : (
-                      <span className={`inline-flex items-center px-3 py-1.5 text-xs font-medium rounded-lg border ${
-                        darkMode
-                          ? 'bg-gray-700/50 text-gray-500 border-gray-600'
-                          : 'bg-gray-100 text-gray-500 border-gray-300'
-                      }`}>
-                        No Tracking
-                      </span>
-                    )}
-                  </div>
-                </div>
               </div>
             ))}
           </div>

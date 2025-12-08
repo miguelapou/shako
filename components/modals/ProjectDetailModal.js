@@ -1,4 +1,4 @@
-import React, { useEffect, useCallback, useMemo } from 'react';
+import React, { useEffect, useCallback, useMemo, useRef } from 'react';
 import { X, Edit2, Trash2, Archive, Pause, Play, ChevronDown, ChevronLeft, ChevronRight } from 'lucide-react';
 import ProjectDetailView from '../ui/ProjectDetailView';
 import ProjectEditForm from '../ui/ProjectEditForm';
@@ -40,6 +40,11 @@ const ProjectDetailModal = ({
   setConfirmDialog,
   onClose
 }) => {
+  // Touch refs for swipe gestures
+  const touchStartRef = useRef(null);
+  const touchEndRef = useRef(null);
+  const minSwipeDistance = 50;
+
   // Filter to non-archived projects for navigation
   const navigableProjects = useMemo(() =>
     projects.filter(p => !p.archived),
@@ -86,6 +91,34 @@ const ProjectDetailModal = ({
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [isOpen, projectModalEditMode, hasPrev, hasNext, goToPrevProject, goToNextProject]);
 
+  // Touch handlers for swipe gestures
+  const handleTouchStart = (e) => {
+    touchEndRef.current = null;
+    touchStartRef.current = e.targetTouches[0].clientX;
+  };
+
+  const handleTouchMove = (e) => {
+    touchEndRef.current = e.targetTouches[0].clientX;
+  };
+
+  const handleTouchEnd = () => {
+    if (!touchStartRef.current || !touchEndRef.current) return;
+    if (projectModalEditMode) return; // Don't swipe in edit mode
+
+    const distance = touchStartRef.current - touchEndRef.current;
+    const isLeftSwipe = distance > minSwipeDistance;
+    const isRightSwipe = distance < -minSwipeDistance;
+
+    if (isLeftSwipe && hasNext) {
+      goToNextProject();
+    } else if (isRightSwipe && hasPrev) {
+      goToPrevProject();
+    }
+
+    touchStartRef.current = null;
+    touchEndRef.current = null;
+  };
+
   if (!isOpen || !viewingProject) {
     return null;
   }
@@ -127,6 +160,9 @@ const ProjectDetailModal = ({
           transition: 'max-height 0.7s ease-in-out'
         }}
         onClick={(e) => e.stopPropagation()}
+        onTouchStart={handleTouchStart}
+        onTouchMove={handleTouchMove}
+        onTouchEnd={handleTouchEnd}
       >
         {/* Header */}
         <div className={`sticky top-0 z-10 px-6 py-4 border-b ${
