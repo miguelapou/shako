@@ -1034,17 +1034,23 @@ const PartsTab = ({
                             // Green if fresh OR if delivered (no need to update after delivery)
                             if (isFresh || part.delivered) {
                               return (
-                                <PackageCheck className="w-5 h-5 text-green-500 inline-block" title={part.delivered ? "Delivered" : "Tracking synced (< 24hrs)"} />
+                                <span title={part.delivered ? "Delivered" : "Tracking synced (< 24hrs)"}>
+                                  <PackageCheck className="w-5 h-5 text-green-500 inline-block" />
+                                </span>
                               );
                             } else {
                               return (
-                                <PackageSearch className="w-5 h-5 text-yellow-500 inline-block" title="Tracking data > 24hrs old" />
+                                <span title="Tracking data > 24hrs old">
+                                  <PackageSearch className="w-5 h-5 text-yellow-500 inline-block" />
+                                </span>
                               );
                             }
                           } else {
                             // Has tracking number but no API data yet
                             return (
-                              <PackageX className="w-5 h-5 text-red-500 inline-block" title="No tracking data from API" />
+                              <span title="No tracking data from API">
+                                <PackageX className="w-5 h-5 text-red-500 inline-block" />
+                              </span>
                             );
                           }
                         }
