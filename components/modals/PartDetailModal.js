@@ -1,10 +1,12 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import {
   X,
   Car,
   Edit2,
   Trash2,
   ChevronDown,
+  ChevronLeft,
+  ChevronRight,
   ExternalLink,
   RefreshCw
 } from 'lucide-react';
@@ -16,7 +18,7 @@ import {
   getVendorDisplayColor
 } from '../../utils/colorUtils';
 import { selectDropdownStyle } from '../../utils/styleUtils';
-import { getTrackingUrl } from '../../utils/trackingUtils';
+import { getTrackingUrl, shouldSkipShip24, getCarrierName } from '../../utils/trackingUtils';
 
 const PartDetailModal = ({
   isOpen,
@@ -42,11 +44,61 @@ const PartDetailModal = ({
   getStatusColor,
   getStatusIcon,
   getStatusText,
-  onRefreshTracking
+  onRefreshTracking,
+  filteredParts = []
 }) => {
   const [isRefreshingTracking, setIsRefreshingTracking] = useState(false);
   const [trackingError, setTrackingError] = useState(null);
   const checkedPartsRef = useRef(new Set()); // Track part IDs we've already checked this session
+  const touchStartRef = useRef(null);
+  const touchEndRef = useRef(null);
+  const minSwipeDistance = 50; // Minimum swipe distance in pixels
+
+  // Get current index and navigation functions
+  const currentIndex = filteredParts.findIndex(p => p.id === viewingPart?.id);
+  const hasPrev = currentIndex > 0;
+  const hasNext = currentIndex < filteredParts.length - 1 && currentIndex !== -1;
+
+  const goToPrevPart = useCallback(() => {
+    if (hasPrev) {
+      checkedPartsRef.current.clear(); // Reset tracking check for new part
+      setViewingPart(filteredParts[currentIndex - 1]);
+    }
+  }, [hasPrev, filteredParts, currentIndex, setViewingPart]);
+
+  const goToNextPart = useCallback(() => {
+    if (hasNext) {
+      checkedPartsRef.current.clear(); // Reset tracking check for new part
+      setViewingPart(filteredParts[currentIndex + 1]);
+    }
+  }, [hasNext, filteredParts, currentIndex, setViewingPart]);
+
+  // Touch handlers for swipe gestures
+  const handleTouchStart = (e) => {
+    touchEndRef.current = null;
+    touchStartRef.current = e.targetTouches[0].clientX;
+  };
+
+  const handleTouchMove = (e) => {
+    touchEndRef.current = e.targetTouches[0].clientX;
+  };
+
+  const handleTouchEnd = () => {
+    if (!touchStartRef.current || !touchEndRef.current) return;
+
+    const distance = touchStartRef.current - touchEndRef.current;
+    const isLeftSwipe = distance > minSwipeDistance;
+    const isRightSwipe = distance < -minSwipeDistance;
+
+    if (isLeftSwipe && hasNext) {
+      goToNextPart();
+    } else if (isRightSwipe && hasPrev) {
+      goToPrevPart();
+    }
+
+    touchStartRef.current = null;
+    touchEndRef.current = null;
+  };
 
   // Parse date string ensuring UTC interpretation
   // Supabase may return timestamps without 'Z' suffix, which JavaScript
@@ -89,8 +141,8 @@ const PartDetailModal = ({
   const handleRefreshTracking = async () => {
     if (!viewingPart?.id || !viewingPart?.tracking || isRefreshingTracking) return;
 
-    // Skip URL tracking
-    if (viewingPart.tracking.startsWith('http')) return;
+    // Skip URLs and Amazon tracking
+    if (shouldSkipShip24(viewingPart.tracking)) return;
 
     setIsRefreshingTracking(true);
     setTrackingError(null);
@@ -144,8 +196,13 @@ const PartDetailModal = ({
       return;
     }
 
-    // Skip URL tracking
-    if (viewingPart.tracking.startsWith('http')) {
+    // Skip URLs, Amazon tracking, and letter-only strings
+    if (shouldSkipShip24(viewingPart.tracking)) {
+      return;
+    }
+
+    // Never auto-refresh delivered parts
+    if (viewingPart.delivered) {
       return;
     }
 
@@ -173,6 +230,29 @@ const PartDetailModal = ({
     handleRefreshTracking();
   }, [isOpen, viewingPart?.id]);
 
+  // Keyboard navigation (left/right arrow keys)
+  useEffect(() => {
+    if (!isOpen || partDetailView !== 'detail') return;
+
+    const handleKeyDown = (e) => {
+      // Don't navigate if user is typing in an input
+      if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA' || e.target.tagName === 'SELECT') {
+        return;
+      }
+
+      if (e.key === 'ArrowLeft' && hasPrev) {
+        e.preventDefault();
+        goToPrevPart();
+      } else if (e.key === 'ArrowRight' && hasNext) {
+        e.preventDefault();
+        goToNextPart();
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [isOpen, partDetailView, hasPrev, hasNext, goToPrevPart, goToNextPart]);
+
   if (!isOpen || !viewingPart) return null;
 
   return (
@@ -197,10 +277,13 @@ const PartDetailModal = ({
         style={{
           gridTemplateRows:
             partDetailView === 'detail' ? 'auto 1fr auto' : 'auto 1fr auto',
-          maxHeight: 'calc(100vh - 4rem)',
+          maxHeight: 'calc(100vh - 8rem)',
           transition: 'max-height 0.7s ease-in-out'
         }}
         onClick={(e) => e.stopPropagation()}
+        onTouchStart={handleTouchStart}
+        onTouchMove={handleTouchMove}
+        onTouchEnd={handleTouchEnd}
       >
         {/* HEADER */}
         <div
@@ -249,6 +332,36 @@ const PartDetailModal = ({
                     )
                   );
                 })()}
+              {/* Navigation buttons and position indicator - hidden on mobile */}
+              {filteredParts.length > 1 && currentIndex !== -1 && partDetailView === 'detail' && (
+                <div className="hidden md:flex items-center gap-2">
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      goToPrevPart();
+                    }}
+                    disabled={!hasPrev}
+                    className={`nav-btn ${darkMode ? 'dark' : 'light'}`}
+                    title="Previous part (←)"
+                  >
+                    <ChevronLeft className="w-5 h-5" />
+                  </button>
+                  <span className={`text-xs font-medium min-w-[4rem] text-center ${darkMode ? 'text-gray-500' : 'text-gray-400'}`}>
+                    {currentIndex + 1} of {filteredParts.length}
+                  </span>
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      goToNextPart();
+                    }}
+                    disabled={!hasNext}
+                    className={`nav-btn ${darkMode ? 'dark' : 'light'}`}
+                    title="Next part (→)"
+                  >
+                    <ChevronRight className="w-5 h-5" />
+                  </button>
+                </div>
+              )}
               <button
                 onClick={() =>
                   handleCloseModal(() => {
@@ -273,7 +386,10 @@ const PartDetailModal = ({
 
         {/* DETAIL VIEW */}
         {partDetailView === 'detail' && (
-          <div className="p-4 sm:p-6 modal-scrollable slide-in-left">
+          <div
+            key={viewingPart.id}
+            className="p-4 sm:p-6 modal-scrollable animate-fade-in"
+          >
             {/* Part Details Grid */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
               {/* Left Column */}
@@ -546,8 +662,8 @@ const PartDetailModal = ({
                   Tracking Information
                 </h3>
 
-                {/* Tracking status and timeline */}
-                {!viewingPart.tracking.startsWith('http') ? (
+                {/* Tracking status and timeline (only for Ship24-supported tracking) */}
+                {!shouldSkipShip24(viewingPart.tracking) ? (
                   <div className="space-y-4">
                     {/* Order status badge */}
                     <div className="flex flex-col items-start gap-1">
@@ -559,20 +675,20 @@ const PartDetailModal = ({
                         {getStatusIcon(viewingPart)}
                         <span>{getStatusText(viewingPart)}</span>
                       </div>
-                      {/* Location and updated at info */}
-                      {(viewingPart.tracking_location || viewingPart.tracking_updated_at) && (
-                        <div className={`text-xs space-y-0.5 mt-1 ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>
-                          {viewingPart.tracking_location && (
-                            <div>{viewingPart.tracking_location}</div>
-                          )}
-                          {viewingPart.tracking_updated_at && (
+                      {/* Updated at info */}
+                      {viewingPart.tracking_updated_at && (
+                        <div className={`w-full text-xs mt-1 ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>
+                          <div className="flex items-center w-full">
                             <div className="flex items-center gap-1.5">
                               <span>Updated {formatRelativeTime(viewingPart.tracking_updated_at)} ({formatTime(viewingPart.tracking_updated_at)})</span>
                               {isRefreshingTracking && (
                                 <RefreshCw className="w-3 h-3 animate-spin" />
                               )}
                             </div>
-                          )}
+                            {viewingPart.tracking && (
+                              <span className="ml-auto">{getCarrierName(viewingPart.tracking)}</span>
+                            )}
+                          </div>
                         </div>
                       )}
                     </div>
@@ -621,14 +737,24 @@ const PartDetailModal = ({
                     )}
                   </div>
                 ) : (
-                  /* Fallback for URL tracking */
-                  <div
-                    className={`inline-flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium border w-fit ${getStatusColor(
-                      viewingPart
-                    )}`}
-                  >
-                    {getStatusIcon(viewingPart)}
-                    <span>{getStatusText(viewingPart)}</span>
+                  /* Fallback for non-API tracking (URLs, Amazon, letter-only) */
+                  <div className="flex items-center justify-between w-full">
+                    <div
+                      className={`inline-flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium border w-fit ${getStatusColor(
+                        viewingPart
+                      )}`}
+                    >
+                      {getStatusIcon(viewingPart)}
+                      <span>{getStatusText(viewingPart)}</span>
+                    </div>
+                    {/* Gray badge for letter-only tracking */}
+                    {viewingPart.tracking && /^[a-zA-Z\s]+$/.test(viewingPart.tracking.trim()) && (
+                      <span className={`inline-flex items-center px-3 py-1.5 rounded text-sm font-medium ${
+                        darkMode ? 'bg-gray-700 text-gray-400' : 'bg-gray-200 text-gray-600'
+                      }`}>
+                        {viewingPart.tracking}
+                      </span>
+                    )}
                   </div>
                 )}
               </div>
@@ -645,14 +771,43 @@ const PartDetailModal = ({
                 : 'border-slate-200 bg-slate-100'
             }`}
           >
-            {/* Track button on the left */}
-            <div>
+            {/* Navigation and Track button on the left */}
+            <div className="flex items-center gap-3">
+              {/* Navigation controls */}
+              {filteredParts.length > 1 && currentIndex !== -1 && (
+                <div className="flex items-center gap-1">
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      goToPrevPart();
+                    }}
+                    disabled={!hasPrev}
+                    className={`nav-btn ${darkMode ? 'dark' : 'light'}`}
+                  >
+                    <ChevronLeft className="w-5 h-5" />
+                  </button>
+                  <span className={`text-xs font-medium min-w-[3rem] text-center ${darkMode ? 'text-gray-500' : 'text-gray-400'}`}>
+                    {currentIndex + 1} / {filteredParts.length}
+                  </span>
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      goToNextPart();
+                    }}
+                    disabled={!hasNext}
+                    className={`nav-btn ${darkMode ? 'dark' : 'light'}`}
+                  >
+                    <ChevronRight className="w-5 h-5" />
+                  </button>
+                </div>
+              )}
+              {/* Track button */}
               {viewingPart.tracking && getTrackingUrl(viewingPart.tracking) && (
                 <a
                   href={getTrackingUrl(viewingPart.tracking)}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-lg transition-colors"
+                  className="hidden sm:inline-flex items-center gap-1.5 px-3 py-1.5 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-lg transition-colors"
                   onClick={(e) => e.stopPropagation()}
                 >
                   Track
@@ -662,7 +817,7 @@ const PartDetailModal = ({
             </div>
             {/* Refresh and Edit buttons on the right */}
             <div className="flex items-center gap-2">
-              {viewingPart.tracking && !viewingPart.tracking.startsWith('http') && (
+              {viewingPart.tracking && !shouldSkipShip24(viewingPart.tracking) && (
                 <button
                   onClick={handleRefreshTracking}
                   disabled={isRefreshingTracking}
@@ -1144,7 +1299,7 @@ const PartDetailModal = ({
                 onClick={async () => {
                   const trackingChanged = editingPart.tracking &&
                     editingPart.tracking !== viewingPart.tracking &&
-                    !editingPart.tracking.startsWith('http');
+                    !shouldSkipShip24(editingPart.tracking);
 
                   await saveEditedPart();
 

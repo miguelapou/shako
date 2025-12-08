@@ -1,4 +1,5 @@
 import { supabase } from '../lib/supabase';
+import { shouldSkipShip24 } from '../utils/trackingUtils';
 
 /**
  * Service layer for Ship24 tracking operations
@@ -155,17 +156,18 @@ export const normalizeTrackingData = (trackingData) => {
   // Get the overall status milestone
   const statusMilestone = shipment.statusMilestone || lastEvent?.statusMilestone || 'pending';
 
+  // Ship24 returns location as a string (e.g., "SAINT PETERSBURG, FL 33710")
   return {
     ship24_id: tracker.tracker?.trackerId || trackingData.trackerId,
     tracking_status: normalizeStatusMilestone(statusMilestone),
     tracking_substatus: lastEvent?.statusCode || null,
-    tracking_location: lastEvent?.location?.city || lastEvent?.location?.country || null,
+    tracking_location: lastEvent?.location || null,
     tracking_eta: shipment.delivery?.estimatedDeliveryDate || null,
     tracking_updated_at: new Date().toISOString(),
     tracking_checkpoints: events.map(event => ({
       checkpoint_time: event.datetime,
       message: event.status,
-      location: event.location?.city || event.location?.country,
+      location: event.location || null,
       status: event.statusMilestone,
       statusCode: event.statusCode
     }))
@@ -222,8 +224,8 @@ export const getPartByTrackingNumber = async (trackingNumber, userId) => {
  * @returns {Promise<Object>} Updated tracking data
  */
 export const syncPartTracking = async (part) => {
-  if (!part.tracking || part.tracking.startsWith('http')) {
-    return null; // Skip URLs and empty tracking
+  if (shouldSkipShip24(part.tracking)) {
+    return null; // Skip URLs, Amazon tracking, and empty tracking
   }
 
   let trackingData;

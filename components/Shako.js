@@ -385,6 +385,12 @@ const Shako = () => {
 
   // Refs for swipe detection on tab content
   const tabContentRef = useRef(null);
+  const modalOpenRef = useRef(false);
+
+  // Keep modalOpenRef in sync with modal states
+  useEffect(() => {
+    modalOpenRef.current = showPartDetailModal || showProjectDetailModal || showVehicleDetailModal;
+  }, [showPartDetailModal, showProjectDetailModal, showVehicleDetailModal]);
 
   // Detect touch device on mount
   useEffect(() => {
@@ -632,6 +638,14 @@ const Shako = () => {
 
       const handleTouchEnd = () => {
         if (!touchStartPos || !touchEndPos) return;
+
+        // Don't trigger tab change if a modal is open (use ref for current value)
+        if (modalOpenRef.current) {
+          touchStartPos = null;
+          touchEndPos = null;
+          isScrolling = false;
+          return;
+        }
 
         // Don't trigger tab change if user was scrolling vertically
         if (isScrolling) {
@@ -1578,6 +1592,7 @@ const Shako = () => {
           getStatusIcon={getStatusIcon}
           getStatusText={getStatusText}
           onRefreshTracking={updatePartTrackingData}
+          filteredParts={filteredParts}
         />
 
         {/* PARTS TAB CONTENT */}

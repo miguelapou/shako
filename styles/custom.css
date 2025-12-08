@@ -579,3 +579,83 @@ body.dark-scrollbar *::-webkit-scrollbar-thumb:hover {
     transform: scale(1);
   }
 }
+
+/* Instant Tooltip - No delay on hover */
+.instant-tooltip {
+  position: relative;
+}
+
+.instant-tooltip::after {
+  content: attr(data-tooltip);
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 4px 8px;
+  background-color: rgba(31, 41, 55, 0.95);
+  color: white;
+  font-size: 11px;
+  font-weight: 500;
+  border-radius: 4px;
+  white-space: nowrap;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.1s ease-out, visibility 0.1s ease-out;
+  pointer-events: none;
+  z-index: 50;
+  margin-bottom: 4px;
+}
+
+.instant-tooltip:hover::after {
+  opacity: 1;
+  visibility: visible;
+}
+
+/* Navigation Button - Only hover on non-touch devices, consistent height */
+.nav-btn {
+  padding: 0.5rem;
+  border-radius: 0.5rem;
+  transition: color 0.15s, background-color 0.15s;
+}
+
+.nav-btn.light {
+  color: #6b7280; /* gray-500 */
+}
+
+.nav-btn.dark {
+  color: #9ca3af; /* gray-400 */
+}
+
+.nav-btn:disabled {
+  cursor: not-allowed;
+}
+
+.nav-btn.light:disabled {
+  color: #d1d5db; /* gray-300 */
+}
+
+.nav-btn.dark:disabled {
+  color: #4b5563; /* gray-600 */
+}
+
+/* Hover effects only on devices that support hover */
+@media (hover: hover) and (pointer: fine) {
+  .nav-btn.light:not(:disabled):hover {
+    color: #374151; /* gray-700 */
+    background-color: #e5e7eb; /* gray-200 */
+  }
+
+  .nav-btn.dark:not(:disabled):hover {
+    color: #e5e7eb; /* gray-200 */
+    background-color: #374151; /* gray-700 */
+  }
+}
+
+/* Active state for touch feedback */
+.nav-btn.light:not(:disabled):active {
+  background-color: #d1d5db; /* gray-300 */
+}
+
+.nav-btn.dark:not(:disabled):active {
+  background-color: #4b5563; /* gray-600 */
+}

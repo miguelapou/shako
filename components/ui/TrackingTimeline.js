@@ -110,13 +110,13 @@ const CheckpointItem = ({ checkpoint, isFirst, isLast, darkMode }) => {
             >
               {checkpoint.subtag_message || checkpoint.message || config.label}
             </p>
-            {(checkpoint.city || checkpoint.state) && (
+            {checkpoint.location && (
               <p
                 className={`text-xs mt-0.5 ${
                   darkMode ? 'text-gray-500' : 'text-gray-400'
                 }`}
               >
-                {[checkpoint.city, checkpoint.state].filter(Boolean).join(', ')}
+                {checkpoint.location}
               </p>
             )}
           </div>
@@ -165,19 +165,29 @@ const TrackingTimeline = ({
 
   const hasMore = sortedCheckpoints.length > maxVisible;
 
+  // Calculate approximate height per checkpoint for animation
+  const checkpointHeight = 64; // approximate height per checkpoint in pixels
+  const collapsedHeight = maxVisible * checkpointHeight;
+  const expandedHeight = sortedCheckpoints.length * checkpointHeight;
+
   return (
     <div className={className}>
       {showProgress && status && (
         <TrackingProgressBar status={status} darkMode={darkMode} />
       )}
 
-      <div className="relative">
-        {visibleCheckpoints.map((checkpoint, index) => (
+      <div
+        className="relative overflow-hidden transition-all duration-500 ease-in-out"
+        style={{
+          maxHeight: expanded ? `${expandedHeight}px` : `${collapsedHeight}px`
+        }}
+      >
+        {sortedCheckpoints.map((checkpoint, index) => (
           <CheckpointItem
             key={checkpoint.checkpoint_time || index}
             checkpoint={checkpoint}
             isFirst={index === 0}
-            isLast={index === visibleCheckpoints.length - 1 && (expanded || !hasMore)}
+            isLast={index === sortedCheckpoints.length - 1}
             darkMode={darkMode}
           />
         ))}

@@ -1,5 +1,5 @@
-import React from 'react';
-import { X, Edit2, Trash2, Archive, Pause, Play, ChevronDown } from 'lucide-react';
+import React, { useEffect, useCallback, useMemo, useRef } from 'react';
+import { X, Edit2, Trash2, Archive, Pause, Play, ChevronDown, ChevronLeft, ChevronRight } from 'lucide-react';
 import ProjectDetailView from '../ui/ProjectDetailView';
 import ProjectEditForm from '../ui/ProjectEditForm';
 import LinkedPartsSection from '../ui/LinkedPartsSection';
@@ -40,6 +40,85 @@ const ProjectDetailModal = ({
   setConfirmDialog,
   onClose
 }) => {
+  // Touch refs for swipe gestures
+  const touchStartRef = useRef(null);
+  const touchEndRef = useRef(null);
+  const minSwipeDistance = 50;
+
+  // Filter to non-archived projects for navigation
+  const navigableProjects = useMemo(() =>
+    projects.filter(p => !p.archived),
+    [projects]
+  );
+
+  // Get current index and navigation state
+  const currentIndex = navigableProjects.findIndex(p => p.id === viewingProject?.id);
+  const hasPrev = currentIndex > 0;
+  const hasNext = currentIndex < navigableProjects.length - 1 && currentIndex !== -1;
+
+  const goToPrevProject = useCallback(() => {
+    if (hasPrev) {
+      setViewingProject(navigableProjects[currentIndex - 1]);
+    }
+  }, [hasPrev, navigableProjects, currentIndex, setViewingProject]);
+
+  const goToNextProject = useCallback(() => {
+    if (hasNext) {
+      setViewingProject(navigableProjects[currentIndex + 1]);
+    }
+  }, [hasNext, navigableProjects, currentIndex, setViewingProject]);
+
+  // Keyboard navigation (left/right arrow keys)
+  useEffect(() => {
+    if (!isOpen || projectModalEditMode) return;
+
+    const handleKeyDown = (e) => {
+      // Don't navigate if user is typing in an input
+      if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA' || e.target.tagName === 'SELECT') {
+        return;
+      }
+
+      if (e.key === 'ArrowLeft' && hasPrev) {
+        e.preventDefault();
+        goToPrevProject();
+      } else if (e.key === 'ArrowRight' && hasNext) {
+        e.preventDefault();
+        goToNextProject();
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [isOpen, projectModalEditMode, hasPrev, hasNext, goToPrevProject, goToNextProject]);
+
+  // Touch handlers for swipe gestures (same pattern as PartDetailModal)
+  const handleTouchStart = (e) => {
+    touchEndRef.current = null;
+    touchStartRef.current = e.targetTouches[0].clientX;
+  };
+
+  const handleTouchMove = (e) => {
+    touchEndRef.current = e.targetTouches[0].clientX;
+  };
+
+  const handleTouchEnd = () => {
+    if (!touchStartRef.current || !touchEndRef.current) return;
+    if (projectModalEditMode) return;
+
+    const distance = touchStartRef.current - touchEndRef.current;
+    const isLeftSwipe = distance > minSwipeDistance;
+    const isRightSwipe = distance < -minSwipeDistance;
+
+    if (isLeftSwipe && hasNext) {
+      goToNextProject();
+    } else if (isRightSwipe && hasPrev) {
+      goToPrevProject();
+    }
+
+    touchStartRef.current = null;
+    touchEndRef.current = null;
+  };
+
   if (!isOpen || !viewingProject) {
     return null;
   }
@@ -81,6 +160,9 @@ const ProjectDetailModal = ({
           transition: 'max-height 0.7s ease-in-out'
         }}
         onClick={(e) => e.stopPropagation()}
+        onTouchStart={handleTouchStart}
+        onTouchMove={handleTouchMove}
+        onTouchEnd={handleTouchEnd}
       >
         {/* Header */}
         <div className={`sticky top-0 z-10 px-6 py-4 border-b ${
@@ -92,34 +174,66 @@ const ProjectDetailModal = ({
             }`} style={{ fontFamily: "'FoundationOne', 'Courier New', monospace" }}>
               {viewingProject.name}
             </h2>
-            <button
-              onClick={() => handleCloseModal(() => {
-                // Check for unsaved changes
-                if (hasUnsavedProjectChanges()) {
-                  setConfirmDialog({
-                    isOpen: true,
-                    title: 'Unsaved Changes',
-                    message: 'You have unsaved changes. Are you sure you want to close without saving?',
-                    confirmText: 'Discard',
-                    cancelText: 'Go Back',
-                    onConfirm: () => {
-                      setProjectModalEditMode(false);
-                      setOriginalProjectData(null);
-                      onClose();
-                    }
-                  });
-                  return;
-                }
-                setProjectModalEditMode(false);
-                setOriginalProjectData(null);
-                onClose();
-              })}
-              className={`p-2 rounded-md transition-colors flex-shrink-0 ${
-                darkMode ? 'hover:bg-gray-700 text-gray-400' : 'hover:bg-gray-100 text-gray-600'
-              }`}
-            >
-              <X className="w-5 h-5" />
-            </button>
+            <div className="flex items-center gap-3">
+              {/* Navigation buttons and position indicator - hidden on mobile, hidden in edit mode */}
+              {navigableProjects.length > 1 && currentIndex !== -1 && !projectModalEditMode && (
+                <div className="hidden md:flex items-center gap-2">
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      goToPrevProject();
+                    }}
+                    disabled={!hasPrev}
+                    className={`nav-btn ${darkMode ? 'dark' : 'light'}`}
+                    title="Previous project (←)"
+                  >
+                    <ChevronLeft className="w-5 h-5" />
+                  </button>
+                  <span className={`text-xs font-medium min-w-[4rem] text-center ${darkMode ? 'text-gray-500' : 'text-gray-400'}`}>
+                    {currentIndex + 1} of {navigableProjects.length}
+                  </span>
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      goToNextProject();
+                    }}
+                    disabled={!hasNext}
+                    className={`nav-btn ${darkMode ? 'dark' : 'light'}`}
+                    title="Next project (→)"
+                  >
+                    <ChevronRight className="w-5 h-5" />
+                  </button>
+                </div>
+              )}
+              <button
+                onClick={() => handleCloseModal(() => {
+                  // Check for unsaved changes
+                  if (hasUnsavedProjectChanges()) {
+                    setConfirmDialog({
+                      isOpen: true,
+                      title: 'Unsaved Changes',
+                      message: 'You have unsaved changes. Are you sure you want to close without saving?',
+                      confirmText: 'Discard',
+                      cancelText: 'Go Back',
+                      onConfirm: () => {
+                        setProjectModalEditMode(false);
+                        setOriginalProjectData(null);
+                        onClose();
+                      }
+                    });
+                    return;
+                  }
+                  setProjectModalEditMode(false);
+                  setOriginalProjectData(null);
+                  onClose();
+                })}
+                className={`p-2 rounded-md transition-colors flex-shrink-0 ${
+                  darkMode ? 'hover:bg-gray-700 text-gray-400' : 'hover:bg-gray-100 text-gray-600'
+                }`}
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
           </div>
         </div>
 
@@ -133,7 +247,10 @@ const ProjectDetailModal = ({
                 : 'relative opacity-100'
             }`}
           >
-            <div className="p-6 space-y-6 max-h-[calc(90vh-180px)] overflow-y-auto">
+            <div
+              key={viewingProject.id}
+              className="p-6 space-y-6 max-h-[calc(90vh-180px)] overflow-y-auto animate-fade-in"
+            >
               <ProjectDetailView
                 project={viewingProject}
                 parts={parts}
@@ -349,16 +466,47 @@ const ProjectDetailModal = ({
               </PrimaryButton>
             </div>
           ) : (
-            <div className="ml-auto">
-              <PrimaryButton
-                onClick={() => {
-                  setProjectModalEditMode(true);
-                }}
-                icon={Edit2}
-              >
-                Edit
-              </PrimaryButton>
-            </div>
+            <>
+              {/* Navigation controls on the left */}
+              {navigableProjects.length > 1 && currentIndex !== -1 && (
+                <div className="flex items-center gap-1">
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      goToPrevProject();
+                    }}
+                    disabled={!hasPrev}
+                    className={`nav-btn ${darkMode ? 'dark' : 'light'}`}
+                  >
+                    <ChevronLeft className="w-5 h-5" />
+                  </button>
+                  <span className={`text-xs font-medium min-w-[3rem] text-center ${darkMode ? 'text-gray-500' : 'text-gray-400'}`}>
+                    {currentIndex + 1} / {navigableProjects.length}
+                  </span>
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      goToNextProject();
+                    }}
+                    disabled={!hasNext}
+                    className={`nav-btn ${darkMode ? 'dark' : 'light'}`}
+                  >
+                    <ChevronRight className="w-5 h-5" />
+                  </button>
+                </div>
+              )}
+              {/* Edit button on the right */}
+              <div className="ml-auto">
+                <PrimaryButton
+                  onClick={() => {
+                    setProjectModalEditMode(true);
+                  }}
+                  icon={Edit2}
+                >
+                  Edit
+                </PrimaryButton>
+              </div>
+            </>
           )}
         </div>
       </div>

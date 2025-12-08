@@ -2,11 +2,30 @@
 // TRACKING UTILITIES
 // ========================================
 
+/**
+ * Check if tracking should skip Ship24 API
+ * Returns true for URLs, Amazon tracking, and letter-only text (which Ship24 can't track)
+ */
+export const shouldSkipShip24 = (tracking) => {
+  if (!tracking) return true;
+  // Skip if it's already a URL
+  if (tracking.startsWith('http')) return true;
+  // Skip Amazon Logistics tracking numbers (start with TBA)
+  if (tracking.toUpperCase().startsWith('TBA')) return true;
+  // Skip letter-only strings (like "USPS", "FedEx", "Local", etc.)
+  if (/^[a-zA-Z\s]+$/.test(tracking.trim())) return true;
+  return false;
+};
+
 export const getTrackingUrl = (tracking) => {
   if (!tracking) return null;
   // If it's already a full URL, return it
   if (tracking.startsWith('http')) {
     return tracking;
+  }
+  // Check if it's an Amazon Logistics tracking number (starts with TBA)
+  if (tracking.toUpperCase().startsWith('TBA')) {
+    return `https://www.amazon.com/progress-tracker/package/?itemId=&orderId=&trackingId=${tracking}`;
   }
   // Check if it's an Orange Connex tracking number (starts with EX)
   if (tracking.startsWith('EX')) {
@@ -39,7 +58,7 @@ export const getTrackingUrl = (tracking) => {
 export const getCarrierName = (tracking) => {
   if (!tracking) return null;
   // Check if it's an Amazon URL or tracking
-  if (tracking.toLowerCase().includes('amazon.com') || tracking.toLowerCase().includes('amzn')) {
+  if (tracking.toLowerCase().includes('amazon.com') || tracking.toLowerCase().includes('amzn') || tracking.toUpperCase().startsWith('TBA')) {
     return 'Amazon';
   }
   // Check if it's a FedEx URL
