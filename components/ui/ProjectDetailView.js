@@ -458,7 +458,7 @@ const ProjectDetailView = ({
             }`}>Description</h3>
             <div className="relative">
               <div
-                className="overflow-hidden transition-all duration-300 ease-in-out"
+                className="overflow-hidden transition-all duration-500 ease-in-out"
                 style={{
                   maxHeight: isDescriptionExpanded ? '1000px' : '4.5em'
                 }}

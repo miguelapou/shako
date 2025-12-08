@@ -177,7 +177,7 @@ const TrackingTimeline = ({
       )}
 
       <div
-        className="relative overflow-hidden transition-all duration-300 ease-in-out"
+        className="relative overflow-hidden transition-all duration-500 ease-in-out"
         style={{
           maxHeight: expanded ? `${expandedHeight}px` : `${collapsedHeight}px`
         }}
