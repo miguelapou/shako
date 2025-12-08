@@ -6,6 +6,7 @@ import {
   refreshAllActiveTrackings
 } from '../../../services/trackingService';
 import { supabase } from '../../../lib/supabase';
+import { shouldSkipShip24 } from '../../../utils/trackingUtils';
 
 /**
  * POST /api/tracking
@@ -23,10 +24,10 @@ export async function POST(request) {
       );
     }
 
-    // Skip URLs - they don't need API tracking
-    if (trackingNumber.startsWith('http')) {
+    // Skip URLs and Amazon tracking - they don't need Ship24 API
+    if (shouldSkipShip24(trackingNumber)) {
       return NextResponse.json(
-        { error: 'URL tracking links are not supported for API tracking' },
+        { error: 'This tracking type is not supported for API tracking' },
         { status: 400 }
       );
     }

@@ -1,4 +1,5 @@
 import { supabase } from '../lib/supabase';
+import { shouldSkipShip24 } from '../utils/trackingUtils';
 
 /**
  * Service layer for Ship24 tracking operations
@@ -222,8 +223,8 @@ export const getPartByTrackingNumber = async (trackingNumber, userId) => {
  * @returns {Promise<Object>} Updated tracking data
  */
 export const syncPartTracking = async (part) => {
-  if (!part.tracking || part.tracking.startsWith('http')) {
-    return null; // Skip URLs and empty tracking
+  if (shouldSkipShip24(part.tracking)) {
+    return null; // Skip URLs, Amazon tracking, and empty tracking
   }
 
   let trackingData;

@@ -3,6 +3,7 @@ import {
   syncPartTracking
 } from '../../../../services/trackingService';
 import { supabase } from '../../../../lib/supabase';
+import { shouldSkipShip24, getTrackingUrl } from '../../../../utils/trackingUtils';
 
 /**
  * GET /api/tracking/[id]
@@ -41,13 +42,13 @@ export async function GET(request, { params }) {
       );
     }
 
-    // Skip URL tracking
-    if (part.tracking.startsWith('http')) {
+    // Skip URLs and Amazon tracking - return external link info
+    if (shouldSkipShip24(part.tracking)) {
       return NextResponse.json({
         success: true,
         tracking: {
           tracking_status: 'External',
-          tracking_url: part.tracking
+          tracking_url: getTrackingUrl(part.tracking) || part.tracking
         }
       });
     }
