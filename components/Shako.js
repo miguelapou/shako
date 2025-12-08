@@ -597,6 +597,7 @@ const Shako = () => {
       let isScrolling = false;
 
       const handleTouchStart = (e) => {
+        console.log('[TabSwipe] touchStart', e.touches[0].clientX);
         touchEndPos = null;
         isScrolling = false;
         touchStartPos = {
@@ -607,6 +608,7 @@ const Shako = () => {
 
       const handleTouchMove = (e) => {
         if (!touchStartPos) return;
+        console.log('[TabSwipe] touchMove');
 
         const currentX = e.touches[0].clientX;
         const currentY = e.touches[0].clientY;
@@ -631,6 +633,7 @@ const Shako = () => {
       };
 
       const handleTouchEnd = () => {
+        console.log('[TabSwipe] touchEnd', { start: touchStartPos, end: touchEndPos, isScrolling });
         if (!touchStartPos || !touchEndPos) return;
 
         // Don't trigger tab change if user was scrolling vertically
@@ -644,9 +647,11 @@ const Shako = () => {
         const distance = touchStartPos.x - touchEndPos.x;
         const isLeftSwipe = distance > minSwipeDistance;
         const isRightSwipe = distance < -minSwipeDistance;
+        console.log('[TabSwipe] swipe calc', { distance, isLeftSwipe, isRightSwipe });
 
         if (isLeftSwipe || isRightSwipe) {
           const currentIndex = tabs.indexOf(activeTab);
+          console.log('[TabSwipe] triggering tab change');
 
           if (isLeftSwipe && currentIndex < tabs.length - 1) {
             handleTabChange(tabs[currentIndex + 1]);

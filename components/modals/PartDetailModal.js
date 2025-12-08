@@ -75,24 +75,33 @@ const PartDetailModal = ({
 
   // Touch handlers for swipe gestures
   const handleTouchStart = (e) => {
+    console.log('[PartDetailModal] touchStart', e.targetTouches[0].clientX);
     touchEndRef.current = null;
     touchStartRef.current = e.targetTouches[0].clientX;
   };
 
   const handleTouchMove = (e) => {
+    console.log('[PartDetailModal] touchMove', e.targetTouches[0].clientX);
     touchEndRef.current = e.targetTouches[0].clientX;
   };
 
   const handleTouchEnd = () => {
-    if (!touchStartRef.current || !touchEndRef.current) return;
+    console.log('[PartDetailModal] touchEnd', { start: touchStartRef.current, end: touchEndRef.current });
+    if (!touchStartRef.current || !touchEndRef.current) {
+      console.log('[PartDetailModal] early return - missing refs');
+      return;
+    }
 
     const distance = touchStartRef.current - touchEndRef.current;
     const isLeftSwipe = distance > minSwipeDistance;
     const isRightSwipe = distance < -minSwipeDistance;
+    console.log('[PartDetailModal] swipe calc', { distance, isLeftSwipe, isRightSwipe, hasNext, hasPrev });
 
     if (isLeftSwipe && hasNext) {
+      console.log('[PartDetailModal] navigating to next');
       goToNextPart();
     } else if (isRightSwipe && hasPrev) {
+      console.log('[PartDetailModal] navigating to prev');
       goToPrevPart();
     }
 

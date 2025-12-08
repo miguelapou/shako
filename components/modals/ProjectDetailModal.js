@@ -93,25 +93,37 @@ const ProjectDetailModal = ({
 
   // Touch handlers for swipe gestures (same pattern as PartDetailModal)
   const handleTouchStart = (e) => {
+    console.log('[ProjectDetailModal] touchStart', e.targetTouches[0].clientX);
     touchEndRef.current = null;
     touchStartRef.current = e.targetTouches[0].clientX;
   };
 
   const handleTouchMove = (e) => {
+    console.log('[ProjectDetailModal] touchMove', e.targetTouches[0].clientX);
     touchEndRef.current = e.targetTouches[0].clientX;
   };
 
   const handleTouchEnd = () => {
-    if (!touchStartRef.current || !touchEndRef.current) return;
-    if (projectModalEditMode) return; // Don't swipe in edit mode
+    console.log('[ProjectDetailModal] touchEnd', { start: touchStartRef.current, end: touchEndRef.current });
+    if (!touchStartRef.current || !touchEndRef.current) {
+      console.log('[ProjectDetailModal] early return - missing refs');
+      return;
+    }
+    if (projectModalEditMode) {
+      console.log('[ProjectDetailModal] early return - edit mode');
+      return;
+    }
 
     const distance = touchStartRef.current - touchEndRef.current;
     const isLeftSwipe = distance > minSwipeDistance;
     const isRightSwipe = distance < -minSwipeDistance;
+    console.log('[ProjectDetailModal] swipe calc', { distance, isLeftSwipe, isRightSwipe, hasNext, hasPrev });
 
     if (isLeftSwipe && hasNext) {
+      console.log('[ProjectDetailModal] navigating to next');
       goToNextProject();
     } else if (isRightSwipe && hasPrev) {
+      console.log('[ProjectDetailModal] navigating to prev');
       goToPrevProject();
     }
 
