@@ -1,8 +1,6 @@
 import { NextResponse } from 'next/server';
 import {
-  syncPartTracking,
-  normalizeTrackingData,
-  updatePartTracking
+  syncPartTracking
 } from '../../../../services/trackingService';
 import { supabase } from '../../../../lib/supabase';
 
@@ -54,7 +52,7 @@ export async function GET(request, { params }) {
       });
     }
 
-    // Sync with AfterShip and update database
+    // Sync with Ship24 and update database
     const trackingData = await syncPartTracking(part);
 
     // Check if package was delivered and auto-update part status
@@ -78,7 +76,7 @@ export async function GET(request, { params }) {
     console.error('Error fetching tracking:', error);
 
     // Handle rate limit error - return cached data if available
-    if (error.code === 'TOO_MANY_REQUEST' || error.meta_code === 429) {
+    if (error.message?.includes('429') || error.message?.includes('rate limit')) {
       const { id } = await params;
       const partId = parseInt(id, 10);
 
@@ -100,7 +98,7 @@ export async function GET(request, { params }) {
 
       return NextResponse.json({
         success: false,
-        error: 'API rate limit reached. Please try again tomorrow.',
+        error: 'API rate limit reached. Please try again later.',
         rateLimited: true
       }, { status: 429 });
     }

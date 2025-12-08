@@ -1,63 +1,80 @@
 import { NextResponse } from 'next/server';
-import { createHmac } from 'crypto';
 import { supabase } from '../../../../lib/supabase';
 
 /**
- * Verify AfterShip webhook signature
- * @param {string} payload - Raw request body
- * @param {string} signature - Signature from header
- * @returns {boolean} Whether signature is valid
+ * Map Ship24 statusMilestone to our display format
  */
-const verifySignature = (payload, signature) => {
-  const secret = process.env.AFTERSHIP_WEBHOOK_SECRET;
-  if (!secret) {
-    console.warn('AFTERSHIP_WEBHOOK_SECRET not configured, skipping verification');
-    return true; // Allow in development
-  }
-
-  const hmac = createHmac('sha256', secret);
-  hmac.update(payload);
-  const expectedSignature = hmac.digest('base64');
-
-  return signature === expectedSignature;
+const normalizeStatusMilestone = (statusMilestone) => {
+  const statusMap = {
+    'pending': 'Pending',
+    'info_received': 'InfoReceived',
+    'in_transit': 'InTransit',
+    'out_for_delivery': 'OutForDelivery',
+    'attempt_fail': 'AttemptFail',
+    'delivered': 'Delivered',
+    'available_for_pickup': 'AvailableForPickup',
+    'exception': 'Exception',
+    'expired': 'Expired'
+  };
+  return statusMap[statusMilestone] || 'Pending';
 };
 
 /**
+ * Verify Ship24 webhook authorization
+ * Ship24 sends the webhook secret in the Authorization header
+ * @param {Request} request - Incoming request
+ * @returns {boolean} Whether authorization is valid
+ */
+const verifyAuthorization = (request) => {
+  const secret = process.env.SHIP24_WEBHOOK_SECRET;
+  if (!secret) {
+    console.warn('SHIP24_WEBHOOK_SECRET not configured, skipping verification');
+    return true; // Allow in development
+  }
+
+  const authHeader = request.headers.get('authorization');
+  if (!authHeader) {
+    return false;
+  }
+
+  // Ship24 sends the secret directly in the Authorization header
+  return authHeader === secret || authHeader === `Bearer ${secret}`;
+};
+
+/**
+ * HEAD /api/tracking/webhook
+ * Ship24 probes the webhook endpoint with HEAD requests
+ */
+export async function HEAD() {
+  return new NextResponse(null, { status: 200 });
+}
+
+/**
  * POST /api/tracking/webhook
- * Receive tracking updates from AfterShip
+ * Receive tracking updates from Ship24
  */
 export async function POST(request) {
   try {
-    const rawBody = await request.text();
-    const signature = request.headers.get('aftership-hmac-sha256');
-
-    // Verify webhook signature
-    if (!verifySignature(rawBody, signature)) {
-      console.error('Invalid webhook signature');
+    // Verify webhook authorization
+    if (!verifyAuthorization(request)) {
+      console.error('Invalid webhook authorization');
       return NextResponse.json(
-        { error: 'Invalid signature' },
+        { error: 'Invalid authorization' },
         { status: 401 }
       );
     }
 
-    const payload = JSON.parse(rawBody);
-    const { msg } = payload;
+    const payload = await request.json();
 
-    if (!msg) {
+    // Ship24 webhook payload structure
+    const { trackerId, trackingNumber, shipment, events } = payload;
+
+    if (!trackingNumber) {
       return NextResponse.json(
-        { error: 'Invalid payload' },
+        { error: 'Invalid payload - missing trackingNumber' },
         { status: 400 }
       );
     }
-
-    const {
-      id: aftershipId,
-      tracking_number: trackingNumber,
-      tag,
-      subtag,
-      checkpoints,
-      expected_delivery: expectedDelivery
-    } = msg;
 
     // Find the part by tracking number
     const { data: parts, error: findError } = await supabase
@@ -79,23 +96,32 @@ export async function POST(request) {
       return NextResponse.json({ success: true, message: 'No matching part' });
     }
 
-    // Get last checkpoint info
-    const lastCheckpoint = checkpoints?.[checkpoints.length - 1];
+    // Get status and last event info
+    const statusMilestone = shipment?.statusMilestone || events?.[0]?.statusMilestone || 'pending';
+    const lastEvent = events?.[0]; // Ship24 returns events in reverse chronological order
+    const normalizedStatus = normalizeStatusMilestone(statusMilestone);
 
     // Update all matching parts
     for (const part of parts) {
       const updateData = {
-        aftership_id: aftershipId,
-        tracking_status: tag,
-        tracking_substatus: subtag,
-        tracking_location: lastCheckpoint?.location || lastCheckpoint?.city || null,
-        tracking_eta: expectedDelivery || null,
+        ship24_id: trackerId,
+        tracking_status: normalizedStatus,
+        tracking_substatus: lastEvent?.statusCode || null,
+        tracking_location: lastEvent?.location?.city || lastEvent?.location?.country || null,
+        tracking_carrier: shipment?.originCountryCode || null,
+        tracking_eta: shipment?.delivery?.estimatedDeliveryDate || null,
         tracking_updated_at: new Date().toISOString(),
-        tracking_checkpoints: checkpoints || []
+        tracking_checkpoints: (events || []).map(event => ({
+          checkpoint_time: event.datetime,
+          message: event.status,
+          location: event.location?.city || event.location?.country,
+          status: event.statusMilestone,
+          statusCode: event.statusCode
+        }))
       };
 
-      // Auto-mark as delivered if AfterShip says delivered
-      if (tag === 'Delivered' && !part.delivered) {
+      // Auto-mark as delivered if Ship24 says delivered
+      if (normalizedStatus === 'Delivered' && !part.delivered) {
         updateData.delivered = true;
       }
 
@@ -129,6 +155,6 @@ export async function POST(request) {
 export async function GET() {
   return NextResponse.json({
     status: 'ok',
-    message: 'AfterShip webhook endpoint is active'
+    message: 'Ship24 webhook endpoint is active'
   });
 }

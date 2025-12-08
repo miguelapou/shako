@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import {
-  createAfterShipTracking,
+  createShip24Tracking,
   normalizeTrackingData,
   updatePartTracking,
   refreshAllActiveTrackings
@@ -10,11 +10,11 @@ import { supabase } from '../../../lib/supabase';
 /**
  * POST /api/tracking
  * Create a new tracking for a part
- * Body: { partId, trackingNumber, carrier?, title? }
+ * Body: { partId, trackingNumber, title? }
  */
 export async function POST(request) {
   try {
-    const { partId, trackingNumber, carrier, title } = await request.json();
+    const { partId, trackingNumber, title } = await request.json();
 
     if (!partId || !trackingNumber) {
       return NextResponse.json(
@@ -31,8 +31,8 @@ export async function POST(request) {
       );
     }
 
-    // Create tracking in AfterShip
-    const tracking = await createAfterShipTracking(trackingNumber, carrier, title);
+    // Create tracking in Ship24
+    const tracking = await createShip24Tracking(trackingNumber, title);
 
     // Normalize and save to our database
     const normalizedData = normalizeTrackingData(tracking);
