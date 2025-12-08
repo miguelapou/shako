@@ -455,16 +455,23 @@ const ProjectDetailView = ({
               darkMode ? 'text-gray-200' : 'text-gray-800'
             }`}>Description</h3>
             <div className="relative">
-              <p
-                ref={descriptionRef}
-                className={`text-base transition-all duration-300 ease-in-out ${
-                  project.description
-                    ? (darkMode ? 'text-gray-400' : 'text-slate-600')
-                    : (darkMode ? 'text-gray-500 italic' : 'text-gray-500 italic')
-                } ${!isDescriptionExpanded && project.description ? 'line-clamp-3' : ''}`}
+              <div
+                className="overflow-hidden transition-all duration-300 ease-in-out"
+                style={{
+                  maxHeight: isDescriptionExpanded ? '1000px' : '4.5em'
+                }}
               >
-                {project.description || 'No description added'}
-              </p>
+                <p
+                  ref={descriptionRef}
+                  className={`text-base ${
+                    project.description
+                      ? (darkMode ? 'text-gray-400' : 'text-slate-600')
+                      : (darkMode ? 'text-gray-500 italic' : 'text-gray-500 italic')
+                  }`}
+                >
+                  {project.description || 'No description added'}
+                </p>
+              </div>
               {project.description && isDescriptionClamped && (
                 <button
                   onClick={() => setIsDescriptionExpanded(!isDescriptionExpanded)}
