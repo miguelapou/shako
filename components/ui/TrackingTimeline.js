@@ -90,13 +90,7 @@ const CheckpointItem = ({ checkpoint, isFirst, isLast, darkMode }) => {
       {/* Timeline line and dot */}
       <div className="flex flex-col items-center">
         <div
-          className={`w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 border-2 ${
-            isFirst
-              ? `${statusColor.border} ${statusColor.text}`
-              : darkMode
-                ? 'border-gray-600 text-gray-500'
-                : 'border-gray-300 text-gray-400'
-          }`}
+          className={`w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 border-2 ${statusColor.border} ${statusColor.text}`}
         >
           <IconComponent className="w-4 h-4" />
         </div>
