@@ -124,9 +124,9 @@ const PartDetailModal = ({
       !viewingPart.tracking.startsWith('http') &&
       !isRefreshingTracking
     ) {
-      // Check if tracking data is stale (older than 8 hours or never fetched)
+      // Check if tracking data is stale (older than 24 hours or never fetched)
       const isStale = !viewingPart.tracking_updated_at ||
-        (Date.now() - new Date(viewingPart.tracking_updated_at).getTime()) > 8 * 60 * 60 * 1000;
+        (Date.now() - new Date(viewingPart.tracking_updated_at).getTime()) > 24 * 60 * 60 * 1000;
 
       if (isStale) {
         handleRefreshTracking();
