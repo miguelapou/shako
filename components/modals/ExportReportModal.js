@@ -43,10 +43,9 @@ const ExportReportModal = ({
         {/* Header */}
         <div className={`px-6 py-4 border-b ${darkMode ? 'border-gray-700' : 'border-slate-200'}`}>
           <h3
-            className={`text-lg font-semibold flex items-center gap-2 ${darkMode ? 'text-gray-100' : 'text-slate-800'}`}
+            className={`text-lg font-semibold ${darkMode ? 'text-gray-100' : 'text-slate-800'}`}
             style={{ fontFamily: "'FoundationOne', 'Courier New', monospace" }}
           >
-            <FileDown className="w-5 h-5" />
             Generate Report
           </h3>
         </div>

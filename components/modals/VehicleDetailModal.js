@@ -160,7 +160,7 @@ const VehicleDetailModal = ({
       setGeneratingReport(true);
 
       // Generate the PDF
-      const { blob, filename } = generateVehicleReportPDF(
+      const { blob, filename } = await generateVehicleReportPDF(
         viewingVehicle,
         projects,
         parts,
