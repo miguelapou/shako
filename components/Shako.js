@@ -1798,6 +1798,7 @@ const Shako = () => {
             unlinkPartFromProject={unlinkPartFromProject}
             loadProjects={loadProjects}
             updateProject={updateProject}
+            toast={toast}
           />
         )}
 
