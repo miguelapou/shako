@@ -8,7 +8,11 @@ import {
   ChevronLeft,
   ChevronRight,
   ExternalLink,
-  RefreshCw
+  RefreshCw,
+  CheckCircle,
+  Truck,
+  ShoppingCart,
+  Clock
 } from 'lucide-react';
 import PrimaryButton from '../ui/PrimaryButton';
 import VendorSelect from '../ui/VendorSelect';
@@ -50,6 +54,10 @@ const PartDetailModal = ({
 }) => {
   const [isRefreshingTracking, setIsRefreshingTracking] = useState(false);
   const [trackingError, setTrackingError] = useState(null);
+  const [statusDropdownOpen, setStatusDropdownOpen] = useState(false);
+  const [statusDropdownClosing, setStatusDropdownClosing] = useState(false);
+  const statusButtonRef = useRef(null);
+  const [statusDropdownStyle, setStatusDropdownStyle] = useState({});
   const checkedPartsRef = useRef(new Set()); // Track part IDs we've already checked this session
   const touchStartRef = useRef(null);
   const touchEndRef = useRef(null);
@@ -63,6 +71,7 @@ const PartDetailModal = ({
   const goToPrevPart = useCallback(() => {
     if (hasPrev) {
       checkedPartsRef.current.clear(); // Reset tracking check for new part
+      setStatusDropdownOpen(false); // Close status dropdown
       setViewingPart(filteredParts[currentIndex - 1]);
     }
   }, [hasPrev, filteredParts, currentIndex, setViewingPart]);
@@ -70,6 +79,7 @@ const PartDetailModal = ({
   const goToNextPart = useCallback(() => {
     if (hasNext) {
       checkedPartsRef.current.clear(); // Reset tracking check for new part
+      setStatusDropdownOpen(false); // Close status dropdown
       setViewingPart(filteredParts[currentIndex + 1]);
     }
   }, [hasNext, filteredParts, currentIndex, setViewingPart]);
@@ -182,9 +192,38 @@ const PartDetailModal = ({
     }
   };
 
+  // Handle status dropdown open
+  const openStatusDropdown = () => {
+    if (statusButtonRef.current) {
+      const rect = statusButtonRef.current.getBoundingClientRect();
+      const dropdownHeight = 200;
+      const spaceBelow = window.innerHeight - rect.bottom;
+      const openUpward = spaceBelow < dropdownHeight;
+
+      setStatusDropdownStyle({
+        left: `${rect.left}px`,
+        top: openUpward ? `${rect.top - dropdownHeight - 4}px` : `${rect.bottom + 4}px`,
+        minWidth: '140px'
+      });
+    }
+    setStatusDropdownOpen(true);
+  };
+
+  // Handle status dropdown close with animation
+  const closeStatusDropdown = () => {
+    setStatusDropdownClosing(true);
+    setTimeout(() => {
+      setStatusDropdownOpen(false);
+      setStatusDropdownClosing(false);
+    }, 150);
+  };
+
   // Handle status change from dropdown
   const handleStatusChange = async (newStatus) => {
     if (!onStatusChange || !viewingPart?.id) return;
+
+    // Close dropdown first
+    closeStatusDropdown();
 
     // Map status to boolean flags
     const statusMap = {
@@ -214,6 +253,103 @@ const PartDetailModal = ({
     if (viewingPart?.purchased) return 'purchased';
     return 'pending';
   };
+
+  // Status dropdown component matching parts table style
+  const renderStatusDropdown = () => (
+    <div className="relative">
+      <button
+        ref={statusButtonRef}
+        onClick={(e) => {
+          e.stopPropagation();
+          if (statusDropdownOpen) {
+            closeStatusDropdown();
+          } else {
+            openStatusDropdown();
+          }
+        }}
+        className={`flex items-center gap-2 px-3 py-1.5 text-sm font-medium rounded-full border transition-all hover:shadow-md ${getStatusColor(viewingPart)}`}
+        style={{ minWidth: '8.25rem' }}
+      >
+        {getStatusIcon(viewingPart)}
+        <span className="flex-1 text-left">{getStatusText(viewingPart)}</span>
+        <ChevronDown className={`w-3 h-3 transition-transform flex-shrink-0 ${statusDropdownOpen ? 'rotate-180' : ''}`} />
+      </button>
+      {statusDropdownOpen && (
+        <>
+          <div
+            className="fixed inset-0 z-10"
+            onClick={(e) => {
+              e.stopPropagation();
+              closeStatusDropdown();
+            }}
+          />
+          <div
+            className={`fixed rounded-lg shadow-lg border py-1 z-50 ${
+              statusDropdownClosing ? 'dropdown-fade-out' : 'dropdown-fade-in'
+            } ${darkMode ? 'bg-gray-800 border-gray-600' : 'bg-slate-50 border-slate-200'}`}
+            style={statusDropdownStyle}
+          >
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                handleStatusChange('delivered');
+              }}
+              className={`w-full px-4 py-2 text-left text-sm flex items-center gap-2 ${
+                darkMode
+                  ? 'text-gray-300 hover:bg-green-900/30'
+                  : 'text-gray-700 hover:bg-green-50'
+              }`}
+            >
+              <CheckCircle className={`w-4 h-4 ${darkMode ? 'text-green-400' : 'text-green-600'}`} />
+              <span>Delivered</span>
+            </button>
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                handleStatusChange('shipped');
+              }}
+              className={`w-full px-4 py-2 text-left text-sm flex items-center gap-2 ${
+                darkMode
+                  ? 'text-gray-300 hover:bg-blue-900/30'
+                  : 'text-gray-700 hover:bg-blue-50'
+              }`}
+            >
+              <Truck className={`w-4 h-4 ${darkMode ? 'text-blue-400' : 'text-blue-600'}`} />
+              <span>Shipped</span>
+            </button>
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                handleStatusChange('purchased');
+              }}
+              className={`w-full px-4 py-2 text-left text-sm flex items-center gap-2 ${
+                darkMode
+                  ? 'text-gray-300 hover:bg-yellow-900/30'
+                  : 'text-gray-700 hover:bg-yellow-50'
+              }`}
+            >
+              <ShoppingCart className={`w-4 h-4 ${darkMode ? 'text-yellow-400' : 'text-yellow-600'}`} />
+              <span>Ordered</span>
+            </button>
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                handleStatusChange('pending');
+              }}
+              className={`w-full px-4 py-2 text-left text-sm flex items-center gap-2 ${
+                darkMode
+                  ? 'text-gray-300 hover:bg-gray-700'
+                  : 'text-gray-700 hover:bg-gray-100'
+              }`}
+            >
+              <Clock className={`w-4 h-4 ${darkMode ? 'text-gray-400' : 'text-gray-500'}`} />
+              <span>Pending</span>
+            </button>
+          </div>
+        </>
+      )}
+    </div>
+  );
 
   // Auto-refresh tracking when modal opens if data is stale (>24 hours old)
   useEffect(() => {
@@ -597,23 +733,7 @@ const PartDetailModal = ({
                         >
                           Status
                         </p>
-                        <div className={`relative inline-flex items-center rounded-full text-sm font-medium border w-fit ${getStatusColor(viewingPart)}`}>
-                          <div className="flex items-center gap-2 pl-3 py-1 pointer-events-none">
-                            {getStatusIcon(viewingPart)}
-                          </div>
-                          <select
-                            value={getCurrentStatus()}
-                            onChange={(e) => handleStatusChange(e.target.value)}
-                            className="appearance-none bg-transparent border-none text-inherit font-medium text-sm cursor-pointer focus:outline-none focus:ring-0 pr-6 py-1"
-                            style={{ ...selectDropdownStyle }}
-                          >
-                            <option value="pending">Pending</option>
-                            <option value="purchased">Ordered</option>
-                            <option value="shipped">Shipped</option>
-                            <option value="delivered">Delivered</option>
-                          </select>
-                          <ChevronDown className="w-3 h-3 absolute right-2 pointer-events-none opacity-60" />
-                        </div>
+                        {renderStatusDropdown()}
                       </div>
                     )}
                   </div>
@@ -730,23 +850,7 @@ const PartDetailModal = ({
                   <div className="space-y-4">
                     {/* Order status dropdown */}
                     <div className="flex flex-col items-start gap-1">
-                      <div className={`relative inline-flex items-center rounded-full text-sm font-medium border w-fit ${getStatusColor(viewingPart)}`}>
-                        <div className="flex items-center gap-2 pl-4 py-2 pointer-events-none">
-                          {getStatusIcon(viewingPart)}
-                        </div>
-                        <select
-                          value={getCurrentStatus()}
-                          onChange={(e) => handleStatusChange(e.target.value)}
-                          className="appearance-none bg-transparent border-none text-inherit font-medium text-sm cursor-pointer focus:outline-none focus:ring-0 pr-7 py-2"
-                          style={{ ...selectDropdownStyle }}
-                        >
-                          <option value="pending">Pending</option>
-                          <option value="purchased">Ordered</option>
-                          <option value="shipped">Shipped</option>
-                          <option value="delivered">Delivered</option>
-                        </select>
-                        <ChevronDown className="w-3.5 h-3.5 absolute right-2.5 pointer-events-none opacity-60" />
-                      </div>
+                      {renderStatusDropdown()}
                       {/* Updated at info */}
                       {viewingPart.tracking_updated_at && (
                         <div className={`w-full text-xs mt-1 ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>
@@ -811,23 +915,7 @@ const PartDetailModal = ({
                 ) : (
                   /* Fallback for non-API tracking (URLs, Amazon, letter-only) */
                   <div className="flex items-center justify-between w-full">
-                    <div className={`relative inline-flex items-center rounded-full text-sm font-medium border w-fit ${getStatusColor(viewingPart)}`}>
-                      <div className="flex items-center gap-2 pl-4 py-2 pointer-events-none">
-                        {getStatusIcon(viewingPart)}
-                      </div>
-                      <select
-                        value={getCurrentStatus()}
-                        onChange={(e) => handleStatusChange(e.target.value)}
-                        className="appearance-none bg-transparent border-none text-inherit font-medium text-sm cursor-pointer focus:outline-none focus:ring-0 pr-7 py-2"
-                        style={{ ...selectDropdownStyle }}
-                      >
-                        <option value="pending">Pending</option>
-                        <option value="purchased">Ordered</option>
-                        <option value="shipped">Shipped</option>
-                        <option value="delivered">Delivered</option>
-                      </select>
-                      <ChevronDown className="w-3.5 h-3.5 absolute right-2.5 pointer-events-none opacity-60" />
-                    </div>
+                    {renderStatusDropdown()}
                     {/* Gray badge for letter-only tracking */}
                     {viewingPart.tracking && /^[a-zA-Z\s]+$/.test(viewingPart.tracking.trim()) && (
                       <span className={`inline-flex items-center px-3 py-1.5 rounded text-sm font-medium ${
