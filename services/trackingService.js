@@ -156,11 +156,10 @@ export const normalizeTrackingData = (trackingData) => {
   const statusMilestone = shipment.statusMilestone || lastEvent?.statusMilestone || 'pending';
 
   return {
-    ship24_id: tracker.tracker?.trackerId || trackingData.trackerId,
+    aftership_id: tracker.tracker?.trackerId || trackingData.trackerId,
     tracking_status: normalizeStatusMilestone(statusMilestone),
     tracking_substatus: lastEvent?.statusCode || null,
     tracking_location: lastEvent?.location?.city || lastEvent?.location?.country || null,
-    tracking_carrier: shipment.originCountryCode || tracker.tracker?.courierCode?.[0] || null,
     tracking_eta: shipment.delivery?.estimatedDeliveryDate || null,
     tracking_updated_at: new Date().toISOString(),
     tracking_checkpoints: events.map(event => ({
@@ -229,9 +228,9 @@ export const syncPartTracking = async (part) => {
 
   let trackingData;
 
-  if (part.ship24_id) {
+  if (part.aftership_id) {
     // Get existing tracking results
-    trackingData = await getShip24Tracking(part.ship24_id);
+    trackingData = await getShip24Tracking(part.aftership_id);
   } else {
     // Create new tracking (idempotent - will return existing if already tracked)
     trackingData = await createShip24Tracking(part.tracking, part.part);
