@@ -108,7 +108,6 @@ export async function POST(request) {
         tracking_status: normalizedStatus,
         tracking_substatus: lastEvent?.statusCode || null,
         tracking_location: lastEvent?.location?.city || lastEvent?.location?.country || null,
-        tracking_carrier: shipment?.originCountryCode || null,
         tracking_eta: shipment?.delivery?.estimatedDeliveryDate || null,
         tracking_updated_at: new Date().toISOString(),
         tracking_checkpoints: (events || []).map(event => ({
