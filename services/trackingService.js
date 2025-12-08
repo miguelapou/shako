@@ -153,6 +153,11 @@ export const normalizeTrackingData = (trackingData) => {
   const events = tracker.events || [];
   const lastEvent = events[0]; // Ship24 returns events in reverse chronological order
 
+  // Debug: log the raw event structure to see location format
+  if (events.length > 0) {
+    console.log('[Ship24] Sample event structure:', JSON.stringify(events[0], null, 2));
+  }
+
   // Get the overall status milestone
   const statusMilestone = shipment.statusMilestone || lastEvent?.statusMilestone || 'pending';
 
