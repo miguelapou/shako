@@ -9,7 +9,8 @@ import {
   MapPin,
   AlertTriangle,
   ChevronDown,
-  ChevronUp
+  ChevronUp,
+  XCircle
 } from 'lucide-react';
 import {
   getTrackingStatusConfig,
@@ -26,7 +27,8 @@ const ICON_MAP = {
   'alert-circle': AlertCircle,
   'check-circle': CheckCircle,
   'map-pin': MapPin,
-  'alert-triangle': AlertTriangle
+  'alert-triangle': AlertTriangle,
+  'x-circle': XCircle
 };
 
 /**
@@ -63,7 +65,9 @@ const TrackingProgressBar = ({ status, darkMode }) => {
  * Single checkpoint item in the timeline
  */
 const CheckpointItem = ({ checkpoint, isFirst, isLast, darkMode }) => {
-  const config = getTrackingStatusConfig(checkpoint.tag);
+  // Use checkpoint.status (from Ship24 statusMilestone) or fall back to tag
+  const statusTag = checkpoint.status || checkpoint.tag;
+  const config = getTrackingStatusConfig(statusTag);
   const IconComponent = ICON_MAP[config.icon] || Package;
   const { date, time } = formatCheckpointTime(checkpoint.checkpoint_time || checkpoint.created_at);
 

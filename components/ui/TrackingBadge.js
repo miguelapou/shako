@@ -7,7 +7,8 @@ import {
   AlertCircle,
   CheckCircle,
   MapPin,
-  AlertTriangle
+  AlertTriangle,
+  XCircle
 } from 'lucide-react';
 import {
   getTrackingStatusConfig,
@@ -25,7 +26,8 @@ const ICON_MAP = {
   'alert-circle': AlertCircle,
   'check-circle': CheckCircle,
   'map-pin': MapPin,
-  'alert-triangle': AlertTriangle
+  'alert-triangle': AlertTriangle,
+  'x-circle': XCircle
 };
 
 /**

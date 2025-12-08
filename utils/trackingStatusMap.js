@@ -104,17 +104,49 @@ export const TRACKING_STATUS_CONFIG = {
     bgDark: 'bg-gray-700',
     textLight: 'text-gray-500',
     textDark: 'text-gray-400',
-    icon: 'clock'
+    icon: 'x-circle'
   }
 };
 
 /**
+ * Normalize snake_case status to PascalCase config key
+ * @param {string} status - Status in any format (snake_case or PascalCase)
+ * @returns {string} PascalCase config key
+ */
+export const normalizeStatusTag = (status) => {
+  if (!status) return 'Pending';
+
+  // Map snake_case Ship24 statuses to PascalCase config keys
+  const statusMap = {
+    'pending': 'Pending',
+    'info_received': 'InfoReceived',
+    'in_transit': 'InTransit',
+    'out_for_delivery': 'OutForDelivery',
+    'attempt_fail': 'AttemptFail',
+    'failed_attempt': 'AttemptFail',
+    'delivered': 'Delivered',
+    'available_for_pickup': 'AvailableForPickup',
+    'exception': 'Exception',
+    'expired': 'Expired'
+  };
+
+  // Check if already PascalCase (exists in config)
+  if (TRACKING_STATUS_CONFIG[status]) {
+    return status;
+  }
+
+  // Convert snake_case to PascalCase key
+  return statusMap[status.toLowerCase()] || 'Pending';
+};
+
+/**
  * Get status configuration for a tracking tag
- * @param {string} tag - Tracking status tag (normalized from Ship24 statusMilestone)
+ * @param {string} tag - Tracking status tag (normalized from Ship24 statusMilestone or raw snake_case)
  * @returns {Object} Status configuration
  */
 export const getTrackingStatusConfig = (tag) => {
-  return TRACKING_STATUS_CONFIG[tag] || TRACKING_STATUS_CONFIG.Pending;
+  const normalizedTag = normalizeStatusTag(tag);
+  return TRACKING_STATUS_CONFIG[normalizedTag] || TRACKING_STATUS_CONFIG.Pending;
 };
 
 /**
