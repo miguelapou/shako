@@ -636,6 +636,15 @@ const Shako = () => {
         console.log('[TabSwipe] touchEnd', { start: touchStartPos, end: touchEndPos, isScrolling });
         if (!touchStartPos || !touchEndPos) return;
 
+        // Don't trigger tab change if a modal is open
+        if (showPartDetailModal || showProjectDetailModal || showVehicleDetailModal) {
+          console.log('[TabSwipe] skipping - modal is open');
+          touchStartPos = null;
+          touchEndPos = null;
+          isScrolling = false;
+          return;
+        }
+
         // Don't trigger tab change if user was scrolling vertically
         if (isScrolling) {
           touchStartPos = null;
@@ -681,7 +690,7 @@ const Shako = () => {
     return () => {
       clearTimeout(timeoutId);
     };
-  }, [activeTab, loading]);
+  }, [activeTab, loading, showPartDetailModal, showProjectDetailModal, showVehicleDetailModal]);
 
   // Reset scroll position to top when switching tabs
   useEffect(() => {
