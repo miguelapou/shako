@@ -174,7 +174,7 @@ const ManageVendorsModal = ({
                       {/* Inline buttons - stop propagation on container */}
                       {!isEditing && (
                         <div
-                          className="flex items-center gap-2"
+                          className="flex items-stretch gap-2"
                           onClick={(e) => e.stopPropagation()}
                         >
                           {/* Hidden color input */}
@@ -194,7 +194,7 @@ const ManageVendorsModal = ({
                               e.stopPropagation();
                               colorInputRefs.current[vendor]?.click();
                             }}
-                            className={`p-2 sm:px-3 sm:py-2 rounded-lg transition-colors ${
+                            className={`p-2 sm:px-3 sm:py-2 rounded-lg transition-colors flex items-center ${
                               darkMode
                                 ? 'hover:bg-gray-600 text-gray-400 hover:text-gray-200'
                                 : 'hover:bg-gray-200 text-gray-500 hover:text-gray-700'
