@@ -492,7 +492,7 @@ const ProjectsTab = ({
                     </p>
                   </div>
                 )}
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
                 {projects.filter(p => p.archived).map((project) => {
                   const vehicle = project.vehicle_id ? vehicles.find(v => v.id === project.vehicle_id) : null;
                   return (
@@ -504,28 +504,12 @@ const ProjectsTab = ({
                         setProjectModalEditMode(false);
                         setShowProjectDetailModal(true);
                       }}
-                      className={`relative rounded-lg shadow-lg p-6 transition-all duration-200 hover:shadow-2xl hover:scale-[1.03] cursor-pointer ${
+                      className={`relative rounded-lg shadow-lg pt-2 pb-2 px-3 transition-all duration-200 hover:shadow-2xl hover:scale-[1.03] cursor-pointer ${
                         darkMode ? 'bg-gray-800' : 'bg-slate-100'
                       }`}
                     >
-                      {/* Vehicle Badge - Top Right */}
-                      {vehicle && (
-                        <div className="absolute top-2 right-2">
-                          <span
-                            className={`inline-flex items-center px-2 py-1 rounded text-xs font-medium border ${
-                              darkMode ? 'bg-gray-700 text-gray-300 border-gray-600' : 'bg-gray-100 text-gray-700 border-gray-300'
-                            }`}
-                          >
-                            <Car className="w-3 h-3 mr-1" />
-                            <span style={{ color: vehicle.color || '#3B82F6' }}>
-                              {vehicle.nickname || `${vehicle.year} ${vehicle.make} ${vehicle.name}`}
-                            </span>
-                          </span>
-                        </div>
-                      )}
-
                       {/* Project Name */}
-                      <h3 className={`text-lg font-bold mb-2 ${vehicle ? 'pr-20' : ''} ${
+                      <h3 className={`text-base font-bold mb-1 ${
                         darkMode ? 'text-gray-100' : 'text-slate-800'
                       }`}>
                         {project.name}
@@ -533,11 +517,25 @@ const ProjectsTab = ({
 
                       {/* Description */}
                       {project.description && (
-                        <p className={`text-sm mb-3 line-clamp-2 ${
+                        <p className={`text-xs mb-2 line-clamp-2 ${
                           darkMode ? 'text-gray-400' : 'text-slate-600'
                         }`}>
                           {project.description}
                         </p>
+                      )}
+
+                      {/* Vehicle Badge - Bottom */}
+                      {vehicle && (
+                        <span
+                          className={`inline-flex items-center px-2 py-0.5 rounded text-xs font-medium ${
+                            darkMode ? 'bg-gray-600 text-gray-300' : 'bg-gray-300 text-gray-700'
+                          }`}
+                        >
+                          <Car className="w-3 h-3 mr-1" />
+                          <span style={{ color: vehicle.color || '#3B82F6' }}>
+                            {vehicle.nickname || vehicle.name}
+                          </span>
+                        </span>
                       )}
                     </div>
                   );
