@@ -45,6 +45,10 @@ const ProjectDetailModal = ({
   const touchEndRef = useRef(null);
   const minSwipeDistance = 50;
 
+  // Track if this modal was open (for close animation)
+  const wasOpen = useRef(false);
+  if (isOpen) wasOpen.current = true;
+
   // Filter to non-archived projects for navigation
   const navigableProjects = useMemo(() =>
     projects.filter(p => !p.archived),
@@ -119,9 +123,16 @@ const ProjectDetailModal = ({
     touchEndRef.current = null;
   };
 
-  if (!isOpen || !viewingProject) {
+  // Keep modal mounted during closing animation only if THIS modal was open
+  // Reset wasOpen when modal finishes closing
+  if (!isOpen && !isModalClosing) {
+    wasOpen.current = false;
+  }
+  if ((!isOpen && !(isModalClosing && wasOpen.current)) || !viewingProject) {
     return null;
   }
+
+  console.log('[ProjectDetailModal] Rendering with isModalClosing:', isModalClosing);
 
   return (
     <div
@@ -151,7 +162,7 @@ const ProjectDetailModal = ({
       })}
     >
       <div
-        className={`rounded-lg shadow-xl max-w-5xl w-full overflow-hidden modal-content transition-all duration-700 ease-in-out grid ${
+        className={`rounded-lg shadow-xl max-w-5xl w-full overflow-hidden modal-content grid ${
           isModalClosing ? 'modal-popup-exit' : 'modal-popup-enter'
         } ${darkMode ? 'bg-gray-800' : 'bg-slate-200'}`}
         style={{

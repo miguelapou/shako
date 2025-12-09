@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useRef } from 'react';
 import { X, Upload } from 'lucide-react';
 import { inputClasses } from '../../utils/styleUtils';
 import { useUI } from '../../contexts';
@@ -26,7 +26,15 @@ const AddVehicleModal = ({
 }) => {
   const { toast } = useUI();
 
-  if (!isOpen) {
+  // Track if this modal was open (for close animation)
+  const wasOpen = useRef(false);
+  if (isOpen) wasOpen.current = true;
+
+  // Keep modal mounted during closing animation only if THIS modal was open
+  if (!isOpen && !isModalClosing) {
+    wasOpen.current = false;
+  }
+  if (!isOpen && !(isModalClosing && wasOpen.current)) {
     return null;
   }
 

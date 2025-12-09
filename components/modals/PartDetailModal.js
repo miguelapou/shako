@@ -63,6 +63,10 @@ const PartDetailModal = ({
   const touchEndRef = useRef(null);
   const minSwipeDistance = 50; // Minimum swipe distance in pixels
 
+  // Track if this modal was open (for close animation)
+  const wasOpen = useRef(false);
+  if (isOpen) wasOpen.current = true;
+
   // Get current index and navigation functions
   const currentIndex = filteredParts.findIndex(p => p.id === viewingPart?.id);
   const hasPrev = currentIndex > 0;
@@ -423,7 +427,12 @@ const PartDetailModal = ({
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [isOpen, partDetailView, hasPrev, hasNext, goToPrevPart, goToNextPart]);
 
-  if (!isOpen || !viewingPart) return null;
+  // Keep modal mounted during closing animation only if THIS modal was open
+  // Reset wasOpen when modal finishes closing
+  if (!isOpen && !isModalClosing) {
+    wasOpen.current = false;
+  }
+  if ((!isOpen && !(isModalClosing && wasOpen.current)) || !viewingPart) return null;
 
   return (
     <div
@@ -441,7 +450,7 @@ const PartDetailModal = ({
       }
     >
       <div
-        className={`rounded-lg shadow-xl max-w-4xl w-full modal-content overflow-hidden transition-all duration-700 ease-in-out grid ${
+        className={`rounded-lg shadow-xl max-w-4xl w-full modal-content overflow-hidden grid ${
           isModalClosing ? 'modal-popup-exit' : 'modal-popup-enter'
         } ${darkMode ? 'bg-gray-800' : 'bg-slate-200'}`}
         style={{

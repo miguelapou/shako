@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import {
   X,
   Wrench,
@@ -103,6 +103,10 @@ const VehicleDetailModal = ({
   const [selectedEventId, setSelectedEventId] = useState(null);
   // State for viewing service event notes
   const [viewingNoteEvent, setViewingNoteEvent] = useState(null);
+
+  // Track if this modal was open (for close animation)
+  const wasOpen = useRef(false);
+  if (isOpen) wasOpen.current = true;
 
   // Get document state and actions from context
   const {
@@ -213,7 +217,12 @@ const VehicleDetailModal = ({
     }
   };
 
-  if (!isOpen || !viewingVehicle) return null;
+  // Keep modal mounted during closing animation only if THIS modal was open
+  // Reset wasOpen when modal finishes closing
+  if (!isOpen && !isModalClosing) {
+    wasOpen.current = false;
+  }
+  if ((!isOpen && !(isModalClosing && wasOpen.current)) || !viewingVehicle) return null;
 
   return (
     <div
@@ -249,7 +258,7 @@ const VehicleDetailModal = ({
       })}
     >
       <div
-        className={`rounded-lg shadow-xl max-w-5xl w-full overflow-hidden modal-content transition-all duration-700 ease-in-out grid ${
+        className={`rounded-lg shadow-xl max-w-5xl w-full overflow-hidden modal-content grid ${
           isModalClosing ? 'modal-popup-exit' : 'modal-popup-enter'
         } ${darkMode ? 'bg-gray-800' : 'bg-slate-200'}`}
         style={{
@@ -330,7 +339,7 @@ const VehicleDetailModal = ({
                 : 'relative opacity-100'
             }`}
           >
-            <div className="p-6 pb-12 space-y-6 max-h-[calc(90vh-164px)] overflow-y-auto">
+            <div className="p-6 pb-12 space-y-6 max-h-[calc(90vh-164px)] overflow-y-auto animate-fade-in">
               {/* Top Section: Image and Basic Info side by side */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 {/* Basic Info Card - Half width on desktop, two column layout - appears second on mobile */}

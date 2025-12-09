@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useRef } from 'react';
 import { X } from 'lucide-react';
 import { selectDropdownStyle } from '../../utils/styleUtils';
 
@@ -14,7 +14,13 @@ const AddPartModal = ({
   addNewPart,
   onClose
 }) => {
-  if (!isOpen) return null;
+  // Track if this modal was open (for close animation)
+  const wasOpen = useRef(false);
+  if (isOpen) wasOpen.current = true;
+
+  // Keep modal mounted during closing animation only if THIS modal was open
+  if (!isOpen && !isModalClosing) wasOpen.current = false;
+  if (!isOpen && !(isModalClosing && wasOpen.current)) return null;
 
   return (
     <div

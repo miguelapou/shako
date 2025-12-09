@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useLayoutEffect, useRef } from 'react';
 
 /**
  * Custom hook for managing all modal state and visibility
@@ -50,6 +50,9 @@ const useModals = () => {
   const [vehicleModalProjectView, setVehicleModalProjectView] = useState(null);
   const [vehicleModalEditMode, setVehicleModalEditMode] = useState(null); // 'vehicle' or 'project'
 
+  // Vendor modals
+  const [showManageVendorsModal, setShowManageVendorsModal] = useState(false);
+
   // Modal closing animation
   const [isModalClosing, setIsModalClosing] = useState(false);
 
@@ -65,15 +68,29 @@ const useModals = () => {
   const isTransitioningModals = useRef(false);
   const savedScrollPosition = useRef(0);
   const isScrollLocked = useRef(false);
+  // Track intentional close operations so useLayoutEffect doesn't interfere
+  const isIntentionalClose = useRef(false);
 
   /**
    * Handle modal closing with exit animation
+   *
+   * Flow:
+   * 1. isModalClosing = true → modal shows exit animation (200ms)
+   * 2. After 200ms → closeCallback() sets isOpen = false
+   * 3. isModalClosing = false → modal unmounts (condition: !isOpen && !isModalClosing)
+   *
+   * Edge case: If user opens a new modal before step 3, useLayoutEffect
+   * resets isModalClosing synchronously to prevent showing exit animation on open.
+   * We use isIntentionalClose ref to prevent useLayoutEffect from resetting
+   * during an active close operation.
    */
   const handleCloseModal = (closeCallback) => {
+    isIntentionalClose.current = true;
     setIsModalClosing(true);
     setTimeout(() => {
       closeCallback();
       setIsModalClosing(false);
+      isIntentionalClose.current = false;
     }, 200); // Duration matches the exit animation
   };
 
@@ -91,58 +108,53 @@ const useModals = () => {
     }
   }, [vehicleModalProjectView, showVehicleDetailModal]);
 
+  // Reset isModalClosing synchronously before paint when a NEW modal opens
+  // This prevents flicker where the exit animation class shows briefly before enter animation
+  // We check isIntentionalClose to avoid resetting during an active close operation
+  useLayoutEffect(() => {
+    const isAnyModalOpen = showAddPartOptionsModal || showAddModal || showCSVImportModal ||
+                          showTrackingModal ||
+                          showAddProjectModal || showProjectDetailModal ||
+                          showAddVehicleModal || showVehicleDetailModal ||
+                          showPartDetailModal || showManageVendorsModal;
+
+    // Only reset if a modal is open, isModalClosing is true, AND we're not intentionally closing
+    if (isAnyModalOpen && isModalClosing && !isIntentionalClose.current) {
+      setIsModalClosing(false);
+    }
+  }, [showAddPartOptionsModal, showAddModal, showCSVImportModal, showTrackingModal, showAddProjectModal,
+      showProjectDetailModal, showAddVehicleModal, showVehicleDetailModal, showPartDetailModal, showManageVendorsModal, isModalClosing]);
+
   // Lock body scroll when any modal is open
   useEffect(() => {
     const isAnyModalOpen = showAddPartOptionsModal || showAddModal || showCSVImportModal ||
                           showTrackingModal ||
                           showAddProjectModal || showProjectDetailModal ||
                           showAddVehicleModal || showVehicleDetailModal ||
-                          showPartDetailModal;
+                          showPartDetailModal || showManageVendorsModal;
 
     if (isAnyModalOpen && !isScrollLocked.current) {
-      // Lock scroll
-      const scrollbarWidth = window.innerWidth - document.documentElement.clientWidth;
+      // Lock scroll using overflow: hidden - works with scrollbar-gutter: stable
       savedScrollPosition.current = window.scrollY;
-
-      document.body.style.position = 'fixed';
-      document.body.style.top = `-${savedScrollPosition.current}px`;
-      document.body.style.width = '100%';
-      document.body.style.paddingRight = `${scrollbarWidth}px`;
-
+      document.documentElement.style.overflow = 'hidden';
       isScrollLocked.current = true;
-    } else if (!isAnyModalOpen && isScrollLocked.current) {
+    } else if (!isAnyModalOpen) {
       // Unlock scroll
-      const scrollY = savedScrollPosition.current;
-
-      document.body.style.position = '';
-      document.body.style.top = '';
-      document.body.style.width = '';
-      document.body.style.paddingRight = '';
-
-      // Use requestAnimationFrame to ensure DOM has updated before scrolling
-      requestAnimationFrame(() => {
-        window.scrollTo(0, scrollY);
+      if (isScrollLocked.current) {
+        document.documentElement.style.overflow = '';
         isScrollLocked.current = false;
-      });
+      }
     }
 
     // Cleanup on unmount
     return () => {
       if (isScrollLocked.current) {
-        const scrollY = savedScrollPosition.current;
-        document.body.style.position = '';
-        document.body.style.top = '';
-        document.body.style.width = '';
-        document.body.style.paddingRight = '';
-        // Use requestAnimationFrame to ensure DOM has updated before scrolling
-        requestAnimationFrame(() => {
-          window.scrollTo(0, scrollY);
-          isScrollLocked.current = false;
-        });
+        document.documentElement.style.overflow = '';
+        isScrollLocked.current = false;
       }
     };
   }, [showAddPartOptionsModal, showAddModal, showCSVImportModal, showTrackingModal, showAddProjectModal,
-      showProjectDetailModal, showAddVehicleModal, showVehicleDetailModal, showPartDetailModal]);
+      showProjectDetailModal, showAddVehicleModal, showVehicleDetailModal, showPartDetailModal, showManageVendorsModal]);
 
   return {
     // Part modals
@@ -208,6 +220,10 @@ const useModals = () => {
     setVehicleModalProjectView,
     vehicleModalEditMode,
     setVehicleModalEditMode,
+
+    // Vendor modals
+    showManageVendorsModal,
+    setShowManageVendorsModal,
 
     // Modal animation and utilities
     isModalClosing,
