@@ -608,10 +608,10 @@ const VehicleDetailModal = ({
 
                             {/* Event content */}
                             <div className="flex-1 min-w-0 pb-0">
-                              <div className={`relative rounded-lg p-3 border ${
+                              <div className={`relative rounded-lg p-3 border transition-colors ${
                                 darkMode
-                                  ? 'bg-gray-700/50 border-gray-600'
-                                  : 'bg-gray-50 border-gray-200'
+                                  ? 'bg-gray-700/50 border-gray-600 md:hover:border-white'
+                                  : 'bg-gray-50 border-gray-200 md:hover:border-gray-400'
                               }`}>
                                 {/* Notes indicator */}
                                 {event.notes && (
