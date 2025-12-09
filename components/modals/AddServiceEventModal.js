@@ -17,6 +17,8 @@ const AddServiceEventModal = ({
   setDescription,
   odometer,
   setOdometer,
+  notes,
+  setNotes,
   // Edit mode
   editingEvent,
   // Handlers
@@ -146,6 +148,26 @@ const AddServiceEventModal = ({
                   : 'bg-white border-gray-300 text-gray-800 placeholder-gray-400'
               }`}
               placeholder="e.g., 125000"
+            />
+          </div>
+
+          {/* Notes field */}
+          <div>
+            <label className={`block text-sm font-medium mb-2 ${
+              darkMode ? 'text-gray-300' : 'text-gray-700'
+            }`}>
+              Notes
+            </label>
+            <textarea
+              value={notes}
+              onChange={(e) => setNotes(e.target.value)}
+              rows={3}
+              className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none ${
+                darkMode
+                  ? 'bg-gray-700 border-gray-600 text-gray-100 placeholder-gray-400'
+                  : 'bg-white border-gray-300 text-gray-800 placeholder-gray-400'
+              }`}
+              placeholder="Additional details, parts used, costs, etc."
             />
           </div>
         </div>

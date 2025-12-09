@@ -99,6 +99,8 @@ const VehicleDetailModal = ({
   const [showExportModal, setShowExportModal] = useState(false);
   // State for mobile document actions overlay
   const [mobileSelectedDocId, setMobileSelectedDocId] = useState(null);
+  // State for mobile service event actions overlay
+  const [mobileSelectedEventId, setMobileSelectedEventId] = useState(null);
 
   // Get document state and actions from context
   const {
@@ -136,6 +138,8 @@ const VehicleDetailModal = ({
     setNewEventDescription,
     newEventOdometer,
     setNewEventOdometer,
+    newEventNotes,
+    setNewEventNotes,
     editingServiceEvent,
     loadServiceEvents,
     addServiceEvent,
@@ -521,7 +525,7 @@ const VehicleDetailModal = ({
                     Service History ({serviceEvents?.length || 0})
                   </h3>
                 </div>
-                <div className="relative">
+                <div className="relative" onClick={() => setMobileSelectedEventId(null)}>
                     {/* Timeline items */}
                     <div className="flex flex-col gap-4">
                       {serviceEvents && [...serviceEvents].sort((a, b) =>
@@ -551,16 +555,24 @@ const VehicleDetailModal = ({
                           <div
                             key={event.id}
                             className="relative flex items-stretch gap-4 group"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              // On mobile, first tap shows overlay
+                              const isMobile = window.innerWidth < 768;
+                              if (isMobile) {
+                                setMobileSelectedEventId(mobileSelectedEventId === event.id ? null : event.id);
+                              }
+                            }}
                           >
                             {/* Timeline column with icon and line */}
                             <div className="relative flex flex-col items-center">
                               {/* Timeline dot */}
                               <div className={`relative z-10 flex-shrink-0 w-10 h-10 rounded-full flex items-center justify-center ${
                                 darkMode ? 'bg-gray-700 border-2 border-gray-600' : 'bg-white border-2 border-gray-300'
-                              } group-hover:border-blue-500 transition-colors`}>
+                              } md:group-hover:border-blue-500 transition-colors`}>
                                 <Wrench className={`w-4 h-4 ${
                                   darkMode ? 'text-gray-400' : 'text-gray-500'
-                                } group-hover:text-blue-500 transition-colors`} />
+                                } md:group-hover:text-blue-500 transition-colors`} />
                               </div>
                               {/* Line extending down - mb-[-16px] extends into the gap to reach next icon */}
                               <div
@@ -574,11 +586,17 @@ const VehicleDetailModal = ({
 
                             {/* Event content */}
                             <div className="flex-1 min-w-0 pb-0">
-                              <div className={`rounded-lg p-3 border transition-all ${
+                              <div className={`relative rounded-lg p-3 border md:transition-all ${
                                 darkMode
-                                  ? 'bg-gray-700/50 border-gray-600 hover:border-gray-500'
-                                  : 'bg-gray-50 border-gray-200 hover:border-gray-300'
+                                  ? 'bg-gray-700/50 border-gray-600 md:hover:border-gray-500'
+                                  : 'bg-gray-50 border-gray-200 md:hover:border-gray-300'
                               }`}>
+                                {/* Notes indicator */}
+                                {event.notes && (
+                                  <FileText className={`absolute top-2 right-2 w-3.5 h-3.5 ${
+                                    darkMode ? 'text-gray-500' : 'text-gray-400'
+                                  }`} />
+                                )}
                                 <div className="flex items-stretch justify-between gap-2">
                                   <div className="flex-1 min-w-0">
                                     <p className={`text-sm font-medium ${
@@ -610,10 +628,13 @@ const VehicleDetailModal = ({
                                       )}
                                     </div>
                                   </div>
-                                  {/* Actions */}
-                                  <div className="flex items-stretch gap-1 flex-shrink-0 opacity-0 group-hover:opacity-100 transition-opacity">
+                                  {/* Actions - desktop only */}
+                                  <div className="hidden md:flex items-stretch gap-1 flex-shrink-0 opacity-0 group-hover:opacity-100 transition-opacity">
                                     <button
-                                      onClick={() => openEditServiceEventModal(event)}
+                                      onClick={(e) => {
+                                        e.stopPropagation();
+                                        openEditServiceEventModal(event);
+                                      }}
                                       className={`px-1.5 rounded transition-colors flex items-center ${
                                         darkMode
                                           ? 'hover:bg-gray-600 text-gray-400 hover:text-gray-200'
@@ -623,7 +644,8 @@ const VehicleDetailModal = ({
                                       <Edit2 className="w-3.5 h-3.5" />
                                     </button>
                                     <button
-                                      onClick={() => {
+                                      onClick={(e) => {
+                                        e.stopPropagation();
                                         setConfirmDialog({
                                           isOpen: true,
                                           title: 'Delete Service Event',
@@ -632,7 +654,7 @@ const VehicleDetailModal = ({
                                           onConfirm: () => deleteServiceEvent(event.id)
                                         });
                                       }}
-                                      className={`hidden md:flex px-1.5 rounded transition-colors items-center ${
+                                      className={`px-1.5 rounded transition-colors flex items-center ${
                                         darkMode
                                           ? 'hover:bg-red-900/50 text-gray-400 hover:text-red-400'
                                           : 'hover:bg-red-100 text-gray-500 hover:text-red-600'
@@ -642,6 +664,50 @@ const VehicleDetailModal = ({
                                     </button>
                                   </div>
                                 </div>
+                                {/* Mobile action overlay */}
+                                {mobileSelectedEventId === event.id && (
+                                  <div
+                                    className={`md:hidden absolute inset-0 rounded-lg flex items-center justify-center gap-4 ${
+                                      darkMode ? 'bg-gray-800/95' : 'bg-gray-100/95'
+                                    }`}
+                                    onClick={(e) => e.stopPropagation()}
+                                  >
+                                    <button
+                                      onClick={() => {
+                                        setMobileSelectedEventId(null);
+                                        openEditServiceEventModal(event);
+                                      }}
+                                      className={`flex flex-col items-center justify-center w-14 h-14 rounded-lg transition-colors ${
+                                        darkMode
+                                          ? 'bg-gray-700 text-blue-400'
+                                          : 'bg-white text-blue-600 shadow-sm'
+                                      }`}
+                                    >
+                                      <Edit2 className="w-5 h-5 mb-0.5" />
+                                      <span className="text-[10px] font-medium">Edit</span>
+                                    </button>
+                                    <button
+                                      onClick={() => {
+                                        setMobileSelectedEventId(null);
+                                        setConfirmDialog({
+                                          isOpen: true,
+                                          title: 'Delete Service Event',
+                                          message: `Are you sure you want to delete "${event.description}"? This action cannot be undone.`,
+                                          confirmText: 'Delete',
+                                          onConfirm: () => deleteServiceEvent(event.id)
+                                        });
+                                      }}
+                                      className={`flex flex-col items-center justify-center w-14 h-14 rounded-lg transition-colors ${
+                                        darkMode
+                                          ? 'bg-gray-700 text-red-400'
+                                          : 'bg-white text-red-600 shadow-sm'
+                                      }`}
+                                    >
+                                      <Trash2 className="w-5 h-5 mb-0.5" />
+                                      <span className="text-[10px] font-medium">Delete</span>
+                                    </button>
+                                  </div>
+                                )}
                               </div>
                             </div>
                           </div>
@@ -699,13 +765,16 @@ const VehicleDetailModal = ({
                   setDescription={setNewEventDescription}
                   odometer={newEventOdometer}
                   setOdometer={setNewEventOdometer}
+                  notes={newEventNotes}
+                  setNotes={setNewEventNotes}
                   editingEvent={editingServiceEvent}
                   onSave={async () => {
                     if (editingServiceEvent) {
                       const result = await updateServiceEvent(editingServiceEvent.id, {
                         event_date: newEventDate,
                         description: newEventDescription.trim(),
-                        odometer: newEventOdometer ? parseInt(newEventOdometer, 10) : null
+                        odometer: newEventOdometer ? parseInt(newEventOdometer, 10) : null,
+                        notes: newEventNotes.trim() || null
                       });
                       return result;
                     } else {
@@ -713,7 +782,8 @@ const VehicleDetailModal = ({
                         viewingVehicle.id,
                         newEventDate,
                         newEventDescription,
-                        newEventOdometer
+                        newEventOdometer,
+                        newEventNotes
                       );
                       return result;
                     }
