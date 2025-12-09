@@ -43,6 +43,7 @@ const ProjectDetailModal = ({
   // Touch refs for swipe gestures
   const touchStartRef = useRef(null);
   const touchEndRef = useRef(null);
+  const isScrollingRef = useRef(false);
   const minSwipeDistance = 50;
 
   // Track if this modal was open (for close animation)
@@ -98,18 +99,43 @@ const ProjectDetailModal = ({
   // Touch handlers for swipe gestures (same pattern as PartDetailModal)
   const handleTouchStart = (e) => {
     touchEndRef.current = null;
-    touchStartRef.current = e.targetTouches[0].clientX;
+    isScrollingRef.current = false;
+    touchStartRef.current = {
+      x: e.targetTouches[0].clientX,
+      y: e.targetTouches[0].clientY
+    };
   };
 
   const handleTouchMove = (e) => {
-    touchEndRef.current = e.targetTouches[0].clientX;
+    if (!touchStartRef.current) return;
+
+    const currentX = e.targetTouches[0].clientX;
+    const currentY = e.targetTouches[0].clientY;
+
+    const diffX = Math.abs(currentX - touchStartRef.current.x);
+    const diffY = Math.abs(currentY - touchStartRef.current.y);
+
+    // Detect if user is scrolling vertically
+    if (diffY > diffX && diffY > 10) {
+      isScrollingRef.current = true;
+    }
+
+    touchEndRef.current = { x: currentX, y: currentY };
   };
 
   const handleTouchEnd = () => {
     if (!touchStartRef.current || !touchEndRef.current) return;
     if (projectModalEditMode) return;
 
-    const distance = touchStartRef.current - touchEndRef.current;
+    // Don't trigger navigation if user was scrolling vertically
+    if (isScrollingRef.current) {
+      touchStartRef.current = null;
+      touchEndRef.current = null;
+      isScrollingRef.current = false;
+      return;
+    }
+
+    const distance = touchStartRef.current.x - touchEndRef.current.x;
     const isLeftSwipe = distance > minSwipeDistance;
     const isRightSwipe = distance < -minSwipeDistance;
 
@@ -121,6 +147,7 @@ const ProjectDetailModal = ({
 
     touchStartRef.current = null;
     touchEndRef.current = null;
+    isScrollingRef.current = false;
   };
 
   // Keep modal mounted during closing animation only if THIS modal was open
