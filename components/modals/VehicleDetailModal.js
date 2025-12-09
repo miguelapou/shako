@@ -182,7 +182,7 @@ const VehicleDetailModal = ({
         const month = String(today.getMonth() + 1).padStart(2, '0');
         const day = String(today.getDate()).padStart(2, '0');
         const year = String(today.getFullYear()).slice(-2);
-        const title = `Vehicle Report - ${month}/${day}/${year}`;
+        const title = `Report - ${month}/${day}/${year}`;
 
         // Upload to documents section
         const newDocument = await addDocument(viewingVehicle.id, title, file);
@@ -853,7 +853,10 @@ const VehicleDetailModal = ({
                     Loading documents...
                   </div>
                 ) : (
-                  <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+                  <div
+                    className="grid grid-cols-2 md:grid-cols-4 gap-3"
+                    onClick={() => setMobileSelectedDocId(null)}
+                  >
                     {documents.map((doc) => (
                       <div
                         key={doc.id}
@@ -863,10 +866,10 @@ const VehicleDetailModal = ({
                             : 'bg-gray-50 border-gray-200 md:hover:border-gray-300'
                         }`}
                         onClick={(e) => {
+                          e.stopPropagation();
                           // On mobile, first tap shows overlay; on desktop, open directly
                           const isMobile = window.innerWidth < 768;
                           if (isMobile) {
-                            e.stopPropagation();
                             setMobileSelectedDocId(mobileSelectedDocId === doc.id ? null : doc.id);
                           } else {
                             openDocument(doc);
@@ -878,7 +881,7 @@ const VehicleDetailModal = ({
                             darkMode ? 'text-blue-400' : 'text-blue-600'
                           }`} />
                           <div className="flex-1 min-w-0">
-                            <p className={`text-sm font-medium md:truncate ${
+                            <p className={`text-sm font-medium line-clamp-2 md:truncate ${
                               darkMode ? 'text-gray-200' : 'text-gray-800'
                             }`} title={doc.title}>
                               {doc.title}
@@ -893,8 +896,8 @@ const VehicleDetailModal = ({
                         {/* Mobile action overlay */}
                         {mobileSelectedDocId === doc.id && (
                           <div
-                            className={`md:hidden absolute inset-0 rounded-lg flex items-center justify-center gap-3 ${
-                              darkMode ? 'bg-gray-900/90' : 'bg-white/90'
+                            className={`md:hidden absolute inset-0 rounded-lg flex items-center justify-center gap-4 ${
+                              darkMode ? 'bg-gray-800/95' : 'bg-gray-100/95'
                             }`}
                             onClick={(e) => e.stopPropagation()}
                           >
@@ -903,14 +906,14 @@ const VehicleDetailModal = ({
                                 openDocument(doc);
                                 setMobileSelectedDocId(null);
                               }}
-                              className={`flex flex-col items-center justify-center w-16 h-16 rounded-lg transition-colors ${
+                              className={`flex flex-col items-center justify-center w-14 h-14 rounded-lg transition-colors ${
                                 darkMode
-                                  ? 'bg-blue-600 hover:bg-blue-700 text-white'
-                                  : 'bg-blue-500 hover:bg-blue-600 text-white'
+                                  ? 'bg-gray-700 text-blue-400'
+                                  : 'bg-white text-blue-600 shadow-sm'
                               }`}
                             >
-                              <ExternalLink className="w-6 h-6 mb-1" />
-                              <span className="text-xs font-medium">Open</span>
+                              <ExternalLink className="w-5 h-5 mb-0.5" />
+                              <span className="text-[10px] font-medium">Open</span>
                             </button>
                             <button
                               onClick={() => {
@@ -923,14 +926,14 @@ const VehicleDetailModal = ({
                                   onConfirm: () => deleteDocument(doc.id, doc.file_url)
                                 });
                               }}
-                              className={`flex flex-col items-center justify-center w-16 h-16 rounded-lg transition-colors ${
+                              className={`flex flex-col items-center justify-center w-14 h-14 rounded-lg transition-colors ${
                                 darkMode
-                                  ? 'bg-red-600 hover:bg-red-700 text-white'
-                                  : 'bg-red-500 hover:bg-red-600 text-white'
+                                  ? 'bg-gray-700 text-red-400'
+                                  : 'bg-white text-red-600 shadow-sm'
                               }`}
                             >
-                              <Trash2 className="w-6 h-6 mb-1" />
-                              <span className="text-xs font-medium">Delete</span>
+                              <Trash2 className="w-5 h-5 mb-0.5" />
+                              <span className="text-[10px] font-medium">Delete</span>
                             </button>
                           </div>
                         )}
