@@ -322,7 +322,10 @@ const ManageVendorsModal = ({
                         className={`sm:hidden absolute inset-0 rounded-lg flex items-center justify-center transition-opacity duration-150 ${
                           isSelected ? 'opacity-100' : 'opacity-0 pointer-events-none'
                         } ${darkMode ? 'bg-gray-800/95' : 'bg-gray-100/95'}`}
-                        onClick={(e) => e.stopPropagation()}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setSelectedVendor(null);
+                        }}
                       >
                         <button
                           onClick={(e) => {
