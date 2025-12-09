@@ -88,6 +88,17 @@ input[type="number"] {
   }
 }
 
+@keyframes popDownCenter {
+  0% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+}
+
 @keyframes fadeIn {
   from {
     opacity: 0;
@@ -195,7 +206,7 @@ input[type="number"] {
 }
 
 .modal-popup-exit {
-  animation: fadeOut 0.2s ease-out;
+  animation: popDownCenter 0.2s ease-out;
   animation-fill-mode: forwards;
 }
 
