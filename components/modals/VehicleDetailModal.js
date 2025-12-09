@@ -24,7 +24,7 @@ import {
   Calendar,
   ListChecks,
   FileDown,
-  Eye
+  BookOpen
 } from 'lucide-react';
 import ProjectDetailView from '../ui/ProjectDetailView';
 import ProjectEditForm from '../ui/ProjectEditForm';
@@ -784,36 +784,6 @@ const VehicleDetailModal = ({
                                   } ${darkMode ? 'bg-gray-800/95' : 'bg-gray-100/95'}`}
                                   onClick={(e) => e.stopPropagation()}
                                 >
-                                  {event.notes && (
-                                    <button
-                                      onClick={() => {
-                                        setSelectedEventId(null);
-                                        setViewingNoteEvent(event);
-                                      }}
-                                      className={`flex flex-col items-center justify-center w-14 h-14 rounded-lg transition-colors ${
-                                        darkMode
-                                          ? 'bg-gray-700 text-gray-300'
-                                          : 'bg-white text-gray-600 shadow-sm'
-                                      }`}
-                                    >
-                                      <Eye className="w-5 h-5 mb-0.5" />
-                                      <span className="text-[10px] font-medium">Notes</span>
-                                    </button>
-                                  )}
-                                  <button
-                                    onClick={() => {
-                                      setSelectedEventId(null);
-                                      openEditServiceEventModal(event);
-                                    }}
-                                    className={`flex flex-col items-center justify-center w-14 h-14 rounded-lg transition-colors ${
-                                      darkMode
-                                        ? 'bg-gray-700 text-blue-400'
-                                        : 'bg-white text-blue-600 shadow-sm'
-                                    }`}
-                                  >
-                                    <Edit2 className="w-5 h-5 mb-0.5" />
-                                    <span className="text-[10px] font-medium">Edit</span>
-                                  </button>
                                   <button
                                     onClick={() => {
                                       setSelectedEventId(null);
@@ -834,6 +804,36 @@ const VehicleDetailModal = ({
                                     <Trash2 className="w-5 h-5 mb-0.5" />
                                     <span className="text-[10px] font-medium">Delete</span>
                                   </button>
+                                  <button
+                                    onClick={() => {
+                                      setSelectedEventId(null);
+                                      openEditServiceEventModal(event);
+                                    }}
+                                    className={`flex flex-col items-center justify-center w-14 h-14 rounded-lg transition-colors ${
+                                      darkMode
+                                        ? 'bg-gray-700 text-blue-400'
+                                        : 'bg-white text-blue-600 shadow-sm'
+                                    }`}
+                                  >
+                                    <Edit2 className="w-5 h-5 mb-0.5" />
+                                    <span className="text-[10px] font-medium">Edit</span>
+                                  </button>
+                                  {event.notes && (
+                                    <button
+                                      onClick={() => {
+                                        setSelectedEventId(null);
+                                        setViewingNoteEvent(event);
+                                      }}
+                                      className={`flex flex-col items-center justify-center w-14 h-14 rounded-lg transition-colors ${
+                                        darkMode
+                                          ? 'bg-gray-700 text-gray-300'
+                                          : 'bg-white text-gray-600 shadow-sm'
+                                      }`}
+                                    >
+                                      <BookOpen className="w-5 h-5 mb-0.5" />
+                                      <span className="text-[10px] font-medium">Notes</span>
+                                    </button>
+                                  )}
                                 </div>
                               </div>
                             </div>
