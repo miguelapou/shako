@@ -206,7 +206,7 @@ input[type="number"] {
 }
 
 .modal-popup-exit {
-  animation: popDownCenter 0.2s ease-out;
+  animation: fadeOut 0.2s ease-out;
   animation-fill-mode: forwards;
 }
 
