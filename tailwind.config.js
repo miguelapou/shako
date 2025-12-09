@@ -12,10 +12,11 @@ module.exports = {
   },
   plugins: [
     // Custom variant for hover-capable devices (mouse, trackpad, stylus)
-    // Uses (hover: hover) to check if PRIMARY input supports hover
-    // iPadOS reports any-hover:hover even without mouse, so we check primary input instead
+    // Uses JavaScript-detected 'has-hover' class on <html> element
+    // This dynamically enables hover when mouse/trackpad is actively being used
+    // Works on iPad with trackpad where CSS media queries fail
     plugin(function({ addVariant }) {
-      addVariant('can-hover', '@media (hover: hover)');
+      addVariant('can-hover', '.has-hover &');
     }),
   ],
 }
