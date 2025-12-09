@@ -29,6 +29,7 @@ import {
 import ProjectDetailView from '../ui/ProjectDetailView';
 import ProjectEditForm from '../ui/ProjectEditForm';
 import LinkedPartsSection from '../ui/LinkedPartsSection';
+import FadeInImage from '../ui/FadeInImage';
 import AddDocumentModal from './AddDocumentModal';
 import AddServiceEventModal from './AddServiceEventModal';
 import ExportReportModal from './ExportReportModal';
@@ -672,7 +673,7 @@ const VehicleDetailModal = ({
                 {/* Vehicle Image - Half width on desktop - appears first on mobile */}
                 {(viewingVehicle.image_url_resolved || viewingVehicle.image_url) ? (
                   <div className="order-first md:order-last rounded-lg overflow-hidden">
-                    <img
+                    <FadeInImage
                       src={viewingVehicle.image_url_resolved || viewingVehicle.image_url}
                       alt={viewingVehicle.nickname || viewingVehicle.name}
                       loading="lazy"
@@ -1622,7 +1623,7 @@ const VehicleDetailModal = ({
                       {/* Current Image or Preview */}
                       {(vehicleImagePreview || viewingVehicle.image_url_resolved || viewingVehicle.image_url) && (
                         <div className="mb-3 relative">
-                          <img
+                          <FadeInImage
                             src={vehicleImagePreview || viewingVehicle.image_url_resolved || viewingVehicle.image_url}
                             alt="Vehicle"
                             className={`w-full h-full object-cover rounded-lg ${
