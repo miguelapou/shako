@@ -260,9 +260,10 @@ const ManageVendorsModal = ({
                           <button
                             onClick={(e) => {
                               e.stopPropagation();
+                              setSelectedVendor(null);
                               colorInputRefs.current[vendor]?.click();
                             }}
-                            className={`p-2 rounded-lg transition-colors ${
+                            className={`p-2 sm:px-3 sm:py-2 rounded-lg transition-colors ${
                               darkMode
                                 ? 'hover:bg-gray-600 text-gray-400 hover:text-gray-200'
                                 : 'hover:bg-gray-200 text-gray-500 hover:text-gray-700'
