@@ -718,7 +718,9 @@ const VehicleDetailModal = ({
                             <div className="relative flex flex-col items-center">
                               {/* Timeline dot */}
                               <div className={`relative z-10 flex-shrink-0 w-10 h-10 rounded-full flex items-center justify-center transition-colors ${
-                                darkMode ? 'bg-gray-700 border-2 border-gray-600 md:group-hover:border-white' : 'bg-white border-2 border-gray-300 md:group-hover:border-gray-400'
+                                darkMode
+                                  ? `bg-gray-700 border-2 border-gray-600 ${selectedEventId !== event.id ? 'md:group-hover:border-white' : ''}`
+                                  : `bg-white border-2 border-gray-300 ${selectedEventId !== event.id ? 'md:group-hover:border-gray-400' : ''}`
                               }`}>
                                 <Wrench className={`w-4 h-4 ${
                                   darkMode ? 'text-gray-400' : 'text-gray-500'
@@ -738,13 +740,15 @@ const VehicleDetailModal = ({
                             <div className="flex-1 min-w-0 pb-0">
                               <div className={`relative rounded-lg p-3 border transition-colors ${
                                 darkMode
-                                  ? 'bg-gray-700/50 border-gray-600 md:hover:border-white'
-                                  : 'bg-gray-50 border-gray-200 md:hover:border-gray-400'
+                                  ? `bg-gray-700/50 border-gray-600 ${selectedEventId !== event.id ? 'md:hover:border-white' : ''}`
+                                  : `bg-gray-50 border-gray-200 ${selectedEventId !== event.id ? 'md:hover:border-gray-400' : ''}`
                               }`}>
                                 {/* Notes indicator */}
                                 {event.notes && (
                                   <FileText className={`absolute top-2 right-2 w-3.5 h-3.5 transition-colors ${
-                                    darkMode ? 'text-gray-500 md:group-hover:text-gray-300' : 'text-gray-400 md:group-hover:text-gray-600'
+                                    darkMode
+                                      ? `text-gray-500 ${selectedEventId !== event.id ? 'md:group-hover:text-gray-300' : ''}`
+                                      : `text-gray-400 ${selectedEventId !== event.id ? 'md:group-hover:text-gray-600' : ''}`
                                   }`} />
                                 )}
                                 <div className="flex-1 min-w-0">
@@ -797,8 +801,8 @@ const VehicleDetailModal = ({
                                     }}
                                     className={`flex flex-col items-center justify-center w-14 h-14 rounded-lg transition-colors ${
                                       darkMode
-                                        ? 'bg-gray-700 text-red-400'
-                                        : 'bg-white text-red-600 shadow-sm'
+                                        ? 'bg-gray-700 text-red-400 hover:text-red-300'
+                                        : 'bg-white text-red-600 shadow-sm hover:text-red-700'
                                     }`}
                                   >
                                     <Trash2 className="w-5 h-5 mb-0.5" />
@@ -811,8 +815,8 @@ const VehicleDetailModal = ({
                                     }}
                                     className={`flex flex-col items-center justify-center w-14 h-14 rounded-lg transition-colors ${
                                       darkMode
-                                        ? 'bg-gray-700 text-blue-400'
-                                        : 'bg-white text-blue-600 shadow-sm'
+                                        ? 'bg-gray-700 text-blue-400 hover:text-blue-300'
+                                        : 'bg-white text-blue-600 shadow-sm hover:text-blue-700'
                                     }`}
                                   >
                                     <Edit2 className="w-5 h-5 mb-0.5" />
@@ -826,8 +830,8 @@ const VehicleDetailModal = ({
                                       }}
                                       className={`flex flex-col items-center justify-center w-14 h-14 rounded-lg transition-colors ${
                                         darkMode
-                                          ? 'bg-gray-700 text-gray-300'
-                                          : 'bg-white text-gray-600 shadow-sm'
+                                          ? 'bg-gray-700 text-gray-300 hover:text-white'
+                                          : 'bg-white text-gray-600 shadow-sm hover:text-gray-800'
                                       }`}
                                     >
                                       <BookOpen className="w-5 h-5 mb-0.5" />
