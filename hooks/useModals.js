@@ -73,7 +73,8 @@ const useModals = () => {
     setIsModalClosing(true);
     setTimeout(() => {
       closeCallback();
-      setIsModalClosing(false);
+      // Note: isModalClosing is reset in the useEffect below when no modals are open
+      // This prevents a race condition that can cause flickering
     }, 200); // Duration matches the exit animation
   };
 
@@ -104,10 +105,17 @@ const useModals = () => {
       savedScrollPosition.current = window.scrollY;
       document.documentElement.style.overflow = 'hidden';
       isScrollLocked.current = true;
-    } else if (!isAnyModalOpen && isScrollLocked.current) {
+    } else if (!isAnyModalOpen) {
       // Unlock scroll
-      document.documentElement.style.overflow = '';
-      isScrollLocked.current = false;
+      if (isScrollLocked.current) {
+        document.documentElement.style.overflow = '';
+        isScrollLocked.current = false;
+      }
+      // Reset closing animation state when all modals are closed
+      // This prevents race condition flickering in handleCloseModal
+      if (isModalClosing) {
+        setIsModalClosing(false);
+      }
     }
 
     // Cleanup on unmount
@@ -118,7 +126,7 @@ const useModals = () => {
       }
     };
   }, [showAddPartOptionsModal, showAddModal, showCSVImportModal, showTrackingModal, showAddProjectModal,
-      showProjectDetailModal, showAddVehicleModal, showVehicleDetailModal, showPartDetailModal]);
+      showProjectDetailModal, showAddVehicleModal, showVehicleDetailModal, showPartDetailModal, isModalClosing]);
 
   return {
     // Part modals
