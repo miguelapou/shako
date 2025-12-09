@@ -57,7 +57,9 @@ export const DocumentProvider = ({ children, userId, toast }) => {
         setDocuments([]);
       }
     } catch (error) {
-      setDocuments([]);
+      // Don't clear documents on error - preserve existing state
+      // This prevents documents from disappearing due to temporary network issues
+      console.error('Failed to load documents:', error);
     } finally {
       setLoadingDocuments(false);
     }
@@ -70,6 +72,10 @@ export const DocumentProvider = ({ children, userId, toast }) => {
     try {
       setUploadingDocument(true);
       const fileUrl = await documentsService.uploadDocumentFile(file, userId);
+
+      // Get a signed URL so the document can be opened immediately
+      const signedUrl = await documentsService.getDocumentFileUrl(fileUrl);
+
       const documentData = {
         vehicle_id: vehicleId,
         title: title,
@@ -80,7 +86,13 @@ export const DocumentProvider = ({ children, userId, toast }) => {
       };
 
       const newDocument = await documentsService.createDocument(documentData, userId);
-      setDocuments(prev => [newDocument, ...prev]);
+
+      // Add to state with resolved URL for immediate access
+      setDocuments(prev => [{
+        ...newDocument,
+        file_url_resolved: signedUrl
+      }, ...prev]);
+
       return newDocument;
     } catch (error) {
       toast?.error('Error uploading document. Please try again.');

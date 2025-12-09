@@ -378,16 +378,32 @@ export const generateVehicleReportPDF = (vehicle, projects, parts, serviceEvents
 
 /**
  * Download a blob as a file
+ * Works across desktop and mobile browsers including iOS Safari
  * @param {Blob} blob - The blob to download
  * @param {string} filename - The filename
  */
 export const downloadBlob = (blob, filename) => {
   const url = URL.createObjectURL(blob);
-  const link = document.createElement('a');
-  link.href = url;
-  link.download = filename;
-  document.body.appendChild(link);
-  link.click();
-  document.body.removeChild(link);
-  URL.revokeObjectURL(url);
+
+  // Check if we're on iOS (iPhone, iPad, iPod)
+  const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) ||
+    (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+
+  if (isIOS) {
+    // On iOS, open in a new tab - Safari will show PDF viewer with share/save options
+    // This is the most reliable method for iOS
+    window.open(url, '_blank');
+    // Delay revoking the URL to ensure the new tab has loaded it
+    setTimeout(() => URL.revokeObjectURL(url), 10000);
+  } else {
+    // Standard download for desktop and Android
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = filename;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    // Delay revoking to ensure download has started
+    setTimeout(() => URL.revokeObjectURL(url), 1000);
+  }
 };
