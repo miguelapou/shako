@@ -310,7 +310,7 @@ const VehicleDetailModal = ({
       );
 
       // Download the PDF immediately
-      downloadBlob(blob, filename);
+      await downloadBlob(blob, filename);
 
       // Optionally save to documents section
       if (saveToDocuments) {

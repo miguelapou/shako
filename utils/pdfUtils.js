@@ -459,25 +459,48 @@ export const generateVehicleReportPDF = async (vehicle, projects, parts, service
 
 /**
  * Download a blob as a file
- * Works across desktop and mobile browsers including iOS Safari
+ * Works across desktop and mobile browsers including iOS Safari and Android
  * @param {Blob} blob - The blob to download
  * @param {string} filename - The filename
  */
-export const downloadBlob = (blob, filename) => {
-  const url = URL.createObjectURL(blob);
-
-  // Check if we're on iOS (iPhone, iPad, iPod)
+export const downloadBlob = async (blob, filename) => {
+  // Check if we're on a mobile device
   const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) ||
     (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+  const isAndroid = /Android/.test(navigator.userAgent);
+  const isMobile = isIOS || isAndroid ||
+    /webOS|BlackBerry|Opera Mini|IEMobile/.test(navigator.userAgent) ||
+    (navigator.maxTouchPoints > 0 && window.matchMedia('(max-width: 768px)').matches);
 
-  if (isIOS) {
-    // On iOS, open in a new tab - Safari will show PDF viewer with share/save options
-    // This is the most reliable method for iOS
+  // Try Web Share API first on mobile (allows native save/share)
+  if (isMobile && navigator.canShare) {
+    try {
+      const file = new File([blob], filename, { type: blob.type });
+      if (navigator.canShare({ files: [file] })) {
+        await navigator.share({
+          files: [file],
+          title: filename,
+        });
+        return; // Success - user handled via share sheet
+      }
+    } catch (error) {
+      // Share was cancelled or failed, fall through to other methods
+      if (error.name !== 'AbortError') {
+        console.log('Share API failed, falling back to other methods');
+      }
+    }
+  }
+
+  const url = URL.createObjectURL(blob);
+
+  if (isMobile) {
+    // On mobile, open in a new tab - let the browser's PDF viewer handle save/share
+    // This is more reliable than programmatic downloads on mobile
     window.open(url, '_blank');
     // Delay revoking the URL to ensure the new tab has loaded it
     setTimeout(() => URL.revokeObjectURL(url), 10000);
   } else {
-    // Standard download for desktop and Android
+    // Standard download for desktop browsers
     const link = document.createElement('a');
     link.href = url;
     link.download = filename;
