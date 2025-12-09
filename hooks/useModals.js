@@ -71,15 +71,22 @@ const useModals = () => {
 
   /**
    * Handle modal closing with exit animation
+   *
+   * Flow:
+   * 1. isModalClosing = true → modal shows exit animation (200ms)
+   * 2. After 200ms → closeCallback() sets isOpen = false
+   * 3. isModalClosing = false → modal unmounts (condition: !isOpen && !isModalClosing)
+   *
+   * Edge case: If user opens a new modal before step 3, useLayoutEffect
+   * resets isModalClosing synchronously to prevent showing exit animation on open.
    */
   const handleCloseModal = (closeCallback) => {
     console.log('[Modal] handleCloseModal called, setting isModalClosing=true');
     setIsModalClosing(true);
     setTimeout(() => {
-      console.log('[Modal] setTimeout fired, calling closeCallback');
+      console.log('[Modal] setTimeout fired, calling closeCallback then resetting isModalClosing');
       closeCallback();
-      // Note: isModalClosing is reset in the useEffect below when no modals are open
-      // This prevents a race condition that can cause flickering
+      setIsModalClosing(false);
     }, 200); // Duration matches the exit animation
   };
 
