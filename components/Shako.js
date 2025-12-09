@@ -115,9 +115,6 @@ const Shako = () => {
   // Delete account modal state
   const [showDeleteAccountModal, setShowDeleteAccountModal] = useState(false);
 
-  // Manage vendors modal state
-  const [showManageVendorsModal, setShowManageVendorsModal] = useState(false);
-
   // Parts hook
   const {
     parts,
@@ -299,6 +296,8 @@ const Shako = () => {
     setVehicleModalProjectView,
     vehicleModalEditMode,
     setVehicleModalEditMode,
+    showManageVendorsModal,
+    setShowManageVendorsModal,
     isModalClosing,
     setIsModalClosing,
     handleCloseModal,

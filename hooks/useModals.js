@@ -50,6 +50,9 @@ const useModals = () => {
   const [vehicleModalProjectView, setVehicleModalProjectView] = useState(null);
   const [vehicleModalEditMode, setVehicleModalEditMode] = useState(null); // 'vehicle' or 'project'
 
+  // Vendor modals
+  const [showManageVendorsModal, setShowManageVendorsModal] = useState(false);
+
   // Modal closing animation
   const [isModalClosing, setIsModalClosing] = useState(false);
 
@@ -101,7 +104,7 @@ const useModals = () => {
                           showTrackingModal ||
                           showAddProjectModal || showProjectDetailModal ||
                           showAddVehicleModal || showVehicleDetailModal ||
-                          showPartDetailModal;
+                          showPartDetailModal || showManageVendorsModal;
 
     // If a modal is opening and isModalClosing is still true from previous close,
     // reset it synchronously before the browser paints
@@ -110,7 +113,7 @@ const useModals = () => {
       setIsModalClosing(false);
     }
   }, [showAddPartOptionsModal, showAddModal, showCSVImportModal, showTrackingModal, showAddProjectModal,
-      showProjectDetailModal, showAddVehicleModal, showVehicleDetailModal, showPartDetailModal, isModalClosing]);
+      showProjectDetailModal, showAddVehicleModal, showVehicleDetailModal, showPartDetailModal, showManageVendorsModal, isModalClosing]);
 
   // Lock body scroll when any modal is open
   useEffect(() => {
@@ -118,7 +121,7 @@ const useModals = () => {
                           showTrackingModal ||
                           showAddProjectModal || showProjectDetailModal ||
                           showAddVehicleModal || showVehicleDetailModal ||
-                          showPartDetailModal;
+                          showPartDetailModal || showManageVendorsModal;
 
     console.log('[Modal] useEffect - isAnyModalOpen:', isAnyModalOpen, 'isModalClosing:', isModalClosing);
 
@@ -145,7 +148,7 @@ const useModals = () => {
       }
     };
   }, [showAddPartOptionsModal, showAddModal, showCSVImportModal, showTrackingModal, showAddProjectModal,
-      showProjectDetailModal, showAddVehicleModal, showVehicleDetailModal, showPartDetailModal]);
+      showProjectDetailModal, showAddVehicleModal, showVehicleDetailModal, showPartDetailModal, showManageVendorsModal]);
 
   return {
     // Part modals
@@ -211,6 +214,10 @@ const useModals = () => {
     setVehicleModalProjectView,
     vehicleModalEditMode,
     setVehicleModalEditMode,
+
+    // Vendor modals
+    showManageVendorsModal,
+    setShowManageVendorsModal,
 
     // Modal animation and utilities
     isModalClosing,
