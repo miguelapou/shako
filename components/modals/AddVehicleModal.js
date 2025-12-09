@@ -2,6 +2,7 @@ import React, { useRef } from 'react';
 import { X, Upload } from 'lucide-react';
 import { inputClasses } from '../../utils/styleUtils';
 import { useUI } from '../../contexts';
+import FadeInImage from '../ui/FadeInImage';
 
 const AddVehicleModal = ({
   isOpen,
@@ -271,7 +272,7 @@ const AddVehicleModal = ({
                 {/* Image Preview */}
                 {vehicleImagePreview && (
                   <div className="mb-3 relative">
-                    <img
+                    <FadeInImage
                       src={vehicleImagePreview}
                       alt="Preview"
                       className={`w-full h-full object-cover rounded-lg ${
