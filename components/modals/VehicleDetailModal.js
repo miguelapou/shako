@@ -1057,10 +1057,10 @@ const VehicleDetailModal = ({
                     {documents.map((doc) => (
                       <div
                         key={doc.id}
-                        className={`group relative rounded-lg p-3 border cursor-pointer ${
+                        className={`group relative rounded-lg p-3 border cursor-pointer transition-colors ${
                           darkMode
-                            ? 'bg-gray-700 border-gray-600'
-                            : 'bg-gray-50 border-gray-200'
+                            ? 'bg-gray-700 border-gray-600 md:hover:border-white'
+                            : 'bg-gray-50 border-gray-200 md:hover:border-gray-400'
                         }`}
                         onClick={(e) => {
                           e.stopPropagation();
@@ -1068,8 +1068,8 @@ const VehicleDetailModal = ({
                         }}
                       >
                         <div className="flex items-start gap-2">
-                          <FileText className={`w-8 h-8 flex-shrink-0 ${
-                            darkMode ? 'text-blue-400' : 'text-blue-600'
+                          <FileText className={`w-8 h-8 flex-shrink-0 transition-colors ${
+                            darkMode ? 'text-blue-400 md:group-hover:text-blue-300' : 'text-blue-600 md:group-hover:text-blue-700'
                           }`} />
                           <div className="flex-1 min-w-0">
                             <p className={`text-sm font-medium line-clamp-2 md:truncate ${
