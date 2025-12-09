@@ -138,7 +138,7 @@ const ManageVendorsModal = ({
                           <Package className="w-3.5 h-3.5" />
                         </span>
                         {isEditing ? (
-                          <div className="flex items-center gap-2 flex-1">
+                          <div className="flex items-center gap-2 flex-1 min-w-0">
                             <input
                               type="text"
                               value={editingVendor.newName}
@@ -160,7 +160,7 @@ const ManageVendorsModal = ({
                                 }
                               }}
                               onClick={(e) => e.stopPropagation()}
-                              className={`flex-1 max-w-[200px] px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
+                              className={`flex-1 min-w-0 max-w-[120px] sm:max-w-[200px] px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
                                 darkMode
                                   ? 'bg-gray-800 border-gray-600 text-gray-100'
                                   : 'bg-slate-50 border-slate-300 text-slate-800'
