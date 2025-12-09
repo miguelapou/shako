@@ -97,6 +97,8 @@ const VehicleDetailModal = ({
   // State for report generation
   const [generatingReport, setGeneratingReport] = useState(false);
   const [showExportModal, setShowExportModal] = useState(false);
+  // State for mobile document actions overlay
+  const [mobileSelectedDocId, setMobileSelectedDocId] = useState(null);
 
   // Get document state and actions from context
   const {
@@ -860,7 +862,16 @@ const VehicleDetailModal = ({
                             ? 'bg-gray-700 border-gray-600 md:hover:border-gray-500'
                             : 'bg-gray-50 border-gray-200 md:hover:border-gray-300'
                         }`}
-                        onClick={() => openDocument(doc)}
+                        onClick={(e) => {
+                          // On mobile, first tap shows overlay; on desktop, open directly
+                          const isMobile = window.innerWidth < 768;
+                          if (isMobile) {
+                            e.stopPropagation();
+                            setMobileSelectedDocId(mobileSelectedDocId === doc.id ? null : doc.id);
+                          } else {
+                            openDocument(doc);
+                          }
+                        }}
                       >
                         <div className="flex items-start gap-2">
                           <FileText className={`w-8 h-8 flex-shrink-0 ${
@@ -879,6 +890,50 @@ const VehicleDetailModal = ({
                             </p>
                           </div>
                         </div>
+                        {/* Mobile action overlay */}
+                        {mobileSelectedDocId === doc.id && (
+                          <div
+                            className={`md:hidden absolute inset-0 rounded-lg flex items-center justify-center gap-3 ${
+                              darkMode ? 'bg-gray-900/90' : 'bg-white/90'
+                            }`}
+                            onClick={(e) => e.stopPropagation()}
+                          >
+                            <button
+                              onClick={() => {
+                                openDocument(doc);
+                                setMobileSelectedDocId(null);
+                              }}
+                              className={`flex flex-col items-center justify-center w-16 h-16 rounded-lg transition-colors ${
+                                darkMode
+                                  ? 'bg-blue-600 hover:bg-blue-700 text-white'
+                                  : 'bg-blue-500 hover:bg-blue-600 text-white'
+                              }`}
+                            >
+                              <ExternalLink className="w-6 h-6 mb-1" />
+                              <span className="text-xs font-medium">Open</span>
+                            </button>
+                            <button
+                              onClick={() => {
+                                setMobileSelectedDocId(null);
+                                setConfirmDialog({
+                                  isOpen: true,
+                                  title: 'Delete Document',
+                                  message: `Are you sure you want to delete "${doc.title}"? This action cannot be undone.`,
+                                  confirmText: 'Delete',
+                                  onConfirm: () => deleteDocument(doc.id, doc.file_url)
+                                });
+                              }}
+                              className={`flex flex-col items-center justify-center w-16 h-16 rounded-lg transition-colors ${
+                                darkMode
+                                  ? 'bg-red-600 hover:bg-red-700 text-white'
+                                  : 'bg-red-500 hover:bg-red-600 text-white'
+                              }`}
+                            >
+                              <Trash2 className="w-6 h-6 mb-1" />
+                              <span className="text-xs font-medium">Delete</span>
+                            </button>
+                          </div>
+                        )}
                         {/* Delete button - appears on hover (desktop only) */}
                         <button
                           onClick={(e) => {
@@ -891,7 +946,7 @@ const VehicleDetailModal = ({
                               onConfirm: () => deleteDocument(doc.id, doc.file_url)
                             });
                           }}
-                          className={`absolute top-1 right-1 p-1 rounded opacity-0 md:group-hover:opacity-100 transition-opacity ${
+                          className={`hidden md:block absolute top-1 right-1 p-1 rounded opacity-0 group-hover:opacity-100 transition-opacity ${
                             darkMode
                               ? 'bg-red-900/50 hover:bg-red-800 text-red-400'
                               : 'bg-red-100 hover:bg-red-200 text-red-600'
