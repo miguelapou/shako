@@ -524,10 +524,10 @@ const ProjectsTab = ({
                         </p>
                       )}
 
-                      {/* Vehicle Badge - Bottom */}
+                      {/* Vehicle Badge - Bottom Right */}
                       {vehicle && (
                         <span
-                          className={`inline-flex items-center px-2 py-0.5 rounded text-xs font-medium ${
+                          className={`absolute bottom-2 right-2 inline-flex items-center px-2 py-0.5 rounded text-xs font-medium ${
                             darkMode ? 'bg-gray-600 text-gray-300' : 'bg-gray-300 text-gray-700'
                           }`}
                         >
