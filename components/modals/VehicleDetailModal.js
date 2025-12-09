@@ -767,8 +767,8 @@ const VehicleDetailModal = ({
                             <div className="flex-1 min-w-0 pb-0">
                               <div className={`relative rounded-lg p-3 border transition-colors ${
                                 darkMode
-                                  ? `bg-gray-700/50 border-gray-600 ${selectedEventId !== event.id ? 'md:hover:border-white' : ''}`
-                                  : `bg-gray-50 border-gray-200 ${selectedEventId !== event.id ? 'md:hover:border-gray-400' : ''}`
+                                  ? `bg-gray-700/50 border-gray-600 ${selectedEventId !== event.id ? 'md:group-hover:border-white' : ''}`
+                                  : `bg-gray-50 border-gray-200 ${selectedEventId !== event.id ? 'md:group-hover:border-gray-400' : ''}`
                               }`}>
                                 {/* Notes indicator */}
                                 {event.notes && (
