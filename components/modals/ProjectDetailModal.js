@@ -45,6 +45,10 @@ const ProjectDetailModal = ({
   const touchEndRef = useRef(null);
   const minSwipeDistance = 50;
 
+  // Track if this modal was open (for close animation)
+  const wasOpen = useRef(false);
+  if (isOpen) wasOpen.current = true;
+
   // Filter to non-archived projects for navigation
   const navigableProjects = useMemo(() =>
     projects.filter(p => !p.archived),
@@ -119,8 +123,12 @@ const ProjectDetailModal = ({
     touchEndRef.current = null;
   };
 
-  // Keep modal mounted during closing animation
-  if ((!isOpen && !isModalClosing) || !viewingProject) {
+  // Keep modal mounted during closing animation only if THIS modal was open
+  // Reset wasOpen when modal finishes closing
+  if (!isOpen && !isModalClosing) {
+    wasOpen.current = false;
+  }
+  if ((!isOpen && !(isModalClosing && wasOpen.current)) || !viewingProject) {
     return null;
   }
 

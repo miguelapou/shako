@@ -15,8 +15,13 @@ const AddPartOptionsModal = ({
   const [isDragging, setIsDragging] = useState(false);
   const { toast } = useUI();
 
-  // Keep modal mounted during closing animation
-  if (!isOpen && !isModalClosing) return null;
+  // Track if this modal was open (for close animation)
+  const wasOpen = useRef(false);
+  if (isOpen) wasOpen.current = true;
+
+  // Keep modal mounted during closing animation only if THIS modal was open
+  if (!isOpen && !isModalClosing) wasOpen.current = false;
+  if (!isOpen && !(isModalClosing && wasOpen.current)) return null;
 
   const handleDragOver = (e) => {
     e.preventDefault();

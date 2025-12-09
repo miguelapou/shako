@@ -85,11 +85,9 @@ const useModals = () => {
    * during an active close operation.
    */
   const handleCloseModal = (closeCallback) => {
-    console.log('[Modal] handleCloseModal called, setting isModalClosing=true');
     isIntentionalClose.current = true;
     setIsModalClosing(true);
     setTimeout(() => {
-      console.log('[Modal] setTimeout fired, calling closeCallback then resetting isModalClosing');
       closeCallback();
       setIsModalClosing(false);
       isIntentionalClose.current = false;
@@ -122,7 +120,6 @@ const useModals = () => {
 
     // Only reset if a modal is open, isModalClosing is true, AND we're not intentionally closing
     if (isAnyModalOpen && isModalClosing && !isIntentionalClose.current) {
-      console.log('[Modal] useLayoutEffect - Resetting isModalClosing before paint (new modal opening)');
       setIsModalClosing(false);
     }
   }, [showAddPartOptionsModal, showAddModal, showCSVImportModal, showTrackingModal, showAddProjectModal,
@@ -136,18 +133,14 @@ const useModals = () => {
                           showAddVehicleModal || showVehicleDetailModal ||
                           showPartDetailModal || showManageVendorsModal;
 
-    console.log('[Modal] useEffect - isAnyModalOpen:', isAnyModalOpen, 'isModalClosing:', isModalClosing);
-
     if (isAnyModalOpen && !isScrollLocked.current) {
       // Lock scroll using overflow: hidden - works with scrollbar-gutter: stable
-      console.log('[Modal] Locking scroll');
       savedScrollPosition.current = window.scrollY;
       document.documentElement.style.overflow = 'hidden';
       isScrollLocked.current = true;
     } else if (!isAnyModalOpen) {
       // Unlock scroll
       if (isScrollLocked.current) {
-        console.log('[Modal] Unlocking scroll');
         document.documentElement.style.overflow = '';
         isScrollLocked.current = false;
       }

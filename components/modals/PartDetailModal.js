@@ -63,6 +63,10 @@ const PartDetailModal = ({
   const touchEndRef = useRef(null);
   const minSwipeDistance = 50; // Minimum swipe distance in pixels
 
+  // Track if this modal was open (for close animation)
+  const wasOpen = useRef(false);
+  if (isOpen) wasOpen.current = true;
+
   // Get current index and navigation functions
   const currentIndex = filteredParts.findIndex(p => p.id === viewingPart?.id);
   const hasPrev = currentIndex > 0;
@@ -423,8 +427,12 @@ const PartDetailModal = ({
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [isOpen, partDetailView, hasPrev, hasNext, goToPrevPart, goToNextPart]);
 
-  // Keep modal mounted during closing animation
-  if ((!isOpen && !isModalClosing) || !viewingPart) return null;
+  // Keep modal mounted during closing animation only if THIS modal was open
+  // Reset wasOpen when modal finishes closing
+  if (!isOpen && !isModalClosing) {
+    wasOpen.current = false;
+  }
+  if ((!isOpen && !(isModalClosing && wasOpen.current)) || !viewingPart) return null;
 
   return (
     <div

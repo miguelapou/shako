@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import {
   X,
   Wrench,
@@ -103,6 +103,10 @@ const VehicleDetailModal = ({
   const [selectedEventId, setSelectedEventId] = useState(null);
   // State for viewing service event notes
   const [viewingNoteEvent, setViewingNoteEvent] = useState(null);
+
+  // Track if this modal was open (for close animation)
+  const wasOpen = useRef(false);
+  if (isOpen) wasOpen.current = true;
 
   // Get document state and actions from context
   const {
@@ -213,8 +217,12 @@ const VehicleDetailModal = ({
     }
   };
 
-  // Keep modal mounted during closing animation
-  if ((!isOpen && !isModalClosing) || !viewingVehicle) return null;
+  // Keep modal mounted during closing animation only if THIS modal was open
+  // Reset wasOpen when modal finishes closing
+  if (!isOpen && !isModalClosing) {
+    wasOpen.current = false;
+  }
+  if ((!isOpen && !(isModalClosing && wasOpen.current)) || !viewingVehicle) return null;
 
   return (
     <div

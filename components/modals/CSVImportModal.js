@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo, useRef } from 'react';
 import { X, ChevronDown, AlertCircle, Check } from 'lucide-react';
 import { selectDropdownStyle } from '../../utils/styleUtils';
 
@@ -242,8 +242,13 @@ const CSVImportModal = ({
     }
   };
 
-  // Keep modal mounted during closing animation
-  if (!isOpen && !isModalClosing) return null;
+  // Track if this modal was open (for close animation)
+  const wasOpen = useRef(false);
+  if (isOpen) wasOpen.current = true;
+
+  // Keep modal mounted during closing animation only if THIS modal was open
+  if (!isOpen && !isModalClosing) wasOpen.current = false;
+  if (!isOpen && !(isModalClosing && wasOpen.current)) return null;
 
   return (
     <div
