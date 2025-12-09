@@ -68,6 +68,8 @@ const useModals = () => {
   const isTransitioningModals = useRef(false);
   const savedScrollPosition = useRef(0);
   const isScrollLocked = useRef(false);
+  // Track intentional close operations so useLayoutEffect doesn't interfere
+  const isIntentionalClose = useRef(false);
 
   /**
    * Handle modal closing with exit animation
@@ -79,14 +81,18 @@ const useModals = () => {
    *
    * Edge case: If user opens a new modal before step 3, useLayoutEffect
    * resets isModalClosing synchronously to prevent showing exit animation on open.
+   * We use isIntentionalClose ref to prevent useLayoutEffect from resetting
+   * during an active close operation.
    */
   const handleCloseModal = (closeCallback) => {
     console.log('[Modal] handleCloseModal called, setting isModalClosing=true');
+    isIntentionalClose.current = true;
     setIsModalClosing(true);
     setTimeout(() => {
       console.log('[Modal] setTimeout fired, calling closeCallback then resetting isModalClosing');
       closeCallback();
       setIsModalClosing(false);
+      isIntentionalClose.current = false;
     }, 200); // Duration matches the exit animation
   };
 
@@ -104,8 +110,9 @@ const useModals = () => {
     }
   }, [vehicleModalProjectView, showVehicleDetailModal]);
 
-  // Reset isModalClosing synchronously before paint when a modal opens
+  // Reset isModalClosing synchronously before paint when a NEW modal opens
   // This prevents flicker where the exit animation class shows briefly before enter animation
+  // We check isIntentionalClose to avoid resetting during an active close operation
   useLayoutEffect(() => {
     const isAnyModalOpen = showAddPartOptionsModal || showAddModal || showCSVImportModal ||
                           showTrackingModal ||
@@ -113,10 +120,9 @@ const useModals = () => {
                           showAddVehicleModal || showVehicleDetailModal ||
                           showPartDetailModal || showManageVendorsModal;
 
-    // If a modal is opening and isModalClosing is still true from previous close,
-    // reset it synchronously before the browser paints
-    if (isAnyModalOpen && isModalClosing) {
-      console.log('[Modal] useLayoutEffect - Resetting isModalClosing before paint');
+    // Only reset if a modal is open, isModalClosing is true, AND we're not intentionally closing
+    if (isAnyModalOpen && isModalClosing && !isIntentionalClose.current) {
+      console.log('[Modal] useLayoutEffect - Resetting isModalClosing before paint (new modal opening)');
       setIsModalClosing(false);
     }
   }, [showAddPartOptionsModal, showAddModal, showCSVImportModal, showTrackingModal, showAddProjectModal,
