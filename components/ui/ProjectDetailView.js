@@ -37,6 +37,9 @@ const ProjectDetailView = ({
   const isAnimatingRef = useRef(false);
   const hasInitialized = useRef(false);
   const [isNewTodoFocused, setIsNewTodoFocused] = useState(false);
+  // Refs to prevent race condition between onKeyDown and onBlur handlers
+  const isSubmittingNewTodoRef = useRef(false);
+  const isSubmittingEditTodoRef = useRef(false);
   const [showCompletedTodos, setShowCompletedTodos] = useState(false);
   const [isDescriptionExpanded, setIsDescriptionExpanded] = useState(false);
   const [isDescriptionClamped, setIsDescriptionClamped] = useState(false);
@@ -329,6 +332,7 @@ const ProjectDetailView = ({
             if (e.key === 'Enter' && !e.shiftKey) {
               e.preventDefault();
               if (editingTodoText.trim()) {
+                isSubmittingEditTodoRef.current = true;
                 const updatedTodos = project.todos.map(t =>
                   t.id === todo.id ? { ...t, text: editingTodoText.trim() } : t
                 );
@@ -337,13 +341,21 @@ const ProjectDetailView = ({
                 });
                 setEditingTodoId(null);
                 setEditingTodoText('');
+                e.target.blur();
               }
             } else if (e.key === 'Escape') {
+              isSubmittingEditTodoRef.current = true;
               setEditingTodoId(null);
               setEditingTodoText('');
+              e.target.blur();
             }
           }}
           onBlur={() => {
+            // Skip if already submitted via Enter or Escape
+            if (isSubmittingEditTodoRef.current) {
+              isSubmittingEditTodoRef.current = false;
+              return;
+            }
             if (editingTodoText.trim() && editingTodoText !== todo.text) {
               const updatedTodos = project.todos.map(t =>
                 t.id === todo.id ? { ...t, text: editingTodoText.trim() } : t
@@ -625,6 +637,7 @@ const ProjectDetailView = ({
                   if (e.key === 'Enter' && !e.shiftKey) {
                     e.preventDefault();
                     if (newTodoText.trim()) {
+                      isSubmittingNewTodoRef.current = true;
                       const currentTodos = project.todos || [];
                       const timestamp = new Date().toISOString();
                       const newTodo = {
@@ -649,6 +662,11 @@ const ProjectDetailView = ({
                 }}
                 onBlur={(e) => {
                   setIsNewTodoFocused(false);
+                  // Skip if already submitted via Enter
+                  if (isSubmittingNewTodoRef.current) {
+                    isSubmittingNewTodoRef.current = false;
+                    return;
+                  }
                   if (newTodoText.trim()) {
                     const currentTodos = project.todos || [];
                     const timestamp = new Date().toISOString();
