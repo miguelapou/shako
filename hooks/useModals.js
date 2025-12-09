@@ -70,8 +70,10 @@ const useModals = () => {
    * Handle modal closing with exit animation
    */
   const handleCloseModal = (closeCallback) => {
+    console.log('[Modal] handleCloseModal called, setting isModalClosing=true');
     setIsModalClosing(true);
     setTimeout(() => {
+      console.log('[Modal] setTimeout fired, calling closeCallback');
       closeCallback();
       // Note: isModalClosing is reset in the useEffect below when no modals are open
       // This prevents a race condition that can cause flickering
@@ -100,20 +102,25 @@ const useModals = () => {
                           showAddVehicleModal || showVehicleDetailModal ||
                           showPartDetailModal;
 
+    console.log('[Modal] useEffect - isAnyModalOpen:', isAnyModalOpen, 'isModalClosing:', isModalClosing);
+
     if (isAnyModalOpen && !isScrollLocked.current) {
       // Lock scroll using overflow: hidden - works with scrollbar-gutter: stable
+      console.log('[Modal] Locking scroll');
       savedScrollPosition.current = window.scrollY;
       document.documentElement.style.overflow = 'hidden';
       isScrollLocked.current = true;
     } else if (!isAnyModalOpen) {
       // Unlock scroll
       if (isScrollLocked.current) {
+        console.log('[Modal] Unlocking scroll');
         document.documentElement.style.overflow = '';
         isScrollLocked.current = false;
       }
       // Reset closing animation state when all modals are closed
       // This prevents race condition flickering in handleCloseModal
       if (isModalClosing) {
+        console.log('[Modal] Resetting isModalClosing to false');
         setIsModalClosing(false);
       }
     }
