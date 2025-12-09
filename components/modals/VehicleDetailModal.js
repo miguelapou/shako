@@ -719,8 +719,8 @@ const VehicleDetailModal = ({
                               {/* Timeline dot */}
                               <div className={`relative z-10 flex-shrink-0 w-10 h-10 rounded-full flex items-center justify-center transition-colors ${
                                 darkMode
-                                  ? `bg-gray-700 border-2 border-gray-600 ${selectedEventId !== event.id ? 'md:group-hover:border-white' : ''}`
-                                  : `bg-white border-2 border-gray-300 ${selectedEventId !== event.id ? 'md:group-hover:border-gray-400' : ''}`
+                                  ? `border-2 border-gray-600 ${selectedEventId !== event.id ? 'md:group-hover:border-white' : ''}`
+                                  : `border-2 border-gray-300 ${selectedEventId !== event.id ? 'md:group-hover:border-gray-400' : ''}`
                               }`}>
                                 <Wrench className={`w-4 h-4 ${
                                   darkMode ? 'text-gray-400' : 'text-gray-500'
