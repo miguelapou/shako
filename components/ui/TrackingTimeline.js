@@ -176,9 +176,8 @@ const TrackingTimeline = ({
   const hasMore = sortedCheckpoints.length > maxVisible;
 
   // Calculate approximate height per checkpoint for animation
-  const checkpointHeight = 64; // approximate height per checkpoint in pixels
+  const checkpointHeight = 72; // approximate height per checkpoint in pixels
   const collapsedHeight = maxVisible * checkpointHeight;
-  const expandedHeight = sortedCheckpoints.length * checkpointHeight;
 
   return (
     <div className={className}>
@@ -189,7 +188,7 @@ const TrackingTimeline = ({
       <div
         className="relative overflow-hidden transition-all duration-500 ease-in-out"
         style={{
-          maxHeight: expanded ? `${expandedHeight}px` : `${collapsedHeight}px`
+          maxHeight: expanded ? 'none' : `${collapsedHeight}px`
         }}
       >
         {sortedCheckpoints.map((checkpoint, index) => (

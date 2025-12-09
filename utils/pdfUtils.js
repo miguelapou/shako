@@ -1,14 +1,70 @@
 import { jsPDF } from 'jspdf';
 
 /**
+ * Load an image from URL and convert to base64 data URL
+ * @param {string} url - The image URL
+ * @returns {Promise<string|null>} Base64 data URL or null if failed
+ */
+const loadImageAsDataURL = (url) => {
+  return new Promise((resolve) => {
+    if (!url) {
+      resolve(null);
+      return;
+    }
+
+    const img = new Image();
+    img.crossOrigin = 'anonymous';
+
+    img.onload = () => {
+      try {
+        const canvas = document.createElement('canvas');
+        const maxSize = 150; // Max dimension for thumbnail
+        let width = img.width;
+        let height = img.height;
+
+        // Scale down maintaining aspect ratio
+        if (width > height) {
+          if (width > maxSize) {
+            height = (height * maxSize) / width;
+            width = maxSize;
+          }
+        } else {
+          if (height > maxSize) {
+            width = (width * maxSize) / height;
+            height = maxSize;
+          }
+        }
+
+        canvas.width = width;
+        canvas.height = height;
+        const ctx = canvas.getContext('2d');
+        ctx.drawImage(img, 0, 0, width, height);
+        const dataURL = canvas.toDataURL('image/jpeg', 0.8);
+        resolve({ dataURL, width, height });
+      } catch (error) {
+        console.error('Error converting image to data URL:', error);
+        resolve(null);
+      }
+    };
+
+    img.onerror = () => {
+      console.error('Error loading image from URL:', url);
+      resolve(null);
+    };
+
+    img.src = url;
+  });
+};
+
+/**
  * Generate a vehicle report PDF with all relevant information
  * @param {Object} vehicle - The vehicle object
  * @param {Array} projects - All projects (will be filtered for this vehicle)
  * @param {Array} parts - All parts (will be filtered for linked projects)
  * @param {Array} serviceEvents - Service events for this vehicle
- * @returns {Object} { blob: Blob, filename: string }
+ * @returns {Promise<Object>} { blob: Blob, filename: string }
  */
-export const generateVehicleReportPDF = (vehicle, projects, parts, serviceEvents) => {
+export const generateVehicleReportPDF = async (vehicle, projects, parts, serviceEvents) => {
   const doc = new jsPDF();
   const pageWidth = doc.internal.pageSize.getWidth();
   const pageHeight = doc.internal.pageSize.getHeight();
@@ -91,12 +147,36 @@ export const generateVehicleReportPDF = (vehicle, projects, parts, serviceEvents
   };
 
   // --- HEADER ---
+  // Load vehicle image if available
+  const imageData = await loadImageAsDataURL(vehicle.image_url);
+  const imageWidth = 40; // Width in PDF units (mm)
+  let imageHeight = 30; // Default height
+
+  if (imageData) {
+    // Calculate proportional height for PDF
+    imageHeight = (imageData.height / imageData.width) * imageWidth;
+    // Cap the height
+    if (imageHeight > 35) {
+      imageHeight = 35;
+    }
+
+    // Add image to PDF on the right side
+    try {
+      const imageX = pageWidth - margin - imageWidth;
+      doc.addImage(imageData.dataURL, 'JPEG', imageX, yPos, imageWidth, imageHeight);
+    } catch (error) {
+      console.error('Error adding image to PDF:', error);
+      // Continue without image if there's an error
+    }
+  }
+
+  // Title (on the left)
   doc.setFontSize(24);
   doc.setFont('helvetica', 'bold');
   doc.setTextColor(40, 40, 40);
   const title = vehicle.nickname || `${vehicle.year || ''} ${vehicle.make || ''} ${vehicle.name || ''}`.trim();
-  doc.text(title, margin, yPos);
-  yPos += 10;
+  const titleYPos = imageData ? yPos + 8 : yPos; // Vertically center with image
+  doc.text(title, margin, titleYPos);
 
   // Subtitle with date
   doc.setFontSize(10);
@@ -108,8 +188,14 @@ export const generateVehicleReportPDF = (vehicle, projects, parts, serviceEvents
     month: 'long',
     day: 'numeric'
   });
-  doc.text(`Vehicle Report - Generated ${reportDate}`, margin, yPos);
-  yPos += 15;
+  doc.text(`Vehicle Report - Generated ${reportDate}`, margin, titleYPos + 8);
+
+  // Move yPos past the image/header area
+  if (imageData) {
+    yPos += Math.max(imageHeight + 5, 25);
+  } else {
+    yPos += 20;
+  }
 
   // --- BASIC INFORMATION ---
   addSectionHeader('Vehicle Information');
@@ -247,13 +333,15 @@ export const generateVehicleReportPDF = (vehicle, projects, parts, serviceEvents
       doc.setFont('helvetica', 'bold');
       doc.setTextColor(50, 50, 50);
       doc.text(project.name, margin, yPos);
+      yPos += 6;
 
       if (project.budget) {
+        doc.setFontSize(9);
         doc.setFont('helvetica', 'normal');
         doc.setTextColor(100, 100, 100);
-        doc.text(`Budget: $${project.budget.toLocaleString()}`, margin + doc.getTextWidth(project.name + '  '), yPos);
+        doc.text(`Budget: $${project.budget.toLocaleString()}`, margin, yPos);
+        yPos += 5;
       }
-      yPos += 6;
 
       // Project parts
       const projectParts = parts.filter(p => p.projectId === project.id);
@@ -264,8 +352,7 @@ export const generateVehicleReportPDF = (vehicle, projects, parts, serviceEvents
         doc.setFont('helvetica', 'bold');
         doc.setTextColor(100, 100, 100);
         doc.text('Part', margin + 5, yPos);
-        doc.text('Vendor', margin + 75, yPos);
-        doc.text('Status', margin + 110, yPos);
+        doc.text('Vendor', margin + 90, yPos);
         doc.text('Total', pageWidth - margin - 15, yPos);
         yPos += 5;
 
@@ -280,7 +367,7 @@ export const generateVehicleReportPDF = (vehicle, projects, parts, serviceEvents
 
           // Part name (truncate if needed)
           let partName = part.part || '';
-          const maxPartWidth = 65;
+          const maxPartWidth = 80;
           while (doc.getTextWidth(partName) > maxPartWidth && partName.length > 0) {
             partName = partName.slice(0, -1);
           }
@@ -291,20 +378,14 @@ export const generateVehicleReportPDF = (vehicle, projects, parts, serviceEvents
 
           // Vendor (truncate if needed)
           let vendor = part.vendor || '-';
-          const maxVendorWidth = 30;
+          const maxVendorWidth = 45;
           while (doc.getTextWidth(vendor) > maxVendorWidth && vendor.length > 0) {
             vendor = vendor.slice(0, -1);
           }
           if (vendor !== (part.vendor || '-')) {
             vendor += '...';
           }
-          doc.text(vendor, margin + 75, yPos);
-
-          // Status
-          const status = part.delivered ? 'Delivered' :
-                        part.shipped ? 'Shipped' :
-                        part.purchased ? 'Purchased' : 'Pending';
-          doc.text(status, margin + 110, yPos);
+          doc.text(vendor, margin + 90, yPos);
 
           // Total
           const partTotal = (part.price || 0) + (part.shipping || 0) + (part.duties || 0);
