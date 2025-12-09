@@ -194,8 +194,8 @@ const ManageVendorsModal = ({
                             onChange={(e) => {
                               updateVendorColor(vendor, e.target.value);
                             }}
-                            className="absolute opacity-0 pointer-events-none"
-                            style={{ width: 0, height: 0 }}
+                            className="sr-only"
+                            tabIndex={-1}
                           />
                           {/* Delete button - desktop only */}
                           <button
