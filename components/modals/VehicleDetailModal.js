@@ -250,7 +250,7 @@ const VehicleDetailModal = ({
       })}
     >
       <div
-        className={`rounded-lg shadow-xl max-w-5xl w-full overflow-hidden modal-content transition-all duration-700 ease-in-out grid ${
+        className={`rounded-lg shadow-xl max-w-5xl w-full overflow-hidden modal-content grid ${
           isModalClosing ? 'modal-popup-exit' : 'modal-popup-enter'
         } ${darkMode ? 'bg-gray-800' : 'bg-slate-200'}`}
         style={{
