@@ -477,7 +477,10 @@ const VehicleDetailModal = ({
                 : 'relative opacity-100'
             }`}
           >
-            <div className="p-6 pb-12 space-y-6 max-h-[calc(90vh-164px)] overflow-y-auto animate-fade-in">
+            <div
+              key={viewingVehicle.id}
+              className="p-6 pb-12 space-y-6 max-h-[calc(90vh-164px)] overflow-y-auto animate-fade-in"
+            >
               {/* Top Section: Image and Basic Info side by side */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 {/* Basic Info Card - Half width on desktop, two column layout - appears second on mobile */}
