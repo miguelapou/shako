@@ -139,8 +139,8 @@ const ManageVendorsModal = ({
                           <span className="w-4 text-right">{partCount}</span>
                           <Package className="w-3.5 h-3.5" />
                         </span>
-                        {/* Vendor badge - fades out when editing */}
-                        <div className={`transition-opacity duration-150 ${isEditing ? 'opacity-0 absolute' : 'opacity-100'}`}>
+                        {/* Vendor badge - fades out when editing (desktop only) */}
+                        <div className={`hidden sm:block transition-opacity duration-150 ${isEditing ? 'sm:opacity-0 sm:absolute' : 'sm:opacity-100'}`}>
                           {vendorColors[vendor] ? (
                             (() => {
                               const colors = getVendorDisplayColor(
@@ -171,8 +171,40 @@ const ManageVendorsModal = ({
                             </span>
                           )}
                         </div>
-                        {/* Edit input - fades in when editing */}
-                        <div className={`flex items-center gap-2 flex-1 min-w-0 transition-opacity duration-150 ${isEditing ? 'opacity-100' : 'opacity-0 absolute pointer-events-none'}`}>
+                        {/* Vendor badge - mobile (always visible) */}
+                        <div className="sm:hidden">
+                          {vendorColors[vendor] ? (
+                            (() => {
+                              const colors = getVendorDisplayColor(
+                                vendorColors[vendor],
+                                darkMode
+                              );
+                              return (
+                                <span
+                                  className="inline-block px-3 py-1 rounded-full text-sm font-medium border"
+                                  style={{
+                                    backgroundColor: colors.bg,
+                                    color: colors.text,
+                                    borderColor: colors.border
+                                  }}
+                                >
+                                  {vendor}
+                                </span>
+                              );
+                            })()
+                          ) : (
+                            <span
+                              className={`inline-block px-3 py-1 rounded-full text-sm font-medium ${getVendorColor(
+                                vendor,
+                                vendorColors
+                              )}`}
+                            >
+                              {vendor}
+                            </span>
+                          )}
+                        </div>
+                        {/* Edit input - desktop only, fades in when editing */}
+                        <div className={`hidden sm:flex items-center gap-2 flex-1 min-w-0 transition-opacity duration-150 ${isEditing ? 'sm:opacity-100' : 'sm:opacity-0 sm:absolute sm:pointer-events-none'}`}>
                           <input
                             type="text"
                             value={isEditing ? editingVendor.newName : ''}
@@ -194,7 +226,7 @@ const ManageVendorsModal = ({
                               }
                             }}
                             onClick={(e) => e.stopPropagation()}
-                            className={`flex-1 min-w-0 max-w-[120px] sm:max-w-[200px] px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
+                            className={`flex-1 min-w-0 max-w-[200px] px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
                               darkMode
                                 ? 'bg-gray-800 border-gray-600 text-gray-100'
                                 : 'bg-slate-50 border-slate-300 text-slate-800'
@@ -242,9 +274,12 @@ const ManageVendorsModal = ({
                         </div>
                       </div>
 
-                      {/* Inline buttons - color and edit on all sizes, delete only on desktop */}
+                      {/* Inline buttons - stop propagation on container */}
                       {!isEditing && (
-                        <div className="flex items-center gap-2">
+                        <div
+                          className="flex items-center gap-2"
+                          onClick={(e) => e.stopPropagation()}
+                        >
                           {/* Hidden color input */}
                           <input
                             type="color"
@@ -260,7 +295,6 @@ const ManageVendorsModal = ({
                           <button
                             onClick={(e) => {
                               e.stopPropagation();
-                              setSelectedVendor(null);
                               colorInputRefs.current[vendor]?.click();
                             }}
                             className={`p-2 sm:px-3 sm:py-2 rounded-lg transition-colors ${
@@ -314,6 +348,74 @@ const ManageVendorsModal = ({
                           </button>
                         </div>
                       )}
+                    </div>
+
+                    {/* Mobile edit overlay with fade animation */}
+                    <div
+                      className={`sm:hidden absolute inset-0 rounded-lg flex items-center justify-center gap-2 px-4 transition-opacity duration-150 ${
+                        isEditing ? 'opacity-100' : 'opacity-0 pointer-events-none'
+                      } ${darkMode ? 'bg-gray-800/95' : 'bg-gray-100/95'}`}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setEditingVendor(null);
+                      }}
+                    >
+                      <input
+                        type="text"
+                        value={isEditing ? editingVendor.newName : ''}
+                        onChange={(e) =>
+                          setEditingVendor({
+                            ...editingVendor,
+                            newName: e.target.value
+                          })
+                        }
+                        onKeyDown={(e) => {
+                          if (e.key === 'Enter' && editingVendor?.newName?.trim()) {
+                            if (editingVendor.newName !== vendor) {
+                              renameVendor(vendor, editingVendor.newName);
+                            }
+                            setEditingVendor(null);
+                          } else if (e.key === 'Escape') {
+                            setEditingVendor(null);
+                          }
+                        }}
+                        onClick={(e) => e.stopPropagation()}
+                        className={`flex-1 min-w-0 px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
+                          darkMode
+                            ? 'bg-gray-700 border-gray-600 text-gray-100'
+                            : 'bg-white border-slate-300 text-slate-800'
+                        }`}
+                        autoFocus={isEditing}
+                      />
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          if (editingVendor?.newName?.trim() && editingVendor.newName !== vendor) {
+                            renameVendor(vendor, editingVendor.newName);
+                          }
+                          setEditingVendor(null);
+                        }}
+                        className={`p-2 rounded-lg transition-colors ${
+                          darkMode
+                            ? 'bg-gray-700 text-green-400 border border-gray-600'
+                            : 'bg-white text-green-600 border border-gray-300'
+                        }`}
+                      >
+                        <Check className="w-5 h-5" />
+                      </button>
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setEditingVendor(null);
+                        }}
+                        className={`p-2 rounded-lg transition-colors ${
+                          darkMode
+                            ? 'bg-gray-700 text-gray-400 border border-gray-600'
+                            : 'bg-white text-gray-600 border border-gray-300'
+                        }`}
+                      >
+                        <X className="w-5 h-5" />
+                      </button>
                     </div>
 
                     {/* Mobile delete overlay with fade animation */}
