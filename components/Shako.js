@@ -69,6 +69,7 @@ import useDragDrop from '../hooks/useDragDrop';
 import useParts from '../hooks/useParts';
 import useProjects from '../hooks/useProjects';
 import useVehicles from '../hooks/useVehicles';
+import useHoverCapability from '../hooks/useHoverCapability';
 import { useAuthContext } from './AuthProvider';
 
 // Context Providers
@@ -86,6 +87,9 @@ const Shako = () => {
 
   // Dark mode hook
   const { darkMode, setDarkMode, darkModeInitialized, mounted } = useDarkMode();
+
+  // Hover capability detection (adds 'has-hover' class to document when mouse/trackpad is used)
+  useHoverCapability();
 
   // Auth hook
   const { user, signOut, deleteAccount } = useAuthContext();
