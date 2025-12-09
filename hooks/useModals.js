@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useLayoutEffect, useRef } from 'react';
 
 /**
  * Custom hook for managing all modal state and visibility
@@ -94,6 +94,24 @@ const useModals = () => {
     }
   }, [vehicleModalProjectView, showVehicleDetailModal]);
 
+  // Reset isModalClosing synchronously before paint when a modal opens
+  // This prevents flicker where the exit animation class shows briefly before enter animation
+  useLayoutEffect(() => {
+    const isAnyModalOpen = showAddPartOptionsModal || showAddModal || showCSVImportModal ||
+                          showTrackingModal ||
+                          showAddProjectModal || showProjectDetailModal ||
+                          showAddVehicleModal || showVehicleDetailModal ||
+                          showPartDetailModal;
+
+    // If a modal is opening and isModalClosing is still true from previous close,
+    // reset it synchronously before the browser paints
+    if (isAnyModalOpen && isModalClosing) {
+      console.log('[Modal] useLayoutEffect - Resetting isModalClosing before paint');
+      setIsModalClosing(false);
+    }
+  }, [showAddPartOptionsModal, showAddModal, showCSVImportModal, showTrackingModal, showAddProjectModal,
+      showProjectDetailModal, showAddVehicleModal, showVehicleDetailModal, showPartDetailModal, isModalClosing]);
+
   // Lock body scroll when any modal is open
   useEffect(() => {
     const isAnyModalOpen = showAddPartOptionsModal || showAddModal || showCSVImportModal ||
@@ -110,12 +128,6 @@ const useModals = () => {
       savedScrollPosition.current = window.scrollY;
       document.documentElement.style.overflow = 'hidden';
       isScrollLocked.current = true;
-      // Reset closing state when opening a new modal (not when closing)
-      // This avoids an extra render cycle after modal closes
-      if (isModalClosing) {
-        console.log('[Modal] Resetting isModalClosing to false (modal opening)');
-        setIsModalClosing(false);
-      }
     } else if (!isAnyModalOpen) {
       // Unlock scroll
       if (isScrollLocked.current) {
@@ -123,8 +135,6 @@ const useModals = () => {
         document.documentElement.style.overflow = '';
         isScrollLocked.current = false;
       }
-      // Don't reset isModalClosing here - it causes an extra render that can flicker
-      // It will be reset when the next modal opens
     }
 
     // Cleanup on unmount
