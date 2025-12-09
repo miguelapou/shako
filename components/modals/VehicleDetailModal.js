@@ -682,6 +682,28 @@ const VehicleDetailModal = ({
                     Service History ({serviceEvents?.length || 0})
                   </h3>
                 </div>
+                {loadingServiceEvents ? (
+                  <div className="flex flex-col gap-4">
+                    {[...Array(3)].map((_, i) => (
+                      <div key={i} className="flex items-stretch gap-4 animate-pulse">
+                        <div className="flex flex-col items-center">
+                          <div className={`w-10 h-10 rounded-full border-2 ${
+                            darkMode ? 'border-gray-600' : 'border-gray-300'
+                          }`} />
+                          <div className={`flex-1 w-0.5 -mb-4 ${
+                            darkMode ? 'bg-gray-600' : 'bg-gray-300'
+                          }`} />
+                        </div>
+                        <div className={`flex-1 rounded-lg p-3 border ${
+                          darkMode ? 'bg-gray-700/50 border-gray-600' : 'bg-gray-50 border-gray-200'
+                        }`}>
+                          <div className={`h-4 w-3/4 rounded mb-2 ${darkMode ? 'bg-gray-600' : 'bg-gray-300'}`} />
+                          <div className={`h-3 w-1/2 rounded ${darkMode ? 'bg-gray-600' : 'bg-gray-300'}`} />
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
                 <div className="relative" onClick={() => setSelectedEventId(null)}>
                     {/* Timeline items */}
                     <div className="flex flex-col gap-4">
@@ -892,6 +914,7 @@ const VehicleDetailModal = ({
                       </div>
                     </div>
                   </div>
+                )}
 
                 {/* Add Service Event Modal */}
                 <AddServiceEventModal
@@ -1056,10 +1079,23 @@ const VehicleDetailModal = ({
                   </h3>
                 </div>
                 {loadingDocuments ? (
-                  <div className={`text-center py-8 ${
-                    darkMode ? 'text-gray-400' : 'text-gray-500'
-                  }`}>
-                    Loading documents...
+                  <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+                    {[...Array(4)].map((_, i) => (
+                      <div
+                        key={i}
+                        className={`rounded-lg p-3 border animate-pulse ${
+                          darkMode ? 'bg-gray-700 border-gray-600' : 'bg-gray-50 border-gray-200'
+                        }`}
+                      >
+                        <div className="flex items-start gap-2">
+                          <div className={`w-8 h-8 rounded ${darkMode ? 'bg-gray-600' : 'bg-gray-300'}`} />
+                          <div className="flex-1 min-w-0 space-y-2">
+                            <div className={`h-4 rounded ${darkMode ? 'bg-gray-600' : 'bg-gray-300'}`} />
+                            <div className={`h-3 w-2/3 rounded ${darkMode ? 'bg-gray-600' : 'bg-gray-300'}`} />
+                          </div>
+                        </div>
+                      </div>
+                    ))}
                   </div>
                 ) : (
                   <div
