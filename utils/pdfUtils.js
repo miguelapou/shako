@@ -352,8 +352,7 @@ export const generateVehicleReportPDF = async (vehicle, projects, parts, service
         doc.setFont('helvetica', 'bold');
         doc.setTextColor(100, 100, 100);
         doc.text('Part', margin + 5, yPos);
-        doc.text('Vendor', margin + 75, yPos);
-        doc.text('Status', margin + 110, yPos);
+        doc.text('Vendor', margin + 90, yPos);
         doc.text('Total', pageWidth - margin - 15, yPos);
         yPos += 5;
 
@@ -368,7 +367,7 @@ export const generateVehicleReportPDF = async (vehicle, projects, parts, service
 
           // Part name (truncate if needed)
           let partName = part.part || '';
-          const maxPartWidth = 65;
+          const maxPartWidth = 80;
           while (doc.getTextWidth(partName) > maxPartWidth && partName.length > 0) {
             partName = partName.slice(0, -1);
           }
@@ -379,20 +378,14 @@ export const generateVehicleReportPDF = async (vehicle, projects, parts, service
 
           // Vendor (truncate if needed)
           let vendor = part.vendor || '-';
-          const maxVendorWidth = 30;
+          const maxVendorWidth = 45;
           while (doc.getTextWidth(vendor) > maxVendorWidth && vendor.length > 0) {
             vendor = vendor.slice(0, -1);
           }
           if (vendor !== (part.vendor || '-')) {
             vendor += '...';
           }
-          doc.text(vendor, margin + 75, yPos);
-
-          // Status
-          const status = part.delivered ? 'Delivered' :
-                        part.shipped ? 'Shipped' :
-                        part.purchased ? 'Purchased' : 'Pending';
-          doc.text(status, margin + 110, yPos);
+          doc.text(vendor, margin + 90, yPos);
 
           // Total
           const partTotal = (part.price || 0) + (part.shipping || 0) + (part.duties || 0);
