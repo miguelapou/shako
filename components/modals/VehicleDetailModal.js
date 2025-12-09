@@ -119,6 +119,7 @@ const VehicleDetailModal = ({
   // Touch refs for swipe gestures
   const touchStartRef = useRef(null);
   const touchEndRef = useRef(null);
+  const isScrollingRef = useRef(false);
   const minSwipeDistance = 50;
 
   // Filter to non-archived vehicles for navigation
@@ -182,18 +183,43 @@ const VehicleDetailModal = ({
   // Touch handlers for swipe gestures
   const handleTouchStart = (e) => {
     touchEndRef.current = null;
-    touchStartRef.current = e.targetTouches[0].clientX;
+    isScrollingRef.current = false;
+    touchStartRef.current = {
+      x: e.targetTouches[0].clientX,
+      y: e.targetTouches[0].clientY
+    };
   };
 
   const handleTouchMove = (e) => {
-    touchEndRef.current = e.targetTouches[0].clientX;
+    if (!touchStartRef.current) return;
+
+    const currentX = e.targetTouches[0].clientX;
+    const currentY = e.targetTouches[0].clientY;
+
+    const diffX = Math.abs(currentX - touchStartRef.current.x);
+    const diffY = Math.abs(currentY - touchStartRef.current.y);
+
+    // Detect if user is scrolling vertically
+    if (diffY > diffX && diffY > 10) {
+      isScrollingRef.current = true;
+    }
+
+    touchEndRef.current = { x: currentX, y: currentY };
   };
 
   const handleTouchEnd = () => {
     if (!touchStartRef.current || !touchEndRef.current) return;
     if (vehicleModalEditMode || vehicleModalProjectView) return;
 
-    const distance = touchStartRef.current - touchEndRef.current;
+    // Don't trigger navigation if user was scrolling vertically
+    if (isScrollingRef.current) {
+      touchStartRef.current = null;
+      touchEndRef.current = null;
+      isScrollingRef.current = false;
+      return;
+    }
+
+    const distance = touchStartRef.current.x - touchEndRef.current.x;
     const isLeftSwipe = distance > minSwipeDistance;
     const isRightSwipe = distance < -minSwipeDistance;
 
@@ -205,6 +231,7 @@ const VehicleDetailModal = ({
 
     touchStartRef.current = null;
     touchEndRef.current = null;
+    isScrollingRef.current = false;
   };
 
   // Track if this modal was open (for close animation)
@@ -682,29 +709,7 @@ const VehicleDetailModal = ({
                     Service History ({serviceEvents?.length || 0})
                   </h3>
                 </div>
-                {loadingServiceEvents ? (
-                  <div className="flex flex-col gap-4">
-                    {[...Array(3)].map((_, i) => (
-                      <div key={i} className="flex items-stretch gap-4 animate-pulse">
-                        <div className="flex flex-col items-center">
-                          <div className={`w-10 h-10 rounded-full border-2 ${
-                            darkMode ? 'border-gray-600' : 'border-gray-300'
-                          }`} />
-                          <div className={`flex-1 w-0.5 -mb-4 ${
-                            darkMode ? 'bg-gray-600' : 'bg-gray-300'
-                          }`} />
-                        </div>
-                        <div className={`flex-1 rounded-lg p-3 border ${
-                          darkMode ? 'bg-gray-700/50 border-gray-600' : 'bg-gray-50 border-gray-200'
-                        }`}>
-                          <div className={`h-4 w-3/4 rounded mb-2 ${darkMode ? 'bg-gray-600' : 'bg-gray-300'}`} />
-                          <div className={`h-3 w-1/2 rounded ${darkMode ? 'bg-gray-600' : 'bg-gray-300'}`} />
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                ) : (
-                <div className="relative" onClick={() => setSelectedEventId(null)}>
+                <div className={`relative ${!loadingServiceEvents ? 'animate-fade-in' : ''}`} onClick={() => setSelectedEventId(null)}>
                     {/* Timeline items */}
                     <div className="flex flex-col gap-4">
                       {serviceEvents && [...serviceEvents].sort((a, b) =>
@@ -914,7 +919,6 @@ const VehicleDetailModal = ({
                       </div>
                     </div>
                   </div>
-                )}
 
                 {/* Add Service Event Modal */}
                 <AddServiceEventModal
@@ -1078,28 +1082,8 @@ const VehicleDetailModal = ({
                     Documents ({documents.length})
                   </h3>
                 </div>
-                {loadingDocuments ? (
-                  <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-                    {[...Array(4)].map((_, i) => (
-                      <div
-                        key={i}
-                        className={`rounded-lg p-3 border animate-pulse ${
-                          darkMode ? 'bg-gray-700 border-gray-600' : 'bg-gray-50 border-gray-200'
-                        }`}
-                      >
-                        <div className="flex items-start gap-2">
-                          <div className={`w-8 h-8 rounded ${darkMode ? 'bg-gray-600' : 'bg-gray-300'}`} />
-                          <div className="flex-1 min-w-0 space-y-2">
-                            <div className={`h-4 rounded ${darkMode ? 'bg-gray-600' : 'bg-gray-300'}`} />
-                            <div className={`h-3 w-2/3 rounded ${darkMode ? 'bg-gray-600' : 'bg-gray-300'}`} />
-                          </div>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                ) : (
-                  <div
-                    className="grid grid-cols-2 md:grid-cols-4 gap-3"
+                <div
+                    className={`grid grid-cols-2 md:grid-cols-4 gap-3 ${!loadingDocuments ? 'animate-fade-in' : ''}`}
                     onClick={() => setSelectedDocId(null)}
                   >
                     {documents.map((doc) => (
@@ -1209,7 +1193,6 @@ const VehicleDetailModal = ({
                       </div>
                     </div>
                   </div>
-                )}
 
                 {/* Add Document Modal */}
                 <AddDocumentModal
