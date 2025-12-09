@@ -2,57 +2,92 @@ import { jsPDF } from 'jspdf';
 
 /**
  * Load an image from URL and convert to base64 data URL
+ * Includes timeout and retry logic to ensure reliable image loading
  * @param {string} url - The image URL
- * @returns {Promise<string|null>} Base64 data URL or null if failed
+ * @param {number} timeout - Timeout in milliseconds (default: 10000)
+ * @param {number} retries - Number of retry attempts (default: 2)
+ * @returns {Promise<Object|null>} { dataURL, width, height } or null if failed
  */
-const loadImageAsDataURL = (url) => {
+const loadImageAsDataURL = (url, timeout = 10000, retries = 2) => {
   return new Promise((resolve) => {
     if (!url) {
       resolve(null);
       return;
     }
 
-    const img = new Image();
-    img.crossOrigin = 'anonymous';
+    let attempts = 0;
+    let timeoutId = null;
 
-    img.onload = () => {
-      try {
-        const canvas = document.createElement('canvas');
-        const maxSize = 150; // Max dimension for thumbnail
-        let width = img.width;
-        let height = img.height;
+    const attemptLoad = () => {
+      attempts++;
+      const img = new Image();
+      img.crossOrigin = 'anonymous';
 
-        // Scale down maintaining aspect ratio
-        if (width > height) {
-          if (width > maxSize) {
-            height = (height * maxSize) / width;
-            width = maxSize;
-          }
+      // Set up timeout
+      timeoutId = setTimeout(() => {
+        img.onload = null;
+        img.onerror = null;
+        img.src = ''; // Cancel the request
+
+        if (attempts <= retries) {
+          console.log(`Image load timeout, retrying (attempt ${attempts}/${retries})...`);
+          attemptLoad();
         } else {
-          if (height > maxSize) {
-            width = (width * maxSize) / height;
-            height = maxSize;
-          }
+          console.error('Image load failed after all retries (timeout):', url);
+          resolve(null);
         }
+      }, timeout);
 
-        canvas.width = width;
-        canvas.height = height;
-        const ctx = canvas.getContext('2d');
-        ctx.drawImage(img, 0, 0, width, height);
-        const dataURL = canvas.toDataURL('image/jpeg', 0.8);
-        resolve({ dataURL, width, height });
-      } catch (error) {
-        console.error('Error converting image to data URL:', error);
-        resolve(null);
-      }
+      img.onload = () => {
+        clearTimeout(timeoutId);
+        try {
+          const canvas = document.createElement('canvas');
+          const maxSize = 150; // Max dimension for thumbnail
+          let width = img.width;
+          let height = img.height;
+
+          // Scale down maintaining aspect ratio
+          if (width > height) {
+            if (width > maxSize) {
+              height = (height * maxSize) / width;
+              width = maxSize;
+            }
+          } else {
+            if (height > maxSize) {
+              width = (width * maxSize) / height;
+              height = maxSize;
+            }
+          }
+
+          canvas.width = width;
+          canvas.height = height;
+          const ctx = canvas.getContext('2d');
+          ctx.drawImage(img, 0, 0, width, height);
+          const dataURL = canvas.toDataURL('image/jpeg', 0.8);
+          resolve({ dataURL, width, height });
+        } catch (error) {
+          console.error('Error converting image to data URL:', error);
+          resolve(null);
+        }
+      };
+
+      img.onerror = () => {
+        clearTimeout(timeoutId);
+
+        if (attempts <= retries) {
+          console.log(`Image load error, retrying (attempt ${attempts}/${retries})...`);
+          // Add a small delay before retry
+          setTimeout(attemptLoad, 500);
+        } else {
+          console.error('Image load failed after all retries:', url);
+          resolve(null);
+        }
+      };
+
+      img.src = url;
     };
 
-    img.onerror = () => {
-      console.error('Error loading image from URL:', url);
-      resolve(null);
-    };
-
-    img.src = url;
+    attemptLoad();
   });
 };
 
@@ -147,8 +182,9 @@ export const generateVehicleReportPDF = async (vehicle, projects, parts, service
   };
 
   // --- HEADER ---
-  // Load vehicle image if available
-  const imageData = await loadImageAsDataURL(vehicle.image_url);
+  // Load vehicle image if available - prefer resolved signed URL over storage path
+  const imageUrl = vehicle.image_url_resolved || vehicle.image_url;
+  const imageData = await loadImageAsDataURL(imageUrl);
   const imageWidth = 40; // Width in PDF units (mm)
   let imageHeight = 30; // Default height
 
