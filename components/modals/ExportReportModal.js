@@ -10,7 +10,7 @@ const ExportReportModal = ({
   generating
 }) => {
   const [isClosing, setIsClosing] = useState(false);
-  const [saveToDocuments, setSaveToDocuments] = useState(true);
+  const [saveToDocuments, setSaveToDocuments] = useState(false);
 
   const handleClose = () => {
     if (generating) return;

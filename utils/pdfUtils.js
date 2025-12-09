@@ -151,7 +151,6 @@ export const generateVehicleReportPDF = async (vehicle, projects, parts, service
   const imageData = await loadImageAsDataURL(vehicle.image_url);
   const imageWidth = 40; // Width in PDF units (mm)
   let imageHeight = 30; // Default height
-  let textStartX = margin;
 
   if (imageData) {
     // Calculate proportional height for PDF
@@ -161,23 +160,23 @@ export const generateVehicleReportPDF = async (vehicle, projects, parts, service
       imageHeight = 35;
     }
 
-    // Add image to PDF
+    // Add image to PDF on the right side
     try {
-      doc.addImage(imageData.dataURL, 'JPEG', margin, yPos, imageWidth, imageHeight);
-      textStartX = margin + imageWidth + 8; // Text starts after image with 8mm gap
+      const imageX = pageWidth - margin - imageWidth;
+      doc.addImage(imageData.dataURL, 'JPEG', imageX, yPos, imageWidth, imageHeight);
     } catch (error) {
       console.error('Error adding image to PDF:', error);
       // Continue without image if there's an error
     }
   }
 
-  // Title (to the right of image if present)
+  // Title (on the left)
   doc.setFontSize(24);
   doc.setFont('helvetica', 'bold');
   doc.setTextColor(40, 40, 40);
   const title = vehicle.nickname || `${vehicle.year || ''} ${vehicle.make || ''} ${vehicle.name || ''}`.trim();
   const titleYPos = imageData ? yPos + 8 : yPos; // Vertically center with image
-  doc.text(title, textStartX, titleYPos);
+  doc.text(title, margin, titleYPos);
 
   // Subtitle with date
   doc.setFontSize(10);
@@ -189,7 +188,7 @@ export const generateVehicleReportPDF = async (vehicle, projects, parts, service
     month: 'long',
     day: 'numeric'
   });
-  doc.text(`Vehicle Report - Generated ${reportDate}`, textStartX, titleYPos + 8);
+  doc.text(`Vehicle Report - Generated ${reportDate}`, margin, titleYPos + 8);
 
   // Move yPos past the image/header area
   if (imageData) {
