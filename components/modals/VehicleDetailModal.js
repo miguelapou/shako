@@ -103,6 +103,16 @@ const VehicleDetailModal = ({
   const [selectedEventId, setSelectedEventId] = useState(null);
   // State for viewing service event notes
   const [viewingNoteEvent, setViewingNoteEvent] = useState(null);
+  const [isNotesModalClosing, setIsNotesModalClosing] = useState(false);
+
+  // Handle closing the notes modal with animation
+  const handleCloseNotesModal = () => {
+    setIsNotesModalClosing(true);
+    setTimeout(() => {
+      setViewingNoteEvent(null);
+      setIsNotesModalClosing(false);
+    }, 150);
+  };
 
   // Track if this modal was open (for close animation)
   const wasOpen = useRef(false);
@@ -1955,18 +1965,20 @@ const VehicleDetailModal = ({
       />
 
       {/* Notes Viewing Modal */}
-      {viewingNoteEvent && (
+      {(viewingNoteEvent || isNotesModalClosing) && (
         <div
-          className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-[70]"
+          className={`fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-[70] modal-backdrop ${
+            isNotesModalClosing ? 'modal-backdrop-exit' : 'modal-backdrop-enter'
+          }`}
           onClick={(e) => {
             e.stopPropagation();
-            setViewingNoteEvent(null);
+            handleCloseNotesModal();
           }}
         >
           <div
-            className={`rounded-lg shadow-xl max-w-md w-full mx-4 ${
-              darkMode ? 'bg-gray-800' : 'bg-white'
-            }`}
+            className={`rounded-lg shadow-xl max-w-md w-full mx-4 modal-content ${
+              isNotesModalClosing ? 'modal-popup-exit' : 'modal-popup-enter'
+            } ${darkMode ? 'bg-gray-800' : 'bg-white'}`}
             onClick={(e) => e.stopPropagation()}
           >
             <div className={`px-5 py-4 border-b flex items-center justify-between ${
@@ -1976,12 +1988,12 @@ const VehicleDetailModal = ({
                 <h3 className={`text-base font-semibold ${
                   darkMode ? 'text-gray-100' : 'text-gray-800'
                 }`}>
-                  {viewingNoteEvent.description}
+                  {viewingNoteEvent?.description}
                 </h3>
                 <p className={`text-xs mt-0.5 ${
                   darkMode ? 'text-gray-400' : 'text-gray-500'
                 }`}>
-                  {new Date(viewingNoteEvent.event_date + 'T00:00:00').toLocaleDateString('en-US', {
+                  {viewingNoteEvent && new Date(viewingNoteEvent.event_date + 'T00:00:00').toLocaleDateString('en-US', {
                     month: 'short',
                     day: 'numeric',
                     year: 'numeric'
@@ -1989,7 +2001,7 @@ const VehicleDetailModal = ({
                 </p>
               </div>
               <button
-                onClick={() => setViewingNoteEvent(null)}
+                onClick={handleCloseNotesModal}
                 className={`p-1 rounded transition-colors ${
                   darkMode ? 'hover:bg-gray-700 text-gray-400' : 'hover:bg-gray-100 text-gray-600'
                 }`}
@@ -2001,7 +2013,7 @@ const VehicleDetailModal = ({
               <p className={`text-sm whitespace-pre-wrap ${
                 darkMode ? 'text-gray-300' : 'text-gray-700'
               }`}>
-                {viewingNoteEvent.notes}
+                {viewingNoteEvent?.notes}
               </p>
             </div>
           </div>
