@@ -722,8 +722,10 @@ const VehicleDetailModal = ({
                                   ? `border-2 border-gray-600 ${selectedEventId !== event.id ? 'md:group-hover:border-white' : ''}`
                                   : `border-2 border-gray-300 ${selectedEventId !== event.id ? 'md:group-hover:border-gray-400' : ''}`
                               }`}>
-                                <Wrench className={`w-4 h-4 ${
-                                  darkMode ? 'text-gray-400' : 'text-gray-500'
+                                <Wrench className={`w-4 h-4 transition-colors ${
+                                  darkMode
+                                    ? `text-gray-400 ${selectedEventId !== event.id ? 'md:group-hover:text-orange-500' : ''}`
+                                    : `text-gray-500 ${selectedEventId !== event.id ? 'md:group-hover:text-orange-500' : ''}`
                                 }`} />
                               </div>
                               {/* Line extending down - mb-[-16px] extends into the gap to reach next icon */}
