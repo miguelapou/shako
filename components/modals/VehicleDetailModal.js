@@ -786,7 +786,10 @@ const VehicleDetailModal = ({
                                   className={`absolute inset-0 rounded-lg flex items-center justify-center gap-3 transition-opacity duration-150 ${
                                     selectedEventId === event.id ? 'opacity-100' : 'opacity-0 pointer-events-none'
                                   } ${darkMode ? 'bg-gray-800/95' : 'bg-gray-100/95'}`}
-                                  onClick={(e) => e.stopPropagation()}
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    setSelectedEventId(null);
+                                  }}
                                 >
                                   <button
                                     onClick={() => {
