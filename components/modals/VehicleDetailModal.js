@@ -175,17 +175,12 @@ const VehicleDetailModal = ({
         // Create a File object from the blob for upload
         const file = new File([blob], filename, { type: 'application/pdf' });
 
-        // Generate a title for the document
-        const make = viewingVehicle.make || '';
-        const model = viewingVehicle.name || '';
-        const year = viewingVehicle.year || '';
+        // Generate a title for the document (MM/DD/YY format)
         const today = new Date();
-        const dateStr = today.toLocaleDateString('en-US', {
-          month: 'short',
-          day: 'numeric',
-          year: 'numeric'
-        });
-        const title = `Vehicle Report - ${year} ${make} ${model} (${dateStr})`.trim().replace(/\s+/g, ' ');
+        const month = String(today.getMonth() + 1).padStart(2, '0');
+        const day = String(today.getDate()).padStart(2, '0');
+        const year = String(today.getFullYear()).slice(-2);
+        const title = `Vehicle Report - ${month}/${day}/${year}`;
 
         // Upload to documents section
         const newDocument = await addDocument(viewingVehicle.id, title, file);
@@ -860,10 +855,10 @@ const VehicleDetailModal = ({
                     {documents.map((doc) => (
                       <div
                         key={doc.id}
-                        className={`group relative rounded-lg p-3 border transition-all cursor-pointer hover:shadow-md ${
+                        className={`group relative rounded-lg p-3 border cursor-pointer md:transition-all md:hover:shadow-md ${
                           darkMode
-                            ? 'bg-gray-700 border-gray-600 hover:border-gray-500'
-                            : 'bg-gray-50 border-gray-200 hover:border-gray-300'
+                            ? 'bg-gray-700 border-gray-600 md:hover:border-gray-500'
+                            : 'bg-gray-50 border-gray-200 md:hover:border-gray-300'
                         }`}
                         onClick={() => openDocument(doc)}
                       >
@@ -872,7 +867,7 @@ const VehicleDetailModal = ({
                             darkMode ? 'text-blue-400' : 'text-blue-600'
                           }`} />
                           <div className="flex-1 min-w-0">
-                            <p className={`text-sm font-medium truncate ${
+                            <p className={`text-sm font-medium md:truncate ${
                               darkMode ? 'text-gray-200' : 'text-gray-800'
                             }`} title={doc.title}>
                               {doc.title}
@@ -884,7 +879,7 @@ const VehicleDetailModal = ({
                             </p>
                           </div>
                         </div>
-                        {/* Delete button - appears on hover */}
+                        {/* Delete button - appears on hover (desktop only) */}
                         <button
                           onClick={(e) => {
                             e.stopPropagation();
@@ -896,7 +891,7 @@ const VehicleDetailModal = ({
                               onConfirm: () => deleteDocument(doc.id, doc.file_url)
                             });
                           }}
-                          className={`absolute top-1 right-1 p-1 rounded opacity-0 group-hover:opacity-100 transition-opacity ${
+                          className={`absolute top-1 right-1 p-1 rounded opacity-0 md:group-hover:opacity-100 transition-opacity ${
                             darkMode
                               ? 'bg-red-900/50 hover:bg-red-800 text-red-400'
                               : 'bg-red-100 hover:bg-red-200 text-red-600'
@@ -904,8 +899,8 @@ const VehicleDetailModal = ({
                         >
                           <X className="w-3 h-3" />
                         </button>
-                        {/* External link indicator */}
-                        <ExternalLink className={`absolute bottom-2 right-2 w-3 h-3 opacity-0 group-hover:opacity-50 transition-opacity ${
+                        {/* External link indicator - desktop only */}
+                        <ExternalLink className={`hidden md:block absolute bottom-2 right-2 w-3 h-3 opacity-0 group-hover:opacity-50 transition-opacity ${
                           darkMode ? 'text-gray-400' : 'text-gray-500'
                         }`} />
                       </div>
