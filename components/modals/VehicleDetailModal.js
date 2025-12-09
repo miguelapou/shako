@@ -1158,14 +1158,14 @@ const VehicleDetailModal = ({
           </div>
 
           {/* Project Details View - Slides in from right */}
-          {vehicleModalProjectView && !vehicleModalEditMode && (
-            <div
-              className={`w-full transition-all duration-500 ease-in-out ${
-                vehicleModalProjectView && !vehicleModalEditMode
-                  ? 'relative opacity-100'
-                  : 'absolute opacity-0 pointer-events-none'
-              }`}
-            >
+          <div
+            className={`w-full transition-all duration-500 ease-in-out ${
+              vehicleModalProjectView && !vehicleModalEditMode
+                ? 'relative opacity-100'
+                : 'absolute opacity-0 pointer-events-none'
+            }`}
+          >
+            {vehicleModalProjectView && !vehicleModalEditMode && (
               <div className="p-6 space-y-6 max-h-[calc(90vh-164px)] overflow-y-auto">
                 <ProjectDetailView
                   project={vehicleModalProjectView}
@@ -1195,8 +1195,8 @@ const VehicleDetailModal = ({
                   setNewTodoText={setNewTodoText}
                 />
               </div>
-            </div>
-          )}
+            )}
+          </div>
 
           {/* Edit Project View - Slides in for editing */}
           <div
