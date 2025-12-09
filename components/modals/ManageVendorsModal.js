@@ -24,8 +24,6 @@ const ManageVendorsModal = ({
 }) => {
   // State for tracking which vendor card has overlay visible (mobile only)
   const [selectedVendor, setSelectedVendor] = useState(null);
-  // Ref for color inputs to trigger programmatically
-  const colorInputRefs = useRef({});
 
   // Track if this modal was open (for close animation)
   const wasOpen = useRef(false);
@@ -186,17 +184,6 @@ const ManageVendorsModal = ({
                           className="flex items-stretch gap-2"
                           onClick={(e) => e.stopPropagation()}
                         >
-                          {/* Hidden color input */}
-                          <input
-                            type="color"
-                            ref={(el) => (colorInputRefs.current[vendor] = el)}
-                            value={vendorColors[vendor] || '#6B7280'}
-                            onChange={(e) => {
-                              updateVendorColor(vendor, e.target.value);
-                            }}
-                            className="sr-only"
-                            tabIndex={-1}
-                          />
                           {/* Delete button - desktop only */}
                           <button
                             onClick={(e) => {
@@ -220,21 +207,28 @@ const ManageVendorsModal = ({
                           >
                             <Trash2 className="w-4 h-4" />
                           </button>
-                          {/* Palette button */}
-                          <button
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              colorInputRefs.current[vendor]?.click();
-                            }}
-                            className={`p-2 sm:px-3 sm:py-2 rounded-lg transition-colors flex items-center ${
+                          {/* Color picker button - input overlays icon for iOS touch support */}
+                          <div
+                            className={`relative p-2 sm:px-3 sm:py-2 rounded-lg transition-colors flex items-center cursor-pointer ${
                               darkMode
                                 ? 'hover:bg-gray-600 text-gray-400 hover:text-gray-200'
                                 : 'hover:bg-gray-200 text-gray-500 hover:text-gray-700'
                             }`}
                             title="Choose vendor color"
+                            onClick={(e) => e.stopPropagation()}
                           >
                             <Palette className="w-4 h-4" />
-                          </button>
+                            <input
+                              type="color"
+                              value={vendorColors[vendor] || '#6B7280'}
+                              onChange={(e) => {
+                                updateVendorColor(vendor, e.target.value);
+                              }}
+                              className="absolute inset-0 opacity-0 cursor-pointer"
+                              style={{ width: '100%', height: '100%' }}
+                              tabIndex={-1}
+                            />
+                          </div>
                           {/* Edit button */}
                           <button
                             onClick={(e) => {
