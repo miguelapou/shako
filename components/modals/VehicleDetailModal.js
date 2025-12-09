@@ -21,7 +21,8 @@ import {
   MoreVertical,
   Calendar,
   ListChecks,
-  FileDown
+  FileDown,
+  Eye
 } from 'lucide-react';
 import ProjectDetailView from '../ui/ProjectDetailView';
 import ProjectEditForm from '../ui/ProjectEditForm';
@@ -97,10 +98,11 @@ const VehicleDetailModal = ({
   // State for report generation
   const [generatingReport, setGeneratingReport] = useState(false);
   const [showExportModal, setShowExportModal] = useState(false);
-  // State for mobile document actions overlay
-  const [mobileSelectedDocId, setMobileSelectedDocId] = useState(null);
-  // State for mobile service event actions overlay
-  const [mobileSelectedEventId, setMobileSelectedEventId] = useState(null);
+  // State for document/service event action overlays
+  const [selectedDocId, setSelectedDocId] = useState(null);
+  const [selectedEventId, setSelectedEventId] = useState(null);
+  // State for viewing service event notes
+  const [viewingNoteEvent, setViewingNoteEvent] = useState(null);
 
   // Get document state and actions from context
   const {
@@ -525,7 +527,7 @@ const VehicleDetailModal = ({
                     Service History ({serviceEvents?.length || 0})
                   </h3>
                 </div>
-                <div className="relative" onClick={() => setMobileSelectedEventId(null)}>
+                <div className="relative" onClick={() => setSelectedEventId(null)}>
                     {/* Timeline items */}
                     <div className="flex flex-col gap-4">
                       {serviceEvents && [...serviceEvents].sort((a, b) =>
@@ -554,14 +556,10 @@ const VehicleDetailModal = ({
                         return (
                           <div
                             key={event.id}
-                            className="relative flex items-stretch gap-4 group"
+                            className="relative flex items-stretch gap-4 group cursor-pointer"
                             onClick={(e) => {
                               e.stopPropagation();
-                              // On mobile, first tap shows overlay
-                              const isMobile = window.innerWidth < 768;
-                              if (isMobile) {
-                                setMobileSelectedEventId(mobileSelectedEventId === event.id ? null : event.id);
-                              }
+                              setSelectedEventId(selectedEventId === event.id ? null : event.id);
                             }}
                           >
                             {/* Timeline column with icon and line */}
@@ -569,10 +567,10 @@ const VehicleDetailModal = ({
                               {/* Timeline dot */}
                               <div className={`relative z-10 flex-shrink-0 w-10 h-10 rounded-full flex items-center justify-center ${
                                 darkMode ? 'bg-gray-700 border-2 border-gray-600' : 'bg-white border-2 border-gray-300'
-                              } md:group-hover:border-blue-500 transition-colors`}>
+                              }`}>
                                 <Wrench className={`w-4 h-4 ${
                                   darkMode ? 'text-gray-400' : 'text-gray-500'
-                                } md:group-hover:text-blue-500 transition-colors`} />
+                                }`} />
                               </div>
                               {/* Line extending down - mb-[-16px] extends into the gap to reach next icon */}
                               <div
@@ -586,10 +584,10 @@ const VehicleDetailModal = ({
 
                             {/* Event content */}
                             <div className="flex-1 min-w-0 pb-0">
-                              <div className={`relative rounded-lg p-3 border md:transition-all ${
+                              <div className={`relative rounded-lg p-3 border ${
                                 darkMode
-                                  ? 'bg-gray-700/50 border-gray-600 md:hover:border-gray-500'
-                                  : 'bg-gray-50 border-gray-200 md:hover:border-gray-300'
+                                  ? 'bg-gray-700/50 border-gray-600'
+                                  : 'bg-gray-50 border-gray-200'
                               }`}>
                                 {/* Notes indicator */}
                                 {event.notes && (
@@ -597,117 +595,94 @@ const VehicleDetailModal = ({
                                     darkMode ? 'text-gray-500' : 'text-gray-400'
                                   }`} />
                                 )}
-                                <div className="flex items-stretch justify-between gap-2">
-                                  <div className="flex-1 min-w-0">
-                                    <p className={`text-sm font-medium ${
-                                      darkMode ? 'text-gray-200' : 'text-gray-800'
+                                <div className="flex-1 min-w-0">
+                                  <p className={`text-sm font-medium ${
+                                    darkMode ? 'text-gray-200' : 'text-gray-800'
+                                  }`}>
+                                    {event.description}
+                                  </p>
+                                  <div className="flex flex-wrap items-center gap-x-3 gap-y-1 mt-1">
+                                    <span className={`text-xs flex items-center gap-1 whitespace-nowrap ${
+                                      darkMode ? 'text-gray-400' : 'text-gray-500'
                                     }`}>
-                                      {event.description}
-                                    </p>
-                                    <div className="flex flex-wrap items-center gap-x-3 gap-y-1 mt-1">
+                                      <Calendar className="w-3 h-3 flex-shrink-0" />
+                                      {formattedDate}
+                                    </span>
+                                    {event.odometer && (
                                       <span className={`text-xs flex items-center gap-1 whitespace-nowrap ${
                                         darkMode ? 'text-gray-400' : 'text-gray-500'
                                       }`}>
-                                        <Calendar className="w-3 h-3 flex-shrink-0" />
-                                        {formattedDate}
+                                        <Gauge className="w-3 h-3 flex-shrink-0" />
+                                        {event.odometer.toLocaleString()}{viewingVehicle.odometer_unit ? ` ${viewingVehicle.odometer_unit}` : ''}
+                                        {mileageDiff !== null && (
+                                          <span className={`${
+                                            darkMode ? 'text-gray-500' : 'text-gray-400'
+                                          }`}>
+                                            (+{mileageDiff.toLocaleString()})
+                                          </span>
+                                        )}
                                       </span>
-                                      {event.odometer && (
-                                        <span className={`text-xs flex items-center gap-1 whitespace-nowrap ${
-                                          darkMode ? 'text-gray-400' : 'text-gray-500'
-                                        }`}>
-                                          <Gauge className="w-3 h-3 flex-shrink-0" />
-                                          {event.odometer.toLocaleString()}{viewingVehicle.odometer_unit ? ` ${viewingVehicle.odometer_unit}` : ''}
-                                          {mileageDiff !== null && (
-                                            <span className={`${
-                                              darkMode ? 'text-gray-500' : 'text-gray-400'
-                                            }`}>
-                                              (+{mileageDiff.toLocaleString()})
-                                            </span>
-                                          )}
-                                        </span>
-                                      )}
-                                    </div>
-                                  </div>
-                                  {/* Actions - desktop only */}
-                                  <div className="hidden md:flex items-stretch gap-1 flex-shrink-0 opacity-0 group-hover:opacity-100 transition-opacity">
-                                    <button
-                                      onClick={(e) => {
-                                        e.stopPropagation();
-                                        openEditServiceEventModal(event);
-                                      }}
-                                      className={`px-1.5 rounded transition-colors flex items-center ${
-                                        darkMode
-                                          ? 'hover:bg-gray-600 text-gray-400 hover:text-gray-200'
-                                          : 'hover:bg-gray-200 text-gray-500 hover:text-gray-700'
-                                      }`}
-                                    >
-                                      <Edit2 className="w-3.5 h-3.5" />
-                                    </button>
-                                    <button
-                                      onClick={(e) => {
-                                        e.stopPropagation();
-                                        setConfirmDialog({
-                                          isOpen: true,
-                                          title: 'Delete Service Event',
-                                          message: `Are you sure you want to delete "${event.description}"? This action cannot be undone.`,
-                                          confirmText: 'Delete',
-                                          onConfirm: () => deleteServiceEvent(event.id)
-                                        });
-                                      }}
-                                      className={`px-1.5 rounded transition-colors flex items-center ${
-                                        darkMode
-                                          ? 'hover:bg-red-900/50 text-gray-400 hover:text-red-400'
-                                          : 'hover:bg-red-100 text-gray-500 hover:text-red-600'
-                                      }`}
-                                    >
-                                      <Trash2 className="w-3.5 h-3.5" />
-                                    </button>
+                                    )}
                                   </div>
                                 </div>
-                                {/* Mobile action overlay */}
-                                {mobileSelectedEventId === event.id && (
-                                  <div
-                                    className={`md:hidden absolute inset-0 rounded-lg flex items-center justify-center gap-4 ${
-                                      darkMode ? 'bg-gray-800/95' : 'bg-gray-100/95'
+                                {/* Action overlay with fade animation */}
+                                <div
+                                  className={`absolute inset-0 rounded-lg flex items-center justify-center gap-3 transition-opacity duration-150 ${
+                                    selectedEventId === event.id ? 'opacity-100' : 'opacity-0 pointer-events-none'
+                                  } ${darkMode ? 'bg-gray-800/95' : 'bg-gray-100/95'}`}
+                                  onClick={(e) => e.stopPropagation()}
+                                >
+                                  {event.notes && (
+                                    <button
+                                      onClick={() => {
+                                        setSelectedEventId(null);
+                                        setViewingNoteEvent(event);
+                                      }}
+                                      className={`flex flex-col items-center justify-center w-14 h-14 rounded-lg transition-colors ${
+                                        darkMode
+                                          ? 'bg-gray-700 text-gray-300'
+                                          : 'bg-white text-gray-600 shadow-sm'
+                                      }`}
+                                    >
+                                      <Eye className="w-5 h-5 mb-0.5" />
+                                      <span className="text-[10px] font-medium">Notes</span>
+                                    </button>
+                                  )}
+                                  <button
+                                    onClick={() => {
+                                      setSelectedEventId(null);
+                                      openEditServiceEventModal(event);
+                                    }}
+                                    className={`flex flex-col items-center justify-center w-14 h-14 rounded-lg transition-colors ${
+                                      darkMode
+                                        ? 'bg-gray-700 text-blue-400'
+                                        : 'bg-white text-blue-600 shadow-sm'
                                     }`}
-                                    onClick={(e) => e.stopPropagation()}
                                   >
-                                    <button
-                                      onClick={() => {
-                                        setMobileSelectedEventId(null);
-                                        openEditServiceEventModal(event);
-                                      }}
-                                      className={`flex flex-col items-center justify-center w-14 h-14 rounded-lg transition-colors ${
-                                        darkMode
-                                          ? 'bg-gray-700 text-blue-400'
-                                          : 'bg-white text-blue-600 shadow-sm'
-                                      }`}
-                                    >
-                                      <Edit2 className="w-5 h-5 mb-0.5" />
-                                      <span className="text-[10px] font-medium">Edit</span>
-                                    </button>
-                                    <button
-                                      onClick={() => {
-                                        setMobileSelectedEventId(null);
-                                        setConfirmDialog({
-                                          isOpen: true,
-                                          title: 'Delete Service Event',
-                                          message: `Are you sure you want to delete "${event.description}"? This action cannot be undone.`,
-                                          confirmText: 'Delete',
-                                          onConfirm: () => deleteServiceEvent(event.id)
-                                        });
-                                      }}
-                                      className={`flex flex-col items-center justify-center w-14 h-14 rounded-lg transition-colors ${
-                                        darkMode
-                                          ? 'bg-gray-700 text-red-400'
-                                          : 'bg-white text-red-600 shadow-sm'
-                                      }`}
-                                    >
-                                      <Trash2 className="w-5 h-5 mb-0.5" />
-                                      <span className="text-[10px] font-medium">Delete</span>
-                                    </button>
-                                  </div>
-                                )}
+                                    <Edit2 className="w-5 h-5 mb-0.5" />
+                                    <span className="text-[10px] font-medium">Edit</span>
+                                  </button>
+                                  <button
+                                    onClick={() => {
+                                      setSelectedEventId(null);
+                                      setConfirmDialog({
+                                        isOpen: true,
+                                        title: 'Delete Service Event',
+                                        message: `Are you sure you want to delete "${event.description}"? This action cannot be undone.`,
+                                        confirmText: 'Delete',
+                                        onConfirm: () => deleteServiceEvent(event.id)
+                                      });
+                                    }}
+                                    className={`flex flex-col items-center justify-center w-14 h-14 rounded-lg transition-colors ${
+                                      darkMode
+                                        ? 'bg-gray-700 text-red-400'
+                                        : 'bg-white text-red-600 shadow-sm'
+                                    }`}
+                                  >
+                                    <Trash2 className="w-5 h-5 mb-0.5" />
+                                    <span className="text-[10px] font-medium">Delete</span>
+                                  </button>
+                                </div>
                               </div>
                             </div>
                           </div>
@@ -925,25 +900,19 @@ const VehicleDetailModal = ({
                 ) : (
                   <div
                     className="grid grid-cols-2 md:grid-cols-4 gap-3"
-                    onClick={() => setMobileSelectedDocId(null)}
+                    onClick={() => setSelectedDocId(null)}
                   >
                     {documents.map((doc) => (
                       <div
                         key={doc.id}
-                        className={`group relative rounded-lg p-3 border cursor-pointer md:transition-all md:hover:shadow-md ${
+                        className={`group relative rounded-lg p-3 border cursor-pointer ${
                           darkMode
-                            ? 'bg-gray-700 border-gray-600 md:hover:border-gray-500'
-                            : 'bg-gray-50 border-gray-200 md:hover:border-gray-300'
+                            ? 'bg-gray-700 border-gray-600'
+                            : 'bg-gray-50 border-gray-200'
                         }`}
                         onClick={(e) => {
                           e.stopPropagation();
-                          // On mobile, first tap shows overlay; on desktop, open directly
-                          const isMobile = window.innerWidth < 768;
-                          if (isMobile) {
-                            setMobileSelectedDocId(mobileSelectedDocId === doc.id ? null : doc.id);
-                          } else {
-                            openDocument(doc);
-                          }
+                          setSelectedDocId(selectedDocId === doc.id ? null : doc.id);
                         }}
                       >
                         <div className="flex items-start gap-2">
@@ -963,74 +932,48 @@ const VehicleDetailModal = ({
                             </p>
                           </div>
                         </div>
-                        {/* Mobile action overlay */}
-                        {mobileSelectedDocId === doc.id && (
-                          <div
-                            className={`md:hidden absolute inset-0 rounded-lg flex items-center justify-center gap-4 ${
-                              darkMode ? 'bg-gray-800/95' : 'bg-gray-100/95'
-                            }`}
-                            onClick={(e) => e.stopPropagation()}
-                          >
-                            <button
-                              onClick={() => {
-                                openDocument(doc);
-                                setMobileSelectedDocId(null);
-                              }}
-                              className={`flex flex-col items-center justify-center w-14 h-14 rounded-lg transition-colors ${
-                                darkMode
-                                  ? 'bg-gray-700 text-blue-400'
-                                  : 'bg-white text-blue-600 shadow-sm'
-                              }`}
-                            >
-                              <ExternalLink className="w-5 h-5 mb-0.5" />
-                              <span className="text-[10px] font-medium">Open</span>
-                            </button>
-                            <button
-                              onClick={() => {
-                                setMobileSelectedDocId(null);
-                                setConfirmDialog({
-                                  isOpen: true,
-                                  title: 'Delete Document',
-                                  message: `Are you sure you want to delete "${doc.title}"? This action cannot be undone.`,
-                                  confirmText: 'Delete',
-                                  onConfirm: () => deleteDocument(doc.id, doc.file_url)
-                                });
-                              }}
-                              className={`flex flex-col items-center justify-center w-14 h-14 rounded-lg transition-colors ${
-                                darkMode
-                                  ? 'bg-gray-700 text-red-400'
-                                  : 'bg-white text-red-600 shadow-sm'
-                              }`}
-                            >
-                              <Trash2 className="w-5 h-5 mb-0.5" />
-                              <span className="text-[10px] font-medium">Delete</span>
-                            </button>
-                          </div>
-                        )}
-                        {/* Delete button - appears on hover (desktop only) */}
-                        <button
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            setConfirmDialog({
-                              isOpen: true,
-                              title: 'Delete Document',
-                              message: `Are you sure you want to delete "${doc.title}"? This action cannot be undone.`,
-                              confirmText: 'Delete',
-                              onConfirm: () => deleteDocument(doc.id, doc.file_url)
-                            });
-                          }}
-                          className={`hidden md:block absolute top-1 right-1 p-1 rounded opacity-0 group-hover:opacity-100 transition-opacity ${
-                            darkMode
-                              ? 'bg-red-900/50 hover:bg-red-800 text-red-400'
-                              : 'bg-red-100 hover:bg-red-200 text-red-600'
-                          }`}
+                        {/* Action overlay with fade animation */}
+                        <div
+                          className={`absolute inset-0 rounded-lg flex items-center justify-center gap-4 transition-opacity duration-150 ${
+                            selectedDocId === doc.id ? 'opacity-100' : 'opacity-0 pointer-events-none'
+                          } ${darkMode ? 'bg-gray-800/95' : 'bg-gray-100/95'}`}
+                          onClick={(e) => e.stopPropagation()}
                         >
-                          <X className="w-3 h-3" />
-                        </button>
-                        {/* External link indicator - desktop only */}
-                        <ExternalLink className={`hidden md:block absolute bottom-2 right-2 w-3 h-3 opacity-0 group-hover:opacity-50 transition-opacity ${
-                          darkMode ? 'text-gray-400' : 'text-gray-500'
-                        }`} />
+                          <button
+                            onClick={() => {
+                              openDocument(doc);
+                              setSelectedDocId(null);
+                            }}
+                            className={`flex flex-col items-center justify-center w-14 h-14 rounded-lg transition-colors ${
+                              darkMode
+                                ? 'bg-gray-700 text-blue-400'
+                                : 'bg-white text-blue-600 shadow-sm'
+                            }`}
+                          >
+                            <ExternalLink className="w-5 h-5 mb-0.5" />
+                            <span className="text-[10px] font-medium">Open</span>
+                          </button>
+                          <button
+                            onClick={() => {
+                              setSelectedDocId(null);
+                              setConfirmDialog({
+                                isOpen: true,
+                                title: 'Delete Document',
+                                message: `Are you sure you want to delete "${doc.title}"? This action cannot be undone.`,
+                                confirmText: 'Delete',
+                                onConfirm: () => deleteDocument(doc.id, doc.file_url)
+                              });
+                            }}
+                            className={`flex flex-col items-center justify-center w-14 h-14 rounded-lg transition-colors ${
+                              darkMode
+                                ? 'bg-gray-700 text-red-400'
+                                : 'bg-white text-red-600 shadow-sm'
+                            }`}
+                          >
+                            <Trash2 className="w-5 h-5 mb-0.5" />
+                            <span className="text-[10px] font-medium">Delete</span>
+                          </button>
+                        </div>
                       </div>
                     ))}
                     {/* Add new document card */}
@@ -1996,6 +1939,57 @@ const VehicleDetailModal = ({
         vehicleName={viewingVehicle?.nickname || `${viewingVehicle?.year || ''} ${viewingVehicle?.make || ''} ${viewingVehicle?.name || ''}`.trim()}
         generating={generatingReport}
       />
+
+      {/* Notes Viewing Modal */}
+      {viewingNoteEvent && (
+        <div
+          className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-[70]"
+          onClick={() => setViewingNoteEvent(null)}
+        >
+          <div
+            className={`rounded-lg shadow-xl max-w-md w-full mx-4 ${
+              darkMode ? 'bg-gray-800' : 'bg-white'
+            }`}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className={`px-5 py-4 border-b flex items-center justify-between ${
+              darkMode ? 'border-gray-700' : 'border-gray-200'
+            }`}>
+              <div>
+                <h3 className={`text-base font-semibold ${
+                  darkMode ? 'text-gray-100' : 'text-gray-800'
+                }`}>
+                  {viewingNoteEvent.description}
+                </h3>
+                <p className={`text-xs mt-0.5 ${
+                  darkMode ? 'text-gray-400' : 'text-gray-500'
+                }`}>
+                  {new Date(viewingNoteEvent.event_date + 'T00:00:00').toLocaleDateString('en-US', {
+                    month: 'short',
+                    day: 'numeric',
+                    year: 'numeric'
+                  })}
+                </p>
+              </div>
+              <button
+                onClick={() => setViewingNoteEvent(null)}
+                className={`p-1 rounded transition-colors ${
+                  darkMode ? 'hover:bg-gray-700 text-gray-400' : 'hover:bg-gray-100 text-gray-600'
+                }`}
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+            <div className="p-5">
+              <p className={`text-sm whitespace-pre-wrap ${
+                darkMode ? 'text-gray-300' : 'text-gray-700'
+              }`}>
+                {viewingNoteEvent.notes}
+              </p>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
