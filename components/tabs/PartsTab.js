@@ -641,12 +641,14 @@ const PartsTab = ({
                 } ${(statusFilter === 'purchased' || statusFilter === 'pending') ? `ring-2 ${statusFilter === 'pending' ? 'ring-gray-400' : 'ring-yellow-500'}` : ''}`}
                 style={{ touchAction: 'manipulation' }}
               >
-                {statusFilter === 'pending' ? (
-                  <Clock className={`w-6 h-6 text-gray-400 absolute top-2 right-2 transition-opacity ${statusFilter === 'pending' ? 'opacity-70' : 'opacity-20'}`} />
-                ) : (
-                  <ShoppingCart className={`w-6 h-6 text-yellow-500 absolute top-2 right-2 transition-opacity ${statusFilter === 'purchased' ? 'opacity-70' : 'opacity-20'}`} />
-                )}
-                <div key={statusFilter === 'pending' ? 'pending' : statusFilter === 'purchased' ? 'purchased' : 'ordered'} className="status-card-content">
+                <span key={statusFilter === 'pending' ? 'icon-clock' : 'icon-cart'} className="status-card-icon absolute top-2 right-2">
+                  {statusFilter === 'pending' ? (
+                    <Clock className={`w-6 h-6 text-gray-400 transition-opacity ${statusFilter === 'pending' ? 'opacity-70' : 'opacity-20'}`} />
+                  ) : (
+                    <ShoppingCart className={`w-6 h-6 text-yellow-500 transition-opacity ${statusFilter === 'purchased' ? 'opacity-70' : 'opacity-20'}`} />
+                  )}
+                </span>
+                <div key={statusFilter === 'pending' ? 'pending' : statusFilter === 'purchased' ? 'purchased' : 'all-ordered'} className="status-card-content">
                   <p className={`text-xs mb-1 ${
                     darkMode ? 'text-gray-400' : 'text-slate-600'
                   }`}>{statusFilter === 'pending' ? 'Unordered' : 'Ordered'}</p>
@@ -739,12 +741,14 @@ const PartsTab = ({
                 } ${deliveredFilter !== 'all' ? `ring-2 ${deliveredFilter === 'hide' ? 'ring-red-500' : 'ring-green-500'}` : ''}`}
                 style={{ touchAction: 'manipulation' }}
               >
-                {deliveredFilter === 'hide' ? (
-                  <Clock className={`w-6 h-6 text-red-500 absolute top-2 right-2 transition-opacity ${deliveredFilter !== 'all' ? 'opacity-70' : 'opacity-20'}`} />
-                ) : (
-                  <CheckCircle className={`w-6 h-6 text-green-500 absolute top-2 right-2 transition-opacity ${deliveredFilter !== 'all' ? 'opacity-70' : 'opacity-20'}`} />
-                )}
-                <div key={deliveredFilter} className={deliveredFilter === 'hide' ? 'status-card-content' : ''}>
+                <span key={deliveredFilter === 'hide' ? 'icon-clock' : 'icon-check'} className="status-card-icon absolute top-2 right-2">
+                  {deliveredFilter === 'hide' ? (
+                    <Clock className={`w-6 h-6 text-red-500 transition-opacity ${deliveredFilter !== 'all' ? 'opacity-70' : 'opacity-20'}`} />
+                  ) : (
+                    <CheckCircle className={`w-6 h-6 text-green-500 transition-opacity ${deliveredFilter !== 'all' ? 'opacity-70' : 'opacity-20'}`} />
+                  )}
+                </span>
+                <div key={deliveredFilter} className="status-card-content">
                   <p className={`text-xs mb-1 ${
                     darkMode ? 'text-gray-400' : 'text-slate-600'
                   }`}>{deliveredFilter === 'hide' ? 'Undelivered' : 'Delivered'}</p>
@@ -1071,9 +1075,11 @@ const PartsTab = ({
                   </th>
                 </tr>
               </thead>
-              <tbody className={`divide-y ${
-                darkMode ? 'divide-gray-700' : 'divide-slate-200'
-              }`}>
+              <tbody
+                className={`divide-y ${
+                  darkMode ? 'divide-gray-700' : 'divide-slate-200'
+                }`}
+              >
                 {paginatedParts.map((part) => (
                   <tr
                     key={part.id}
@@ -1263,9 +1269,9 @@ const PartsTab = ({
                     </td>
                   </tr>
                 ))}
-                {/* Add empty rows on last page to maintain consistent height when there are multiple pages */}
-                {totalPages > 1 && paginatedParts.length < rowsPerPage && Array.from({ length: rowsPerPage - paginatedParts.length }).map((_, index) => (
-                  <tr key={`empty-${index}`} className="h-[63px]">
+                {/* Empty rows to maintain consistent height and keep divider lines visible */}
+                {totalPages > 1 && Array.from({ length: rowsPerPage - paginatedParts.length }).map((_, index) => (
+                  <tr key={`empty-${index}`} className="h-[63px] empty-row">
                     <td className="px-6 py-4"></td>
                     <td className="px-3 py-4"></td>
                     <td className="px-6 py-4"></td>
