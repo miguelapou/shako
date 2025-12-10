@@ -464,31 +464,27 @@ const PartDetailModal = ({
   }, [isOpen, partDetailView, hasPrev, hasNext, goToPrevPart, goToNextPart]);
 
   // Sync viewingPart with parts array when it changes (e.g., after tracking modal saves)
+  // Use a ref to track the parts array and detect when it actually changes
+  const prevPartsRef = useRef(parts);
   useEffect(() => {
     if (!isOpen || !viewingPart?.id || !parts) return;
 
+    // Only sync when parts array reference actually changed
+    const partsChanged = prevPartsRef.current !== parts;
+    prevPartsRef.current = parts;
+
+    if (!partsChanged) return;
+
     const updatedPart = parts.find(p => p.id === viewingPart.id);
-    console.log('[PartDetailModal] Sync effect running', {
+    console.log('[PartDetailModal] Parts array changed, syncing viewingPart', {
       viewingPartId: viewingPart.id,
       viewingPartShipped: viewingPart.shipped,
-      viewingPartTracking: viewingPart.tracking,
-      updatedPartShipped: updatedPart?.shipped,
-      updatedPartTracking: updatedPart?.tracking,
-      partsLength: parts.length
+      updatedPartShipped: updatedPart?.shipped
     });
-    if (updatedPart) {
-      // Check if any relevant field changed
-      const hasChanges =
-        updatedPart.shipped !== viewingPart.shipped ||
-        updatedPart.delivered !== viewingPart.delivered ||
-        updatedPart.purchased !== viewingPart.purchased ||
-        updatedPart.tracking !== viewingPart.tracking;
 
-      console.log('[PartDetailModal] hasChanges:', hasChanges);
-      if (hasChanges) {
-        console.log('[PartDetailModal] Updating viewingPart to:', updatedPart);
-        setViewingPart(updatedPart);
-      }
+    if (updatedPart && updatedPart !== viewingPart) {
+      console.log('[PartDetailModal] Updating viewingPart');
+      setViewingPart(updatedPart);
     }
   }, [isOpen, parts, viewingPart, setViewingPart]);
 

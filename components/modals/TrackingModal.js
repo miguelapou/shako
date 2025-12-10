@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useRef } from 'react';
 import { X } from 'lucide-react';
 
 const TrackingModal = ({
@@ -11,30 +11,36 @@ const TrackingModal = ({
   onClose
 }) => {
   const [isClosing, setIsClosing] = useState(false);
+  const isSubmittingRef = useRef(false); // Guard against double-clicks
 
   const handleClose = useCallback(() => {
+    if (isClosing) return;
     setIsClosing(true);
     setTimeout(() => {
       onClose();
       setIsClosing(false);
     }, 150);
-  }, [onClose]);
+  }, [onClose, isClosing]);
 
   const handleSkip = useCallback(() => {
+    if (isSubmittingRef.current || isClosing) return;
+    isSubmittingRef.current = true;
     setIsClosing(true);
     setTimeout(() => {
       skipTrackingInfo();
-      // Don't reset isClosing - modal will unmount
+      // Don't reset - modal will unmount
     }, 150);
-  }, [skipTrackingInfo]);
+  }, [skipTrackingInfo, isClosing]);
 
   const handleSave = useCallback(() => {
+    if (isSubmittingRef.current || isClosing) return;
+    isSubmittingRef.current = true;
     setIsClosing(true);
     setTimeout(() => {
       saveTrackingInfo();
-      // Don't reset isClosing - modal will unmount
+      // Don't reset - modal will unmount
     }, 150);
-  }, [saveTrackingInfo]);
+  }, [saveTrackingInfo, isClosing]);
 
   if (!isOpen) return null;
 
