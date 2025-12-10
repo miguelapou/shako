@@ -64,7 +64,7 @@ const PartsTab = ({
     const estimatedTableTop = 274;
     const bottomPadding = 180;
     const headerHeight = 57;
-    const rowHeight = 57;
+    const rowHeight = 63;
     const availableHeight = viewportHeight - estimatedTableTop - bottomPadding - headerHeight;
     return Math.max(5, Math.floor(availableHeight / rowHeight));
   };
@@ -98,7 +98,7 @@ const PartsTab = ({
     const viewportHeight = window.innerHeight;
     const bottomPadding = 180;
     const headerHeight = 57;
-    const rowHeight = 57;
+    const rowHeight = 63;
 
     const availableHeight = viewportHeight - tableTop - bottomPadding - headerHeight;
     const optimalRows = Math.max(5, Math.floor(availableHeight / rowHeight));
@@ -963,10 +963,10 @@ const PartsTab = ({
         {filteredParts.length > 0 ? (
         <div
           ref={tableContainerRef}
-          className={`hidden-below-800 rounded-lg shadow-md ${
+          className={`hidden-below-800 rounded-t-lg shadow-md ${
           darkMode ? 'bg-gray-800' : 'bg-slate-100'
         }`}>
-          <div className="overflow-x-auto overflow-y-visible rounded-lg">
+          <div className="overflow-x-auto overflow-y-visible rounded-t-lg">
             <table className={`w-full min-w-[900px] table-fixed ${isStatusFiltering || isFilteringParts || isSearching ? 'table-status-filtering' : isSorting ? 'table-sorting' : isPaginating ? 'table-status-filtering' : ''}`}>
               <thead className={`border-b ${
                 darkMode ? 'bg-gray-700 border-gray-600' : 'bg-slate-50 border-slate-200'
@@ -1232,7 +1232,7 @@ const PartsTab = ({
                 ))}
                 {/* Add empty rows on last page to maintain consistent height when there are multiple pages */}
                 {totalPages > 1 && paginatedParts.length < rowsPerPage && Array.from({ length: rowsPerPage - paginatedParts.length }).map((_, index) => (
-                  <tr key={`empty-${index}`} className="h-[57px]">
+                  <tr key={`empty-${index}`} className="h-[63px]">
                     <td className="px-6 py-4"></td>
                     <td className="px-3 py-4"></td>
                     <td className="px-6 py-4"></td>
@@ -1246,7 +1246,7 @@ const PartsTab = ({
               </tbody>
             </table>
           </div>
-          <div className={`px-6 py-4 border-t parts-table-footer ${
+          <div className={`px-6 py-4 border-t rounded-b-lg parts-table-footer ${
             darkMode ? 'bg-gray-700 border-gray-600' : 'bg-slate-50 border-slate-200'
           }`}>
             <div className="grid grid-cols-3 items-center gap-4">
