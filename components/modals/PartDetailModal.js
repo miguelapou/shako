@@ -468,6 +468,14 @@ const PartDetailModal = ({
     if (!isOpen || !viewingPart?.id || !parts) return;
 
     const updatedPart = parts.find(p => p.id === viewingPart.id);
+    console.log('[PartDetailModal] Sync effect running', {
+      viewingPartId: viewingPart.id,
+      viewingPartShipped: viewingPart.shipped,
+      viewingPartTracking: viewingPart.tracking,
+      updatedPartShipped: updatedPart?.shipped,
+      updatedPartTracking: updatedPart?.tracking,
+      partsLength: parts.length
+    });
     if (updatedPart) {
       // Check if any relevant field changed
       const hasChanges =
@@ -476,7 +484,9 @@ const PartDetailModal = ({
         updatedPart.purchased !== viewingPart.purchased ||
         updatedPart.tracking !== viewingPart.tracking;
 
+      console.log('[PartDetailModal] hasChanges:', hasChanges);
       if (hasChanges) {
+        console.log('[PartDetailModal] Updating viewingPart to:', updatedPart);
         setViewingPart(updatedPart);
       }
     }
