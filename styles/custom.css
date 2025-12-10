@@ -320,6 +320,22 @@ input[type="number"] {
   }
 }
 
+/* Status Card Icon Fade-in Animation */
+.status-card-icon {
+  animation: statusCardIconFadeIn 0.3s ease-in-out;
+}
+
+@keyframes statusCardIconFadeIn {
+  0% {
+    opacity: 0;
+    transform: scale(0.8);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
 /* Project Filtering Animation */
 .projects-filtering > div {
   animation: projectFilterFade 0.4s cubic-bezier(0.4, 0, 0.2, 1) forwards;
