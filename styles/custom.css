@@ -384,31 +384,37 @@ input[type="number"] {
 /* Image animation during layout transitions */
 @keyframes vehicleImageShrink {
   0% {
-    transform: scale(1.15);
+    transform: scale(1.15) translateZ(0);
   }
   100% {
-    transform: scale(1);
+    transform: scale(1) translateZ(0);
   }
 }
 
 @keyframes vehicleImageGrow {
   0% {
-    transform: scale(0.85);
+    transform: scale(0.85) translateZ(0);
   }
   100% {
-    transform: scale(1);
+    transform: scale(1) translateZ(0);
   }
 }
 
 .vehicles-layout-transition.to-compact img,
 .vehicles-layout-transition.to-compact .aspect-square {
   animation: vehicleImageShrink 0.35s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+  -webkit-backface-visibility: hidden;
+  backface-visibility: hidden;
+  will-change: transform;
 }
 
 .vehicles-layout-transition.to-default img,
 .vehicles-layout-transition.to-default .h-48 {
   animation: vehicleImageGrow 0.35s cubic-bezier(0.4, 0, 0.2, 1) forwards;
   transform-origin: left center;
+  -webkit-backface-visibility: hidden;
+  backface-visibility: hidden;
+  will-change: transform;
 }
 
 .vehicles-layout-transition.to-compact img,
