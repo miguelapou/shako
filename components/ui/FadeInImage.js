@@ -2,9 +2,6 @@
 
 import { useState, useCallback, useEffect, useRef } from 'react';
 
-// Debug counter for tracking component instances
-let instanceCounter = 0;
-
 /**
  * FadeInImage - An image component that fades in smoothly once loaded
  *
@@ -34,41 +31,21 @@ export default function FadeInImage({
 }) {
   const [isLoaded, setIsLoaded] = useState(false);
   const prevSrcRef = useRef(src);
-  const instanceIdRef = useRef(null);
-  const renderCountRef = useRef(0);
-
-  // Assign instance ID on first render
-  if (instanceIdRef.current === null) {
-    instanceIdRef.current = ++instanceCounter;
-  }
-
-  renderCountRef.current++;
-  console.log(`[FadeInImage #${instanceIdRef.current}] RENDER #${renderCountRef.current} | alt="${alt}" | isLoaded=${isLoaded}`);
-
-  // Log mount/unmount
-  useEffect(() => {
-    console.log(`[FadeInImage #${instanceIdRef.current}] MOUNTED | alt="${alt}"`);
-    return () => {
-      console.log(`[FadeInImage #${instanceIdRef.current}] UNMOUNTED | alt="${alt}"`);
-    };
-  }, [alt]);
 
   // Reset loaded state when src changes
   useEffect(() => {
     if (prevSrcRef.current !== src) {
-      console.log(`[FadeInImage #${instanceIdRef.current}] SRC CHANGED | alt="${alt}" | resetting isLoaded`);
       setIsLoaded(false);
       prevSrcRef.current = src;
     }
-  }, [src, alt]);
+  }, [src]);
 
   const handleLoad = useCallback((e) => {
-    console.log(`[FadeInImage #${instanceIdRef.current}] IMAGE LOADED | alt="${alt}"`);
     setIsLoaded(true);
     if (onLoad) {
       onLoad(e);
     }
-  }, [onLoad, alt]);
+  }, [onLoad]);
 
   return (
     <img

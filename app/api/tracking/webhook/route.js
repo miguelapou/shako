@@ -92,7 +92,6 @@ export async function POST(request) {
 
     if (!parts || parts.length === 0) {
       // Part not found - might be tracking from another source
-      console.log(`No part found for tracking ${trackingNumber}`);
       return NextResponse.json({ success: true, message: 'No matching part' });
     }
 
