@@ -3,6 +3,20 @@
 // ========================================
 
 /**
+ * Get fields to purge when tracking is removed or changed
+ * Returns an object with all tracking-related fields set to null
+ */
+export const getTrackingPurgeFields = () => ({
+  ship24_id: null,
+  tracking_status: null,
+  tracking_substatus: null,
+  tracking_location: null,
+  tracking_eta: null,
+  tracking_updated_at: null,
+  tracking_checkpoints: null
+});
+
+/**
  * Check if tracking should skip Ship24 API
  * Returns true for URLs, Amazon tracking, and letter-only text (which Ship24 can't track)
  */
