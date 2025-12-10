@@ -186,7 +186,7 @@ const VehiclesTab = ({
                   {/* Top row: Thumbnail + Projects side by side (50/50 split) */}
                   <div className="flex gap-4 mt-2 md:mt-8">
                     {/* Thumbnail Column - 50% */}
-                    <div className="w-1/2 flex-shrink-0">
+                    <div className="w-1/2 flex-shrink-0 vehicle-image-container">
                       {(vehicle.image_url_resolved || vehicle.image_url) ? (
                         <FadeInImage
                           src={vehicle.image_url_resolved || vehicle.image_url}
@@ -288,7 +288,7 @@ const VehiclesTab = ({
                 <>
                   {/* Vehicle Image */}
                   {(vehicle.image_url_resolved || vehicle.image_url) ? (
-                    <div className="mb-4 mt-2 md:mt-10 relative">
+                    <div className="mb-4 mt-2 md:mt-10 relative vehicle-image-container">
                       <FadeInImage
                         src={vehicle.image_url_resolved || vehicle.image_url}
                         alt={vehicle.nickname || vehicle.name}
@@ -313,7 +313,7 @@ const VehiclesTab = ({
                       )}
                     </div>
                   ) : (
-                    <div className="mb-4 mt-2 md:mt-10 w-full h-48 rounded-lg flex flex-col items-center justify-center">
+                    <div className="mb-4 mt-2 md:mt-10 w-full h-48 rounded-lg flex flex-col items-center justify-center vehicle-image-container">
                       <Camera className={`w-12 h-12 mb-2 opacity-40 ${
                         darkMode ? 'text-gray-600' : 'text-gray-400'
                       }`} />
