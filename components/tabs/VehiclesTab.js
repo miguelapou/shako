@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import {
   Plus, ChevronDown, ChevronRight, Edit2, GripVertical,
   Car, Archive, Package, ListChecks, FolderLock, FolderOpen, Camera
@@ -88,6 +88,23 @@ const VehiclesTab = ({
   toast
   // Document and service event props removed - now handled via context in VehicleDetailModal
 }) => {
+  // Track layout transitions for animation
+  const [isLayoutTransitioning, setIsLayoutTransitioning] = useState(false);
+  const previousLayoutRef = useRef(layoutMode);
+
+  // Detect layout changes and trigger animation
+  useEffect(() => {
+    if (previousLayoutRef.current !== layoutMode) {
+      setIsLayoutTransitioning(true);
+      previousLayoutRef.current = layoutMode;
+      // Remove animation class after animation completes
+      const timer = setTimeout(() => {
+        setIsLayoutTransitioning(false);
+      }, 400);
+      return () => clearTimeout(timer);
+    }
+  }, [layoutMode]);
+
   return (
     <div
       ref={tabContentRef}
@@ -95,7 +112,9 @@ const VehiclesTab = ({
     >
       <>
         {/* Active Vehicles Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className={`grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 ${
+          isLayoutTransitioning ? 'vehicles-layout-transition' : ''
+        }`}>
           {vehicles.filter(v => !v.archived).map((vehicle) => {
             const borderColor = getMutedColor(vehicle.color, darkMode);
             return (
