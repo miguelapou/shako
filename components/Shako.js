@@ -1,5 +1,5 @@
 import React, { useState, useMemo, useEffect, useRef } from 'react';
-import { Search, Package, PackageOpen, BadgeDollarSign, TrendingUp, Truck, CheckCircle, Clock, ChevronDown, Plus, X, ExternalLink, ChevronUp, Edit2, Trash2, Moon, Sun, ListChecks, GripVertical, ShoppingCart, Car, Upload, Gauge, Settings, Check, Archive, ChevronRight, Pause, Play, LogOut } from 'lucide-react';
+import { Search, Package, PackageOpen, BadgeDollarSign, TrendingUp, Truck, CheckCircle, Clock, ChevronDown, Plus, X, ExternalLink, ChevronUp, Edit2, Trash2, Moon, Sun, ListChecks, GripVertical, ShoppingCart, Car, Upload, Gauge, Settings, Check, Archive, ChevronRight, Pause, Play, LogOut, LayoutGrid, LayoutList } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 
 // Utilities
@@ -364,6 +364,17 @@ const Shako = () => {
 
   const [activeTab, setActiveTab] = useState('vehicles'); // 'parts', 'projects', or 'vehicles'
   const [previousTab, setPreviousTab] = useState('vehicles');
+
+  // Vehicle layout mode state with localStorage persistence
+  const [vehicleLayoutMode, setVehicleLayoutMode] = useState('default');
+
+  // Load vehicle layout preference from localStorage on mount
+  useEffect(() => {
+    const savedLayout = localStorage.getItem('vehicleLayoutMode');
+    if (savedLayout === 'compact' || savedLayout === 'default') {
+      setVehicleLayoutMode(savedLayout);
+    }
+  }, []);
 
   // Refs for tab underline animation
   const tabRefs = useRef({});
@@ -1418,6 +1429,51 @@ const Shako = () => {
               )}
                 </div>
               )}
+              {/* Vehicle Layout Toggle - only visible on vehicles tab */}
+              {activeTab === 'vehicles' && (
+                <div
+                  className={`relative flex items-center p-1 rounded-lg ${
+                    darkMode ? 'bg-gray-700' : 'bg-slate-200'
+                  }`}
+                >
+                  {/* Sliding background indicator */}
+                  <div
+                    className={`absolute top-1 bottom-1 w-8 rounded-md transition-transform duration-200 ease-in-out ${
+                      darkMode ? 'bg-gray-600' : 'bg-white shadow-sm'
+                    } ${vehicleLayoutMode === 'compact' ? 'translate-x-8' : 'translate-x-0'}`}
+                  />
+                  {/* Default layout button */}
+                  <button
+                    onClick={() => {
+                      setVehicleLayoutMode('default');
+                      localStorage.setItem('vehicleLayoutMode', 'default');
+                    }}
+                    className={`relative z-10 w-8 h-8 flex items-center justify-center rounded-md transition-colors ${
+                      vehicleLayoutMode === 'default'
+                        ? darkMode ? 'text-gray-100' : 'text-slate-800'
+                        : darkMode ? 'text-gray-400 hover:text-gray-300' : 'text-slate-500 hover:text-slate-600'
+                    }`}
+                    title="Default view"
+                  >
+                    <LayoutList className="w-4 h-4" />
+                  </button>
+                  {/* Compact layout button */}
+                  <button
+                    onClick={() => {
+                      setVehicleLayoutMode('compact');
+                      localStorage.setItem('vehicleLayoutMode', 'compact');
+                    }}
+                    className={`relative z-10 w-8 h-8 flex items-center justify-center rounded-md transition-colors ${
+                      vehicleLayoutMode === 'compact'
+                        ? darkMode ? 'text-gray-100' : 'text-slate-800'
+                        : darkMode ? 'text-gray-400 hover:text-gray-300' : 'text-slate-500 hover:text-slate-600'
+                    }`}
+                    title="Compact view"
+                  >
+                    <LayoutGrid className="w-4 h-4" />
+                  </button>
+                </div>
+              )}
               <button
                 onClick={() => {
                   if (activeTab === 'parts') setShowAddPartOptionsModal(true);
@@ -1763,6 +1819,7 @@ const Shako = () => {
             projects={projects}
             parts={parts}
             darkMode={darkMode}
+            layoutMode={vehicleLayoutMode}
             draggedVehicle={draggedVehicle}
             setDraggedVehicle={setDraggedVehicle}
             dragOverVehicle={dragOverVehicle}
