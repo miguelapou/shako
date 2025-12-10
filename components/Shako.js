@@ -1,5 +1,5 @@
 import React, { useState, useMemo, useEffect, useRef } from 'react';
-import { Search, Package, PackageOpen, BadgeDollarSign, TrendingUp, Truck, CheckCircle, Clock, ChevronDown, Plus, X, ExternalLink, ChevronUp, Edit2, Trash2, Moon, Sun, ListChecks, GripVertical, ShoppingCart, Car, Upload, Gauge, Settings, Check, Archive, ChevronRight, Pause, Play, LogOut } from 'lucide-react';
+import { Search, Package, PackageOpen, BadgeDollarSign, TrendingUp, Truck, CheckCircle, Clock, ChevronDown, Plus, X, ExternalLink, ChevronUp, Edit2, Trash2, Moon, Sun, ListChecks, GripVertical, ShoppingCart, Car, Upload, Gauge, Settings, Check, Archive, ChevronRight, Pause, Play, LogOut, LayoutGrid, LayoutList } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 
 // Utilities
@@ -364,6 +364,17 @@ const Shako = () => {
 
   const [activeTab, setActiveTab] = useState('vehicles'); // 'parts', 'projects', or 'vehicles'
   const [previousTab, setPreviousTab] = useState('vehicles');
+
+  // Vehicle layout mode state with localStorage persistence (default to compact)
+  const [vehicleLayoutMode, setVehicleLayoutMode] = useState('compact');
+
+  // Load vehicle layout preference from localStorage on mount
+  useEffect(() => {
+    const savedLayout = localStorage.getItem('vehicleLayoutMode');
+    if (savedLayout === 'compact' || savedLayout === 'default') {
+      setVehicleLayoutMode(savedLayout);
+    }
+  }, []);
 
   // Refs for tab underline animation
   const tabRefs = useRef({});
@@ -1418,6 +1429,46 @@ const Shako = () => {
               )}
                 </div>
               )}
+              {/* Vehicle Layout Toggle - only visible on vehicles tab */}
+              {activeTab === 'vehicles' && (
+                <div
+                  onClick={() => {
+                    const newMode = vehicleLayoutMode === 'default' ? 'compact' : 'default';
+                    setVehicleLayoutMode(newMode);
+                    localStorage.setItem('vehicleLayoutMode', newMode);
+                  }}
+                  className={`slide-in-right relative flex items-center rounded-lg border cursor-pointer ${
+                    darkMode ? 'bg-gray-800 border-gray-600' : 'bg-slate-100 border-slate-300'
+                  }`}
+                >
+                  {/* Sliding background indicator */}
+                  <div
+                    className={`absolute top-0.5 bottom-0.5 left-0.5 w-[calc(50%-2px)] rounded-md transition-all duration-200 ease-in-out bg-blue-600 ${
+                      vehicleLayoutMode === 'compact' ? 'translate-x-full' : 'translate-x-0'
+                    }`}
+                  />
+                  {/* Default layout icon */}
+                  <div
+                    className={`relative z-10 p-2 sm:p-3 flex items-center justify-center rounded-md transition-colors duration-200 ${
+                      vehicleLayoutMode === 'default'
+                        ? 'text-white'
+                        : darkMode ? 'text-gray-400' : 'text-slate-500'
+                    }`}
+                  >
+                    <LayoutGrid className="w-5 h-5" />
+                  </div>
+                  {/* Compact layout icon */}
+                  <div
+                    className={`relative z-10 p-2 sm:p-3 flex items-center justify-center rounded-md transition-colors duration-200 ${
+                      vehicleLayoutMode === 'compact'
+                        ? 'text-white'
+                        : darkMode ? 'text-gray-400' : 'text-slate-500'
+                    }`}
+                  >
+                    <LayoutList className="w-5 h-5" />
+                  </div>
+                </div>
+              )}
               <button
                 onClick={() => {
                   if (activeTab === 'parts') setShowAddPartOptionsModal(true);
@@ -1763,6 +1814,7 @@ const Shako = () => {
             projects={projects}
             parts={parts}
             darkMode={darkMode}
+            layoutMode={vehicleLayoutMode}
             draggedVehicle={draggedVehicle}
             setDraggedVehicle={setDraggedVehicle}
             dragOverVehicle={dragOverVehicle}

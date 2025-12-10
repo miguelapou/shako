@@ -13,6 +13,7 @@ const VehiclesTab = ({
   vehicles,
   projects,
   darkMode,
+  layoutMode,
   draggedVehicle,
   setDraggedVehicle,
   dragOverVehicle,
@@ -159,122 +160,230 @@ const VehiclesTab = ({
                 </button>
               </div>
 
-              {/* Vehicle Image */}
-              {(vehicle.image_url_resolved || vehicle.image_url) ? (
-                <div className="mb-4 mt-2 md:mt-10 relative">
-                  <FadeInImage
-                    src={vehicle.image_url_resolved || vehicle.image_url}
-                    alt={vehicle.nickname || vehicle.name}
-                    loading="lazy"
-                    decoding="async"
-                    className={`w-full h-48 object-cover rounded-lg border ${
-                      vehicle.archived
-                        ? 'grayscale opacity-40'
-                        : ''
-                    } ${darkMode ? 'bg-gray-700 border-gray-600' : 'bg-gray-200 border-gray-300'}`}
-                  />
-                  {vehicle.archived && (
-                    <div className="absolute inset-0 flex items-center justify-center">
-                      <span className={`text-2xl font-bold px-6 py-2 rounded-lg ${
-                        darkMode
-                          ? 'bg-gray-900/80 text-gray-300 border-2 border-gray-600'
-                          : 'bg-white/80 text-gray-700 border-2 border-gray-400'
-                      }`} style={{ fontFamily: "'FoundationOne', 'Courier New', monospace" }}>
-                        ARCHIVED
-                      </span>
-                    </div>
-                  )}
-                </div>
-              ) : (
-                <div className="mb-4 mt-2 md:mt-10 w-full h-48 rounded-lg flex flex-col items-center justify-center">
-                  <Camera className={`w-12 h-12 mb-2 opacity-40 ${
-                    darkMode ? 'text-gray-600' : 'text-gray-400'
-                  }`} />
-                  <p className={`text-sm ${
-                    darkMode ? 'text-gray-500' : 'text-gray-500'
-                  }`}>
-                    No image
-                  </p>
-                </div>
-              )}
-
-              {/* Vehicle Header */}
-              <div>
-                <div className="flex items-start justify-between gap-2 mb-1">
-                  <h3 className={`text-xl font-bold ${
-                    darkMode ? 'text-gray-100' : 'text-slate-800'
-                  }`}>
-                    {vehicle.nickname || [vehicle.year, vehicle.make, vehicle.name].filter(Boolean).join(' ')}
-                  </h3>
-                  {vehicle.nickname && [vehicle.year, vehicle.make, vehicle.name].filter(Boolean).length > 0 && (
-                    <span
-                      className="inline-block px-2.5 py-1 rounded-full text-xs font-medium whitespace-nowrap flex-shrink-0 text-white"
-                      style={{ backgroundColor: vehicle.color || '#3B82F6' }}
-                    >
-                      {[vehicle.year, vehicle.make, vehicle.name].filter(Boolean).join(' ')}
-                    </span>
-                  )}
-                </div>
-                {!vehicle.archived && (
-                  <>
-                    {/* Project Badges */}
-                    {(() => {
-                      const vehicleProjects = getVehicleProjects(vehicle.id);
-                      return (
-                        <div className={`mt-4 pt-4 border-t ${
-                          darkMode ? 'border-gray-700' : 'border-slate-200'
+              {layoutMode === 'compact' ? (
+                /* ========== COMPACT LAYOUT ========== */
+                <>
+                  {/* Top row: Thumbnail + Projects side by side (50/50 split) */}
+                  <div className="flex gap-4 mt-2 md:mt-8">
+                    {/* Thumbnail Column - 50% */}
+                    <div className="w-1/2 flex-shrink-0">
+                      {(vehicle.image_url_resolved || vehicle.image_url) ? (
+                        <FadeInImage
+                          src={vehicle.image_url_resolved || vehicle.image_url}
+                          alt={vehicle.nickname || vehicle.name}
+                          loading="lazy"
+                          decoding="async"
+                          className={`w-full aspect-square object-cover rounded-lg border ${
+                            darkMode ? 'bg-gray-700 border-gray-600' : 'bg-gray-200 border-gray-300'
+                          }`}
+                        />
+                      ) : (
+                        <div className={`w-full aspect-square rounded-lg flex flex-col items-center justify-center border ${
+                          darkMode ? 'bg-gray-700 border-gray-600' : 'bg-gray-200 border-gray-300'
                         }`}>
-                          <h4 className={`text-xs font-semibold mb-2 uppercase tracking-wider ${
-                            darkMode ? 'text-gray-400' : 'text-slate-600'
-                          }`}>
-                            Projects ({vehicleProjects.length})
-                          </h4>
-                          {vehicleProjects.length > 0 ? (
-                            <div className="flex flex-wrap gap-2">
-                              {vehicleProjects.slice(0, 4).map((project) => (
-                                <span
-                                  key={project.id}
-                                  className={`inline-flex items-center px-2 py-1 rounded text-xs font-medium border ${
-                                    darkMode ? 'bg-gray-700 text-gray-300 border-gray-600' : 'bg-gray-100 text-gray-700 border-gray-300'
-                                  }`}
-                                  style={{
-                                    borderLeftWidth: '3px',
-                                    borderLeftColor: getPriorityBorderColor(project.priority),
-                                    width: 'calc(50% - 4px)'
-                                  }}
-                                >
-                                  <ListChecks className="w-3 h-3 mr-1 flex-shrink-0" />
-                                  <span className="truncate">{project.name}</span>
-                                </span>
-                              ))}
-                              {vehicleProjects.length > 4 && (
-                                <div className="w-full text-center mt-1">
-                                  <span className={`text-xs ${
+                          <Camera className={`w-8 h-8 opacity-40 ${
+                            darkMode ? 'text-gray-500' : 'text-gray-400'
+                          }`} />
+                        </div>
+                      )}
+                    </div>
+
+                    {/* Projects Column - 50% */}
+                    <div className="w-1/2 min-w-0">
+                      {(() => {
+                        const vehicleProjects = getVehicleProjects(vehicle.id);
+                        return (
+                          <>
+                            <h4 className={`text-xs font-semibold mb-2 uppercase tracking-wider ${
+                              darkMode ? 'text-gray-400' : 'text-slate-600'
+                            }`}>
+                              Projects
+                            </h4>
+                            {vehicleProjects.length > 0 ? (
+                              <div className="flex flex-col gap-1.5">
+                                {vehicleProjects.slice(0, 4).map((project) => (
+                                  <span
+                                    key={project.id}
+                                    className={`inline-flex items-center px-2 py-1 rounded text-xs font-medium border ${
+                                      darkMode ? 'bg-gray-700 text-gray-300 border-gray-600' : 'bg-gray-100 text-gray-700 border-gray-300'
+                                    }`}
+                                    style={{
+                                      borderLeftWidth: '3px',
+                                      borderLeftColor: getPriorityBorderColor(project.priority)
+                                    }}
+                                  >
+                                    <ListChecks className="w-3 h-3 mr-1 flex-shrink-0" />
+                                    <span className="truncate">{project.name}</span>
+                                  </span>
+                                ))}
+                                {vehicleProjects.length > 4 && (
+                                  <span className={`text-xs text-center ${
                                     darkMode ? 'text-gray-500' : 'text-gray-600'
                                   }`}>
                                     +{vehicleProjects.length - 4} more
                                   </span>
+                                )}
+                              </div>
+                            ) : (
+                              <div className="flex items-center gap-2 py-1">
+                                <ListChecks className={`w-4 h-4 opacity-40 ${
+                                  darkMode ? 'text-gray-400' : 'text-gray-500'
+                                }`} />
+                                <span className={`text-xs ${
+                                  darkMode ? 'text-gray-400' : 'text-gray-500'
+                                }`}>
+                                  No projects linked
+                                </span>
+                              </div>
+                            )}
+                          </>
+                        );
+                      })()}
+                    </div>
+                  </div>
+
+                  {/* Bottom: Vehicle name/badge separated by horizontal line */}
+                  <div className={`mt-4 pt-3 border-t ${
+                    darkMode ? 'border-gray-700' : 'border-slate-200'
+                  }`}>
+                    <div className="flex items-center justify-between gap-2">
+                      <h3 className={`text-lg font-bold truncate ${
+                        darkMode ? 'text-gray-100' : 'text-slate-800'
+                      }`}>
+                        {vehicle.nickname || [vehicle.year, vehicle.make, vehicle.name].filter(Boolean).join(' ')}
+                      </h3>
+                      {vehicle.nickname && [vehicle.year, vehicle.make, vehicle.name].filter(Boolean).length > 0 && (
+                        <span
+                          className="inline-block px-2 py-0.5 rounded-full text-xs font-medium whitespace-nowrap flex-shrink-0 text-white"
+                          style={{ backgroundColor: vehicle.color || '#3B82F6' }}
+                        >
+                          {[vehicle.year, vehicle.make, vehicle.name].filter(Boolean).join(' ')}
+                        </span>
+                      )}
+                    </div>
+                  </div>
+                </>
+              ) : (
+                /* ========== DEFAULT LAYOUT ========== */
+                <>
+                  {/* Vehicle Image */}
+                  {(vehicle.image_url_resolved || vehicle.image_url) ? (
+                    <div className="mb-4 mt-2 md:mt-10 relative">
+                      <FadeInImage
+                        src={vehicle.image_url_resolved || vehicle.image_url}
+                        alt={vehicle.nickname || vehicle.name}
+                        loading="lazy"
+                        decoding="async"
+                        className={`w-full h-48 object-cover rounded-lg border ${
+                          vehicle.archived
+                            ? 'grayscale opacity-40'
+                            : ''
+                        } ${darkMode ? 'bg-gray-700 border-gray-600' : 'bg-gray-200 border-gray-300'}`}
+                      />
+                      {vehicle.archived && (
+                        <div className="absolute inset-0 flex items-center justify-center">
+                          <span className={`text-2xl font-bold px-6 py-2 rounded-lg ${
+                            darkMode
+                              ? 'bg-gray-900/80 text-gray-300 border-2 border-gray-600'
+                              : 'bg-white/80 text-gray-700 border-2 border-gray-400'
+                          }`} style={{ fontFamily: "'FoundationOne', 'Courier New', monospace" }}>
+                            ARCHIVED
+                          </span>
+                        </div>
+                      )}
+                    </div>
+                  ) : (
+                    <div className="mb-4 mt-2 md:mt-10 w-full h-48 rounded-lg flex flex-col items-center justify-center">
+                      <Camera className={`w-12 h-12 mb-2 opacity-40 ${
+                        darkMode ? 'text-gray-600' : 'text-gray-400'
+                      }`} />
+                      <p className={`text-sm ${
+                        darkMode ? 'text-gray-500' : 'text-gray-500'
+                      }`}>
+                        No image
+                      </p>
+                    </div>
+                  )}
+
+                  {/* Vehicle Header */}
+                  <div>
+                    <div className="flex items-start justify-between gap-2 mb-1">
+                      <h3 className={`text-xl font-bold ${
+                        darkMode ? 'text-gray-100' : 'text-slate-800'
+                      }`}>
+                        {vehicle.nickname || [vehicle.year, vehicle.make, vehicle.name].filter(Boolean).join(' ')}
+                      </h3>
+                      {vehicle.nickname && [vehicle.year, vehicle.make, vehicle.name].filter(Boolean).length > 0 && (
+                        <span
+                          className="inline-block px-2.5 py-1 rounded-full text-xs font-medium whitespace-nowrap flex-shrink-0 text-white"
+                          style={{ backgroundColor: vehicle.color || '#3B82F6' }}
+                        >
+                          {[vehicle.year, vehicle.make, vehicle.name].filter(Boolean).join(' ')}
+                        </span>
+                      )}
+                    </div>
+                    {!vehicle.archived && (
+                      <>
+                        {/* Project Badges */}
+                        {(() => {
+                          const vehicleProjects = getVehicleProjects(vehicle.id);
+                          return (
+                            <div className={`mt-4 pt-4 border-t ${
+                              darkMode ? 'border-gray-700' : 'border-slate-200'
+                            }`}>
+                              <h4 className={`text-xs font-semibold mb-2 uppercase tracking-wider ${
+                                darkMode ? 'text-gray-400' : 'text-slate-600'
+                              }`}>
+                                Projects
+                              </h4>
+                              {vehicleProjects.length > 0 ? (
+                                <div className="flex flex-wrap gap-2">
+                                  {vehicleProjects.slice(0, 4).map((project) => (
+                                    <span
+                                      key={project.id}
+                                      className={`inline-flex items-center px-2 py-1 rounded text-xs font-medium border ${
+                                        darkMode ? 'bg-gray-700 text-gray-300 border-gray-600' : 'bg-gray-100 text-gray-700 border-gray-300'
+                                      }`}
+                                      style={{
+                                        borderLeftWidth: '3px',
+                                        borderLeftColor: getPriorityBorderColor(project.priority),
+                                        width: 'calc(50% - 4px)'
+                                      }}
+                                    >
+                                      <ListChecks className="w-3 h-3 mr-1 flex-shrink-0" />
+                                      <span className="truncate">{project.name}</span>
+                                    </span>
+                                  ))}
+                                  {vehicleProjects.length > 4 && (
+                                    <div className="w-full text-center mt-1">
+                                      <span className={`text-xs ${
+                                        darkMode ? 'text-gray-500' : 'text-gray-600'
+                                      }`}>
+                                        +{vehicleProjects.length - 4} more
+                                      </span>
+                                    </div>
+                                  )}
+                                </div>
+                              ) : (
+                                <div className="text-center py-2">
+                                  <ListChecks className={`w-6 h-6 mx-auto mb-1 opacity-40 ${
+                                    darkMode ? 'text-gray-400' : 'text-gray-500'
+                                  }`} />
+                                  <p className={`text-xs ${
+                                    darkMode ? 'text-gray-400' : 'text-gray-500'
+                                  }`}>
+                                    No projects linked
+                                  </p>
                                 </div>
                               )}
                             </div>
-                          ) : (
-                            <div className="text-center py-2">
-                              <ListChecks className={`w-6 h-6 mx-auto mb-1 opacity-40 ${
-                                darkMode ? 'text-gray-400' : 'text-gray-500'
-                              }`} />
-                              <p className={`text-xs ${
-                                darkMode ? 'text-gray-400' : 'text-gray-500'
-                              }`}>
-                                No projects linked
-                              </p>
-                            </div>
-                          )}
-                        </div>
-                      );
-                    })()}
-                  </>
-                )}
-              </div>
+                          );
+                        })()}
+                      </>
+                    )}
+                  </div>
+                </>
+              )}
             </div>
           );
           })}

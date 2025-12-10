@@ -511,8 +511,8 @@ const VehicleDetailModal = ({
             >
               {/* Top Section: Image and Basic Info side by side */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                {/* Basic Info Card - Half width on desktop, two column layout - appears second on mobile */}
-                <div className={`order-last md:order-first rounded-lg p-6 ${
+                {/* Basic Info Card - Half width on desktop, two column layout - appears second */}
+                <div className={`order-last rounded-lg p-6 ${
                   darkMode ? 'bg-gray-700' : 'bg-gray-50'
                 }`}>
                   <div className="flex items-center justify-between mb-4">
@@ -670,9 +670,9 @@ const VehicleDetailModal = ({
                     })()}
                   </div>
                 </div>
-                {/* Vehicle Image - Half width on desktop - appears first on mobile */}
+                {/* Vehicle Image - Half width on desktop - appears first */}
                 {(viewingVehicle.image_url_resolved || viewingVehicle.image_url) ? (
-                  <div className="order-first md:order-last rounded-lg overflow-hidden">
+                  <div className="order-first rounded-lg overflow-hidden">
                     <FadeInImage
                       src={viewingVehicle.image_url_resolved || viewingVehicle.image_url}
                       alt={viewingVehicle.nickname || viewingVehicle.name}
@@ -682,7 +682,7 @@ const VehicleDetailModal = ({
                     />
                   </div>
                 ) : (
-                  <div className={`order-first md:order-last rounded-lg border min-h-[300px] flex flex-col items-center justify-center ${
+                  <div className={`order-first rounded-lg border min-h-[300px] flex flex-col items-center justify-center ${
                     darkMode ? 'bg-gray-700/30 border-gray-600' : 'bg-gray-50 border-gray-200'
                   }`}>
                     <Camera className={`w-12 h-12 mx-auto mb-2 opacity-40 ${
@@ -707,7 +707,7 @@ const VehicleDetailModal = ({
                   <h3 className={`text-lg font-semibold ${
                     darkMode ? 'text-gray-200' : 'text-gray-800'
                   }`}>
-                    Service History ({serviceEvents?.length || 0})
+                    Service History
                   </h3>
                 </div>
                 <div className={`relative ${!loadingServiceEvents ? 'animate-fade-in' : ''}`} onClick={() => setSelectedEventId(null)}>
@@ -1080,7 +1080,7 @@ const VehicleDetailModal = ({
                   <h3 className={`text-lg font-semibold ${
                     darkMode ? 'text-gray-200' : 'text-gray-800'
                   }`}>
-                    Documents ({documents.length})
+                    Documents
                   </h3>
                 </div>
                 <div
@@ -1234,7 +1234,7 @@ const VehicleDetailModal = ({
                     }`}>
                       <div className="flex items-center gap-2">
                         <ListChecks className="w-5 h-5" />
-                        <span>Projects ({vehicleProjects.length})</span>
+                        <span>Projects</span>
                       </div>
                     </h3>
                     {vehicleProjects.length > 0 ? (
@@ -1415,8 +1415,8 @@ const VehicleDetailModal = ({
             {viewingVehicle && (
               <div className="p-6 space-y-6 max-h-[calc(90vh-164px)] overflow-y-auto">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  {/* Left Column - Basic Information */}
-                  <div className="space-y-4">
+                  {/* Basic Information - Right on desktop */}
+                  <div className="order-last space-y-4">
                     <div>
                       <label className={`block text-sm font-medium mb-2 ${
                         darkMode ? 'text-gray-300' : 'text-slate-700'
@@ -1609,8 +1609,8 @@ const VehicleDetailModal = ({
                     </div>
                   </div>
 
-                  {/* Right Column - Image Upload */}
-                  <div className="space-y-4">
+                  {/* Image Upload - Left on desktop */}
+                  <div className="order-first space-y-4">
                     <div>
                       <label className={`block text-sm font-medium mb-2 ${
                         darkMode ? 'text-gray-300' : 'text-slate-700'

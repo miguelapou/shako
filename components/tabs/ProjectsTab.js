@@ -267,7 +267,7 @@ const ProjectsTab = ({
                           darkMode ? 'text-gray-300' : 'text-slate-700'
                         }`}>
                           <Package className="w-4 h-4" />
-                          Linked Parts ({linkedParts.length})
+                          Linked Parts
                         </span>
                       </div>
                       {linkedParts.length > 0 ? (
