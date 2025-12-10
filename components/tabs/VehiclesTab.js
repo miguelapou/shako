@@ -109,7 +109,7 @@ const VehiclesTab = ({
                 setOriginalVehicleData({ ...vehicle }); // Save original data for unsaved changes check
                 setShowVehicleDetailModal(true);
               }}
-              className={`relative rounded-lg shadow-lg pt-3 ${vehicle.archived ? 'pb-3' : 'pb-4'} px-6 transition-all duration-200 hover:shadow-2xl hover:scale-[1.03] cursor-pointer border-t-4 ${
+              className={`relative rounded-lg shadow-lg pt-3 ${vehicle.archived ? 'pb-3' : 'pb-4'} px-6 transition-[transform,box-shadow] duration-200 hover:shadow-2xl hover:scale-[1.03] cursor-pointer border-t-4 ${
                 draggedVehicle?.id === vehicle.id
                   ? 'ring-2 ring-blue-500 ring-offset-2'
                   : dragOverVehicle?.id === vehicle.id
@@ -450,7 +450,7 @@ const VehiclesTab = ({
                     setOriginalVehicleData({ ...vehicle }); // Save original data for unsaved changes check
                     setShowVehicleDetailModal(true);
                   }}
-                  className={`relative rounded-lg shadow-lg pt-2 pb-2 px-3 transition-all duration-200 hover:shadow-2xl hover:scale-[1.03] cursor-pointer border-t-4 ${
+                  className={`relative rounded-lg shadow-lg pt-2 pb-2 px-3 transition-[transform,box-shadow] duration-200 hover:shadow-2xl hover:scale-[1.03] cursor-pointer border-t-4 ${
                     darkMode ? 'bg-gray-800' : 'bg-slate-100'
                   }`}
                   style={{ borderTopColor: borderColor }}

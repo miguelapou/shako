@@ -117,7 +117,6 @@ export const getShip24TrackingByNumber = async (trackingNumber) => {
 export const deleteShip24Tracking = async (trackerId) => {
   // Ship24 doesn't support deleting trackers - they expire automatically
   // This is a no-op for API compatibility
-  console.log(`Ship24 tracker ${trackerId} will expire automatically`);
 };
 
 /**

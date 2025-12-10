@@ -59,6 +59,9 @@ export default function FadeInImage({
         ...style,
         opacity: isLoaded ? 1 : 0,
         transition: `opacity ${duration}ms ease-in-out`,
+        // Force GPU layer to prevent Safari repaint flash during parent transforms
+        transform: 'translateZ(0)',
+        backfaceVisibility: 'hidden',
       }}
       {...rest}
     />

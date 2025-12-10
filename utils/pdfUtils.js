@@ -30,7 +30,6 @@ const loadImageAsDataURL = (url, timeout = 10000, retries = 2) => {
         img.src = ''; // Cancel the request
 
         if (attempts <= retries) {
-          console.log(`Image load timeout, retrying (attempt ${attempts}/${retries})...`);
           attemptLoad();
         } else {
           console.error('Image load failed after all retries (timeout):', url);
@@ -75,7 +74,6 @@ const loadImageAsDataURL = (url, timeout = 10000, retries = 2) => {
         clearTimeout(timeoutId);
 
         if (attempts <= retries) {
-          console.log(`Image load error, retrying (attempt ${attempts}/${retries})...`);
           // Add a small delay before retry
           setTimeout(attemptLoad, 500);
         } else {
@@ -521,9 +519,6 @@ export const downloadBlob = async (blob, filename) => {
       }
     } catch (error) {
       // Share was cancelled or failed, fall through to other methods
-      if (error.name !== 'AbortError') {
-        console.log('Share API failed, falling back to other methods');
-      }
     }
   }
 
