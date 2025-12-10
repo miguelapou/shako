@@ -50,7 +50,9 @@ const PartDetailModal = ({
   getStatusText,
   onRefreshTracking,
   onStatusChange,
-  filteredParts = []
+  filteredParts = [],
+  setShowTrackingModal,
+  setTrackingModalPartId
 }) => {
   const [isRefreshingTracking, setIsRefreshingTracking] = useState(false);
   const [trackingError, setTrackingError] = useState(null);
@@ -255,6 +257,13 @@ const PartDetailModal = ({
 
     // Close dropdown first
     closeStatusDropdown();
+
+    // If changing to shipped and part has no tracking, show tracking modal
+    if (newStatus === 'shipped' && !viewingPart.tracking && setShowTrackingModal && setTrackingModalPartId) {
+      setTrackingModalPartId(viewingPart.id);
+      setShowTrackingModal(true);
+      return;
+    }
 
     // Map status to boolean flags
     const statusMap = {
@@ -759,19 +768,6 @@ const PartDetailModal = ({
                         </div>
                       );
                     })()}
-                    {/* Status dropdown - only show in Part Info when no tracking */}
-                    {!viewingPart.tracking && (
-                      <div>
-                        <p
-                          className={`text-sm font-medium mb-1 ${
-                            darkMode ? 'text-gray-400' : 'text-slate-600'
-                          }`}
-                        >
-                          Status
-                        </p>
-                        {renderStatusDropdown()}
-                      </div>
-                    )}
                   </div>
                 </div>
               </div>
@@ -866,104 +862,107 @@ const PartDetailModal = ({
               </div>
             </div>
 
-            {/* Tracking Information */}
-            {viewingPart.tracking && (
-              <div
-                className={`pt-6 border-t ${
-                  darkMode ? 'border-gray-700' : 'border-slate-200'
+            {/* Status & Tracking Section - Always shows status */}
+            <div
+              className={`pt-6 border-t ${
+                darkMode ? 'border-gray-700' : 'border-slate-200'
+              }`}
+            >
+              <h3
+                className={`text-lg font-semibold mb-4 ${
+                  darkMode ? 'text-gray-200' : 'text-gray-800'
                 }`}
               >
-                <h3
-                  className={`text-lg font-semibold mb-4 ${
-                    darkMode ? 'text-gray-200' : 'text-gray-800'
-                  }`}
-                >
-                  Tracking Information
-                </h3>
+                {viewingPart.tracking ? 'Tracking Information' : 'Status'}
+              </h3>
 
-                {/* Tracking status and timeline (only for Ship24-supported tracking) */}
-                {!shouldSkipShip24(viewingPart.tracking) ? (
-                  <div className="space-y-4">
-                    {/* Order status dropdown */}
-                    <div className="flex flex-col items-start gap-1">
-                      {renderStatusDropdown()}
-                      {/* Updated at info */}
-                      {viewingPart.tracking_updated_at && (
-                        <div className={`w-full text-xs mt-1 ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>
-                          <div className="flex items-center w-full">
-                            <div className="flex items-center gap-1.5">
-                              <span>Updated {formatRelativeTime(viewingPart.tracking_updated_at)} ({formatTime(viewingPart.tracking_updated_at)})</span>
-                              {isRefreshingTracking && (
-                                <RefreshCw className="w-3 h-3 animate-spin" />
-                              )}
-                            </div>
-                            {viewingPart.tracking && (
-                              <span className="ml-auto">{getCarrierName(viewingPart.tracking)}</span>
+              {/* Status dropdown - always visible */}
+              {viewingPart.tracking && !shouldSkipShip24(viewingPart.tracking) ? (
+                <div className="space-y-4">
+                  {/* Order status dropdown with tracking info */}
+                  <div className="flex flex-col items-start gap-1">
+                    {renderStatusDropdown()}
+                    {/* Updated at info */}
+                    {viewingPart.tracking_updated_at && (
+                      <div className={`w-full text-xs mt-1 ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>
+                        <div className="flex items-center w-full">
+                          <div className="flex items-center gap-1.5">
+                            <span>Updated {formatRelativeTime(viewingPart.tracking_updated_at)} ({formatTime(viewingPart.tracking_updated_at)})</span>
+                            {isRefreshingTracking && (
+                              <RefreshCw className="w-3 h-3 animate-spin" />
                             )}
                           </div>
+                          {viewingPart.tracking && (
+                            <span className="ml-auto">{getCarrierName(viewingPart.tracking)}</span>
+                          )}
                         </div>
-                      )}
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Tracking timeline or loading state */}
+                  {viewingPart.tracking_checkpoints && viewingPart.tracking_checkpoints.length > 0 ? (
+                    <div
+                      className={`rounded-lg p-4 ${
+                        darkMode ? 'bg-gray-700' : 'bg-gray-50'
+                      }`}
+                    >
+                      <TrackingTimeline
+                        checkpoints={viewingPart.tracking_checkpoints}
+                        status={viewingPart.tracking_status}
+                        darkMode={darkMode}
+                        maxVisible={4}
+                        showProgress={true}
+                      />
                     </div>
+                  ) : isRefreshingTracking ? (
+                    <div
+                      className={`rounded-lg p-4 ${
+                        darkMode ? 'bg-gray-700' : 'bg-gray-50'
+                      }`}
+                    >
+                      <div className="flex items-center gap-3">
+                        <RefreshCw className={`w-4 h-4 animate-spin ${darkMode ? 'text-gray-400' : 'text-gray-500'}`} />
+                        <span className={`text-sm ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>
+                          Loading tracking updates...
+                        </span>
+                      </div>
+                    </div>
+                  ) : null}
 
-                    {/* Tracking timeline or loading state */}
-                    {viewingPart.tracking_checkpoints && viewingPart.tracking_checkpoints.length > 0 ? (
-                      <div
-                        className={`rounded-lg p-4 ${
-                          darkMode ? 'bg-gray-700' : 'bg-gray-50'
-                        }`}
-                      >
-                        <TrackingTimeline
-                          checkpoints={viewingPart.tracking_checkpoints}
-                          status={viewingPart.tracking_status}
-                          darkMode={darkMode}
-                          maxVisible={4}
-                          showProgress={true}
-                        />
-                      </div>
-                    ) : isRefreshingTracking ? (
-                      <div
-                        className={`rounded-lg p-4 ${
-                          darkMode ? 'bg-gray-700' : 'bg-gray-50'
-                        }`}
-                      >
-                        <div className="flex items-center gap-3">
-                          <RefreshCw className={`w-4 h-4 animate-spin ${darkMode ? 'text-gray-400' : 'text-gray-500'}`} />
-                          <span className={`text-sm ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>
-                            Loading tracking updates...
-                          </span>
-                        </div>
-                      </div>
-                    ) : null}
-
-                    {/* Error/Rate limit message */}
-                    {trackingError && (
-                      <div
-                        className={`text-xs px-3 py-2 rounded-lg ${
-                          darkMode
-                            ? 'bg-yellow-900/30 text-yellow-300 border border-yellow-700'
-                            : 'bg-yellow-50 text-yellow-700 border border-yellow-200'
-                        }`}
-                      >
-                        {trackingError}
-                      </div>
-                    )}
-                  </div>
-                ) : (
-                  /* Fallback for non-API tracking (URLs, Amazon, letter-only) */
-                  <div className="flex items-center justify-between w-full">
-                    {renderStatusDropdown()}
-                    {/* Gray badge for letter-only tracking */}
-                    {viewingPart.tracking && /^[a-zA-Z\s]+$/.test(viewingPart.tracking.trim()) && (
-                      <span className={`inline-flex items-center px-3 py-1.5 rounded text-sm font-medium ${
-                        darkMode ? 'bg-gray-700 text-gray-400' : 'bg-gray-200 text-gray-600'
-                      }`}>
-                        {viewingPart.tracking}
-                      </span>
-                    )}
-                  </div>
-                )}
-              </div>
-            )}
+                  {/* Error/Rate limit message */}
+                  {trackingError && (
+                    <div
+                      className={`text-xs px-3 py-2 rounded-lg ${
+                        darkMode
+                          ? 'bg-yellow-900/30 text-yellow-300 border border-yellow-700'
+                          : 'bg-yellow-50 text-yellow-700 border border-yellow-200'
+                      }`}
+                    >
+                      {trackingError}
+                    </div>
+                  )}
+                </div>
+              ) : viewingPart.tracking ? (
+                /* Fallback for non-API tracking (URLs, Amazon, letter-only) */
+                <div className="flex items-center justify-between w-full">
+                  {renderStatusDropdown()}
+                  {/* Gray badge for letter-only tracking */}
+                  {/^[a-zA-Z\s]+$/.test(viewingPart.tracking.trim()) && (
+                    <span className={`inline-flex items-center px-3 py-1.5 rounded text-sm font-medium ${
+                      darkMode ? 'bg-gray-700 text-gray-400' : 'bg-gray-200 text-gray-600'
+                    }`}>
+                      {viewingPart.tracking}
+                    </span>
+                  )}
+                </div>
+              ) : (
+                /* No tracking - just show status dropdown */
+                <div className="flex items-start">
+                  {renderStatusDropdown()}
+                </div>
+              )}
+            </div>
           </div>
         )}
 

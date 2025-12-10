@@ -1688,6 +1688,8 @@ const Shako = () => {
           onRefreshTracking={updatePartTrackingData}
           onStatusChange={handlePartDetailStatusChange}
           filteredParts={filteredParts}
+          setShowTrackingModal={setShowTrackingModal}
+          setTrackingModalPartId={setTrackingModalPartId}
         />
 
         {/* PARTS TAB CONTENT */}
