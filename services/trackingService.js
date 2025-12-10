@@ -227,24 +227,10 @@ export const syncPartTracking = async (part) => {
     return null; // Skip URLs, Amazon tracking, and empty tracking
   }
 
-  let trackingData;
-
-  if (part.ship24_id) {
-    try {
-      // Get existing tracking results
-      trackingData = await getShip24Tracking(part.ship24_id);
-    } catch (error) {
-      // If tracker not found (404), create a new one
-      if (error.message?.includes('404')) {
-        trackingData = await createShip24Tracking(part.tracking, part.part);
-      } else {
-        throw error;
-      }
-    }
-  } else {
-    // Create new tracking (idempotent - will return existing if already tracked)
-    trackingData = await createShip24Tracking(part.tracking, part.part);
-  }
+  // Always use the tracking number to fetch fresh data from Ship24
+  // The POST /trackers/track endpoint queries carriers for new updates
+  // while GET /trackers/{id}/results only returns cached data
+  const trackingData = await getShip24TrackingByNumber(part.tracking);
 
   const normalizedData = normalizeTrackingData(trackingData);
   await updatePartTracking(part.id, normalizedData);
