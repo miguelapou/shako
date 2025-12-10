@@ -233,9 +233,13 @@ const PartsTab = ({
   // Helper function to change page with animation
   const handlePageChange = (newPage) => {
     if (newPage !== currentPage && newPage >= 1 && newPage <= totalPages) {
+      console.log('handlePageChange called', { newPage, currentPage, totalPages, rowsPerPage, paginatedPartsLength: paginatedParts.length });
       setIsPaginating(true);
       setCurrentPage(newPage);
-      setTimeout(() => setIsPaginating(false), 600);
+      setTimeout(() => {
+        console.log('isPaginating set to false');
+        setIsPaginating(false);
+      }, 600);
     }
   };
 
@@ -1075,15 +1079,17 @@ const PartsTab = ({
                   </th>
                 </tr>
               </thead>
+              {console.log('Rendering tbody', { isPaginating, totalPages, rowsPerPage, paginatedPartsLength: paginatedParts.length, minHeight: totalPages > 1 ? `${rowsPerPage * 63}px` : 'auto' })}
               <tbody
                 className={`divide-y ${
                   darkMode ? 'divide-gray-700' : 'divide-slate-200'
                 }`}
                 style={{ minHeight: totalPages > 1 ? `${rowsPerPage * 63}px` : 'auto' }}
               >
-                {paginatedParts.map((part) => (
+                {paginatedParts.map((part, index) => (
                   <tr
                     key={part.id}
+                    ref={index === 0 ? (el) => console.log('First row rendered', { partId: part.id, el }) : undefined}
                     onClick={() => {
                       setViewingPart(part);
                       setShowPartDetailModal(true);
