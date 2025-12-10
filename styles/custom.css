@@ -175,7 +175,6 @@ input[type="number"] {
 @keyframes tableFadeOnly {
   0% {
     opacity: 0;
-    border-color: transparent;
   }
   100% {
     opacity: 1;
@@ -279,8 +278,8 @@ input[type="number"] {
 }
 
 /* Table Sorting Animation */
-.table-sorting tbody tr {
-  animation: tableFadeSlide 0.4s ease-out;
+.table-sorting tbody tr:not(.empty-row) {
+  animation: tableFadeOnly 0.4s ease-out;
 }
 
 .table-sorting tbody tr:nth-child(1) { animation-delay: 0s; }
@@ -295,7 +294,7 @@ input[type="number"] {
 .table-sorting tbody tr:nth-child(10) { animation-delay: 0.18s; }
 
 /* Status Filtering Animation */
-.table-status-filtering tbody tr {
+.table-status-filtering tbody tr:not(.empty-row) {
   animation: tableFadeOnly 0.6s ease-in;
 }
 
@@ -306,17 +305,29 @@ input[type="number"] {
 
 /* Status Card Content Fade-in Animation */
 .status-card-content {
-  animation: statusCardFadeIn 0.3s ease-in-out;
+  animation: statusCardFadeIn 0.6s ease-in;
 }
 
 @keyframes statusCardFadeIn {
   0% {
     opacity: 0;
-    transform: translateY(-4px);
   }
   100% {
     opacity: 1;
-    transform: translateY(0);
+  }
+}
+
+/* Status Card Icon Fade-in Animation */
+.status-card-icon {
+  animation: statusCardIconFadeIn 0.6s ease-in;
+}
+
+@keyframes statusCardIconFadeIn {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
   }
 }
 
