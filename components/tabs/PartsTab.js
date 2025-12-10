@@ -601,7 +601,7 @@ const PartsTab = ({
                 }}
                 className={`rounded-lg shadow-md p-4 border-l-4 ${
                   statusFilter === 'pending' ? 'border-gray-400' : 'border-yellow-500'
-                } relative overflow-hidden cursor-pointer transition-shadow duration-200 hover:shadow-lg ${
+                } relative overflow-hidden cursor-pointer transition-all duration-200 hover:shadow-lg hover:scale-[1.02] ${
                   statusFilter === 'pending'
                     ? (darkMode ? 'bg-gray-900' : 'bg-slate-300')
                     : (darkMode ? 'bg-gray-800 hover:bg-gray-750' : 'bg-slate-100 hover:bg-slate-200')
@@ -650,7 +650,7 @@ const PartsTab = ({
                     setTimeout(() => setContainerMinHeight('auto'), 50);
                   }
                 }}
-                className={`rounded-lg shadow-md p-4 border-l-4 border-blue-500 relative overflow-hidden cursor-pointer transition-shadow duration-200 hover:shadow-lg ${
+                className={`rounded-lg shadow-md p-4 border-l-4 border-blue-500 relative overflow-hidden cursor-pointer transition-all duration-200 hover:shadow-lg hover:scale-[1.02] ${
                   darkMode ? 'bg-gray-800 hover:bg-gray-750' : 'bg-slate-100 hover:bg-slate-200'
                 } ${statusFilter === 'shipped' ? 'ring-2 ring-blue-500' : ''}`}
                 style={{ touchAction: 'manipulation' }}
@@ -699,7 +699,7 @@ const PartsTab = ({
                 }}
                 className={`rounded-lg shadow-md p-4 border-l-4 ${
                   deliveredFilter === 'hide' ? 'border-red-500' : 'border-green-500'
-                } relative overflow-hidden cursor-pointer transition-shadow duration-200 hover:shadow-lg ${
+                } relative overflow-hidden cursor-pointer transition-all duration-200 hover:shadow-lg hover:scale-[1.02] ${
                   deliveredFilter === 'hide'
                     ? (darkMode ? 'bg-gray-900' : 'bg-slate-300')
                     : (darkMode ? 'bg-gray-800 hover:bg-gray-750' : 'bg-slate-100 hover:bg-slate-200')
