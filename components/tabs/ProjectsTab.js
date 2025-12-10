@@ -504,7 +504,9 @@ const ProjectsTab = ({
                         setProjectModalEditMode(false);
                         setShowProjectDetailModal(true);
                       }}
-                      className={`relative rounded-lg shadow-lg pt-2 pb-2 px-3 transition-[transform,box-shadow] duration-200 hover:shadow-2xl hover:scale-[1.03] cursor-pointer ${
+                      className={`relative rounded-lg shadow-lg pt-2 px-3 transition-[transform,box-shadow] duration-200 hover:shadow-2xl hover:scale-[1.03] cursor-pointer ${
+                        vehicle ? 'pb-8' : 'pb-2'
+                      } ${
                         darkMode ? 'bg-gray-800' : 'bg-slate-100'
                       }`}
                     >
