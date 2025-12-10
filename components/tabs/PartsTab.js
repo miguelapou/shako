@@ -53,7 +53,6 @@ const PartsTab = ({
 }) => {
   // Pagination state
   const [currentPage, setCurrentPage] = useState(1);
-  const [isPaginating, setIsPaginating] = useState(false);
   const tableContainerRef = useRef(null);
 
   // Calculate initial estimate based on viewport (before ref is available)
@@ -215,14 +214,10 @@ const PartsTab = ({
 
       if (e.key === 'ArrowLeft' && currentPage > 1) {
         e.preventDefault();
-        setIsPaginating(true);
         setCurrentPage(prev => prev - 1);
-        setTimeout(() => setIsPaginating(false), 600);
       } else if (e.key === 'ArrowRight' && currentPage < pages) {
         e.preventDefault();
-        setIsPaginating(true);
         setCurrentPage(prev => prev + 1);
-        setTimeout(() => setIsPaginating(false), 600);
       }
     };
 
@@ -230,16 +225,10 @@ const PartsTab = ({
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [currentPage, filteredParts.length, rowsPerPage]);
 
-  // Helper function to change page with animation
+  // Helper function to change page
   const handlePageChange = (newPage) => {
     if (newPage !== currentPage && newPage >= 1 && newPage <= totalPages) {
-      console.log('handlePageChange called', { newPage, currentPage, totalPages, rowsPerPage, paginatedPartsLength: paginatedParts.length });
-      setIsPaginating(true);
       setCurrentPage(newPage);
-      setTimeout(() => {
-        console.log('isPaginating set to false');
-        setIsPaginating(false);
-      }, 600);
     }
   };
 
@@ -1008,7 +997,7 @@ const PartsTab = ({
           darkMode ? 'bg-gray-800' : 'bg-slate-100'
         }`}>
           <div className="overflow-x-auto overflow-y-visible rounded-t-lg">
-            <table className={`w-full min-w-[900px] table-fixed ${isStatusFiltering || isFilteringParts || isSearching ? 'table-status-filtering' : isSorting ? 'table-sorting' : isPaginating ? 'table-status-filtering' : ''}`}>
+            <table className={`w-full min-w-[900px] table-fixed ${isStatusFiltering || isFilteringParts || isSearching ? 'table-status-filtering' : isSorting ? 'table-sorting' : ''}`}>
               <thead className={`border-b ${
                 darkMode ? 'bg-gray-700 border-gray-600' : 'bg-slate-50 border-slate-200'
               }`}>
@@ -1079,17 +1068,15 @@ const PartsTab = ({
                   </th>
                 </tr>
               </thead>
-              {console.log('Rendering tbody', { isPaginating, totalPages, rowsPerPage, paginatedPartsLength: paginatedParts.length, minHeight: totalPages > 1 ? `${rowsPerPage * 63}px` : 'auto' })}
               <tbody
                 className={`divide-y ${
                   darkMode ? 'divide-gray-700' : 'divide-slate-200'
                 }`}
                 style={{ minHeight: totalPages > 1 ? `${rowsPerPage * 63}px` : 'auto' }}
               >
-                {paginatedParts.map((part, index) => (
+                {paginatedParts.map((part) => (
                   <tr
                     key={part.id}
-                    ref={index === 0 ? (el) => console.log('First row rendered', { partId: part.id, el }) : undefined}
                     onClick={() => {
                       setViewingPart(part);
                       setShowPartDetailModal(true);
@@ -1294,7 +1281,6 @@ const PartsTab = ({
                   id="rowsPerPage"
                   value={isAutoRows ? 'auto' : rowsPerPage}
                   onChange={(e) => {
-                    setIsPaginating(true);
                     const value = e.target.value;
                     if (value === 'auto') {
                       setIsAutoRows(true);
@@ -1304,7 +1290,6 @@ const PartsTab = ({
                       setRowsPerPage(Number(value));
                     }
                     setCurrentPage(1);
-                    setTimeout(() => setIsPaginating(false), 600);
                   }}
                   className={`px-3 py-2 pr-8 rounded border text-sm appearance-none ${
                     darkMode
