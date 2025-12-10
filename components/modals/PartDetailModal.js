@@ -476,14 +476,7 @@ const PartDetailModal = ({
     if (!partsChanged) return;
 
     const updatedPart = parts.find(p => p.id === viewingPart.id);
-    console.log('[PartDetailModal] Parts array changed, syncing viewingPart', {
-      viewingPartId: viewingPart.id,
-      viewingPartShipped: viewingPart.shipped,
-      updatedPartShipped: updatedPart?.shipped
-    });
-
     if (updatedPart && updatedPart !== viewingPart) {
-      console.log('[PartDetailModal] Updating viewingPart');
       setViewingPart(updatedPart);
     }
   }, [isOpen, parts, viewingPart, setViewingPart]);

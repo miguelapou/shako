@@ -234,7 +234,6 @@ const useParts = (userId, toast) => {
    * Save tracking information
    */
   const saveTrackingInfo = async (trackingModalPartId, trackingInput, setShowTrackingModal, setTrackingModalPartId, setTrackingInput) => {
-    console.log('[useParts] saveTrackingInfo called', { trackingModalPartId, trackingInput });
     try {
       // Update in database
       await partsService.updatePart(trackingModalPartId, {
@@ -243,26 +242,19 @@ const useParts = (userId, toast) => {
         purchased: true,
         tracking: trackingInput
       });
-      console.log('[useParts] Database updated, now updating local state');
       // Update local state
-      setParts(prevParts => {
-        console.log('[useParts] setParts mapper running, prevParts length:', prevParts.length);
-        const newParts = prevParts.map(part => {
-          if (part.id === trackingModalPartId) {
-            console.log('[useParts] Found part to update:', part.id, 'setting shipped=true');
-            return {
-              ...part,
-              delivered: false,
-              shipped: true,
-              purchased: true,
-              tracking: trackingInput
-            };
-          }
-          return part;
-        });
-        console.log('[useParts] Returning new parts array');
-        return newParts;
-      });
+      setParts(prevParts => prevParts.map(part => {
+        if (part.id === trackingModalPartId) {
+          return {
+            ...part,
+            delivered: false,
+            shipped: true,
+            purchased: true,
+            tracking: trackingInput
+          };
+        }
+        return part;
+      }));
       if (setShowTrackingModal) setShowTrackingModal(false);
       if (setTrackingModalPartId) setTrackingModalPartId(null);
       if (setTrackingInput) setTrackingInput('');
@@ -297,7 +289,6 @@ const useParts = (userId, toast) => {
    * Skip tracking information
    */
   const skipTrackingInfo = async (trackingModalPartId, setShowTrackingModal, setTrackingModalPartId, setTrackingInput) => {
-    console.log('[useParts] skipTrackingInfo called', { trackingModalPartId });
     try {
       // Update in database
       await partsService.updatePart(trackingModalPartId, {
@@ -305,25 +296,18 @@ const useParts = (userId, toast) => {
         shipped: true,
         purchased: true
       });
-      console.log('[useParts] Database updated (skip), now updating local state');
       // Update local state
-      setParts(prevParts => {
-        console.log('[useParts] setParts mapper running (skip), prevParts length:', prevParts.length);
-        const newParts = prevParts.map(part => {
-          if (part.id === trackingModalPartId) {
-            console.log('[useParts] Found part to update (skip):', part.id, 'setting shipped=true');
-            return {
-              ...part,
-              delivered: false,
-              shipped: true,
-              purchased: true
-            };
-          }
-          return part;
-        });
-        console.log('[useParts] Returning new parts array (skip)');
-        return newParts;
-      });
+      setParts(prevParts => prevParts.map(part => {
+        if (part.id === trackingModalPartId) {
+          return {
+            ...part,
+            delivered: false,
+            shipped: true,
+            purchased: true
+          };
+        }
+        return part;
+      }));
       if (setShowTrackingModal) setShowTrackingModal(false);
       if (setTrackingModalPartId) setTrackingModalPartId(null);
       if (setTrackingInput) setTrackingInput('');

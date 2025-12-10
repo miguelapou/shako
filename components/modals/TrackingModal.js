@@ -17,7 +17,6 @@ const TrackingModal = ({
   // Reset state when modal opens
   useEffect(() => {
     if (isOpen) {
-      console.log('[TrackingModal] Modal opened, resetting state');
       setIsClosing(false);
       isSubmittingRef.current = false;
       openTimeRef.current = Date.now();
@@ -26,15 +25,8 @@ const TrackingModal = ({
 
   const handleClose = useCallback(() => {
     // Ignore clicks within 200ms of opening (prevents click-through from dropdown)
-    if (Date.now() - openTimeRef.current < 200) {
-      console.log('[TrackingModal] Ignoring close - too soon after open');
-      return;
-    }
-    if (isClosing || isSubmittingRef.current) {
-      console.log('[TrackingModal] Ignoring close - already closing/submitting');
-      return;
-    }
-    console.log('[TrackingModal] Closing modal');
+    if (Date.now() - openTimeRef.current < 200) return;
+    if (isClosing || isSubmittingRef.current) return;
     setIsClosing(true);
     setTimeout(() => {
       onClose();
@@ -43,11 +35,7 @@ const TrackingModal = ({
   }, [onClose, isClosing]);
 
   const handleSkip = useCallback(() => {
-    if (isSubmittingRef.current || isClosing) {
-      console.log('[TrackingModal] Ignoring skip - already submitting/closing');
-      return;
-    }
-    console.log('[TrackingModal] Skip clicked');
+    if (isSubmittingRef.current || isClosing) return;
     isSubmittingRef.current = true;
     setIsClosing(true);
     setTimeout(() => {
@@ -56,11 +44,7 @@ const TrackingModal = ({
   }, [skipTrackingInfo, isClosing]);
 
   const handleSave = useCallback(() => {
-    if (isSubmittingRef.current || isClosing) {
-      console.log('[TrackingModal] Ignoring save - already submitting/closing');
-      return;
-    }
-    console.log('[TrackingModal] Save clicked');
+    if (isSubmittingRef.current || isClosing) return;
     isSubmittingRef.current = true;
     setIsClosing(true);
     setTimeout(() => {
