@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect, useCallback } from 'react';
+import React, { useState, useRef, useEffect, useLayoutEffect, useCallback } from 'react';
 import {
   Search, Package, Receipt, Truck, CheckCircle, Clock,
   ChevronDown, Plus, X, ExternalLink, ShoppingCart, Car,
@@ -54,37 +54,72 @@ const PartsTab = ({
   // Pagination state
   const [currentPage, setCurrentPage] = useState(1);
   const [isPaginating, setIsPaginating] = useState(false);
+  const tableContainerRef = useRef(null);
+
+  // Calculate initial estimate based on viewport (before ref is available)
+  const getInitialRowEstimate = () => {
+    if (typeof window === 'undefined') return 10;
+    const viewportHeight = window.innerHeight;
+    // Estimate table top position (header ~64px + tabs ~50px + filters ~120px + spacing ~40px)
+    const estimatedTableTop = 274;
+    const bottomPadding = 180;
+    const headerHeight = 57;
+    const rowHeight = 57;
+    const availableHeight = viewportHeight - estimatedTableTop - bottomPadding - headerHeight;
+    return Math.max(5, Math.floor(availableHeight / rowHeight));
+  };
+
   const [isAutoRows, setIsAutoRows] = useState(() => {
-    // Load auto mode preference from localStorage
     if (typeof window !== 'undefined') {
       const saved = localStorage.getItem('partsTableRowsPerPage');
-      return saved === 'auto' || saved === null; // Default to auto
+      return saved === 'auto' || saved === null;
     }
     return true;
   });
-  const [rowsPerPage, setRowsPerPage] = useState(10); // Will be calculated if auto
-  const [calculatedRows, setCalculatedRows] = useState(10);
-  const tableContainerRef = useRef(null);
+
+  const initialRows = getInitialRowEstimate();
+  const [rowsPerPage, setRowsPerPage] = useState(() => {
+    if (typeof window !== 'undefined') {
+      const saved = localStorage.getItem('partsTableRowsPerPage');
+      if (saved && saved !== 'auto') {
+        const parsed = parseInt(saved, 10);
+        if (!isNaN(parsed)) return parsed;
+      }
+    }
+    return initialRows;
+  });
+  const [calculatedRows, setCalculatedRows] = useState(initialRows);
 
   // Calculate optimal rows based on available viewport height
   const calculateOptimalRows = useCallback(() => {
-    if (!tableContainerRef.current) return 10;
+    if (!tableContainerRef.current) return calculatedRows;
 
     const tableTop = tableContainerRef.current.getBoundingClientRect().top;
     const viewportHeight = window.innerHeight;
-    const bottomPadding = 180; // Space for pagination footer + breathing room
-    const headerHeight = 57; // Approximate table header height
-    const rowHeight = 57; // Approximate row height (py-4 + content)
+    const bottomPadding = 180;
+    const headerHeight = 57;
+    const rowHeight = 57;
 
     const availableHeight = viewportHeight - tableTop - bottomPadding - headerHeight;
     const optimalRows = Math.max(5, Math.floor(availableHeight / rowHeight));
 
     return optimalRows;
-  }, []);
+  }, [calculatedRows]);
 
-  // Update calculated rows on mount and window resize
+  // Use useLayoutEffect for initial calculation (runs before paint)
+  useLayoutEffect(() => {
+    if (tableContainerRef.current) {
+      const optimal = calculateOptimalRows();
+      setCalculatedRows(optimal);
+      if (isAutoRows) {
+        setRowsPerPage(optimal);
+      }
+    }
+  }, [calculateOptimalRows, isAutoRows]);
+
+  // Handle window resize
   useEffect(() => {
-    const updateRows = () => {
+    const handleResize = () => {
       const optimal = calculateOptimalRows();
       setCalculatedRows(optimal);
       if (isAutoRows) {
@@ -92,28 +127,9 @@ const PartsTab = ({
       }
     };
 
-    // Initial calculation after a short delay to ensure DOM is ready
-    const initialTimeout = setTimeout(updateRows, 100);
-
-    window.addEventListener('resize', updateRows);
-    return () => {
-      clearTimeout(initialTimeout);
-      window.removeEventListener('resize', updateRows);
-    };
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
   }, [calculateOptimalRows, isAutoRows]);
-
-  // Load manual rowsPerPage from localStorage on mount
-  useEffect(() => {
-    if (typeof window !== 'undefined') {
-      const saved = localStorage.getItem('partsTableRowsPerPage');
-      if (saved && saved !== 'auto') {
-        const parsed = parseInt(saved, 10);
-        if (!isNaN(parsed)) {
-          setRowsPerPage(parsed);
-        }
-      }
-    }
-  }, []);
 
   // Dropdown animation state
   const [closingDropdown, setClosingDropdown] = useState(null);
@@ -1216,8 +1232,8 @@ const PartsTab = ({
                 ))}
                 {/* Add empty rows on last page to maintain consistent height when there are multiple pages */}
                 {totalPages > 1 && paginatedParts.length < rowsPerPage && Array.from({ length: rowsPerPage - paginatedParts.length }).map((_, index) => (
-                  <tr key={`empty-${index}`}>
-                    <td className="px-6 py-4"><div className="h-[2rem]"></div></td>
+                  <tr key={`empty-${index}`} className="h-[57px]">
+                    <td className="px-6 py-4"></td>
                     <td className="px-3 py-4"></td>
                     <td className="px-6 py-4"></td>
                     <td className="hidden px-6 py-4"></td>
