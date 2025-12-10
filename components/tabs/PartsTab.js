@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect, useCallback } from 'react';
+import React, { useState, useRef, useEffect, useLayoutEffect, useCallback } from 'react';
 import {
   Search, Package, Receipt, Truck, CheckCircle, Clock,
   ChevronDown, Plus, X, ExternalLink, ShoppingCart, Car,
@@ -54,14 +54,82 @@ const PartsTab = ({
   // Pagination state
   const [currentPage, setCurrentPage] = useState(1);
   const [isPaginating, setIsPaginating] = useState(false);
-  const [rowsPerPage, setRowsPerPage] = useState(() => {
-    // Load from localStorage or default to 10
+  const tableContainerRef = useRef(null);
+
+  // Calculate initial estimate based on viewport (before ref is available)
+  const getInitialRowEstimate = () => {
+    if (typeof window === 'undefined') return 10;
+    const viewportHeight = window.innerHeight;
+    // Estimate table top position (header ~64px + tabs ~50px + filters ~120px + spacing ~40px)
+    const estimatedTableTop = 274;
+    const bottomPadding = 100;
+    const headerHeight = 57;
+    const rowHeight = 63;
+    const availableHeight = viewportHeight - estimatedTableTop - bottomPadding - headerHeight;
+    return Math.max(5, Math.floor(availableHeight / rowHeight));
+  };
+
+  const [isAutoRows, setIsAutoRows] = useState(() => {
     if (typeof window !== 'undefined') {
       const saved = localStorage.getItem('partsTableRowsPerPage');
-      return saved ? parseInt(saved, 10) : 10;
+      return saved === 'auto' || saved === null;
     }
-    return 10;
+    return true;
   });
+
+  const initialRows = getInitialRowEstimate();
+  const [rowsPerPage, setRowsPerPage] = useState(() => {
+    if (typeof window !== 'undefined') {
+      const saved = localStorage.getItem('partsTableRowsPerPage');
+      if (saved && saved !== 'auto') {
+        const parsed = parseInt(saved, 10);
+        if (!isNaN(parsed)) return parsed;
+      }
+    }
+    return initialRows;
+  });
+  const [calculatedRows, setCalculatedRows] = useState(initialRows);
+
+  // Calculate optimal rows based on available viewport height
+  const calculateOptimalRows = useCallback(() => {
+    if (!tableContainerRef.current) return calculatedRows;
+
+    const tableTop = tableContainerRef.current.getBoundingClientRect().top;
+    const viewportHeight = window.innerHeight;
+    const bottomPadding = 100;
+    const headerHeight = 57;
+    const rowHeight = 63;
+
+    const availableHeight = viewportHeight - tableTop - bottomPadding - headerHeight;
+    const optimalRows = Math.max(5, Math.floor(availableHeight / rowHeight));
+
+    return optimalRows;
+  }, [calculatedRows]);
+
+  // Use useLayoutEffect for initial calculation (runs before paint)
+  useLayoutEffect(() => {
+    if (tableContainerRef.current) {
+      const optimal = calculateOptimalRows();
+      setCalculatedRows(optimal);
+      if (isAutoRows) {
+        setRowsPerPage(optimal);
+      }
+    }
+  }, [calculateOptimalRows, isAutoRows]);
+
+  // Handle window resize
+  useEffect(() => {
+    const handleResize = () => {
+      const optimal = calculateOptimalRows();
+      setCalculatedRows(optimal);
+      if (isAutoRows) {
+        setRowsPerPage(optimal);
+      }
+    };
+
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, [calculateOptimalRows, isAutoRows]);
 
   // Dropdown animation state
   const [closingDropdown, setClosingDropdown] = useState(null);
@@ -79,12 +147,12 @@ const PartsTab = ({
     }, 150);
   }, [setOpenDropdown]);
 
-  // Save rowsPerPage to localStorage whenever it changes
+  // Save rowsPerPage preference to localStorage whenever it changes
   useEffect(() => {
     if (typeof window !== 'undefined') {
-      localStorage.setItem('partsTableRowsPerPage', rowsPerPage.toString());
+      localStorage.setItem('partsTableRowsPerPage', isAutoRows ? 'auto' : rowsPerPage.toString());
     }
-  }, [rowsPerPage]);
+  }, [rowsPerPage, isAutoRows]);
 
   const [containerMinHeight, setContainerMinHeight] = useState('auto');
 
@@ -893,18 +961,20 @@ const PartsTab = ({
         {/* Parts Table */}
         {/* Desktop Table View - Hidden below 800px */}
         {filteredParts.length > 0 ? (
-        <div className={`hidden-below-800 rounded-lg shadow-md ${
+        <div
+          ref={tableContainerRef}
+          className={`hidden-below-800 rounded-t-lg shadow-md ${
           darkMode ? 'bg-gray-800' : 'bg-slate-100'
         }`}>
-          <div className="overflow-x-auto overflow-y-visible rounded-lg">
-            <table className={`w-full min-w-[900px] ${isStatusFiltering || isFilteringParts || isSearching ? 'table-status-filtering' : isSorting ? 'table-sorting' : isPaginating ? 'table-status-filtering' : ''}`}>
+          <div className="overflow-x-auto overflow-y-visible rounded-t-lg">
+            <table className={`w-full min-w-[900px] table-fixed ${isStatusFiltering || isFilteringParts || isSearching ? 'table-status-filtering' : isSorting ? 'table-sorting' : isPaginating ? 'table-status-filtering' : ''}`}>
               <thead className={`border-b ${
                 darkMode ? 'bg-gray-700 border-gray-600' : 'bg-slate-50 border-slate-200'
               }`}>
                 <tr>
                   <th
                     onClick={() => handleSort('status')}
-                    className={`px-6 py-4 text-center text-xs font-semibold uppercase tracking-wider cursor-pointer transition-colors ${
+                    className={`w-[180px] px-6 py-4 text-center text-xs font-semibold uppercase tracking-wider cursor-pointer transition-colors ${
                       darkMode ? 'text-gray-300 hover:bg-gray-600' : 'text-slate-700 hover:bg-slate-200'
                     }`}
                   >
@@ -913,10 +983,10 @@ const PartsTab = ({
                       {getSortIcon('status')}
                     </div>
                   </th>
-                  <th className={`px-3 py-4 text-center text-xs font-semibold uppercase tracking-wider ${
+                  <th className={`w-[100px] px-3 py-4 text-center text-xs font-semibold uppercase tracking-wider ${
                     darkMode ? 'text-gray-300' : 'text-slate-700'
-                  }`} style={{ width: '100px', maxWidth: '100px' }}>Tracking</th>
-                  <th className={`px-6 py-4 text-center text-xs font-semibold uppercase tracking-wider ${
+                  }`}>Tracking</th>
+                  <th className={`w-[25%] px-6 py-4 text-center text-xs font-semibold uppercase tracking-wider ${
                     darkMode ? 'text-gray-300' : 'text-slate-700'
                   }`}>Part</th>
                   <th className={`hidden px-6 py-4 text-center text-xs font-semibold uppercase tracking-wider ${
@@ -924,7 +994,7 @@ const PartsTab = ({
                   }`}>Part #</th>
                   <th
                     onClick={() => handleSort('vendor')}
-                    className={`px-6 py-4 text-center text-xs font-semibold uppercase tracking-wider cursor-pointer transition-colors ${
+                    className={`w-[15%] px-6 py-4 text-center text-xs font-semibold uppercase tracking-wider cursor-pointer transition-colors ${
                       darkMode ? 'text-gray-300 hover:bg-gray-600' : 'text-slate-700 hover:bg-slate-200'
                     }`}
                   >
@@ -935,7 +1005,7 @@ const PartsTab = ({
                   </th>
                   <th
                     onClick={() => handleSort('project')}
-                    className={`px-6 py-4 text-center text-xs font-semibold uppercase tracking-wider cursor-pointer transition-colors ${
+                    className={`w-[15%] px-6 py-4 text-center text-xs font-semibold uppercase tracking-wider cursor-pointer transition-colors ${
                       darkMode ? 'text-gray-300 hover:bg-gray-600' : 'text-slate-700 hover:bg-slate-200'
                     }`}
                   >
@@ -946,7 +1016,7 @@ const PartsTab = ({
                   </th>
                   <th
                     onClick={() => handleSort('vehicle')}
-                    className={`hidden min-[1100px]:table-cell px-6 py-4 text-center text-xs font-semibold uppercase tracking-wider cursor-pointer transition-colors ${
+                    className={`hidden min-[1100px]:table-cell w-[15%] px-6 py-4 text-center text-xs font-semibold uppercase tracking-wider cursor-pointer transition-colors ${
                       darkMode ? 'text-gray-300 hover:bg-gray-600' : 'text-slate-700 hover:bg-slate-200'
                     }`}
                   >
@@ -957,7 +1027,7 @@ const PartsTab = ({
                   </th>
                   <th
                     onClick={() => handleSort('total')}
-                    className={`px-6 py-4 text-center text-xs font-semibold uppercase tracking-wider cursor-pointer transition-colors ${
+                    className={`w-[100px] px-6 py-4 text-center text-xs font-semibold uppercase tracking-wider cursor-pointer transition-colors ${
                       darkMode ? 'text-gray-300 hover:bg-gray-600' : 'text-slate-700 hover:bg-slate-200'
                     }`}
                   >
@@ -1162,16 +1232,21 @@ const PartsTab = ({
                 ))}
                 {/* Add empty rows on last page to maintain consistent height when there are multiple pages */}
                 {totalPages > 1 && paginatedParts.length < rowsPerPage && Array.from({ length: rowsPerPage - paginatedParts.length }).map((_, index) => (
-                  <tr key={`empty-${index}`}>
-                    <td colSpan="8" className="px-6 py-4">
-                      <div className="h-[2rem]"></div>
-                    </td>
+                  <tr key={`empty-${index}`} className="h-[63px]">
+                    <td className="px-6 py-4"></td>
+                    <td className="px-3 py-4"></td>
+                    <td className="px-6 py-4"></td>
+                    <td className="hidden px-6 py-4"></td>
+                    <td className="px-6 py-4"></td>
+                    <td className="px-6 py-4"></td>
+                    <td className="hidden min-[1100px]:table-cell px-6 py-4"></td>
+                    <td className="px-6 py-4"></td>
                   </tr>
                 ))}
               </tbody>
             </table>
           </div>
-          <div className={`px-6 py-4 border-t parts-table-footer ${
+          <div className={`px-6 py-4 border-t rounded-b-lg parts-table-footer ${
             darkMode ? 'bg-gray-700 border-gray-600' : 'bg-slate-50 border-slate-200'
           }`}>
             <div className="grid grid-cols-3 items-center gap-4">
@@ -1184,10 +1259,17 @@ const PartsTab = ({
                 </label>
                 <select
                   id="rowsPerPage"
-                  value={rowsPerPage}
+                  value={isAutoRows ? 'auto' : rowsPerPage}
                   onChange={(e) => {
                     setIsPaginating(true);
-                    setRowsPerPage(Number(e.target.value));
+                    const value = e.target.value;
+                    if (value === 'auto') {
+                      setIsAutoRows(true);
+                      setRowsPerPage(calculatedRows);
+                    } else {
+                      setIsAutoRows(false);
+                      setRowsPerPage(Number(value));
+                    }
                     setCurrentPage(1);
                     setTimeout(() => setIsPaginating(false), 600);
                   }}
@@ -1197,6 +1279,7 @@ const PartsTab = ({
                       : 'bg-white border-slate-300 text-slate-700'
                   } cursor-pointer focus:outline-none focus:ring-2 focus:ring-blue-500`}
                 >
+                  <option value="auto">Auto ({calculatedRows})</option>
                   <option value="10">10</option>
                   <option value="25">25</option>
                   <option value="50">50</option>

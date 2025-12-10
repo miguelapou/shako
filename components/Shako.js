@@ -730,9 +730,11 @@ const Shako = () => {
 
   const getSortIcon = (field) => {
     if (sortBy !== field) return null;
-    return sortOrder === 'asc' 
-      ? <ChevronUp className="w-4 h-4 transition-transform duration-300 animate-in spin-in-180" /> 
-      : <ChevronDown className="w-4 h-4 transition-transform duration-300 animate-in spin-in-180" />;
+    return (
+      <ChevronUp
+        className={`w-4 h-4 transition-transform duration-300 ${sortOrder === 'desc' ? 'rotate-180' : ''}`}
+      />
+    );
   };
 
   const filteredParts = useMemo(() => {
@@ -939,6 +941,7 @@ const Shako = () => {
       <style>{`
         /* Reserve scrollbar space to prevent layout shift */
         html {
+          overflow-y: scroll;
           scrollbar-gutter: stable;
         }
 
@@ -1009,17 +1012,9 @@ const Shako = () => {
           }
         }
 
-        /* Round bottom corners of parts table */
+        /* Round bottom corners of parts table footer */
         .parts-table-footer {
           border-bottom-left-radius: 0.5rem;
-          border-bottom-right-radius: 0.5rem;
-        }
-
-        /* Round bottom corners of last table row cells */
-        table tbody tr:last-child td:first-child {
-          border-bottom-left-radius: 0.5rem;
-        }
-        table tbody tr:last-child td:last-child {
           border-bottom-right-radius: 0.5rem;
         }
       `}</style>
