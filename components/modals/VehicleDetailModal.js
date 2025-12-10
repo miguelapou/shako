@@ -511,8 +511,8 @@ const VehicleDetailModal = ({
             >
               {/* Top Section: Image and Basic Info side by side */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                {/* Basic Info Card - Half width on desktop, two column layout - appears second on mobile */}
-                <div className={`order-last md:order-first rounded-lg p-6 ${
+                {/* Basic Info Card - Half width on desktop, two column layout - appears first on mobile */}
+                <div className={`order-first md:order-last rounded-lg p-6 ${
                   darkMode ? 'bg-gray-700' : 'bg-gray-50'
                 }`}>
                   <div className="flex items-center justify-between mb-4">
@@ -670,9 +670,9 @@ const VehicleDetailModal = ({
                     })()}
                   </div>
                 </div>
-                {/* Vehicle Image - Half width on desktop - appears first on mobile */}
+                {/* Vehicle Image - Half width on desktop - appears second on mobile */}
                 {(viewingVehicle.image_url_resolved || viewingVehicle.image_url) ? (
-                  <div className="order-first md:order-last rounded-lg overflow-hidden">
+                  <div className="order-last md:order-first rounded-lg overflow-hidden">
                     <FadeInImage
                       src={viewingVehicle.image_url_resolved || viewingVehicle.image_url}
                       alt={viewingVehicle.nickname || viewingVehicle.name}
@@ -682,7 +682,7 @@ const VehicleDetailModal = ({
                     />
                   </div>
                 ) : (
-                  <div className={`order-first md:order-last rounded-lg border min-h-[300px] flex flex-col items-center justify-center ${
+                  <div className={`order-last md:order-first rounded-lg border min-h-[300px] flex flex-col items-center justify-center ${
                     darkMode ? 'bg-gray-700/30 border-gray-600' : 'bg-gray-50 border-gray-200'
                   }`}>
                     <Camera className={`w-12 h-12 mx-auto mb-2 opacity-40 ${
