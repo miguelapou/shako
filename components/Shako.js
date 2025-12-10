@@ -730,9 +730,11 @@ const Shako = () => {
 
   const getSortIcon = (field) => {
     if (sortBy !== field) return null;
-    return sortOrder === 'asc' 
-      ? <ChevronUp className="w-4 h-4 transition-transform duration-300 animate-in spin-in-180" /> 
-      : <ChevronDown className="w-4 h-4 transition-transform duration-300 animate-in spin-in-180" />;
+    return (
+      <ChevronUp
+        className={`w-4 h-4 transition-transform duration-300 ${sortOrder === 'desc' ? 'rotate-180' : ''}`}
+      />
+    );
   };
 
   const filteredParts = useMemo(() => {
