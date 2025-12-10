@@ -62,7 +62,7 @@ const PartsTab = ({
     const viewportHeight = window.innerHeight;
     // Estimate table top position (header ~64px + tabs ~50px + filters ~120px + spacing ~40px)
     const estimatedTableTop = 274;
-    const bottomPadding = 180;
+    const bottomPadding = 100;
     const headerHeight = 57;
     const rowHeight = 63;
     const availableHeight = viewportHeight - estimatedTableTop - bottomPadding - headerHeight;
@@ -96,7 +96,7 @@ const PartsTab = ({
 
     const tableTop = tableContainerRef.current.getBoundingClientRect().top;
     const viewportHeight = window.innerHeight;
-    const bottomPadding = 180;
+    const bottomPadding = 100;
     const headerHeight = 57;
     const rowHeight = 63;
 
