@@ -108,7 +108,7 @@ const ProjectsTab = ({
                   setProjectModalEditMode(false);
                   setShowProjectDetailModal(true);
                 }}
-                className={`relative rounded-lg shadow-lg pt-3 pb-6 px-6 transition-all duration-200 hover:shadow-2xl hover:scale-[1.03] cursor-pointer ${
+                className={`relative rounded-lg shadow-lg pt-3 pb-6 px-6 transition-[transform,box-shadow] duration-200 hover:shadow-2xl hover:scale-[1.03] cursor-pointer ${
                   draggedProject?.id === project.id
                     ? 'ring-2 ring-blue-500 ring-offset-2'
                     : dragOverProject?.id === project.id
@@ -504,7 +504,7 @@ const ProjectsTab = ({
                         setProjectModalEditMode(false);
                         setShowProjectDetailModal(true);
                       }}
-                      className={`relative rounded-lg shadow-lg pt-2 pb-2 px-3 transition-all duration-200 hover:shadow-2xl hover:scale-[1.03] cursor-pointer ${
+                      className={`relative rounded-lg shadow-lg pt-2 pb-2 px-3 transition-[transform,box-shadow] duration-200 hover:shadow-2xl hover:scale-[1.03] cursor-pointer ${
                         darkMode ? 'bg-gray-800' : 'bg-slate-100'
                       }`}
                     >
