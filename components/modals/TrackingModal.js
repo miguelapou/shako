@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useRef } from 'react';
+import React, { useState, useCallback, useRef, useEffect } from 'react';
 import { X } from 'lucide-react';
 
 const TrackingModal = ({
@@ -11,10 +11,30 @@ const TrackingModal = ({
   onClose
 }) => {
   const [isClosing, setIsClosing] = useState(false);
-  const isSubmittingRef = useRef(false); // Guard against double-clicks
+  const isSubmittingRef = useRef(false);
+  const openTimeRef = useRef(0); // Track when modal opened to ignore immediate clicks
+
+  // Reset state when modal opens
+  useEffect(() => {
+    if (isOpen) {
+      console.log('[TrackingModal] Modal opened, resetting state');
+      setIsClosing(false);
+      isSubmittingRef.current = false;
+      openTimeRef.current = Date.now();
+    }
+  }, [isOpen]);
 
   const handleClose = useCallback(() => {
-    if (isClosing) return;
+    // Ignore clicks within 200ms of opening (prevents click-through from dropdown)
+    if (Date.now() - openTimeRef.current < 200) {
+      console.log('[TrackingModal] Ignoring close - too soon after open');
+      return;
+    }
+    if (isClosing || isSubmittingRef.current) {
+      console.log('[TrackingModal] Ignoring close - already closing/submitting');
+      return;
+    }
+    console.log('[TrackingModal] Closing modal');
     setIsClosing(true);
     setTimeout(() => {
       onClose();
@@ -23,22 +43,28 @@ const TrackingModal = ({
   }, [onClose, isClosing]);
 
   const handleSkip = useCallback(() => {
-    if (isSubmittingRef.current || isClosing) return;
+    if (isSubmittingRef.current || isClosing) {
+      console.log('[TrackingModal] Ignoring skip - already submitting/closing');
+      return;
+    }
+    console.log('[TrackingModal] Skip clicked');
     isSubmittingRef.current = true;
     setIsClosing(true);
     setTimeout(() => {
       skipTrackingInfo();
-      // Don't reset - modal will unmount
     }, 150);
   }, [skipTrackingInfo, isClosing]);
 
   const handleSave = useCallback(() => {
-    if (isSubmittingRef.current || isClosing) return;
+    if (isSubmittingRef.current || isClosing) {
+      console.log('[TrackingModal] Ignoring save - already submitting/closing');
+      return;
+    }
+    console.log('[TrackingModal] Save clicked');
     isSubmittingRef.current = true;
     setIsClosing(true);
     setTimeout(() => {
       saveTrackingInfo();
-      // Don't reset - modal will unmount
     }, 150);
   }, [saveTrackingInfo, isClosing]);
 
