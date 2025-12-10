@@ -350,32 +350,50 @@ input[type="number"] {
 .projects-filtering > div:nth-child(11) { animation-delay: 0.4s; }
 .projects-filtering > div:nth-child(12) { animation-delay: 0.44s; }
 
-/* Vehicle Layout Transition - Smooth reshape effect */
-@keyframes vehicleCardReshape {
+/* Vehicle Layout Transition - Height morph effect */
+@keyframes vehicleCardGrow {
   0% {
-    transform: scale(1);
-  }
-  50% {
-    transform: scale(0.97);
+    transform: scaleY(0.85);
+    opacity: 0.7;
   }
   100% {
-    transform: scale(1);
+    transform: scaleY(1);
+    opacity: 1;
+  }
+}
+
+@keyframes vehicleCardShrink {
+  0% {
+    transform: scaleY(1.1);
+    opacity: 0.7;
+  }
+  100% {
+    transform: scaleY(1);
+    opacity: 1;
   }
 }
 
 .vehicles-layout-transition > div {
-  animation: vehicleCardReshape 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  transform-origin: top center;
+}
+
+.vehicles-layout-transition.to-compact > div {
+  animation: vehicleCardShrink 0.35s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+
+.vehicles-layout-transition.to-default > div {
+  animation: vehicleCardGrow 0.35s cubic-bezier(0.4, 0, 0.2, 1) forwards;
 }
 
 .vehicles-layout-transition > div:nth-child(1) { animation-delay: 0s; }
-.vehicles-layout-transition > div:nth-child(2) { animation-delay: 0.02s; }
-.vehicles-layout-transition > div:nth-child(3) { animation-delay: 0.04s; }
-.vehicles-layout-transition > div:nth-child(4) { animation-delay: 0.06s; }
-.vehicles-layout-transition > div:nth-child(5) { animation-delay: 0.08s; }
-.vehicles-layout-transition > div:nth-child(6) { animation-delay: 0.1s; }
-.vehicles-layout-transition > div:nth-child(7) { animation-delay: 0.12s; }
-.vehicles-layout-transition > div:nth-child(8) { animation-delay: 0.14s; }
-.vehicles-layout-transition > div:nth-child(9) { animation-delay: 0.16s; }
+.vehicles-layout-transition > div:nth-child(2) { animation-delay: 0.03s; }
+.vehicles-layout-transition > div:nth-child(3) { animation-delay: 0.06s; }
+.vehicles-layout-transition > div:nth-child(4) { animation-delay: 0.09s; }
+.vehicles-layout-transition > div:nth-child(5) { animation-delay: 0.12s; }
+.vehicles-layout-transition > div:nth-child(6) { animation-delay: 0.15s; }
+.vehicles-layout-transition > div:nth-child(7) { animation-delay: 0.18s; }
+.vehicles-layout-transition > div:nth-child(8) { animation-delay: 0.21s; }
+.vehicles-layout-transition > div:nth-child(9) { animation-delay: 0.24s; }
 
 /* Garage Door Loading Spinner */
 .garage-spinner {

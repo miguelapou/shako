@@ -89,18 +89,19 @@ const VehiclesTab = ({
   // Document and service event props removed - now handled via context in VehicleDetailModal
 }) => {
   // Track layout transitions for animation
-  const [isLayoutTransitioning, setIsLayoutTransitioning] = useState(false);
+  const [transitionDirection, setTransitionDirection] = useState(null);
   const previousLayoutRef = useRef(layoutMode);
 
   // Detect layout changes and trigger animation
   useEffect(() => {
     if (previousLayoutRef.current !== layoutMode) {
-      setIsLayoutTransitioning(true);
+      // Set direction based on which layout we're transitioning to
+      setTransitionDirection(layoutMode === 'compact' ? 'to-compact' : 'to-default');
       previousLayoutRef.current = layoutMode;
       // Remove animation class after animation completes
       const timer = setTimeout(() => {
-        setIsLayoutTransitioning(false);
-      }, 400);
+        setTransitionDirection(null);
+      }, 500);
       return () => clearTimeout(timer);
     }
   }, [layoutMode]);
@@ -113,7 +114,7 @@ const VehiclesTab = ({
       <>
         {/* Active Vehicles Grid */}
         <div className={`grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 ${
-          isLayoutTransitioning ? 'vehicles-layout-transition' : ''
+          transitionDirection ? `vehicles-layout-transition ${transitionDirection}` : ''
         }`}>
           {vehicles.filter(v => !v.archived).map((vehicle) => {
             const borderColor = getMutedColor(vehicle.color, darkMode);
