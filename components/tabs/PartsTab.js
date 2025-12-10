@@ -1269,7 +1269,7 @@ const PartsTab = ({
                 ))}
                 {/* Add empty rows on last page to maintain consistent height when there are multiple pages */}
                 {totalPages > 1 && paginatedParts.length < rowsPerPage && Array.from({ length: rowsPerPage - paginatedParts.length }).map((_, index) => (
-                  <tr key={`empty-${index}`} className="h-[63px]">
+                  <tr key={`empty-${index}`} className="h-[63px] empty-row">
                     <td className="px-6 py-4"></td>
                     <td className="px-3 py-4"></td>
                     <td className="px-6 py-4"></td>
