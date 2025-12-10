@@ -1075,9 +1075,12 @@ const PartsTab = ({
                   </th>
                 </tr>
               </thead>
-              <tbody className={`divide-y ${
-                darkMode ? 'divide-gray-700' : 'divide-slate-200'
-              }`}>
+              <tbody
+                className={`divide-y ${
+                  darkMode ? 'divide-gray-700' : 'divide-slate-200'
+                }`}
+                style={{ minHeight: totalPages > 1 ? `${rowsPerPage * 63}px` : 'auto' }}
+              >
                 {paginatedParts.map((part) => (
                   <tr
                     key={part.id}
@@ -1265,19 +1268,6 @@ const PartsTab = ({
                         darkMode ? 'text-gray-100' : 'text-slate-900'
                       }`}>${part.total.toFixed(2)}</div>
                     </td>
-                  </tr>
-                ))}
-                {/* Add empty rows on last page to maintain consistent height when there are multiple pages */}
-                {totalPages > 1 && paginatedParts.length < rowsPerPage && Array.from({ length: rowsPerPage - paginatedParts.length }).map((_, index) => (
-                  <tr key={`empty-${index}`} className="h-[63px] empty-row">
-                    <td className="px-6 py-4"></td>
-                    <td className="px-3 py-4"></td>
-                    <td className="px-6 py-4"></td>
-                    <td className="hidden px-6 py-4"></td>
-                    <td className="px-6 py-4"></td>
-                    <td className="px-6 py-4"></td>
-                    <td className="hidden min-[1100px]:table-cell px-6 py-4"></td>
-                    <td className="px-6 py-4"></td>
                   </tr>
                 ))}
               </tbody>
