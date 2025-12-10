@@ -1011,17 +1011,9 @@ const Shako = () => {
           }
         }
 
-        /* Round bottom corners of parts table */
+        /* Round bottom corners of parts table footer */
         .parts-table-footer {
           border-bottom-left-radius: 0.5rem;
-          border-bottom-right-radius: 0.5rem;
-        }
-
-        /* Round bottom corners of last table row cells */
-        table tbody tr:last-child td:first-child {
-          border-bottom-left-radius: 0.5rem;
-        }
-        table tbody tr:last-child td:last-child {
           border-bottom-right-radius: 0.5rem;
         }
       `}</style>
