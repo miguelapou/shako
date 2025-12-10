@@ -958,7 +958,7 @@ const PartsTab = ({
                 <tr>
                   <th
                     onClick={() => handleSort('status')}
-                    className={`w-[140px] px-6 py-4 text-center text-xs font-semibold uppercase tracking-wider cursor-pointer transition-colors ${
+                    className={`w-[180px] px-6 py-4 text-center text-xs font-semibold uppercase tracking-wider cursor-pointer transition-colors ${
                       darkMode ? 'text-gray-300 hover:bg-gray-600' : 'text-slate-700 hover:bg-slate-200'
                     }`}
                   >
@@ -970,7 +970,7 @@ const PartsTab = ({
                   <th className={`w-[100px] px-3 py-4 text-center text-xs font-semibold uppercase tracking-wider ${
                     darkMode ? 'text-gray-300' : 'text-slate-700'
                   }`}>Tracking</th>
-                  <th className={`px-6 py-4 text-center text-xs font-semibold uppercase tracking-wider ${
+                  <th className={`w-[25%] px-6 py-4 text-center text-xs font-semibold uppercase tracking-wider ${
                     darkMode ? 'text-gray-300' : 'text-slate-700'
                   }`}>Part</th>
                   <th className={`hidden px-6 py-4 text-center text-xs font-semibold uppercase tracking-wider ${
@@ -1217,9 +1217,14 @@ const PartsTab = ({
                 {/* Add empty rows on last page to maintain consistent height when there are multiple pages */}
                 {totalPages > 1 && paginatedParts.length < rowsPerPage && Array.from({ length: rowsPerPage - paginatedParts.length }).map((_, index) => (
                   <tr key={`empty-${index}`}>
-                    <td colSpan="8" className="px-6 py-4">
-                      <div className="h-[2rem]"></div>
-                    </td>
+                    <td className="px-6 py-4"><div className="h-[2rem]"></div></td>
+                    <td className="px-3 py-4"></td>
+                    <td className="px-6 py-4"></td>
+                    <td className="hidden px-6 py-4"></td>
+                    <td className="px-6 py-4"></td>
+                    <td className="px-6 py-4"></td>
+                    <td className="hidden min-[1100px]:table-cell px-6 py-4"></td>
+                    <td className="px-6 py-4"></td>
                   </tr>
                 ))}
               </tbody>
