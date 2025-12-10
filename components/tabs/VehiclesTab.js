@@ -201,7 +201,7 @@ const VehiclesTab = ({
                             </h4>
                             {vehicleProjects.length > 0 ? (
                               <div className="flex flex-col gap-1.5">
-                                {vehicleProjects.slice(0, 3).map((project) => (
+                                {vehicleProjects.slice(0, 4).map((project) => (
                                   <span
                                     key={project.id}
                                     className={`inline-flex items-center px-2 py-1 rounded text-xs font-medium border ${
@@ -216,11 +216,11 @@ const VehiclesTab = ({
                                     <span className="truncate">{project.name}</span>
                                   </span>
                                 ))}
-                                {vehicleProjects.length > 3 && (
-                                  <span className={`text-xs ${
+                                {vehicleProjects.length > 4 && (
+                                  <span className={`text-xs text-center ${
                                     darkMode ? 'text-gray-500' : 'text-gray-600'
                                   }`}>
-                                    +{vehicleProjects.length - 3} more
+                                    +{vehicleProjects.length - 4} more
                                   </span>
                                 )}
                               </div>

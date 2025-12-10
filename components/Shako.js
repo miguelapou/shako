@@ -1432,15 +1432,15 @@ const Shako = () => {
               {/* Vehicle Layout Toggle - only visible on vehicles tab */}
               {activeTab === 'vehicles' && (
                 <div
-                  className={`relative flex items-center p-1 rounded-lg border ${
+                  className={`dropdown-fade-in relative flex items-center rounded-lg border ${
                     darkMode ? 'bg-gray-800 border-gray-600' : 'bg-slate-100 border-slate-300'
                   }`}
                 >
                   {/* Sliding background indicator */}
                   <div
-                    className={`absolute top-1 bottom-1 w-8 rounded-md transition-all duration-200 ease-in-out ${
-                      darkMode ? 'bg-blue-600' : 'bg-blue-600'
-                    } ${vehicleLayoutMode === 'compact' ? 'translate-x-8' : 'translate-x-0'}`}
+                    className={`absolute top-0.5 bottom-0.5 left-0.5 w-[calc(50%-2px)] rounded-md transition-all duration-200 ease-in-out bg-blue-600 ${
+                      vehicleLayoutMode === 'compact' ? 'translate-x-[calc(100%+2px)]' : 'translate-x-0'
+                    }`}
                   />
                   {/* Default layout button */}
                   <button
@@ -1448,14 +1448,14 @@ const Shako = () => {
                       setVehicleLayoutMode('default');
                       localStorage.setItem('vehicleLayoutMode', 'default');
                     }}
-                    className={`relative z-10 w-8 h-8 flex items-center justify-center rounded-md transition-colors duration-200 ${
+                    className={`relative z-10 p-2 sm:p-3 flex items-center justify-center rounded-md transition-colors duration-200 ${
                       vehicleLayoutMode === 'default'
                         ? 'text-white'
                         : darkMode ? 'text-gray-400 hover:text-gray-300' : 'text-slate-500 hover:text-slate-700'
                     }`}
                     title="Default view"
                   >
-                    <LayoutGrid className="w-4 h-4" />
+                    <LayoutGrid className="w-5 h-5" />
                   </button>
                   {/* Compact layout button */}
                   <button
@@ -1463,14 +1463,14 @@ const Shako = () => {
                       setVehicleLayoutMode('compact');
                       localStorage.setItem('vehicleLayoutMode', 'compact');
                     }}
-                    className={`relative z-10 w-8 h-8 flex items-center justify-center rounded-md transition-colors duration-200 ${
+                    className={`relative z-10 p-2 sm:p-3 flex items-center justify-center rounded-md transition-colors duration-200 ${
                       vehicleLayoutMode === 'compact'
                         ? 'text-white'
                         : darkMode ? 'text-gray-400 hover:text-gray-300' : 'text-slate-500 hover:text-slate-700'
                     }`}
                     title="Compact view"
                   >
-                    <LayoutList className="w-4 h-4" />
+                    <LayoutList className="w-5 h-5" />
                   </button>
                 </div>
               )}
