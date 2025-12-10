@@ -709,6 +709,42 @@ const Shako = () => {
     window.scrollTo({ top: 0, behavior: 'instant' });
   }, [activeTab]);
 
+  // Keyboard navigation for tabs (Shift + Left/Right arrows)
+  useEffect(() => {
+    const tabs = ['vehicles', 'projects', 'parts'];
+
+    const handleKeyDown = (e) => {
+      // Only trigger with Shift key held
+      if (!e.shiftKey) return;
+
+      // Don't trigger if a modal is open
+      if (modalOpenRef.current) return;
+
+      // Don't interfere with input fields, textareas, or contenteditable elements
+      const activeElement = document.activeElement;
+      const isInputFocused = activeElement && (
+        activeElement.tagName === 'INPUT' ||
+        activeElement.tagName === 'TEXTAREA' ||
+        activeElement.isContentEditable
+      );
+
+      if (isInputFocused) return;
+
+      const currentIndex = tabs.indexOf(activeTab);
+
+      if (e.key === 'ArrowLeft' && currentIndex > 0) {
+        e.preventDefault();
+        handleTabChange(tabs[currentIndex - 1]);
+      } else if (e.key === 'ArrowRight' && currentIndex < tabs.length - 1) {
+        e.preventDefault();
+        handleTabChange(tabs[currentIndex + 1]);
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [activeTab]);
+
   // Note: Document and service event loading is now handled in VehicleDetailModal via context
 
   const handleSort = (field) => {
