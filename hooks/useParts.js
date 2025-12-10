@@ -2,7 +2,7 @@ import { useState } from 'react';
 import * as partsService from '../services/partsService';
 import * as vendorsService from '../services/vendorsService';
 import { validatePartCosts } from '../utils/validationUtils';
-import { shouldSkipShip24 } from '../utils/trackingUtils';
+import { shouldSkipShip24, getTrackingPurgeFields } from '../utils/trackingUtils';
 
 /**
  * Custom hook for managing parts data and CRUD operations
@@ -339,9 +339,17 @@ const useParts = (userId, toast) => {
       pending: { delivered: false, shipped: false, purchased: false }
     };
 
+    // Check if tracking was removed or changed
+    const originalPart = parts.find(p => p.id === editingPart.id);
+    const originalTracking = originalPart?.tracking || '';
+    const newTracking = editingPart.tracking || '';
+    const trackingRemoved = originalTracking && !newTracking;
+    const trackingChanged = originalTracking && newTracking && originalTracking !== newTracking;
+    const shouldPurgeTrackingData = trackingRemoved || trackingChanged;
+
     try {
-      // Update in database
-      await partsService.updatePart(editingPart.id, {
+      // Build update object
+      const updateData = {
         ...statusMap[editingPart.status],
         part: editingPart.part,
         part_number: editingPart.partNumber,
@@ -352,11 +360,20 @@ const useParts = (userId, toast) => {
         total,
         tracking: editingPart.tracking,
         project_id: editingPart.projectId || null
-      });
+      };
+
+      // If tracking was removed or changed, purge all tracking data
+      if (shouldPurgeTrackingData) {
+        Object.assign(updateData, getTrackingPurgeFields());
+      }
+
+      // Update in database
+      await partsService.updatePart(editingPart.id, updateData);
+
       // Update local state
       setParts(prevParts => prevParts.map(part => {
         if (part.id === editingPart.id) {
-          return {
+          const updatedPart = {
             ...part,
             ...statusMap[editingPart.status],
             part: editingPart.part,
@@ -369,6 +386,19 @@ const useParts = (userId, toast) => {
             tracking: editingPart.tracking,
             projectId: editingPart.projectId || null
           };
+
+          // If tracking was removed or changed, clear tracking data from local state
+          if (shouldPurgeTrackingData) {
+            updatedPart.ship24_id = null;
+            updatedPart.tracking_status = null;
+            updatedPart.tracking_substatus = null;
+            updatedPart.tracking_location = null;
+            updatedPart.tracking_eta = null;
+            updatedPart.tracking_updated_at = null;
+            updatedPart.tracking_checkpoints = null;
+          }
+
+          return updatedPart;
         }
         return part;
       }));
