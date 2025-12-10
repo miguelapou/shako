@@ -1,8 +1,7 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import {
   Plus, ChevronDown, ChevronRight, Edit2, GripVertical,
-  Car, Archive, Package, ListChecks, FolderLock, FolderOpen, Camera,
-  LayoutGrid, LayoutList
+  Car, Archive, Package, ListChecks, FolderLock, FolderOpen, Camera
 } from 'lucide-react';
 import { getMutedColor, getPriorityBorderColor } from '../../utils/colorUtils';
 import AddVehicleModal from '../modals/AddVehicleModal';
@@ -14,6 +13,7 @@ const VehiclesTab = ({
   vehicles,
   projects,
   darkMode,
+  layoutMode,
   draggedVehicle,
   setDraggedVehicle,
   dragOverVehicle,
@@ -88,71 +88,12 @@ const VehiclesTab = ({
   toast
   // Document and service event props removed - now handled via context in VehicleDetailModal
 }) => {
-  // Layout mode state with localStorage persistence
-  const [layoutMode, setLayoutMode] = useState('default');
-
-  // Load layout preference from localStorage on mount
-  useEffect(() => {
-    const savedLayout = localStorage.getItem('vehicleLayoutMode');
-    if (savedLayout === 'compact' || savedLayout === 'default') {
-      setLayoutMode(savedLayout);
-    }
-  }, []);
-
   return (
     <div
       ref={tabContentRef}
       className="slide-in-right"
     >
       <>
-        {/* Layout Toggle Header */}
-        {vehicles.filter(v => !v.archived).length > 0 && (
-          <div className="flex justify-end mb-4">
-            <div
-              className={`relative flex items-center p-1 rounded-lg ${
-                darkMode ? 'bg-gray-700' : 'bg-slate-200'
-              }`}
-            >
-              {/* Sliding background indicator */}
-              <div
-                className={`absolute top-1 bottom-1 w-9 rounded-md transition-transform duration-200 ease-in-out ${
-                  darkMode ? 'bg-gray-600' : 'bg-white shadow-sm'
-                } ${layoutMode === 'compact' ? 'translate-x-9' : 'translate-x-0'}`}
-              />
-              {/* Default layout button */}
-              <button
-                onClick={() => {
-                  setLayoutMode('default');
-                  localStorage.setItem('vehicleLayoutMode', 'default');
-                }}
-                className={`relative z-10 p-2 rounded-md transition-colors ${
-                  layoutMode === 'default'
-                    ? darkMode ? 'text-gray-100' : 'text-slate-800'
-                    : darkMode ? 'text-gray-400 hover:text-gray-300' : 'text-slate-500 hover:text-slate-600'
-                }`}
-                title="Default view"
-              >
-                <LayoutList className="w-4 h-4" />
-              </button>
-              {/* Compact layout button */}
-              <button
-                onClick={() => {
-                  setLayoutMode('compact');
-                  localStorage.setItem('vehicleLayoutMode', 'compact');
-                }}
-                className={`relative z-10 p-2 rounded-md transition-colors ${
-                  layoutMode === 'compact'
-                    ? darkMode ? 'text-gray-100' : 'text-slate-800'
-                    : darkMode ? 'text-gray-400 hover:text-gray-300' : 'text-slate-500 hover:text-slate-600'
-                }`}
-                title="Compact view"
-              >
-                <LayoutGrid className="w-4 h-4" />
-              </button>
-            </div>
-          </div>
-        )}
-
         {/* Active Vehicles Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {vehicles.filter(v => !v.archived).map((vehicle) => {
@@ -232,12 +173,12 @@ const VehiclesTab = ({
                           alt={vehicle.nickname || vehicle.name}
                           loading="lazy"
                           decoding="async"
-                          className={`w-full h-24 object-cover rounded-lg border ${
+                          className={`w-full aspect-square object-cover rounded-lg border ${
                             darkMode ? 'bg-gray-700 border-gray-600' : 'bg-gray-200 border-gray-300'
                           }`}
                         />
                       ) : (
-                        <div className={`w-full h-24 rounded-lg flex flex-col items-center justify-center border ${
+                        <div className={`w-full aspect-square rounded-lg flex flex-col items-center justify-center border ${
                           darkMode ? 'bg-gray-700 border-gray-600' : 'bg-gray-200 border-gray-300'
                         }`}>
                           <Camera className={`w-8 h-8 opacity-40 ${
