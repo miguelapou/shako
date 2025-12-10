@@ -197,6 +197,39 @@ const PartsTab = ({
     }
   }, []);
 
+  // Keyboard navigation for pagination (left/right arrow keys)
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      // Don't interfere with input fields, textareas, or contenteditable elements
+      const activeElement = document.activeElement;
+      const isInputFocused = activeElement && (
+        activeElement.tagName === 'INPUT' ||
+        activeElement.tagName === 'TEXTAREA' ||
+        activeElement.isContentEditable
+      );
+
+      if (isInputFocused) return;
+
+      // Calculate totalPages here to have fresh value
+      const pages = Math.ceil(filteredParts.length / rowsPerPage);
+
+      if (e.key === 'ArrowLeft' && currentPage > 1) {
+        e.preventDefault();
+        setIsPaginating(true);
+        setCurrentPage(prev => prev - 1);
+        setTimeout(() => setIsPaginating(false), 600);
+      } else if (e.key === 'ArrowRight' && currentPage < pages) {
+        e.preventDefault();
+        setIsPaginating(true);
+        setCurrentPage(prev => prev + 1);
+        setTimeout(() => setIsPaginating(false), 600);
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [currentPage, filteredParts.length, rowsPerPage]);
+
   // Helper function to change page with animation
   const handlePageChange = (newPage) => {
     if (newPage !== currentPage && newPage >= 1 && newPage <= totalPages) {
