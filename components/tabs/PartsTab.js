@@ -951,14 +951,14 @@ const PartsTab = ({
           darkMode ? 'bg-gray-800' : 'bg-slate-100'
         }`}>
           <div className="overflow-x-auto overflow-y-visible rounded-lg">
-            <table className={`w-full min-w-[900px] ${isStatusFiltering || isFilteringParts || isSearching ? 'table-status-filtering' : isSorting ? 'table-sorting' : isPaginating ? 'table-status-filtering' : ''}`}>
+            <table className={`w-full min-w-[900px] table-fixed ${isStatusFiltering || isFilteringParts || isSearching ? 'table-status-filtering' : isSorting ? 'table-sorting' : isPaginating ? 'table-status-filtering' : ''}`}>
               <thead className={`border-b ${
                 darkMode ? 'bg-gray-700 border-gray-600' : 'bg-slate-50 border-slate-200'
               }`}>
                 <tr>
                   <th
                     onClick={() => handleSort('status')}
-                    className={`px-6 py-4 text-center text-xs font-semibold uppercase tracking-wider cursor-pointer transition-colors ${
+                    className={`w-[140px] px-6 py-4 text-center text-xs font-semibold uppercase tracking-wider cursor-pointer transition-colors ${
                       darkMode ? 'text-gray-300 hover:bg-gray-600' : 'text-slate-700 hover:bg-slate-200'
                     }`}
                   >
@@ -967,9 +967,9 @@ const PartsTab = ({
                       {getSortIcon('status')}
                     </div>
                   </th>
-                  <th className={`px-3 py-4 text-center text-xs font-semibold uppercase tracking-wider ${
+                  <th className={`w-[100px] px-3 py-4 text-center text-xs font-semibold uppercase tracking-wider ${
                     darkMode ? 'text-gray-300' : 'text-slate-700'
-                  }`} style={{ width: '100px', maxWidth: '100px' }}>Tracking</th>
+                  }`}>Tracking</th>
                   <th className={`px-6 py-4 text-center text-xs font-semibold uppercase tracking-wider ${
                     darkMode ? 'text-gray-300' : 'text-slate-700'
                   }`}>Part</th>
@@ -978,7 +978,7 @@ const PartsTab = ({
                   }`}>Part #</th>
                   <th
                     onClick={() => handleSort('vendor')}
-                    className={`px-6 py-4 text-center text-xs font-semibold uppercase tracking-wider cursor-pointer transition-colors ${
+                    className={`w-[15%] px-6 py-4 text-center text-xs font-semibold uppercase tracking-wider cursor-pointer transition-colors ${
                       darkMode ? 'text-gray-300 hover:bg-gray-600' : 'text-slate-700 hover:bg-slate-200'
                     }`}
                   >
@@ -989,7 +989,7 @@ const PartsTab = ({
                   </th>
                   <th
                     onClick={() => handleSort('project')}
-                    className={`px-6 py-4 text-center text-xs font-semibold uppercase tracking-wider cursor-pointer transition-colors ${
+                    className={`w-[15%] px-6 py-4 text-center text-xs font-semibold uppercase tracking-wider cursor-pointer transition-colors ${
                       darkMode ? 'text-gray-300 hover:bg-gray-600' : 'text-slate-700 hover:bg-slate-200'
                     }`}
                   >
@@ -1000,7 +1000,7 @@ const PartsTab = ({
                   </th>
                   <th
                     onClick={() => handleSort('vehicle')}
-                    className={`hidden min-[1100px]:table-cell px-6 py-4 text-center text-xs font-semibold uppercase tracking-wider cursor-pointer transition-colors ${
+                    className={`hidden min-[1100px]:table-cell w-[15%] px-6 py-4 text-center text-xs font-semibold uppercase tracking-wider cursor-pointer transition-colors ${
                       darkMode ? 'text-gray-300 hover:bg-gray-600' : 'text-slate-700 hover:bg-slate-200'
                     }`}
                   >
@@ -1011,7 +1011,7 @@ const PartsTab = ({
                   </th>
                   <th
                     onClick={() => handleSort('total')}
-                    className={`px-6 py-4 text-center text-xs font-semibold uppercase tracking-wider cursor-pointer transition-colors ${
+                    className={`w-[100px] px-6 py-4 text-center text-xs font-semibold uppercase tracking-wider cursor-pointer transition-colors ${
                       darkMode ? 'text-gray-300 hover:bg-gray-600' : 'text-slate-700 hover:bg-slate-200'
                     }`}
                   >
