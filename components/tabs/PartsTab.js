@@ -691,7 +691,7 @@ const PartsTab = ({
                 style={{ touchAction: 'manipulation' }}
               >
                 <Truck className={`w-6 h-6 text-blue-500 absolute top-2 right-2 transition-opacity ${statusFilter === 'shipped' ? 'opacity-70' : 'opacity-20'}`} />
-                <div key={statusFilter === 'shipped' ? 'shipped-active' : 'shipped-default'} className="status-card-content">
+                <div>
                   <p className={`text-xs mb-1 ${
                     darkMode ? 'text-gray-400' : 'text-slate-600'
                   }`}>Shipped</p>
