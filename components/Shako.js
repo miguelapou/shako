@@ -365,8 +365,8 @@ const Shako = () => {
   const [activeTab, setActiveTab] = useState('vehicles'); // 'parts', 'projects', or 'vehicles'
   const [previousTab, setPreviousTab] = useState('vehicles');
 
-  // Vehicle layout mode state with localStorage persistence
-  const [vehicleLayoutMode, setVehicleLayoutMode] = useState('default');
+  // Vehicle layout mode state with localStorage persistence (default to compact)
+  const [vehicleLayoutMode, setVehicleLayoutMode] = useState('compact');
 
   // Load vehicle layout preference from localStorage on mount
   useEffect(() => {
