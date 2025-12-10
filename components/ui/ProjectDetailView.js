@@ -585,7 +585,7 @@ const ProjectDetailView = ({
                         ? ''
                         : 'text-green-500'
                     }`} />
-                    Completed ({sortedTodos.filter(t => t.completed).length})
+                    Completed
                   </span>
                   <ChevronDown className={`w-4 h-4 transition-transform duration-200 ${
                     showCompletedTodos ? 'rotate-180' : ''
@@ -715,7 +715,7 @@ const ProjectDetailView = ({
           }`}>
             <div className="flex items-center gap-2">
               <Package className="w-5 h-5" />
-              <span>Linked Parts ({linkedParts.length})</span>
+              <span>Linked Parts</span>
             </div>
           </h3>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">

@@ -707,7 +707,7 @@ const VehicleDetailModal = ({
                   <h3 className={`text-lg font-semibold ${
                     darkMode ? 'text-gray-200' : 'text-gray-800'
                   }`}>
-                    Service History ({serviceEvents?.length || 0})
+                    Service History
                   </h3>
                 </div>
                 <div className={`relative ${!loadingServiceEvents ? 'animate-fade-in' : ''}`} onClick={() => setSelectedEventId(null)}>
@@ -1080,7 +1080,7 @@ const VehicleDetailModal = ({
                   <h3 className={`text-lg font-semibold ${
                     darkMode ? 'text-gray-200' : 'text-gray-800'
                   }`}>
-                    Documents ({documents.length})
+                    Documents
                   </h3>
                 </div>
                 <div
@@ -1234,7 +1234,7 @@ const VehicleDetailModal = ({
                     }`}>
                       <div className="flex items-center gap-2">
                         <ListChecks className="w-5 h-5" />
-                        <span>Projects ({vehicleProjects.length})</span>
+                        <span>Projects</span>
                       </div>
                     </h3>
                     {vehicleProjects.length > 0 ? (

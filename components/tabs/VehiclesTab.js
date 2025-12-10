@@ -197,7 +197,7 @@ const VehiclesTab = ({
                             <h4 className={`text-xs font-semibold mb-2 uppercase tracking-wider ${
                               darkMode ? 'text-gray-400' : 'text-slate-600'
                             }`}>
-                              Projects ({vehicleProjects.length})
+                              Projects
                             </h4>
                             {vehicleProjects.length > 0 ? (
                               <div className="flex flex-col gap-1.5">
@@ -334,7 +334,7 @@ const VehiclesTab = ({
                               <h4 className={`text-xs font-semibold mb-2 uppercase tracking-wider ${
                                 darkMode ? 'text-gray-400' : 'text-slate-600'
                               }`}>
-                                Projects ({vehicleProjects.length})
+                                Projects
                               </h4>
                               {vehicleProjects.length > 0 ? (
                                 <div className="flex flex-wrap gap-2">
