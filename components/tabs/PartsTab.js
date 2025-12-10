@@ -72,7 +72,7 @@ const PartsTab = ({
 
     const tableTop = tableContainerRef.current.getBoundingClientRect().top;
     const viewportHeight = window.innerHeight;
-    const bottomPadding = 120; // Space for pagination footer + breathing room
+    const bottomPadding = 180; // Space for pagination footer + breathing room
     const headerHeight = 57; // Approximate table header height
     const rowHeight = 57; // Approximate row height (py-4 + content)
 
