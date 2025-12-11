@@ -1,6 +1,5 @@
 import React, { useState, useMemo, useEffect, useLayoutEffect, useRef } from 'react';
 import { Package, CheckCircle, CheckSquare, ChevronDown, X, Car } from 'lucide-react';
-import { secondaryBg } from '../../utils/styleUtils';
 import { getVendorDisplayColor } from '../../utils/colorUtils';
 import ConfirmDialog from './ConfirmDialog';
 
@@ -459,84 +458,50 @@ const ProjectDetailView = ({
         )}
       </div>
 
-      {/* Two Column Layout: Project Details (Left) and Todo List (Right) */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
-        {/* Left Column: Project Details */}
-        <div className="space-y-6">
-          {/* Description */}
-          <div>
-            <h3 className={`text-lg font-semibold mb-2 ${
-              darkMode ? 'text-gray-200' : 'text-gray-800'
-            }`}>Description</h3>
-            <div className="relative">
-              <div
-                className="overflow-hidden transition-all duration-500 ease-in-out"
-                style={{
-                  maxHeight: isDescriptionExpanded ? '1000px' : '4.5em'
-                }}
-              >
-                <p
-                  ref={descriptionRef}
-                  className={`text-base ${
-                    project.description
-                      ? (darkMode ? 'text-gray-400' : 'text-slate-600')
-                      : (darkMode ? 'text-gray-500 italic' : 'text-gray-500 italic')
-                  }`}
-                >
-                  {project.description || 'No description added'}
-                </p>
-              </div>
-              {project.description && isDescriptionClamped && (
-                <button
-                  onClick={() => setIsDescriptionExpanded(!isDescriptionExpanded)}
-                  className={`mt-2 flex items-center gap-1 text-sm font-medium transition-colors ${
-                    darkMode ? 'text-blue-400 hover:text-blue-300' : 'text-blue-600 hover:text-blue-700'
-                  }`}
-                >
-                  {isDescriptionExpanded ? 'Show less' : 'Show more'}
-                  <ChevronDown className={`w-4 h-4 transition-transform duration-300 ${
-                    isDescriptionExpanded ? 'rotate-180' : ''
-                  }`} />
-                </button>
-              )}
-            </div>
-          </div>
-
-          {/* Budget Progress */}
-          <div>
-            <h3 className={`text-lg font-semibold mb-3 ${
-              darkMode ? 'text-gray-200' : 'text-gray-800'
-            }`}>Budget Used</h3>
-            <div className="flex justify-between items-center mb-2">
-              <span className={`text-sm font-medium ${
-                darkMode ? 'text-gray-300' : 'text-slate-700'
-              }`}>
-                ${linkedPartsTotal.toFixed(2)} / ${Math.round(project.budget || 0)}
-              </span>
-              <span className={`text-sm font-bold ${
-                darkMode ? 'text-gray-200' : 'text-gray-900'
-              }`}>
-                {progress.toFixed(0)}%
-              </span>
-            </div>
-            <div className={`w-full rounded-full h-4 ${
-              darkMode ? 'bg-gray-700' : 'bg-gray-200'
-            }`}>
-              <div
-                className={`h-4 rounded-full transition-all ${
-                  progress > 90
-                    ? 'bg-red-500'
-                    : progress > 70
-                    ? 'bg-yellow-500'
-                    : 'bg-green-500'
+      {/* 8-Column Grid Layout: Description (3) | Priority+Parts (1) | Todos (4) */}
+      <div className="grid grid-cols-1 lg:grid-cols-8 gap-6 mb-6">
+        {/* Description - 3 columns */}
+        <div className="lg:col-span-3">
+          <h3 className={`text-lg font-semibold mb-2 ${
+            darkMode ? 'text-gray-200' : 'text-gray-800'
+          }`}>Description</h3>
+          <div className="relative">
+            <div
+              className="overflow-hidden transition-all duration-500 ease-in-out"
+              style={{
+                maxHeight: isDescriptionExpanded ? '1000px' : '4.5em'
+              }}
+            >
+              <p
+                ref={descriptionRef}
+                className={`text-base ${
+                  project.description
+                    ? (darkMode ? 'text-gray-400' : 'text-slate-600')
+                    : (darkMode ? 'text-gray-500 italic' : 'text-gray-500 italic')
                 }`}
-                style={{ width: `${Math.min(progress, 100)}%` }}
-              />
+              >
+                {project.description || 'No description added'}
+              </p>
             </div>
+            {project.description && isDescriptionClamped && (
+              <button
+                onClick={() => setIsDescriptionExpanded(!isDescriptionExpanded)}
+                className={`mt-2 flex items-center gap-1 text-sm font-medium transition-colors ${
+                  darkMode ? 'text-blue-400 hover:text-blue-300' : 'text-blue-600 hover:text-blue-700'
+                }`}
+              >
+                {isDescriptionExpanded ? 'Show less' : 'Show more'}
+                <ChevronDown className={`w-4 h-4 transition-transform duration-300 ${
+                  isDescriptionExpanded ? 'rotate-180' : ''
+                }`} />
+              </button>
+            )}
           </div>
+        </div>
 
-          {/* Project Details Grid */}
-          <div className={`grid grid-cols-2 gap-4 p-4 rounded-lg ${secondaryBg(darkMode)}`}>
+        {/* Priority + Linked Parts - 1 column with yellow-700 border */}
+        <div className="lg:col-span-1">
+          <div className="border-2 border-yellow-700 rounded-lg p-3 space-y-4">
             <div>
               <p className={`text-xs mb-1 ${darkMode ? 'text-gray-400' : 'text-slate-600'}`}>
                 Priority</p>
@@ -557,8 +522,8 @@ const ProjectDetailView = ({
           </div>
         </div>
 
-        {/* Right Column: To-Do List Section */}
-        <div>
+        {/* To-Do List - 4 columns, spans 2 rows */}
+        <div className="lg:col-span-4 lg:row-span-2">
           <div className="mb-3">
             <h3 className={`text-lg font-semibold ${
               darkMode ? 'text-gray-200' : 'text-gray-800'
@@ -702,7 +667,40 @@ const ProjectDetailView = ({
             </div>
           </div>
         </div>
-        {/* End of two-column grid */}
+
+        {/* Budget Used - 4 columns on second row */}
+        <div className="lg:col-span-4">
+          <h3 className={`text-lg font-semibold mb-3 ${
+            darkMode ? 'text-gray-200' : 'text-gray-800'
+          }`}>Budget Used</h3>
+          <div className="flex justify-between items-center mb-2">
+            <span className={`text-sm font-medium ${
+              darkMode ? 'text-gray-300' : 'text-slate-700'
+            }`}>
+              ${linkedPartsTotal.toFixed(2)} / ${Math.round(project.budget || 0)}
+            </span>
+            <span className={`text-sm font-bold ${
+              darkMode ? 'text-gray-200' : 'text-gray-900'
+            }`}>
+              {progress.toFixed(0)}%
+            </span>
+          </div>
+          <div className={`w-full rounded-full h-4 ${
+            darkMode ? 'bg-gray-700' : 'bg-gray-200'
+          }`}>
+            <div
+              className={`h-4 rounded-full transition-all ${
+                progress > 90
+                  ? 'bg-red-500'
+                  : progress > 70
+                  ? 'bg-yellow-500'
+                  : 'bg-green-500'
+              }`}
+              style={{ width: `${Math.min(progress, 100)}%` }}
+            />
+          </div>
+        </div>
+        {/* End of 8-column grid */}
       </div>
 
       {/* Linked Parts List - Full Width Below */}
