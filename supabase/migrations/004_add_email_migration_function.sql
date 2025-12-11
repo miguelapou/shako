@@ -133,7 +133,7 @@ BEGIN
 
     RETURN jsonb_build_object(
       'success', false,
-      'error', 'The selected Google account already has existing data. Please sign in with a fresh Google account that has never been used with this app.'
+      'error', 'The selected Google account already has vehicles, projects, or parts. Please choose an account without existing data (an empty account is fine).'
     );
   END IF;
 
