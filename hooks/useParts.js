@@ -363,6 +363,14 @@ const useParts = (userId, toast) => {
     const trackingChanged = originalTracking && newTracking && originalTracking !== newTracking;
     const shouldPurgeTrackingData = trackingRemoved || trackingChanged;
 
+    console.log('[saveEditedPart] Tracking change check:', {
+      originalTracking,
+      newTracking,
+      trackingRemoved,
+      trackingChanged,
+      shouldPurgeTrackingData
+    });
+
     try {
       // Build update object
       const updateData = {
@@ -383,8 +391,15 @@ const useParts = (userId, toast) => {
         Object.assign(updateData, getTrackingPurgeFields());
       }
 
+      console.log('[saveEditedPart] Saving to database:', {
+        partId: editingPart.id,
+        tracking: updateData.tracking,
+        fullUpdateData: updateData
+      });
+
       // Update in database
       await partsService.updatePart(editingPart.id, updateData);
+      console.log('[saveEditedPart] Database update complete');
 
       // Update local state
       setParts(prevParts => prevParts.map(part => {
@@ -420,7 +435,35 @@ const useParts = (userId, toast) => {
       }));
       if (setEditingPart) setEditingPart(null);
       if (setPartModalView) setPartModalView(null);
+
+      // Auto-refresh tracking from Ship24 if tracking was added or changed
+      const newTrackingValue = editingPart.tracking;
+      if (newTrackingValue && (trackingChanged || !originalTracking) && !shouldSkipShip24(newTrackingValue)) {
+        console.log('[saveEditedPart] Auto-refreshing tracking for new/changed tracking number:', newTrackingValue);
+        try {
+          const response = await fetch(`/api/tracking/${editingPart.id}`);
+          const data = await response.json();
+          console.log('[saveEditedPart] Tracking refresh response:', data);
+          if (data.success && data.tracking) {
+            setParts(prevParts => prevParts.map(part => {
+              if (part.id === editingPart.id) {
+                return {
+                  ...part,
+                  ...data.tracking,
+                  delivered: data.tracking.tracking_status === 'Delivered' ? true : part.delivered
+                };
+              }
+              return part;
+            }));
+          } else if (data.error) {
+            console.error('[saveEditedPart] Tracking refresh error:', data.error);
+          }
+        } catch (trackingError) {
+          console.error('[saveEditedPart] Failed to refresh tracking:', trackingError);
+        }
+      }
     } catch (error) {
+      console.error('[saveEditedPart] Error saving part:', error);
       toast?.error('Error saving part. Please try again.');
     }
   };

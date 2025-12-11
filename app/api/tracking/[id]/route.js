@@ -37,6 +37,12 @@ export async function GET(request, { params }) {
       );
     }
 
+    console.log('[Tracking API] Part fetched from database:', {
+      id: part.id,
+      tracking: part.tracking,
+      tracking_status: part.tracking_status
+    });
+
     if (!part.tracking) {
       return NextResponse.json(
         { error: 'Part has no tracking number' },
