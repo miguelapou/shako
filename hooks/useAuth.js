@@ -335,24 +335,32 @@ const useAuth = () => {
         return { success: false, error: initError };
       }
 
+      console.log('[Migration] Token created:', migrationToken);
+
       // Store the migration token in localStorage
       localStorage.setItem(MIGRATION_TOKEN_KEY, migrationToken);
 
       // Sign out current session first to force fresh Google account selection
       // This prevents Google from auto-selecting the current account
+      console.log('[Migration] Signing out current session...');
       await supabase.auth.signOut();
 
       // Small delay to ensure sign out completes
       await new Promise(resolve => setTimeout(resolve, 100));
+
+      const redirectUrl = typeof window !== 'undefined'
+        ? `${window.location.origin}/`
+        : undefined;
+
+      console.log('[Migration] Redirect URL:', redirectUrl);
+      console.log('[Migration] Starting OAuth with prompt: consent select_account');
 
       // Redirect to Google OAuth with the new account
       // Use 'consent select_account' to force both account picker and fresh consent
       const { error: signInError } = await supabase.auth.signInWithOAuth({
         provider: 'google',
         options: {
-          redirectTo: typeof window !== 'undefined'
-            ? `${window.location.origin}/`
-            : undefined,
+          redirectTo: redirectUrl,
           queryParams: {
             prompt: 'consent select_account',
             access_type: 'offline',
@@ -361,7 +369,7 @@ const useAuth = () => {
       });
 
       if (signInError) {
-        console.error('Error redirecting to Google:', signInError);
+        console.error('[Migration] Error redirecting to Google:', signInError);
         // Clean up the migration token if OAuth fails
         localStorage.removeItem(MIGRATION_TOKEN_KEY);
         setError(signInError.message);
@@ -369,10 +377,11 @@ const useAuth = () => {
         return { success: false, error: signInError };
       }
 
+      console.log('[Migration] OAuth initiated, redirecting to Google...');
       // Page will redirect to Google, loading state will be reset on return
       return { success: true };
     } catch (err) {
-      console.error('Error initiating migration:', err);
+      console.error('[Migration] Error initiating migration:', err);
       localStorage.removeItem(MIGRATION_TOKEN_KEY);
       setError(err.message);
       setLoading(false);
