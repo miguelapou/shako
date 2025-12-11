@@ -1,6 +1,34 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { supabase } from '../lib/supabase';
 
+// Constants for email migration
+const MIGRATION_TOKEN_KEY = 'shako-pending-email-migration';
+const MIGRATION_ERROR_KEY = 'shako-migration-error';
+const MIGRATION_SUCCESS_KEY = 'shako-migration-success';
+const MIGRATION_STARTED_KEY = 'shako-migration-started';
+
+// Migration timeout in milliseconds (5 minutes)
+const MIGRATION_TIMEOUT_MS = 5 * 60 * 1000;
+
+// Make error messages more user-friendly
+const getFriendlyMigrationError = (error) => {
+  if (!error) return 'An unknown error occurred. Please try again.';
+
+  const errorLower = error.toLowerCase();
+
+  if (errorLower.includes('not found') || errorLower.includes('expired')) {
+    return 'Your migration session expired. Please try again.';
+  }
+  if (errorLower.includes('same user') || errorLower.includes('same account')) {
+    return 'You selected the same account. Please choose a different Google account to migrate to.';
+  }
+  if (errorLower.includes('existing data') || errorLower.includes('already has')) {
+    return 'The selected account already has data. Please choose an account with no existing data, or delete the data from that account first.';
+  }
+
+  return error;
+};
+
 /**
  * Custom hook for managing authentication state with Supabase
  *
@@ -10,6 +38,7 @@ import { supabase } from '../lib/supabase';
  * - Listens for auth state changes
  * - Automatic token refresh handling
  * - Session expiration detection and recovery
+ * - Email migration (account transfer) support
  * - Provides loading and error states
  *
  * @returns {Object} Auth state and handlers
@@ -23,6 +52,8 @@ import { supabase } from '../lib/supabase';
  * @property {function} deleteAccount - Permanently delete user account and all data
  * @property {function} refreshSession - Manually refresh the session
  * @property {function} handleAuthError - Handle auth errors with retry
+ * @property {function} initiateEmailMigration - Start the email migration process
+ * @property {Object|null} migrationResult - Result of completed migration
  */
 const useAuth = () => {
   const [user, setUser] = useState(null);
@@ -30,9 +61,15 @@ const useAuth = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [isRefreshing, setIsRefreshing] = useState(false);
+  const [migrationResult, setMigrationResult] = useState(null);
+  const [pendingNewUser, setPendingNewUser] = useState(null); // For new user confirmation
 
   // Track if we're currently refreshing to avoid duplicate refresh attempts
   const refreshPromiseRef = useRef(null);
+  // Track if we've already attempted migration completion
+  const migrationAttemptedRef = useRef(false);
+  // Track if we've already checked for new user
+  const newUserCheckRef = useRef(false);
 
   // Manually refresh the session
   const refreshSession = useCallback(async () => {
@@ -121,6 +158,45 @@ const useAuth = () => {
 
   // Initialize auth state and listen for changes
   useEffect(() => {
+    // Check for stale migration token (user cancelled or hit back button during OAuth)
+    const migrationToken = localStorage.getItem(MIGRATION_TOKEN_KEY);
+    const migrationStarted = localStorage.getItem(MIGRATION_STARTED_KEY);
+    if (migrationToken && migrationStarted) {
+      const startTime = parseInt(migrationStarted, 10);
+      const elapsed = Date.now() - startTime;
+      if (elapsed > MIGRATION_TIMEOUT_MS) {
+        console.log('[Migration] Found stale migration token, clearing...');
+        localStorage.removeItem(MIGRATION_TOKEN_KEY);
+        localStorage.removeItem(MIGRATION_STARTED_KEY);
+        localStorage.setItem(MIGRATION_ERROR_KEY, 'Migration was cancelled or timed out. Please try again.');
+      }
+    }
+
+    // Check for stored migration error (from failed migration that caused sign out)
+    const storedMigrationError = localStorage.getItem(MIGRATION_ERROR_KEY);
+    if (storedMigrationError) {
+      console.log('[Migration] Found stored error:', storedMigrationError);
+      localStorage.removeItem(MIGRATION_ERROR_KEY);
+      setMigrationResult({ success: false, error: storedMigrationError });
+    }
+
+    // Check for stored migration success (from successful migration before page reload)
+    const storedMigrationSuccess = localStorage.getItem(MIGRATION_SUCCESS_KEY);
+    if (storedMigrationSuccess) {
+      console.log('[Migration] Found stored success:', storedMigrationSuccess);
+      localStorage.removeItem(MIGRATION_SUCCESS_KEY);
+      try {
+        const successData = JSON.parse(storedMigrationSuccess);
+        setMigrationResult({
+          success: true,
+          recordsTransferred: successData.recordsTransferred,
+          oldEmail: successData.oldEmail
+        });
+      } catch (e) {
+        console.error('[Migration] Error parsing stored success:', e);
+      }
+    }
+
     // Get initial session
     const initializeAuth = async () => {
       try {
@@ -132,6 +208,21 @@ const useAuth = () => {
         } else {
           setSession(initialSession);
           setUser(initialSession?.user ?? null);
+
+          // Check for cancelled migration (token exists but no session and token is old enough)
+          // This handles the case where user cancelled at Google's account picker or hit back
+          const token = localStorage.getItem(MIGRATION_TOKEN_KEY);
+          const startedAt = localStorage.getItem(MIGRATION_STARTED_KEY);
+          if (token && !initialSession && startedAt) {
+            const elapsed = Date.now() - parseInt(startedAt, 10);
+            // If token is older than 5 seconds and no session, user likely cancelled
+            if (elapsed > 5000) {
+              console.log('[Migration] Detected cancelled migration (no session with old token)');
+              localStorage.removeItem(MIGRATION_TOKEN_KEY);
+              localStorage.removeItem(MIGRATION_STARTED_KEY);
+              setMigrationResult({ success: false, error: 'Migration was cancelled. Please try again.' });
+            }
+          }
         }
       } catch (err) {
         console.error('Error initializing auth:', err);
@@ -149,14 +240,154 @@ const useAuth = () => {
         // Handle different auth events
         switch (event) {
           case 'SIGNED_IN':
+            console.log('[Auth] SIGNED_IN event received');
+            console.log('[Auth] User:', currentSession?.user?.email);
+            setError(null);
+
+            // Check for pending email migration BEFORE setting user state
+            // This prevents briefly showing the wrong account's data
+            console.log('[Migration] Checking for pending migration...');
+            console.log('[Migration] Has user:', !!currentSession?.user);
+            console.log('[Migration] Migration already attempted:', migrationAttemptedRef.current);
+
+            if (currentSession?.user && !migrationAttemptedRef.current) {
+              const migrationToken = localStorage.getItem(MIGRATION_TOKEN_KEY);
+              console.log('[Migration] Token from localStorage:', migrationToken ? 'Found' : 'Not found');
+
+              if (migrationToken) {
+                // Keep loading state - don't show any UI until migration completes
+                console.log('[Migration] Keeping loading state during migration...');
+
+                // Attempt to complete the migration
+                migrationAttemptedRef.current = true;
+                console.log('[Migration] Attempting to complete migration...');
+                console.log('[Migration] Token value:', migrationToken.substring(0, 10) + '...');
+
+                // Run migration after a short delay to ensure client is ready
+                setTimeout(async () => {
+                  try {
+                    console.log('[Migration] Calling complete_email_migration RPC...');
+
+                    const { data: result, error: completeError } = await supabase.rpc(
+                      'complete_email_migration',
+                      { p_migration_token: migrationToken }
+                    );
+
+                    console.log('[Migration] RPC response - data:', result);
+                    console.log('[Migration] RPC response - error:', completeError);
+
+                    // Clear the token and timestamp
+                    localStorage.removeItem(MIGRATION_TOKEN_KEY);
+                    localStorage.removeItem(MIGRATION_STARTED_KEY);
+                    console.log('[Migration] Token cleared from localStorage');
+
+                    if (completeError) {
+                      console.error('[Migration] Error completing migration:', completeError);
+                      // Store friendly error in localStorage so it persists after sign out
+                      localStorage.setItem(MIGRATION_ERROR_KEY, getFriendlyMigrationError(completeError.message));
+                      // Sign out so user can try again
+                      console.log('[Migration] Signing out due to error...');
+                      try { await supabase.auth.signOut(); } catch { /* ignore */ }
+                    } else if (!result || !result.success) {
+                      console.error('[Migration] Migration failed:', result?.error);
+                      // Store friendly error in localStorage so it persists after sign out
+                      localStorage.setItem(MIGRATION_ERROR_KEY, getFriendlyMigrationError(result?.error));
+                      // Sign out so user can try again with a different account
+                      console.log('[Migration] Signing out due to failed migration...');
+                      try { await supabase.auth.signOut(); } catch { /* ignore */ }
+                    } else {
+                      // Migration successful - store in localStorage and reload to get the transferred data
+                      console.log('[Migration] SUCCESS! Records transferred:', result.records_transferred);
+                      // Store success info in localStorage so it persists across reload
+                      localStorage.setItem(MIGRATION_SUCCESS_KEY, JSON.stringify({
+                        recordsTransferred: result.records_transferred,
+                        oldEmail: result.old_email
+                      }));
+                      // Reload the page to fetch the transferred data
+                      window.location.reload();
+                    }
+                  } catch (err) {
+                    console.error('[Migration] Exception during migration:', err);
+                    localStorage.removeItem(MIGRATION_TOKEN_KEY);
+                    localStorage.removeItem(MIGRATION_STARTED_KEY);
+                    // Store friendly error in localStorage so it persists after sign out
+                    localStorage.setItem(MIGRATION_ERROR_KEY, getFriendlyMigrationError(err.message));
+                    // Sign out so user can try again
+                    try { await supabase.auth.signOut(); } catch { /* ignore */ }
+                  }
+                }, 500); // 500ms delay to ensure client is ready
+
+                // Don't set user/session or loading=false - migration handler will handle it
+                break;
+              }
+            }
+
+            // No migration pending - set user state normally
             setSession(currentSession);
             setUser(currentSession?.user ?? null);
-            setError(null);
+            setLoading(false);
+
+            // Check if this is a new user (no existing data)
+            if (currentSession?.user && !newUserCheckRef.current) {
+                // No migration token - check if this is a new user
+                newUserCheckRef.current = true;
+                console.log('[NewUser] Checking if user is new...');
+
+                setTimeout(async () => {
+                  try {
+                    const userId = currentSession.user.id;
+
+                    // Check if user has any existing data (explicitly filter by user_id)
+                    const { count: vehicleCount } = await supabase
+                      .from('vehicles')
+                      .select('*', { count: 'exact', head: true })
+                      .eq('user_id', userId);
+
+                    const { count: projectCount } = await supabase
+                      .from('projects')
+                      .select('*', { count: 'exact', head: true })
+                      .eq('user_id', userId);
+
+                    const { count: partCount } = await supabase
+                      .from('parts')
+                      .select('*', { count: 'exact', head: true })
+                      .eq('user_id', userId);
+
+                    const totalCount = (vehicleCount || 0) + (projectCount || 0) + (partCount || 0);
+                    console.log('[NewUser] Total existing records:', totalCount);
+
+                    if (totalCount === 0) {
+                      // This is a new user - show confirmation modal
+                      console.log('[NewUser] New user detected, showing confirmation');
+                      setPendingNewUser({
+                        email: currentSession.user.email,
+                        id: currentSession.user.id
+                      });
+                    }
+                  } catch (err) {
+                    console.error('[NewUser] Error checking for new user:', err);
+                    // On error, just let them through
+                  }
+                }, 300);
+            }
+            console.log('[Auth] SIGNED_IN handling complete');
             break;
 
           case 'SIGNED_OUT':
             setUser(null);
             setSession(null);
+            setPendingNewUser(null);
+            // Reset flags on sign out
+            migrationAttemptedRef.current = false;
+            newUserCheckRef.current = false;
+
+            // Check for stored migration error (stored just before signOut was called)
+            const storedError = localStorage.getItem(MIGRATION_ERROR_KEY);
+            if (storedError) {
+              console.log('[Migration] Found stored error on sign out:', storedError);
+              localStorage.removeItem(MIGRATION_ERROR_KEY);
+              setMigrationResult({ success: false, error: storedError });
+            }
             break;
 
           case 'TOKEN_REFRESHED':
@@ -258,7 +489,12 @@ const useAuth = () => {
       setSession(null);
 
       // Sign out to clear any remaining session data
-      await supabase.auth.signOut();
+      // This may fail with 403 since the user no longer exists - that's expected
+      try {
+        await supabase.auth.signOut();
+      } catch {
+        // Ignore signOut errors after successful account deletion
+      }
 
       return { success: true };
     } catch (err) {
@@ -270,17 +506,208 @@ const useAuth = () => {
     }
   }, []);
 
+  // Initiate email migration - creates a migration token and redirects to Google OAuth
+  const initiateEmailMigration = useCallback(async () => {
+    setLoading(true);
+    setError(null);
+
+    try {
+      // Call the database function to create a migration token
+      const { data: migrationToken, error: initError } = await supabase.rpc('initiate_email_migration');
+
+      if (initError) {
+        console.error('Error initiating migration:', initError);
+        setError(initError.message);
+        setLoading(false);
+        return { success: false, error: initError };
+      }
+
+      console.log('[Migration] Token created:', migrationToken);
+
+      // Store the migration token and start timestamp in localStorage
+      localStorage.setItem(MIGRATION_TOKEN_KEY, migrationToken);
+      localStorage.setItem(MIGRATION_STARTED_KEY, Date.now().toString());
+
+      // Sign out current session first to force fresh Google account selection
+      // This prevents Google from auto-selecting the current account
+      console.log('[Migration] Signing out current session...');
+      await supabase.auth.signOut();
+
+      // Small delay to ensure sign out completes
+      await new Promise(resolve => setTimeout(resolve, 100));
+
+      const redirectUrl = typeof window !== 'undefined'
+        ? `${window.location.origin}/`
+        : undefined;
+
+      console.log('[Migration] Redirect URL:', redirectUrl);
+      console.log('[Migration] Starting OAuth with prompt: consent select_account');
+
+      // Redirect to Google OAuth with the new account
+      // Use 'consent select_account' to force both account picker and fresh consent
+      const { error: signInError } = await supabase.auth.signInWithOAuth({
+        provider: 'google',
+        options: {
+          redirectTo: redirectUrl,
+          queryParams: {
+            prompt: 'consent select_account',
+            access_type: 'offline',
+          },
+        },
+      });
+
+      if (signInError) {
+        console.error('[Migration] Error redirecting to Google:', signInError);
+        // Clean up the migration token and timestamp if OAuth fails
+        localStorage.removeItem(MIGRATION_TOKEN_KEY);
+        localStorage.removeItem(MIGRATION_STARTED_KEY);
+        setError(signInError.message);
+        setLoading(false);
+        return { success: false, error: signInError };
+      }
+
+      console.log('[Migration] OAuth initiated, redirecting to Google...');
+      // Page will redirect to Google, loading state will be reset on return
+      return { success: true };
+    } catch (err) {
+      console.error('[Migration] Error initiating migration:', err);
+      localStorage.removeItem(MIGRATION_TOKEN_KEY);
+      localStorage.removeItem(MIGRATION_STARTED_KEY);
+      setError(err.message);
+      setLoading(false);
+      return { success: false, error: err };
+    }
+  }, []);
+
+  // Complete a pending email migration (called automatically after OAuth redirect)
+  const completePendingMigration = useCallback(async () => {
+    // Only attempt once per session
+    if (migrationAttemptedRef.current) return null;
+    migrationAttemptedRef.current = true;
+
+    // Check for pending migration token
+    const migrationToken = localStorage.getItem(MIGRATION_TOKEN_KEY);
+    if (!migrationToken) return null;
+
+    try {
+      // Call the database function to complete the migration
+      const { data: result, error: completeError } = await supabase.rpc(
+        'complete_email_migration',
+        { p_migration_token: migrationToken }
+      );
+
+      // Always clear the token and timestamp after attempting
+      localStorage.removeItem(MIGRATION_TOKEN_KEY);
+      localStorage.removeItem(MIGRATION_STARTED_KEY);
+
+      if (completeError) {
+        console.error('Error completing migration:', completeError);
+        return { success: false, error: completeError.message };
+      }
+
+      if (!result.success) {
+        console.error('Migration failed:', result.error);
+        return { success: false, error: result.error };
+      }
+
+      // Migration successful
+      return {
+        success: true,
+        recordsTransferred: result.records_transferred,
+        oldEmail: result.old_email
+      };
+    } catch (err) {
+      console.error('Error completing migration:', err);
+      localStorage.removeItem(MIGRATION_TOKEN_KEY);
+      localStorage.removeItem(MIGRATION_STARTED_KEY);
+      return { success: false, error: err.message };
+    }
+  }, []);
+
+  // Cancel any pending email migration
+  const cancelEmailMigration = useCallback(async () => {
+    try {
+      // Clear local storage
+      localStorage.removeItem(MIGRATION_TOKEN_KEY);
+      localStorage.removeItem(MIGRATION_STARTED_KEY);
+
+      // Clear from database
+      await supabase.rpc('cancel_email_migration');
+
+      return { success: true };
+    } catch (err) {
+      console.error('Error canceling migration:', err);
+      return { success: false, error: err };
+    }
+  }, []);
+
+  // Clear migration result (for dismissing the success message)
+  const clearMigrationResult = useCallback(() => {
+    setMigrationResult(null);
+  }, []);
+
+  // Confirm new user - clear the pending state and let them proceed
+  const confirmNewUser = useCallback(() => {
+    console.log('[NewUser] User confirmed account creation');
+    setPendingNewUser(null);
+  }, []);
+
+  // Cancel new user - sign out and delete the empty account
+  const cancelNewUser = useCallback(async () => {
+    console.log('[NewUser] User cancelled account creation');
+    setLoading(true);
+
+    try {
+      // Delete the empty account
+      const { error: deleteError } = await supabase.rpc('delete_user_account');
+
+      if (deleteError) {
+        console.error('[NewUser] Error deleting account:', deleteError);
+      }
+
+      // Clear state
+      setPendingNewUser(null);
+      setUser(null);
+      setSession(null);
+
+      // Sign out - may fail with 403 since user no longer exists, that's expected
+      try {
+        await supabase.auth.signOut();
+      } catch {
+        // Ignore signOut errors after account deletion
+      }
+    } catch (err) {
+      console.error('[NewUser] Error canceling new user:', err);
+      // Still try to sign out
+      try {
+        await supabase.auth.signOut();
+      } catch {
+        // Ignore
+      }
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
   return {
     user,
     session,
     loading,
     error,
     isRefreshing,
+    migrationResult,
+    pendingNewUser,
     signInWithGoogle,
     signOut,
     deleteAccount,
     refreshSession,
     handleAuthError,
+    initiateEmailMigration,
+    completePendingMigration,
+    cancelEmailMigration,
+    clearMigrationResult,
+    confirmNewUser,
+    cancelNewUser,
   };
 };
 
