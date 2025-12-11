@@ -54,7 +54,9 @@ export async function GET(request, { params }) {
     }
 
     // Sync with Ship24 and update database
+    console.log('[Tracking API] Syncing tracking for part:', part.id, 'tracking:', part.tracking);
     const trackingData = await syncPartTracking(part);
+    console.log('[Tracking API] syncPartTracking returned:', JSON.stringify(trackingData, null, 2));
 
     // Check if package was delivered and auto-update part status
     let isDelivered = part.delivered;

@@ -13,6 +13,7 @@ const SHIP24_API_BASE = 'https://api.ship24.com/public/v1';
  */
 const getHeaders = () => {
   const apiKey = process.env.SHIP24_API_KEY;
+  console.log('[Ship24] API key configured:', !!apiKey, apiKey ? `(${apiKey.substring(0, 8)}...)` : '');
   if (!apiKey) {
     throw new Error('Ship24 API key not configured');
   }
@@ -89,18 +90,23 @@ export const getShip24Tracking = async (trackerId) => {
  */
 export const getShip24TrackingByNumber = async (trackingNumber) => {
   try {
+    console.log('[Ship24] Fetching tracking for:', trackingNumber);
     const response = await fetch(`${SHIP24_API_BASE}/trackers/track`, {
       method: 'POST',
       headers: getHeaders(),
       body: JSON.stringify({ trackingNumber })
     });
 
+    console.log('[Ship24] Response status:', response.status);
+
     if (!response.ok) {
       const errorData = await response.json().catch(() => ({}));
+      console.log('[Ship24] Error response:', errorData);
       throw new Error(errorData.message || `Ship24 API error: ${response.status}`);
     }
 
     const data = await response.json();
+    console.log('[Ship24] Success response data:', JSON.stringify(data, null, 2));
     return data.data;
   } catch (error) {
     error.message = `Failed to get Ship24 tracking: ${error.message}`;
@@ -145,15 +151,22 @@ const normalizeStatusMilestone = (statusMilestone) => {
  * @returns {Object} Normalized tracking data for parts table
  */
 export const normalizeTrackingData = (trackingData) => {
-  if (!trackingData) return null;
+  console.log('[Ship24] normalizeTrackingData input:', JSON.stringify(trackingData, null, 2));
+  if (!trackingData) {
+    console.log('[Ship24] trackingData is null/undefined, returning null');
+    return null;
+  }
 
   const tracker = trackingData.trackings?.[0] || trackingData;
+  console.log('[Ship24] Extracted tracker:', JSON.stringify(tracker, null, 2));
   const shipment = tracker.shipment || {};
   const events = tracker.events || [];
+  console.log('[Ship24] Found', events.length, 'events');
   const lastEvent = events[0]; // Ship24 returns events in reverse chronological order
 
   // Get the overall status milestone
   const statusMilestone = shipment.statusMilestone || lastEvent?.statusMilestone || 'pending';
+  console.log('[Ship24] statusMilestone:', statusMilestone);
 
   // Ship24 returns location as a string (e.g., "SAINT PETERSBURG, FL 33710")
   return {
