@@ -1227,7 +1227,7 @@ const PartsTab = ({
                         <span className={`inline-block px-3 py-1 rounded-full text-xs font-medium text-center border ${
                           darkMode
                             ? 'bg-gray-700/50 text-gray-500 border-gray-600'
-                            : 'bg-gray-100 text-gray-500 border-gray-300'
+                            : 'bg-gray-200 text-gray-600 border-gray-400'
                         }`}>
                           No Vendor
                         </span>
@@ -1497,8 +1497,8 @@ const PartsTab = ({
                         </span>
                       )
                     ) : (
-                      <span className={`inline-block px-2 py-0.5 rounded-full text-xs font-medium ${
-                        darkMode ? 'bg-gray-700 text-gray-500' : 'bg-gray-200 text-gray-500'
+                      <span className={`inline-block px-2 py-0.5 rounded-full text-xs font-medium border ${
+                        darkMode ? 'bg-gray-700 text-gray-500 border-gray-600' : 'bg-gray-200 text-gray-600 border-gray-400'
                       }`}>
                         none
                       </span>

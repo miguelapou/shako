@@ -31,7 +31,7 @@ export const getPriorityBorderColor = (priority) => {
 
 // Vendor color mapping - now accepts customColors object
 export const getVendorColor = (vendor, customColors = {}) => {
-  if (!vendor) return 'bg-gray-100 text-gray-700 border border-gray-200';
+  if (!vendor) return 'bg-gray-200 text-gray-800 border border-gray-300';
 
   // Check if vendor has a custom color
   if (customColors[vendor]) {
@@ -39,14 +39,14 @@ export const getVendorColor = (vendor, customColors = {}) => {
   }
 
   const vendorLower = vendor.toLowerCase();
-  if (vendorLower === 'toyota') return 'bg-red-100 text-red-700 border border-red-200';
-  if (vendorLower === 'ebay') return 'bg-green-100 text-green-700 border border-green-200';
-  if (vendorLower === 'etsy') return 'bg-orange-100 text-orange-700 border border-orange-200';
-  if (vendorLower === 'partsnext') return 'bg-yellow-100 text-yellow-700 border border-yellow-200';
-  if (vendorLower === 'best buy') return 'bg-purple-100 text-purple-700 border border-purple-200';
-  if (vendorLower === 'amazon') return 'bg-blue-100 text-blue-700 border border-blue-200';
-  if (vendorLower === 'jauce') return 'bg-fuchsia-100 text-fuchsia-700 border border-fuchsia-200';
-  return 'bg-gray-100 text-gray-700 border border-gray-200';
+  if (vendorLower === 'toyota') return 'bg-red-100 text-red-800 border border-red-300';
+  if (vendorLower === 'ebay') return 'bg-green-100 text-green-800 border border-green-300';
+  if (vendorLower === 'etsy') return 'bg-orange-100 text-orange-800 border border-orange-300';
+  if (vendorLower === 'partsnext') return 'bg-yellow-100 text-yellow-800 border border-yellow-300';
+  if (vendorLower === 'best buy') return 'bg-purple-100 text-purple-800 border border-purple-300';
+  if (vendorLower === 'amazon') return 'bg-blue-100 text-blue-800 border border-blue-300';
+  if (vendorLower === 'jauce') return 'bg-fuchsia-100 text-fuchsia-800 border border-fuchsia-300';
+  return 'bg-gray-200 text-gray-800 border border-gray-300';
 };
 
 // Helper function to convert hex to rgba with lightness
@@ -91,12 +91,12 @@ export const getVendorDisplayColor = (color, darkMode) => {
       border: hexToRgba(color, 0.3)
     };
   } else {
-    // In light mode, use a darkened version for better contrast
-    const darkenedColor = darkenColor(color, 0.4);
+    // In light mode, use a darkened version for better contrast against white background
+    const darkenedColor = darkenColor(color, 0.5);
     return {
       text: darkenedColor,
-      bg: hexToRgba(color, 0.15),
-      border: hexToRgba(darkenedColor, 0.25)
+      bg: hexToRgba(color, 0.25),
+      border: hexToRgba(darkenedColor, 0.4)
     };
   }
 };

@@ -965,23 +965,23 @@ const Shako = () => {
 
   const getStatusColor = (part) => {
     if (part.delivered) {
-      return darkMode 
-        ? 'bg-green-900/20 text-green-400 border-green-700/50' 
-        : 'bg-green-50 text-green-700 border-green-200';
+      return darkMode
+        ? 'bg-green-900/20 text-green-400 border-green-700/50'
+        : 'bg-green-100 text-green-800 border-green-300';
     }
     if (part.shipped) {
-      return darkMode 
-        ? 'bg-blue-900/20 text-blue-400 border-blue-700/50' 
-        : 'bg-blue-50 text-blue-700 border-blue-200';
+      return darkMode
+        ? 'bg-blue-900/20 text-blue-400 border-blue-700/50'
+        : 'bg-blue-100 text-blue-800 border-blue-300';
     }
     if (part.purchased) {
-      return darkMode 
-        ? 'bg-yellow-900/20 text-yellow-400 border-yellow-700/50' 
-        : 'bg-yellow-50 text-yellow-700 border-yellow-200';
+      return darkMode
+        ? 'bg-yellow-900/20 text-yellow-400 border-yellow-700/50'
+        : 'bg-yellow-100 text-yellow-800 border-yellow-300';
     }
-    return darkMode 
-      ? 'bg-gray-700 text-gray-400 border-gray-600' 
-      : 'bg-gray-100 text-gray-700 border-gray-200';
+    return darkMode
+      ? 'bg-gray-700 text-gray-400 border-gray-600'
+      : 'bg-gray-200 text-gray-800 border-gray-300';
   };
 
   const getStatusTextColor = (part) => {
@@ -1488,7 +1488,9 @@ const Shako = () => {
                 >
                   {/* Sliding background indicator */}
                   <div
-                    className={`absolute top-0.5 bottom-0.5 left-0.5 w-[calc(50%-2px)] rounded-md transition-all duration-200 ease-in-out bg-yellow-600 ${
+                    className={`absolute top-0.5 bottom-0.5 left-0.5 w-[calc(50%-2px)] rounded-md transition-all duration-200 ease-in-out ${
+                      darkMode ? 'bg-yellow-600' : 'bg-yellow-500'
+                    } ${
                       vehicleLayoutMode === 'compact' ? 'translate-x-full' : 'translate-x-0'
                     }`}
                   />
