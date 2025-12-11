@@ -380,7 +380,12 @@ const useAuth = () => {
       setSession(null);
 
       // Sign out to clear any remaining session data
-      await supabase.auth.signOut();
+      // This may fail with 403 since the user no longer exists - that's expected
+      try {
+        await supabase.auth.signOut();
+      } catch {
+        // Ignore signOut errors after successful account deletion
+      }
 
       return { success: true };
     } catch (err) {
@@ -550,12 +555,20 @@ const useAuth = () => {
       setUser(null);
       setSession(null);
 
-      // Sign out
-      await supabase.auth.signOut();
+      // Sign out - may fail with 403 since user no longer exists, that's expected
+      try {
+        await supabase.auth.signOut();
+      } catch {
+        // Ignore signOut errors after account deletion
+      }
     } catch (err) {
       console.error('[NewUser] Error canceling new user:', err);
       // Still try to sign out
-      await supabase.auth.signOut();
+      try {
+        await supabase.auth.signOut();
+      } catch {
+        // Ignore
+      }
     } finally {
       setLoading(false);
     }
