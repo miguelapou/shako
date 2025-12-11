@@ -238,18 +238,23 @@ const useAuth = () => {
 
                 setTimeout(async () => {
                   try {
-                    // Check if user has any existing data
+                    const userId = currentSession.user.id;
+
+                    // Check if user has any existing data (explicitly filter by user_id)
                     const { count: vehicleCount } = await supabase
                       .from('vehicles')
-                      .select('*', { count: 'exact', head: true });
+                      .select('*', { count: 'exact', head: true })
+                      .eq('user_id', userId);
 
                     const { count: projectCount } = await supabase
                       .from('projects')
-                      .select('*', { count: 'exact', head: true });
+                      .select('*', { count: 'exact', head: true })
+                      .eq('user_id', userId);
 
                     const { count: partCount } = await supabase
                       .from('parts')
-                      .select('*', { count: 'exact', head: true });
+                      .select('*', { count: 'exact', head: true })
+                      .eq('user_id', userId);
 
                     const totalCount = (vehicleCount || 0) + (projectCount || 0) + (partCount || 0);
                     console.log('[NewUser] Total existing records:', totalCount);
