@@ -62,12 +62,19 @@ export const createPart = async (partData, userId) => {
  */
 export const updatePart = async (partId, updates) => {
   try {
-    const { error } = await supabase
+    console.log('[partsService] updatePart called with:', { partId, updates });
+    const { data, error, count } = await supabase
       .from('parts')
       .update(updates)
-      .eq('id', partId);
+      .eq('id', partId)
+      .select();
+
+    console.log('[partsService] Supabase update result:', { data, error, count, rowsUpdated: data?.length });
 
     if (error) throw error;
+    if (!data || data.length === 0) {
+      console.warn('[partsService] WARNING: No rows were updated! Part ID:', partId);
+    }
   } catch (error) {
     error.message = `Failed to update part: ${error.message}`;
     throw error;
