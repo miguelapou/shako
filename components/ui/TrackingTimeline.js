@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import {
   Clock,
   Tag,
@@ -153,6 +153,44 @@ const TrackingTimeline = ({
   className = ''
 }) => {
   const [expanded, setExpanded] = useState(false);
+  const contentRef = useRef(null);
+  const [contentHeight, setContentHeight] = useState(0);
+
+  // Sort checkpoints by time (newest first)
+  const sortedCheckpoints = React.useMemo(() => {
+    if (!checkpoints || checkpoints.length === 0) return [];
+    return [...checkpoints].sort((a, b) => {
+      const timeA = new Date(a.checkpoint_time || a.created_at);
+      const timeB = new Date(b.checkpoint_time || b.created_at);
+      return timeB - timeA;
+    });
+  }, [checkpoints]);
+
+  const hasMore = sortedCheckpoints.length > maxVisible;
+
+  // Calculate collapsed height based on visible checkpoints
+  // Use a generous estimate to avoid cutting off content on mobile
+  const checkpointHeight = 80;
+  const collapsedHeight = maxVisible * checkpointHeight;
+
+  // Measure the full content height for smooth animation
+  useEffect(() => {
+    const measureHeight = () => {
+      if (contentRef.current) {
+        setContentHeight(contentRef.current.scrollHeight);
+      }
+    };
+
+    measureHeight();
+
+    // Use ResizeObserver to handle content size changes (important for mobile)
+    const resizeObserver = new ResizeObserver(measureHeight);
+    if (contentRef.current) {
+      resizeObserver.observe(contentRef.current);
+    }
+
+    return () => resizeObserver.disconnect();
+  }, [checkpoints, sortedCheckpoints.length]);
 
   if (!checkpoints || checkpoints.length === 0) {
     return (
@@ -162,23 +200,6 @@ const TrackingTimeline = ({
     );
   }
 
-  // Sort checkpoints by time (newest first)
-  const sortedCheckpoints = [...checkpoints].sort((a, b) => {
-    const timeA = new Date(a.checkpoint_time || a.created_at);
-    const timeB = new Date(b.checkpoint_time || b.created_at);
-    return timeB - timeA;
-  });
-
-  const visibleCheckpoints = expanded
-    ? sortedCheckpoints
-    : sortedCheckpoints.slice(0, maxVisible);
-
-  const hasMore = sortedCheckpoints.length > maxVisible;
-
-  // Calculate approximate height per checkpoint for animation
-  const checkpointHeight = 72; // approximate height per checkpoint in pixels
-  const collapsedHeight = maxVisible * checkpointHeight;
-
   return (
     <div className={className}>
       {showProgress && status && (
@@ -186,9 +207,13 @@ const TrackingTimeline = ({
       )}
 
       <div
-        className="relative overflow-hidden transition-all duration-500 ease-in-out"
+        ref={contentRef}
+        className="relative transition-all duration-500 ease-in-out"
         style={{
-          maxHeight: expanded ? 'none' : `${collapsedHeight}px`
+          maxHeight: expanded
+            ? `${contentHeight || sortedCheckpoints.length * checkpointHeight}px`
+            : `${collapsedHeight}px`,
+          overflow: expanded ? 'visible' : 'hidden'
         }}
       >
         {sortedCheckpoints.map((checkpoint, index) => (
