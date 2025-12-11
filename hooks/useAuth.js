@@ -211,9 +211,15 @@ const useAuth = () => {
                     if (completeError) {
                       console.error('[Migration] Error completing migration:', completeError);
                       setMigrationResult({ success: false, error: completeError.message });
+                      // Sign out so user can try again
+                      console.log('[Migration] Signing out due to error...');
+                      try { await supabase.auth.signOut(); } catch { /* ignore */ }
                     } else if (!result || !result.success) {
                       console.error('[Migration] Migration failed:', result?.error);
                       setMigrationResult({ success: false, error: result?.error || 'Unknown error' });
+                      // Sign out so user can try again with a different account
+                      console.log('[Migration] Signing out due to failed migration...');
+                      try { await supabase.auth.signOut(); } catch { /* ignore */ }
                     } else {
                       // Migration successful - reload to get the transferred data
                       console.log('[Migration] SUCCESS! Records transferred:', result.records_transferred);
@@ -229,6 +235,8 @@ const useAuth = () => {
                     console.error('[Migration] Exception during migration:', err);
                     localStorage.removeItem(MIGRATION_TOKEN_KEY);
                     setMigrationResult({ success: false, error: err.message });
+                    // Sign out so user can try again
+                    try { await supabase.auth.signOut(); } catch { /* ignore */ }
                   }
                 }, 500); // 500ms delay to ensure client is ready
               } else if (!newUserCheckRef.current) {
