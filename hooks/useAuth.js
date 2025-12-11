@@ -338,6 +338,13 @@ const useAuth = () => {
       // Store the migration token in localStorage
       localStorage.setItem(MIGRATION_TOKEN_KEY, migrationToken);
 
+      // Sign out current session first to force fresh Google account selection
+      // This prevents Google from auto-selecting the current account
+      await supabase.auth.signOut();
+
+      // Small delay to ensure sign out completes
+      await new Promise(resolve => setTimeout(resolve, 100));
+
       // Redirect to Google OAuth with the new account
       const { error: signInError } = await supabase.auth.signInWithOAuth({
         provider: 'google',
