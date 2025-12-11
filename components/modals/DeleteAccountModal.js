@@ -96,7 +96,8 @@ const DeleteAccountModal = ({
             <li>All vehicles and their images</li>
             <li>All projects and tasks</li>
             <li>All parts and tracking information</li>
-            <li>All vendor color preferences</li>
+            <li>All service events</li>
+            <li>All vendor information</li>
             <li>All documents</li>
           </ul>
 
