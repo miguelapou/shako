@@ -37,11 +37,14 @@ const useAuth = () => {
   const [error, setError] = useState(null);
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [migrationResult, setMigrationResult] = useState(null);
+  const [pendingNewUser, setPendingNewUser] = useState(null); // For new user confirmation
 
   // Track if we're currently refreshing to avoid duplicate refresh attempts
   const refreshPromiseRef = useRef(null);
   // Track if we've already attempted migration completion
   const migrationAttemptedRef = useRef(false);
+  // Track if we've already checked for new user
+  const newUserCheckRef = useRef(false);
 
   // Manually refresh the session
   const refreshSession = useCallback(async () => {
@@ -228,6 +231,42 @@ const useAuth = () => {
                     setMigrationResult({ success: false, error: err.message });
                   }
                 }, 500); // 500ms delay to ensure client is ready
+              } else if (!newUserCheckRef.current) {
+                // No migration token - check if this is a new user
+                newUserCheckRef.current = true;
+                console.log('[NewUser] Checking if user is new...');
+
+                setTimeout(async () => {
+                  try {
+                    // Check if user has any existing data
+                    const { count: vehicleCount } = await supabase
+                      .from('vehicles')
+                      .select('*', { count: 'exact', head: true });
+
+                    const { count: projectCount } = await supabase
+                      .from('projects')
+                      .select('*', { count: 'exact', head: true });
+
+                    const { count: partCount } = await supabase
+                      .from('parts')
+                      .select('*', { count: 'exact', head: true });
+
+                    const totalCount = (vehicleCount || 0) + (projectCount || 0) + (partCount || 0);
+                    console.log('[NewUser] Total existing records:', totalCount);
+
+                    if (totalCount === 0) {
+                      // This is a new user - show confirmation modal
+                      console.log('[NewUser] New user detected, showing confirmation');
+                      setPendingNewUser({
+                        email: currentSession.user.email,
+                        id: currentSession.user.id
+                      });
+                    }
+                  } catch (err) {
+                    console.error('[NewUser] Error checking for new user:', err);
+                    // On error, just let them through
+                  }
+                }, 300);
               }
             }
             console.log('[Auth] SIGNED_IN handling complete');
@@ -236,8 +275,10 @@ const useAuth = () => {
           case 'SIGNED_OUT':
             setUser(null);
             setSession(null);
-            // Reset migration attempted flag on sign out
+            setPendingNewUser(null);
+            // Reset flags on sign out
             migrationAttemptedRef.current = false;
+            newUserCheckRef.current = false;
             break;
 
           case 'TOKEN_REFRESHED':
@@ -485,6 +526,41 @@ const useAuth = () => {
     setMigrationResult(null);
   }, []);
 
+  // Confirm new user - clear the pending state and let them proceed
+  const confirmNewUser = useCallback(() => {
+    console.log('[NewUser] User confirmed account creation');
+    setPendingNewUser(null);
+  }, []);
+
+  // Cancel new user - sign out and delete the empty account
+  const cancelNewUser = useCallback(async () => {
+    console.log('[NewUser] User cancelled account creation');
+    setLoading(true);
+
+    try {
+      // Delete the empty account
+      const { error: deleteError } = await supabase.rpc('delete_user_account');
+
+      if (deleteError) {
+        console.error('[NewUser] Error deleting account:', deleteError);
+      }
+
+      // Clear state
+      setPendingNewUser(null);
+      setUser(null);
+      setSession(null);
+
+      // Sign out
+      await supabase.auth.signOut();
+    } catch (err) {
+      console.error('[NewUser] Error canceling new user:', err);
+      // Still try to sign out
+      await supabase.auth.signOut();
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
   return {
     user,
     session,
@@ -492,6 +568,7 @@ const useAuth = () => {
     error,
     isRefreshing,
     migrationResult,
+    pendingNewUser,
     signInWithGoogle,
     signOut,
     deleteAccount,
@@ -501,6 +578,8 @@ const useAuth = () => {
     completePendingMigration,
     cancelEmailMigration,
     clearMigrationResult,
+    confirmNewUser,
+    cancelNewUser,
   };
 };
 

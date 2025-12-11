@@ -13,6 +13,7 @@ const AuthContext = createContext({
   error: null,
   isRefreshing: false,
   migrationResult: null,
+  pendingNewUser: null,
   signInWithGoogle: async () => {},
   signOut: async () => {},
   deleteAccount: async () => {},
@@ -22,6 +23,8 @@ const AuthContext = createContext({
   completePendingMigration: async () => {},
   cancelEmailMigration: async () => {},
   clearMigrationResult: () => {},
+  confirmNewUser: () => {},
+  cancelNewUser: async () => {},
 });
 
 /**

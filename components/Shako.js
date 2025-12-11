@@ -56,6 +56,7 @@ import VehicleDetailModal from './modals/VehicleDetailModal';
 import DeleteAccountModal from './modals/DeleteAccountModal';
 import ManageVendorsModal from './modals/ManageVendorsModal';
 import UpdateLoginEmailModal from './modals/UpdateLoginEmailModal';
+import NewUserConfirmModal from './modals/NewUserConfirmModal';
 
 // Tab Components
 import PartsTab from './tabs/PartsTab';
@@ -93,7 +94,18 @@ const Shako = () => {
   useHoverCapability();
 
   // Auth hook
-  const { user, signOut, deleteAccount, initiateEmailMigration, migrationResult, clearMigrationResult } = useAuthContext();
+  const {
+    user,
+    loading: authLoading,
+    signOut,
+    deleteAccount,
+    initiateEmailMigration,
+    migrationResult,
+    clearMigrationResult,
+    pendingNewUser,
+    confirmNewUser,
+    cancelNewUser
+  } = useAuthContext();
   const userId = user?.id;
 
   // Toast notification state (created here so hooks can use it)
@@ -1970,6 +1982,15 @@ const Shako = () => {
         onInitiateMigration={initiateEmailMigration}
         darkMode={darkMode}
         userEmail={user?.email}
+      />
+      {/* New User Confirmation Modal */}
+      <NewUserConfirmModal
+        isOpen={!!pendingNewUser}
+        onConfirm={confirmNewUser}
+        onCancel={cancelNewUser}
+        email={pendingNewUser?.email}
+        darkMode={darkMode}
+        isLoading={authLoading}
       />
     </div>
     <ToastContainer toasts={toasts} onDismiss={dismissToast} darkMode={darkMode} />
