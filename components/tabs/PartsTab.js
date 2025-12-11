@@ -56,6 +56,10 @@ const PartsTab = ({
   const [isPaginating, setIsPaginating] = useState(false);
   const tableContainerRef = useRef(null);
 
+  // Track row count changes for resize animation
+  const prevRowsPerPageRef = useRef(null);
+  const [resizeAnimationStart, setResizeAnimationStart] = useState(null);
+
   // Calculate initial estimate based on viewport (before ref is available)
   const getInitialRowEstimate = () => {
     if (typeof window === 'undefined') return 10;
@@ -123,6 +127,14 @@ const PartsTab = ({
       const optimal = calculateOptimalRows();
       setCalculatedRows(optimal);
       if (isAutoRows) {
+        const prevRows = prevRowsPerPageRef.current;
+        // Only animate if rows are being added (window got taller)
+        if (prevRows !== null && optimal > prevRows) {
+          setResizeAnimationStart(prevRows);
+          // Clear animation state after animation completes
+          setTimeout(() => setResizeAnimationStart(null), 400);
+        }
+        prevRowsPerPageRef.current = optimal;
         setRowsPerPage(optimal);
       }
     };
@@ -130,6 +142,13 @@ const PartsTab = ({
     window.addEventListener('resize', handleResize);
     return () => window.removeEventListener('resize', handleResize);
   }, [calculateOptimalRows, isAutoRows]);
+
+  // Initialize prevRowsPerPageRef
+  useEffect(() => {
+    if (prevRowsPerPageRef.current === null && isAutoRows) {
+      prevRowsPerPageRef.current = rowsPerPage;
+    }
+  }, [rowsPerPage, isAutoRows]);
 
   // Dropdown animation state
   const [closingDropdown, setClosingDropdown] = useState(null);
@@ -1080,7 +1099,7 @@ const PartsTab = ({
                   darkMode ? 'divide-gray-700' : 'divide-slate-200'
                 }`}
               >
-                {paginatedParts.map((part) => (
+                {paginatedParts.map((part, index) => (
                   <tr
                     key={part.id}
                     onClick={() => {
@@ -1089,7 +1108,7 @@ const PartsTab = ({
                     }}
                     className={`transition-colors cursor-pointer parts-table-row ${
                       darkMode ? 'dark' : 'light'
-                    }`}
+                    }${resizeAnimationStart !== null && index >= resizeAnimationStart ? ' row-resize-fade-in' : ''}`}
                   >
                     <td className="px-6 py-4 whitespace-nowrap">
                       <StatusDropdown part={part} />
@@ -1227,7 +1246,7 @@ const PartsTab = ({
                         <span className={`inline-block px-3 py-1 rounded-full text-xs font-medium text-center border ${
                           darkMode
                             ? 'bg-gray-700/50 text-gray-500 border-gray-600'
-                            : 'bg-gray-100 text-gray-500 border-gray-300'
+                            : 'bg-gray-200 text-gray-600 border-gray-400'
                         }`}>
                           No Vendor
                         </span>
@@ -1497,8 +1516,8 @@ const PartsTab = ({
                         </span>
                       )
                     ) : (
-                      <span className={`inline-block px-2 py-0.5 rounded-full text-xs font-medium ${
-                        darkMode ? 'bg-gray-700 text-gray-500' : 'bg-gray-200 text-gray-500'
+                      <span className={`inline-block px-2 py-0.5 rounded-full text-xs font-medium border ${
+                        darkMode ? 'bg-gray-700 text-gray-500 border-gray-600' : 'bg-gray-200 text-gray-600 border-gray-400'
                       }`}>
                         none
                       </span>
