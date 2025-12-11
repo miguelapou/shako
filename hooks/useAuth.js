@@ -163,6 +163,7 @@ const useAuth = () => {
             setSession(currentSession);
             setUser(currentSession?.user ?? null);
             setError(null);
+            setLoading(false); // Set loading to false immediately so app doesn't hang
 
             // Check for pending email migration after sign-in
             // This happens when user signs in with a new Google account during migration
@@ -180,40 +181,53 @@ const useAuth = () => {
                 console.log('[Migration] Attempting to complete migration...');
                 console.log('[Migration] Token value:', migrationToken.substring(0, 10) + '...');
 
-                try {
-                  console.log('[Migration] Calling complete_email_migration RPC...');
-                  const { data: result, error: completeError } = await supabase.rpc(
-                    'complete_email_migration',
-                    { p_migration_token: migrationToken }
-                  );
+                // Run migration in background after a short delay to ensure client is ready
+                // Use setTimeout to not block the auth state change handler
+                setTimeout(async () => {
+                  try {
+                    console.log('[Migration] Calling complete_email_migration RPC...');
 
-                  console.log('[Migration] RPC response - data:', result);
-                  console.log('[Migration] RPC response - error:', completeError);
+                    // Create an AbortController for timeout
+                    const controller = new AbortController();
+                    const timeoutId = setTimeout(() => controller.abort(), 30000); // 30 second timeout
 
-                  // Clear the token
-                  localStorage.removeItem(MIGRATION_TOKEN_KEY);
-                  console.log('[Migration] Token cleared from localStorage');
+                    const { data: result, error: completeError } = await supabase.rpc(
+                      'complete_email_migration',
+                      { p_migration_token: migrationToken }
+                    );
 
-                  if (completeError) {
-                    console.error('[Migration] Error completing migration:', completeError);
-                    setMigrationResult({ success: false, error: completeError.message });
-                  } else if (!result.success) {
-                    console.error('[Migration] Migration failed:', result.error);
-                    setMigrationResult({ success: false, error: result.error });
-                  } else {
-                    // Migration successful
-                    console.log('[Migration] SUCCESS! Records transferred:', result.records_transferred);
-                    setMigrationResult({
-                      success: true,
-                      recordsTransferred: result.records_transferred,
-                      oldEmail: result.old_email
-                    });
+                    clearTimeout(timeoutId);
+
+                    console.log('[Migration] RPC response - data:', result);
+                    console.log('[Migration] RPC response - error:', completeError);
+
+                    // Clear the token
+                    localStorage.removeItem(MIGRATION_TOKEN_KEY);
+                    console.log('[Migration] Token cleared from localStorage');
+
+                    if (completeError) {
+                      console.error('[Migration] Error completing migration:', completeError);
+                      setMigrationResult({ success: false, error: completeError.message });
+                    } else if (!result || !result.success) {
+                      console.error('[Migration] Migration failed:', result?.error);
+                      setMigrationResult({ success: false, error: result?.error || 'Unknown error' });
+                    } else {
+                      // Migration successful - reload to get the transferred data
+                      console.log('[Migration] SUCCESS! Records transferred:', result.records_transferred);
+                      setMigrationResult({
+                        success: true,
+                        recordsTransferred: result.records_transferred,
+                        oldEmail: result.old_email
+                      });
+                      // Reload the page to fetch the transferred data
+                      window.location.reload();
+                    }
+                  } catch (err) {
+                    console.error('[Migration] Exception during migration:', err);
+                    localStorage.removeItem(MIGRATION_TOKEN_KEY);
+                    setMigrationResult({ success: false, error: err.message });
                   }
-                } catch (err) {
-                  console.error('[Migration] Exception during migration:', err);
-                  localStorage.removeItem(MIGRATION_TOKEN_KEY);
-                  setMigrationResult({ success: false, error: err.message });
-                }
+                }, 500); // 500ms delay to ensure client is ready
               }
             }
             console.log('[Auth] SIGNED_IN handling complete');
