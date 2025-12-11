@@ -158,34 +158,51 @@ const useAuth = () => {
         // Handle different auth events
         switch (event) {
           case 'SIGNED_IN':
+            console.log('[Auth] SIGNED_IN event received');
+            console.log('[Auth] User:', currentSession?.user?.email);
             setSession(currentSession);
             setUser(currentSession?.user ?? null);
             setError(null);
 
             // Check for pending email migration after sign-in
             // This happens when user signs in with a new Google account during migration
+            console.log('[Migration] Checking for pending migration...');
+            console.log('[Migration] Has user:', !!currentSession?.user);
+            console.log('[Migration] Migration already attempted:', migrationAttemptedRef.current);
+
             if (currentSession?.user && !migrationAttemptedRef.current) {
               const migrationToken = localStorage.getItem(MIGRATION_TOKEN_KEY);
+              console.log('[Migration] Token from localStorage:', migrationToken ? 'Found' : 'Not found');
+
               if (migrationToken) {
                 // Attempt to complete the migration
                 migrationAttemptedRef.current = true;
+                console.log('[Migration] Attempting to complete migration...');
+                console.log('[Migration] Token value:', migrationToken.substring(0, 10) + '...');
+
                 try {
+                  console.log('[Migration] Calling complete_email_migration RPC...');
                   const { data: result, error: completeError } = await supabase.rpc(
                     'complete_email_migration',
                     { p_migration_token: migrationToken }
                   );
 
+                  console.log('[Migration] RPC response - data:', result);
+                  console.log('[Migration] RPC response - error:', completeError);
+
                   // Clear the token
                   localStorage.removeItem(MIGRATION_TOKEN_KEY);
+                  console.log('[Migration] Token cleared from localStorage');
 
                   if (completeError) {
-                    console.error('Error completing migration:', completeError);
+                    console.error('[Migration] Error completing migration:', completeError);
                     setMigrationResult({ success: false, error: completeError.message });
                   } else if (!result.success) {
-                    console.error('Migration failed:', result.error);
+                    console.error('[Migration] Migration failed:', result.error);
                     setMigrationResult({ success: false, error: result.error });
                   } else {
                     // Migration successful
+                    console.log('[Migration] SUCCESS! Records transferred:', result.records_transferred);
                     setMigrationResult({
                       success: true,
                       recordsTransferred: result.records_transferred,
@@ -193,12 +210,13 @@ const useAuth = () => {
                     });
                   }
                 } catch (err) {
-                  console.error('Error completing migration:', err);
+                  console.error('[Migration] Exception during migration:', err);
                   localStorage.removeItem(MIGRATION_TOKEN_KEY);
                   setMigrationResult({ success: false, error: err.message });
                 }
               }
             }
+            console.log('[Auth] SIGNED_IN handling complete');
             break;
 
           case 'SIGNED_OUT':
