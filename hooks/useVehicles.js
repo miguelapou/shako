@@ -18,6 +18,7 @@ import * as vehiclesService from '../services/vehiclesService';
 const useVehicles = (userId, toast) => {
   const [vehicles, setVehicles] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [imagesLoaded, setImagesLoaded] = useState(false);
   const [newVehicle, setNewVehicle] = useState({
     nickname: '',
     name: '',
@@ -44,12 +45,40 @@ const useVehicles = (userId, toast) => {
   const [isDraggingImage, setIsDraggingImage] = useState(false);
 
   /**
+   * Preload images by creating Image objects and waiting for them to load
+   * @param {Array} vehicleList - List of vehicles with image URLs
+   * @returns {Promise} Resolves when all images are loaded (or failed)
+   */
+  const preloadImages = (vehicleList) => {
+    const imageUrls = vehicleList
+      .filter(v => !v.archived) // Only preload non-archived vehicle images
+      .map(v => v.image_url_resolved || v.image_url)
+      .filter(url => url); // Filter out null/undefined
+
+    if (imageUrls.length === 0) {
+      return Promise.resolve();
+    }
+
+    const imagePromises = imageUrls.map(url => {
+      return new Promise((resolve) => {
+        const img = new Image();
+        img.onload = () => resolve();
+        img.onerror = () => resolve(); // Resolve even on error to not block loading
+        img.src = url;
+      });
+    });
+
+    return Promise.all(imagePromises);
+  };
+
+  /**
    * Load vehicles from Supabase and resolve image URLs
    */
   const loadVehicles = async () => {
     if (!userId) return;
     try {
       setLoading(true);
+      setImagesLoaded(false);
       const data = await vehiclesService.getAllVehicles(userId);
       if (data) {
         // Sort so archived vehicles are always at the end
@@ -67,11 +96,12 @@ const useVehicles = (userId, toast) => {
           .map(v => v.image_url)
           .filter(url => url && !url.startsWith('http'));
 
+        let finalVehicles;
         if (imagePaths.length > 0) {
           try {
             const urlMap = await vehiclesService.getVehicleImageUrls(imagePaths);
             // Update vehicles with resolved URLs
-            const withResolvedUrls = sorted.map(vehicle => {
+            finalVehicles = sorted.map(vehicle => {
               if (vehicle.image_url && !vehicle.image_url.startsWith('http')) {
                 return {
                   ...vehicle,
@@ -83,24 +113,30 @@ const useVehicles = (userId, toast) => {
                 image_url_resolved: vehicle.image_url
               };
             });
-            setVehicles(withResolvedUrls);
           } catch (urlError) {
             // If URL resolution fails, use original data
-            setVehicles(sorted);
+            finalVehicles = sorted;
           }
         } else {
           // No storage paths to resolve, use URLs as-is
-          const withResolvedUrls = sorted.map(vehicle => ({
+          finalVehicles = sorted.map(vehicle => ({
             ...vehicle,
             image_url_resolved: vehicle.image_url
           }));
-          setVehicles(withResolvedUrls);
         }
+
+        setVehicles(finalVehicles);
+
+        // Preload images before marking as loaded
+        await preloadImages(finalVehicles);
+        setImagesLoaded(true);
       } else {
         setVehicles([]);
+        setImagesLoaded(true);
       }
     } catch (error) {
       // Error loading vehicles - silent fail
+      setImagesLoaded(true);
     } finally {
       setLoading(false);
     }
@@ -278,6 +314,7 @@ const useVehicles = (userId, toast) => {
     vehicles,
     setVehicles,
     loading,
+    imagesLoaded,
     newVehicle,
     setNewVehicle,
     vehicleImageFile,
