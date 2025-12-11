@@ -175,35 +175,42 @@ BEGIN
   records_updated := records_updated + temp_count;
 
   -- =============================================
-  -- Handle storage files (update paths)
+  -- Handle storage files (update paths and ownership)
   -- Note: Storage files use paths like vehicle-images/{user_id}/filename
-  -- We need to move files from old user's folder to new user's folder
-  -- This is handled by updating the object names in storage.objects
+  -- We need to: 1) update paths, 2) update ownership, 3) update URL references
   -- =============================================
 
-  -- Update vehicle-images paths
+  -- Update vehicle-images paths in storage
   UPDATE storage.objects
   SET name = regexp_replace(name, '^vehicle-images/' || old_user_id::text || '/', 'vehicle-images/' || new_user_id::text || '/')
   WHERE bucket_id = 'vehicles'
     AND name LIKE 'vehicle-images/' || old_user_id::text || '/%';
 
-  -- Update vehicle-documents paths
+  -- Update vehicle-documents paths in storage
   UPDATE storage.objects
   SET name = regexp_replace(name, '^vehicle-documents/' || old_user_id::text || '/', 'vehicle-documents/' || new_user_id::text || '/')
   WHERE bucket_id = 'vehicles'
     AND name LIKE 'vehicle-documents/' || old_user_id::text || '/%';
 
-  -- Also update the image_url and file_url fields in vehicles and vehicle_documents tables
-  -- to reflect the new paths
-  UPDATE public.vehicles
-  SET image_url = regexp_replace(image_url, '/vehicle-images/' || old_user_id::text || '/', '/vehicle-images/' || new_user_id::text || '/')
-  WHERE user_id = new_user_id
-    AND image_url LIKE '%/vehicle-images/' || old_user_id::text || '/%';
+  -- Update storage object ownership to new user
+  UPDATE storage.objects
+  SET owner = new_user_id
+  WHERE owner = old_user_id
+    AND bucket_id = 'vehicles';
 
-  UPDATE public.vehicle_documents
-  SET file_url = regexp_replace(file_url, '/vehicle-documents/' || old_user_id::text || '/', '/vehicle-documents/' || new_user_id::text || '/')
+  -- Update image_url in vehicles table
+  -- Handle both full URLs (with /) and path-only values (without leading /)
+  UPDATE public.vehicles
+  SET image_url = replace(image_url, old_user_id::text, new_user_id::text)
   WHERE user_id = new_user_id
-    AND file_url LIKE '%/vehicle-documents/' || old_user_id::text || '/%';
+    AND image_url LIKE '%' || old_user_id::text || '%';
+
+  -- Update file_url in vehicle_documents table
+  -- Handle both full URLs and path-only values
+  UPDATE public.vehicle_documents
+  SET file_url = replace(file_url, old_user_id::text, new_user_id::text)
+  WHERE user_id = new_user_id
+    AND file_url LIKE '%' || old_user_id::text || '%';
 
   -- =============================================
   -- Cleanup
