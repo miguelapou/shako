@@ -887,7 +887,7 @@ const Shako = () => {
     return {
       total: parts.length,
       delivered: parts.filter(p => p.delivered).length,
-      undelivered: parts.filter(p => !p.delivered).length,
+      undelivered: parts.filter(p => !p.delivered && p.purchased).length,
       shipped: parts.filter(p => p.shipped && !p.delivered).length,
       purchased: parts.filter(p => p.purchased && !p.shipped).length,
       pending: parts.filter(p => !p.purchased).length,
