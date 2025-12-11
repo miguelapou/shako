@@ -585,7 +585,7 @@ const ProjectDetailView = ({
                         ? ''
                         : 'text-green-500'
                     }`} />
-                    Completed
+                    Completed ({sortedTodos.filter(todo => todo.completed).length})
                   </span>
                   <ChevronDown className={`w-4 h-4 transition-transform duration-200 ${
                     showCompletedTodos ? 'rotate-180' : ''
