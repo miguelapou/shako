@@ -260,8 +260,12 @@ const useParts = (userId, toast) => {
       if (setTrackingInput) setTrackingInput('');
 
       // Auto-refresh tracking from Ship24 if supported
+      console.log('========== CHECKING IF SHOULD FETCH TRACKING ==========');
+      console.log('[useParts] trackingInput:', trackingInput);
+      console.log('[useParts] shouldSkipShip24 result:', shouldSkipShip24(trackingInput));
       if (trackingInput && !shouldSkipShip24(trackingInput)) {
         try {
+          console.log('========== FETCHING TRACKING FROM API ==========');
           console.log('[useParts] Fetching tracking for part:', trackingModalPartId);
           const response = await fetch(`/api/tracking/${trackingModalPartId}`);
           const data = await response.json();
@@ -283,7 +287,9 @@ const useParts = (userId, toast) => {
             console.error('[useParts] Tracking API error:', data.error);
             toast?.error(`Tracking update failed: ${data.error}`);
           } else {
-            console.warn('[useParts] Unexpected tracking response:', data);
+            console.warn('[useParts] Unexpected tracking response - no success or error:', data);
+            // Log the full response for debugging
+            console.warn('[useParts] Full response object:', JSON.stringify(data, null, 2));
           }
         } catch (trackingError) {
           console.error('[useParts] Failed to refresh tracking:', trackingError);

@@ -10,8 +10,10 @@ import { shouldSkipShip24, getTrackingUrl } from '../../../../utils/trackingUtil
  * Get and refresh tracking status for a specific part
  */
 export async function GET(request, { params }) {
+  console.log('========== TRACKING API CALLED ==========');
   try {
     const { id } = await params;
+    console.log('[Tracking API] Received request for part ID:', id);
     const partId = parseInt(id, 10);
 
     if (isNaN(partId)) {
