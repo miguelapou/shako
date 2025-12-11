@@ -184,6 +184,7 @@ const Shako = () => {
     vehicles,
     setVehicles,
     loading: loadingVehicles,
+    imagesLoaded,
     newVehicle,
     setNewVehicle,
     vehicleImageFile,
@@ -371,8 +372,8 @@ const Shako = () => {
   // COMBINED LOADING STATE
   // ========================================
 
-  // Show loading screen until all data is loaded to prevent flash of empty content
-  const loading = loadingParts || loadingProjects || loadingVehicles;
+  // Show loading screen until all data and vehicle images are loaded to prevent flash of empty content
+  const loading = loadingParts || loadingProjects || loadingVehicles || !imagesLoaded;
 
   // ========================================
   // LOCAL COMPONENT STATE
