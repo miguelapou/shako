@@ -172,13 +172,10 @@ const useAuth = () => {
           case 'SIGNED_IN':
             console.log('[Auth] SIGNED_IN event received');
             console.log('[Auth] User:', currentSession?.user?.email);
-            setSession(currentSession);
-            setUser(currentSession?.user ?? null);
             setError(null);
-            setLoading(false); // Set loading to false immediately so app doesn't hang
 
-            // Check for pending email migration after sign-in
-            // This happens when user signs in with a new Google account during migration
+            // Check for pending email migration BEFORE setting user state
+            // This prevents briefly showing the wrong account's data
             console.log('[Migration] Checking for pending migration...');
             console.log('[Migration] Has user:', !!currentSession?.user);
             console.log('[Migration] Migration already attempted:', migrationAttemptedRef.current);
@@ -188,27 +185,23 @@ const useAuth = () => {
               console.log('[Migration] Token from localStorage:', migrationToken ? 'Found' : 'Not found');
 
               if (migrationToken) {
+                // Keep loading state - don't show any UI until migration completes
+                console.log('[Migration] Keeping loading state during migration...');
+
                 // Attempt to complete the migration
                 migrationAttemptedRef.current = true;
                 console.log('[Migration] Attempting to complete migration...');
                 console.log('[Migration] Token value:', migrationToken.substring(0, 10) + '...');
 
-                // Run migration in background after a short delay to ensure client is ready
-                // Use setTimeout to not block the auth state change handler
+                // Run migration after a short delay to ensure client is ready
                 setTimeout(async () => {
                   try {
                     console.log('[Migration] Calling complete_email_migration RPC...');
-
-                    // Create an AbortController for timeout
-                    const controller = new AbortController();
-                    const timeoutId = setTimeout(() => controller.abort(), 30000); // 30 second timeout
 
                     const { data: result, error: completeError } = await supabase.rpc(
                       'complete_email_migration',
                       { p_migration_token: migrationToken }
                     );
-
-                    clearTimeout(timeoutId);
 
                     console.log('[Migration] RPC response - data:', result);
                     console.log('[Migration] RPC response - error:', completeError);
@@ -251,7 +244,19 @@ const useAuth = () => {
                     try { await supabase.auth.signOut(); } catch { /* ignore */ }
                   }
                 }, 500); // 500ms delay to ensure client is ready
-              } else if (!newUserCheckRef.current) {
+
+                // Don't set user/session or loading=false - migration handler will handle it
+                break;
+              }
+            }
+
+            // No migration pending - set user state normally
+            setSession(currentSession);
+            setUser(currentSession?.user ?? null);
+            setLoading(false);
+
+            // Check if this is a new user (no existing data)
+            if (currentSession?.user && !newUserCheckRef.current) {
                 // No migration token - check if this is a new user
                 newUserCheckRef.current = true;
                 console.log('[NewUser] Checking if user is new...');
@@ -292,7 +297,6 @@ const useAuth = () => {
                     // On error, just let them through
                   }
                 }, 300);
-              }
             }
             console.log('[Auth] SIGNED_IN handling complete');
             break;
