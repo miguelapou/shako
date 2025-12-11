@@ -32,10 +32,19 @@ const GoogleIcon = () => (
  * Login page component with Google authentication
  */
 const LoginPage = () => {
-  const { signInWithGoogle, loading, error } = useAuthContext();
+  const { signInWithGoogle, loading, error, migrationResult, clearMigrationResult } = useAuthContext();
   const [darkMode, setDarkMode] = useState(false);
   const [mounted, setMounted] = useState(false);
   const [fontLoaded, setFontLoaded] = useState(false);
+  const [migrationError, setMigrationError] = useState(null);
+
+  // Handle migration error display
+  useEffect(() => {
+    if (migrationResult && !migrationResult.success) {
+      setMigrationError(migrationResult.error);
+      clearMigrationResult();
+    }
+  }, [migrationResult, clearMigrationResult]);
 
   // Initialize dark mode preference
   useEffect(() => {
@@ -115,10 +124,32 @@ const LoginPage = () => {
           </p>
         </div>
 
-        {/* Error message */}
+        {/* Error messages */}
         {error && (
           <div className="mb-6 p-4 bg-red-100 border border-red-300 text-red-700 rounded-lg text-sm">
             {error}
+          </div>
+        )}
+
+        {/* Migration error message */}
+        {migrationError && (
+          <div className={`mb-6 p-4 rounded-lg text-sm ${
+            darkMode
+              ? 'bg-red-900/30 border border-red-800 text-red-400'
+              : 'bg-red-100 border border-red-300 text-red-700'
+          }`}>
+            <div className="flex justify-between items-start gap-2">
+              <div>
+                <p className="font-medium mb-1">Migration Failed</p>
+                <p>{migrationError}</p>
+              </div>
+              <button
+                onClick={() => setMigrationError(null)}
+                className={`text-lg leading-none ${darkMode ? 'text-red-400 hover:text-red-300' : 'text-red-500 hover:text-red-700'}`}
+              >
+                ×
+              </button>
+            </div>
           </div>
         )}
 

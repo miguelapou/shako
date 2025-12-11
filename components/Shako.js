@@ -1,5 +1,5 @@
 import React, { useState, useMemo, useEffect, useRef } from 'react';
-import { Search, Package, PackageOpen, BadgeDollarSign, TrendingUp, Truck, CheckCircle, Clock, ChevronDown, Plus, X, ExternalLink, ChevronUp, Edit2, Trash2, Moon, Sun, ListChecks, GripVertical, ShoppingCart, Car, Upload, Gauge, Settings, Check, Archive, ChevronRight, Pause, Play, LogOut, LayoutGrid, LayoutList } from 'lucide-react';
+import { Search, Package, PackageOpen, BadgeDollarSign, TrendingUp, Truck, CheckCircle, Clock, ChevronDown, Plus, X, ExternalLink, ChevronUp, Edit2, Trash2, Moon, Sun, ListChecks, GripVertical, ShoppingCart, Car, Upload, Gauge, Settings, Check, Archive, ChevronRight, Pause, Play, LogOut, LayoutGrid, LayoutList, Mail } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 
 // Utilities
@@ -55,6 +55,8 @@ import AddVehicleModal from './modals/AddVehicleModal';
 import VehicleDetailModal from './modals/VehicleDetailModal';
 import DeleteAccountModal from './modals/DeleteAccountModal';
 import ManageVendorsModal from './modals/ManageVendorsModal';
+import UpdateLoginEmailModal from './modals/UpdateLoginEmailModal';
+import NewUserConfirmModal from './modals/NewUserConfirmModal';
 
 // Tab Components
 import PartsTab from './tabs/PartsTab';
@@ -92,7 +94,18 @@ const Shako = () => {
   useHoverCapability();
 
   // Auth hook
-  const { user, signOut, deleteAccount } = useAuthContext();
+  const {
+    user,
+    loading: authLoading,
+    signOut,
+    deleteAccount,
+    initiateEmailMigration,
+    migrationResult,
+    clearMigrationResult,
+    pendingNewUser,
+    confirmNewUser,
+    cancelNewUser
+  } = useAuthContext();
   const userId = user?.id;
 
   // Toast notification state (created here so hooks can use it)
@@ -118,6 +131,9 @@ const Shako = () => {
 
   // Delete account modal state
   const [showDeleteAccountModal, setShowDeleteAccountModal] = useState(false);
+
+  // Update login email modal state
+  const [showUpdateEmailModal, setShowUpdateEmailModal] = useState(false);
 
   // Parts hook
   const {
@@ -720,6 +736,23 @@ const Shako = () => {
     window.scrollTo({ top: 0, behavior: 'instant' });
   }, [activeTab]);
 
+  // Handle email migration result (show toast on success or error)
+  useEffect(() => {
+    if (migrationResult) {
+      if (migrationResult.success) {
+        toast.success(
+          `Login email updated successfully! Your data has been transferred from ${migrationResult.oldEmail}.`
+        );
+      } else {
+        toast.error(
+          migrationResult.error || 'Failed to update login email. Please try again.'
+        );
+      }
+      // Clear the result after showing the toast
+      clearMigrationResult();
+    }
+  }, [migrationResult, clearMigrationResult, toast]);
+
   // Keyboard navigation for tabs (Shift + Left/Right arrows)
   useEffect(() => {
     const tabs = ['vehicles', 'projects', 'parts'];
@@ -1161,6 +1194,21 @@ const Shako = () => {
                       >
                         <Settings className="w-5 h-5" />
                         <span>Manage Vendors</span>
+                      </button>
+                      {/* Update Login Email */}
+                      <button
+                        onClick={() => {
+                          closeMenuWithAnimation();
+                          setShowUpdateEmailModal(true);
+                        }}
+                        className={`w-full flex items-center gap-3 px-3 py-2 rounded-lg transition-colors ${
+                          darkMode
+                            ? 'hover:bg-gray-700 text-gray-100'
+                            : 'hover:bg-slate-100 text-slate-700'
+                        }`}
+                      >
+                        <Mail className="w-5 h-5" />
+                        <span>Update Login Email</span>
                       </button>
                       {/* Sign Out */}
                       <button
@@ -1926,6 +1974,23 @@ const Shako = () => {
         setConfirmDialog={setConfirmDialog}
         isModalClosing={isModalClosing}
         handleCloseModal={handleCloseModal}
+      />
+      {/* Update Login Email Modal */}
+      <UpdateLoginEmailModal
+        isOpen={showUpdateEmailModal}
+        onClose={() => setShowUpdateEmailModal(false)}
+        onInitiateMigration={initiateEmailMigration}
+        darkMode={darkMode}
+        userEmail={user?.email}
+      />
+      {/* New User Confirmation Modal */}
+      <NewUserConfirmModal
+        isOpen={!!pendingNewUser}
+        onConfirm={confirmNewUser}
+        onCancel={cancelNewUser}
+        email={pendingNewUser?.email}
+        darkMode={darkMode}
+        isLoading={authLoading}
       />
     </div>
     <ToastContainer toasts={toasts} onDismiss={dismissToast} darkMode={darkMode} />
