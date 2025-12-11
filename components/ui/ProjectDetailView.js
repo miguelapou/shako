@@ -1,6 +1,5 @@
 import React, { useState, useMemo, useEffect, useLayoutEffect, useRef } from 'react';
 import { Package, CheckCircle, CheckSquare, ChevronDown, X, Car } from 'lucide-react';
-import { secondaryBg } from '../../utils/styleUtils';
 import { getVendorDisplayColor } from '../../utils/colorUtils';
 import ConfirmDialog from './ConfirmDialog';
 
@@ -535,25 +534,30 @@ const ProjectDetailView = ({
             </div>
           </div>
 
-          {/* Project Details Grid */}
-          <div className={`grid grid-cols-2 gap-4 p-4 rounded-lg ${secondaryBg(darkMode)}`}>
-            <div>
-              <p className={`text-xs mb-1 ${darkMode ? 'text-gray-400' : 'text-slate-600'}`}>
-                Priority</p>
-              <p className={`text-lg font-bold ${priorityColors[project.priority]}`}>
-                {project.priority?.replace(/_/g, ' ').toUpperCase()}
-              </p>
+          {/* Project Details Grid - 3 columns */}
+          <div className="grid grid-cols-3 gap-4">
+            {/* Priority and Linked Parts with yellow border */}
+            <div className="col-span-2 grid grid-cols-2 gap-4 p-4 rounded-lg border-2 border-yellow-700">
+              <div>
+                <p className={`text-xs mb-1 ${darkMode ? 'text-gray-400' : 'text-slate-600'}`}>
+                  Priority</p>
+                <p className={`text-lg font-bold ${priorityColors[project.priority]}`}>
+                  {project.priority?.replace(/_/g, ' ').toUpperCase()}
+                </p>
+              </div>
+              <div>
+                <p className={`text-xs mb-1 ${
+                  darkMode ? 'text-gray-400' : 'text-slate-600'
+                }`}>Linked Parts</p>
+                <p className={`text-lg font-bold ${
+                  darkMode ? 'text-gray-100' : 'text-slate-800'
+                }`}>
+                  {linkedParts.length}
+                </p>
+              </div>
             </div>
-            <div>
-              <p className={`text-xs mb-1 ${
-                darkMode ? 'text-gray-400' : 'text-slate-600'
-              }`}>Linked Parts</p>
-              <p className={`text-lg font-bold ${
-                darkMode ? 'text-gray-100' : 'text-slate-800'
-              }`}>
-                {linkedParts.length}
-              </p>
-            </div>
+            {/* Empty third column */}
+            <div></div>
           </div>
         </div>
 
