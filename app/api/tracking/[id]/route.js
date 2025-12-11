@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server';
 import {
   syncPartTracking
 } from '../../../../services/trackingService';
-import { supabase } from '../../../../lib/supabase';
+import { createServerClient } from '../../../../lib/supabaseServer';
 import { shouldSkipShip24, getTrackingUrl } from '../../../../utils/trackingUtils';
 
 /**
@@ -10,10 +10,8 @@ import { shouldSkipShip24, getTrackingUrl } from '../../../../utils/trackingUtil
  * Get and refresh tracking status for a specific part
  */
 export async function GET(request, { params }) {
-  console.log('========== TRACKING API CALLED ==========');
   try {
     const { id } = await params;
-    console.log('[Tracking API] Received request for part ID:', id);
     const partId = parseInt(id, 10);
 
     if (isNaN(partId)) {
@@ -22,6 +20,9 @@ export async function GET(request, { params }) {
         { status: 400 }
       );
     }
+
+    // Create authenticated Supabase client from request
+    const supabase = createServerClient(request);
 
     // Get the part from database
     const { data: part, error } = await supabase
@@ -36,12 +37,6 @@ export async function GET(request, { params }) {
         { status: 404 }
       );
     }
-
-    console.log('[Tracking API] Part fetched from database:', {
-      id: part.id,
-      tracking: part.tracking,
-      tracking_status: part.tracking_status
-    });
 
     if (!part.tracking) {
       return NextResponse.json(
@@ -61,10 +56,8 @@ export async function GET(request, { params }) {
       });
     }
 
-    // Sync with Ship24 and update database
-    console.log('[Tracking API] Syncing tracking for part:', part.id, 'tracking:', part.tracking);
-    const trackingData = await syncPartTracking(part);
-    console.log('[Tracking API] syncPartTracking returned:', JSON.stringify(trackingData, null, 2));
+    // Sync with Ship24 and update database (pass authenticated client)
+    const trackingData = await syncPartTracking(part, supabase);
 
     // Check if package was delivered and auto-update part status
     let isDelivered = part.delivered;
@@ -91,8 +84,11 @@ export async function GET(request, { params }) {
       const { id } = await params;
       const partId = parseInt(id, 10);
 
+      // Create authenticated client for error handling
+      const supabaseClient = createServerClient(request);
+
       // Get cached tracking data from database
-      const { data: part } = await supabase
+      const { data: part } = await supabaseClient
         .from('parts')
         .select('tracking_status, tracking_location, tracking_checkpoints, tracking_updated_at, delivered')
         .eq('id', partId)

@@ -23,6 +23,7 @@ import {
 } from '../../utils/colorUtils';
 import { selectDropdownStyle } from '../../utils/styleUtils';
 import { getTrackingUrl, shouldSkipShip24, getCarrierName } from '../../utils/trackingUtils';
+import { fetchWithAuth } from '../../utils/fetchWithAuth';
 
 const PartDetailModal = ({
   isOpen,
@@ -191,7 +192,7 @@ const PartDetailModal = ({
     setIsRefreshingTracking(true);
     setTrackingError(null);
     try {
-      const response = await fetch(`/api/tracking/${viewingPart.id}`);
+      const response = await fetchWithAuth(`/api/tracking/${viewingPart.id}`);
       const data = await response.json();
 
       if (data.success && data.tracking) {
@@ -1327,13 +1328,10 @@ const PartDetailModal = ({
                   <input
                     type="text"
                     value={editingPart.tracking || ''}
-                    onChange={(e) => {
-                      console.log('[PartDetailModal] Tracking input changed to:', e.target.value);
-                      setEditingPart({
-                        ...editingPart,
-                        tracking: e.target.value
-                      });
-                    }}
+                    onChange={(e) => setEditingPart({
+                      ...editingPart,
+                      tracking: e.target.value
+                    })}
                     className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
                       darkMode
                         ? 'bg-gray-700 border-gray-600 text-gray-100 placeholder-gray-400'
@@ -1552,7 +1550,7 @@ const PartDetailModal = ({
                   // Auto-refresh tracking if tracking number was added/changed
                   if (trackingChanged) {
                     try {
-                      const response = await fetch(`/api/tracking/${viewingPart.id}`);
+                      const response = await fetchWithAuth(`/api/tracking/${viewingPart.id}`);
                       const data = await response.json();
                       if (data.success && data.tracking) {
                         setViewingPart(prev => ({

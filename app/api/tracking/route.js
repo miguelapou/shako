@@ -5,7 +5,7 @@ import {
   updatePartTracking,
   refreshAllActiveTrackings
 } from '../../../services/trackingService';
-import { supabase } from '../../../lib/supabase';
+import { createServerClient } from '../../../lib/supabaseServer';
 import { shouldSkipShip24 } from '../../../utils/trackingUtils';
 
 /**
@@ -32,12 +32,15 @@ export async function POST(request) {
       );
     }
 
+    // Create authenticated Supabase client from request
+    const supabase = createServerClient(request);
+
     // Create tracking in Ship24
     const tracking = await createShip24Tracking(trackingNumber, title);
 
-    // Normalize and save to our database
+    // Normalize and save to our database (pass authenticated client)
     const normalizedData = normalizeTrackingData(tracking);
-    await updatePartTracking(partId, normalizedData);
+    await updatePartTracking(partId, normalizedData, supabase);
 
     return NextResponse.json({
       success: true,
@@ -68,7 +71,10 @@ export async function GET(request) {
       );
     }
 
-    const results = await refreshAllActiveTrackings(userId);
+    // Create authenticated Supabase client from request
+    const supabase = createServerClient(request);
+
+    const results = await refreshAllActiveTrackings(userId, supabase);
 
     return NextResponse.json({
       success: true,

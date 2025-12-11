@@ -13,7 +13,6 @@ const SHIP24_API_BASE = 'https://api.ship24.com/public/v1';
  */
 const getHeaders = () => {
   const apiKey = process.env.SHIP24_API_KEY;
-  console.log('[Ship24] API key configured:', !!apiKey, apiKey ? `(${apiKey.substring(0, 8)}...)` : '');
   if (!apiKey) {
     throw new Error('Ship24 API key not configured');
   }
@@ -90,23 +89,18 @@ export const getShip24Tracking = async (trackerId) => {
  */
 export const getShip24TrackingByNumber = async (trackingNumber) => {
   try {
-    console.log('[Ship24] Fetching tracking for:', trackingNumber);
     const response = await fetch(`${SHIP24_API_BASE}/trackers/track`, {
       method: 'POST',
       headers: getHeaders(),
       body: JSON.stringify({ trackingNumber })
     });
 
-    console.log('[Ship24] Response status:', response.status);
-
     if (!response.ok) {
       const errorData = await response.json().catch(() => ({}));
-      console.log('[Ship24] Error response:', errorData);
       throw new Error(errorData.message || `Ship24 API error: ${response.status}`);
     }
 
     const data = await response.json();
-    console.log('[Ship24] Success response data:', JSON.stringify(data, null, 2));
     return data.data;
   } catch (error) {
     error.message = `Failed to get Ship24 tracking: ${error.message}`;
@@ -151,22 +145,17 @@ const normalizeStatusMilestone = (statusMilestone) => {
  * @returns {Object} Normalized tracking data for parts table
  */
 export const normalizeTrackingData = (trackingData) => {
-  console.log('[Ship24] normalizeTrackingData input:', JSON.stringify(trackingData, null, 2));
   if (!trackingData) {
-    console.log('[Ship24] trackingData is null/undefined, returning null');
     return null;
   }
 
   const tracker = trackingData.trackings?.[0] || trackingData;
-  console.log('[Ship24] Extracted tracker:', JSON.stringify(tracker, null, 2));
   const shipment = tracker.shipment || {};
   const events = tracker.events || [];
-  console.log('[Ship24] Found', events.length, 'events');
   const lastEvent = events[0]; // Ship24 returns events in reverse chronological order
 
   // Get the overall status milestone
   const statusMilestone = shipment.statusMilestone || lastEvent?.statusMilestone || 'pending';
-  console.log('[Ship24] statusMilestone:', statusMilestone);
 
   // Ship24 returns location as a string (e.g., "SAINT PETERSBURG, FL 33710")
   return {
@@ -190,11 +179,13 @@ export const normalizeTrackingData = (trackingData) => {
  * Update part with tracking data from Ship24
  * @param {number} partId - Part ID to update
  * @param {Object} trackingData - Normalized tracking data
+ * @param {Object} supabaseClient - Optional Supabase client (for server-side auth)
  * @returns {Promise<void>}
  */
-export const updatePartTracking = async (partId, trackingData) => {
+export const updatePartTracking = async (partId, trackingData, supabaseClient = null) => {
   try {
-    const { error } = await supabase
+    const client = supabaseClient || supabase;
+    const { error } = await client
       .from('parts')
       .update(trackingData)
       .eq('id', partId);
@@ -233,9 +224,10 @@ export const getPartByTrackingNumber = async (trackingNumber, userId) => {
  * Sync tracking status for a part
  * Creates tracking in Ship24 if needed, then updates part with status
  * @param {Object} part - Part object with tracking number
+ * @param {Object} supabaseClient - Optional Supabase client (for server-side auth)
  * @returns {Promise<Object>} Updated tracking data
  */
-export const syncPartTracking = async (part) => {
+export const syncPartTracking = async (part, supabaseClient = null) => {
   if (shouldSkipShip24(part.tracking)) {
     return null; // Skip URLs, Amazon tracking, and empty tracking
   }
@@ -246,7 +238,7 @@ export const syncPartTracking = async (part) => {
   const trackingData = await getShip24TrackingByNumber(part.tracking);
 
   const normalizedData = normalizeTrackingData(trackingData);
-  await updatePartTracking(part.id, normalizedData);
+  await updatePartTracking(part.id, normalizedData, supabaseClient);
 
   return normalizedData;
 };
@@ -254,12 +246,14 @@ export const syncPartTracking = async (part) => {
 /**
  * Refresh tracking for all shipped but not delivered parts
  * @param {string} userId - User ID
+ * @param {Object} supabaseClient - Optional Supabase client (for server-side auth)
  * @returns {Promise<Array>} Array of updated parts
  */
-export const refreshAllActiveTrackings = async (userId) => {
+export const refreshAllActiveTrackings = async (userId, supabaseClient = null) => {
   try {
+    const client = supabaseClient || supabase;
     // Get all parts that are shipped but not delivered with tracking numbers
-    const { data: parts, error } = await supabase
+    const { data: parts, error } = await client
       .from('parts')
       .select('*')
       .eq('user_id', userId)
@@ -273,7 +267,7 @@ export const refreshAllActiveTrackings = async (userId) => {
     const results = [];
     for (const part of parts || []) {
       try {
-        const updated = await syncPartTracking(part);
+        const updated = await syncPartTracking(part, supabaseClient);
         if (updated) {
           results.push({ partId: part.id, ...updated });
         }

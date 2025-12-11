@@ -3,6 +3,7 @@ import * as partsService from '../services/partsService';
 import * as vendorsService from '../services/vendorsService';
 import { validatePartCosts } from '../utils/validationUtils';
 import { shouldSkipShip24, getTrackingPurgeFields } from '../utils/trackingUtils';
+import { fetchWithAuth } from '../utils/fetchWithAuth';
 
 /**
  * Custom hook for managing parts data and CRUD operations
@@ -260,18 +261,11 @@ const useParts = (userId, toast) => {
       if (setTrackingInput) setTrackingInput('');
 
       // Auto-refresh tracking from Ship24 if supported
-      console.log('========== CHECKING IF SHOULD FETCH TRACKING ==========');
-      console.log('[useParts] trackingInput:', trackingInput);
-      console.log('[useParts] shouldSkipShip24 result:', shouldSkipShip24(trackingInput));
       if (trackingInput && !shouldSkipShip24(trackingInput)) {
         try {
-          console.log('========== FETCHING TRACKING FROM API ==========');
-          console.log('[useParts] Fetching tracking for part:', trackingModalPartId);
-          const response = await fetch(`/api/tracking/${trackingModalPartId}`);
+          const response = await fetchWithAuth(`/api/tracking/${trackingModalPartId}`);
           const data = await response.json();
-          console.log('[useParts] Tracking API response:', data);
           if (data.success && data.tracking) {
-            console.log('[useParts] Updating parts state with tracking data:', data.tracking);
             setParts(prevParts => prevParts.map(part => {
               if (part.id === trackingModalPartId) {
                 return {
@@ -283,13 +277,7 @@ const useParts = (userId, toast) => {
               return part;
             }));
           } else if (data.error) {
-            // Show error to user instead of silently ignoring
-            console.error('[useParts] Tracking API error:', data.error);
             toast?.error(`Tracking update failed: ${data.error}`);
-          } else {
-            console.warn('[useParts] Unexpected tracking response - no success or error:', data);
-            // Log the full response for debugging
-            console.warn('[useParts] Full response object:', JSON.stringify(data, null, 2));
           }
         } catch (trackingError) {
           console.error('[useParts] Failed to refresh tracking:', trackingError);
@@ -363,14 +351,6 @@ const useParts = (userId, toast) => {
     const trackingChanged = originalTracking && newTracking && originalTracking !== newTracking;
     const shouldPurgeTrackingData = trackingRemoved || trackingChanged;
 
-    console.log('[saveEditedPart] Tracking change check:', {
-      originalTracking,
-      newTracking,
-      trackingRemoved,
-      trackingChanged,
-      shouldPurgeTrackingData
-    });
-
     try {
       // Build update object
       const updateData = {
@@ -391,15 +371,8 @@ const useParts = (userId, toast) => {
         Object.assign(updateData, getTrackingPurgeFields());
       }
 
-      console.log('[saveEditedPart] Saving to database:', {
-        partId: editingPart.id,
-        tracking: updateData.tracking,
-        fullUpdateData: updateData
-      });
-
       // Update in database
       await partsService.updatePart(editingPart.id, updateData);
-      console.log('[saveEditedPart] Database update complete');
 
       // Update local state
       setParts(prevParts => prevParts.map(part => {
@@ -444,11 +417,9 @@ const useParts = (userId, toast) => {
 
       // Auto-refresh tracking from Ship24 if tracking was added or changed
       if (newTrackingValue && (trackingChanged || !originalTracking) && !shouldSkipShip24(newTrackingValue)) {
-        console.log('[saveEditedPart] Auto-refreshing tracking for new/changed tracking number:', newTrackingValue);
         try {
-          const response = await fetch(`/api/tracking/${partId}`);
+          const response = await fetchWithAuth(`/api/tracking/${partId}`);
           const data = await response.json();
-          console.log('[saveEditedPart] Tracking refresh response:', data);
           if (data.success && data.tracking) {
             setParts(prevParts => prevParts.map(part => {
               if (part.id === partId) {
@@ -460,15 +431,12 @@ const useParts = (userId, toast) => {
               }
               return part;
             }));
-          } else if (data.error) {
-            console.error('[saveEditedPart] Tracking refresh error:', data.error);
           }
         } catch (trackingError) {
-          console.error('[saveEditedPart] Failed to refresh tracking:', trackingError);
+          // Silently fail - tracking will be refreshed on next view
         }
       }
     } catch (error) {
-      console.error('[saveEditedPart] Error saving part:', error);
       toast?.error('Error saving part. Please try again.');
     }
   };
