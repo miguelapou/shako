@@ -346,6 +346,7 @@ const useAuth = () => {
       await new Promise(resolve => setTimeout(resolve, 100));
 
       // Redirect to Google OAuth with the new account
+      // Use 'consent select_account' to force both account picker and fresh consent
       const { error: signInError } = await supabase.auth.signInWithOAuth({
         provider: 'google',
         options: {
@@ -353,7 +354,8 @@ const useAuth = () => {
             ? `${window.location.origin}/`
             : undefined,
           queryParams: {
-            prompt: 'select_account', // Force account selection
+            prompt: 'consent select_account',
+            access_type: 'offline',
           },
         },
       });
