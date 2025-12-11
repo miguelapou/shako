@@ -4,6 +4,7 @@ import { supabase } from '../lib/supabase';
 // Constants for email migration
 const MIGRATION_TOKEN_KEY = 'shako-pending-email-migration';
 const MIGRATION_ERROR_KEY = 'shako-migration-error';
+const MIGRATION_SUCCESS_KEY = 'shako-migration-success';
 
 /**
  * Custom hook for managing authentication state with Supabase
@@ -142,6 +143,23 @@ const useAuth = () => {
       setMigrationResult({ success: false, error: storedMigrationError });
     }
 
+    // Check for stored migration success (from successful migration before page reload)
+    const storedMigrationSuccess = localStorage.getItem(MIGRATION_SUCCESS_KEY);
+    if (storedMigrationSuccess) {
+      console.log('[Migration] Found stored success:', storedMigrationSuccess);
+      localStorage.removeItem(MIGRATION_SUCCESS_KEY);
+      try {
+        const successData = JSON.parse(storedMigrationSuccess);
+        setMigrationResult({
+          success: true,
+          recordsTransferred: successData.recordsTransferred,
+          oldEmail: successData.oldEmail
+        });
+      } catch (e) {
+        console.error('[Migration] Error parsing stored success:', e);
+      }
+    }
+
     // Get initial session
     const initializeAuth = async () => {
       try {
@@ -225,13 +243,13 @@ const useAuth = () => {
                       console.log('[Migration] Signing out due to failed migration...');
                       try { await supabase.auth.signOut(); } catch { /* ignore */ }
                     } else {
-                      // Migration successful - reload to get the transferred data
+                      // Migration successful - store in localStorage and reload to get the transferred data
                       console.log('[Migration] SUCCESS! Records transferred:', result.records_transferred);
-                      setMigrationResult({
-                        success: true,
+                      // Store success info in localStorage so it persists across reload
+                      localStorage.setItem(MIGRATION_SUCCESS_KEY, JSON.stringify({
                         recordsTransferred: result.records_transferred,
                         oldEmail: result.old_email
-                      });
+                      }));
                       // Reload the page to fetch the transferred data
                       window.location.reload();
                     }
