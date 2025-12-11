@@ -6,6 +6,9 @@ import Shako from '../components/Shako';
 import { Loader2 } from 'lucide-react';
 import { useState, useEffect } from 'react';
 
+// Key for migration token - must match useAuth.js
+const MIGRATION_TOKEN_KEY = 'shako-pending-email-migration';
+
 /**
  * Loading spinner shown while checking auth state
  */
@@ -47,8 +50,19 @@ const LoadingScreen = () => {
  */
 const AuthGate = () => {
   const { user, loading } = useAuthContext();
+  const [hasMigrationToken, setHasMigrationToken] = useState(false);
 
-  if (loading) {
+  // Check for migration token on mount and when auth state changes
+  // This ensures we hide the login page during migration redirect
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const token = localStorage.getItem(MIGRATION_TOKEN_KEY);
+      setHasMigrationToken(!!token);
+    }
+  }, [loading, user]);
+
+  // Show loading during initial load or if migration redirect is in progress
+  if (loading || hasMigrationToken) {
     return <LoadingScreen />;
   }
 
