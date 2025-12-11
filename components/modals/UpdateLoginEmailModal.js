@@ -94,7 +94,7 @@ const UpdateLoginEmailModal = ({
                 <ol className={`list-decimal list-inside space-y-1 ${darkMode ? 'text-gray-300' : 'text-slate-600'}`}>
                   <li>Click the button below to sign in with your new Google account</li>
                   <li>All your data will be transferred to the new account</li>
-                  <li>Your old account will be removed</li>
+                  <li className={darkMode ? 'text-yellow-400' : 'text-yellow-600'}>Your old account will be removed</li>
                 </ol>
               </div>
             </div>
