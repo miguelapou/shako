@@ -1465,7 +1465,7 @@ const PartDetailModal = ({
         )}
 
         {/* EDIT VIEW FOOTER */}
-        {partDetailView === 'edit' && (
+        {partDetailView === 'edit' && editingPart && (
           <div
             className={`sticky bottom-0 border-t p-4 flex items-center justify-between ${
               darkMode
