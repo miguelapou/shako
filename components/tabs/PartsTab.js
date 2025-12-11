@@ -60,6 +60,9 @@ const PartsTab = ({
   const prevRowsPerPageRef = useRef(null);
   const [resizeAnimationStart, setResizeAnimationStart] = useState(null);
 
+  // Track if user has clicked on status cards (to prevent fade-in on initial load)
+  const [hasClickedStatusCard, setHasClickedStatusCard] = useState(false);
+
   // Calculate initial estimate based on viewport (before ref is available)
   const getInitialRowEstimate = () => {
     if (typeof window === 'undefined') return 10;
@@ -638,6 +641,7 @@ const PartsTab = ({
                   }
 
                   setIsStatusFiltering(true);
+                  setHasClickedStatusCard(true);
                   // Cycle through: all -> purchased -> pending -> all
                   setStatusFilter(prev =>
                     prev === 'all' || (prev !== 'purchased' && prev !== 'pending') ? 'purchased' :
@@ -660,14 +664,14 @@ const PartsTab = ({
                 } ${(statusFilter === 'purchased' || statusFilter === 'pending') ? `ring-2 ${statusFilter === 'pending' ? 'ring-gray-400' : 'ring-yellow-500'}` : ''}`}
                 style={{ touchAction: 'manipulation' }}
               >
-                <span key={statusFilter === 'pending' ? 'icon-clock' : 'icon-cart'} className="status-card-icon absolute top-2 right-2">
+                <span key={statusFilter === 'pending' ? 'icon-clock' : 'icon-cart'} className={`${hasClickedStatusCard ? 'status-card-icon' : ''} absolute top-2 right-2`}>
                   {statusFilter === 'pending' ? (
                     <Clock className={`w-6 h-6 text-gray-400 transition-opacity ${statusFilter === 'pending' ? 'opacity-70' : 'opacity-20'}`} />
                   ) : (
                     <ShoppingCart className={`w-6 h-6 text-yellow-500 transition-opacity ${statusFilter === 'purchased' ? 'opacity-70' : 'opacity-20'}`} />
                   )}
                 </span>
-                <div key={statusFilter === 'pending' ? 'pending' : statusFilter === 'purchased' ? 'purchased' : 'all-ordered'} className="status-card-content">
+                <div key={statusFilter === 'pending' ? 'pending' : statusFilter === 'purchased' ? 'purchased' : 'all-ordered'} className={hasClickedStatusCard ? 'status-card-content' : ''}>
                   <p className={`text-xs mb-1 ${
                     darkMode ? 'text-gray-400' : 'text-slate-600'
                   }`}>{statusFilter === 'pending' ? 'Unordered' : 'Ordered'}</p>
@@ -695,6 +699,7 @@ const PartsTab = ({
                   }
 
                   setIsStatusFiltering(true);
+                  setHasClickedStatusCard(true);
                   setStatusFilter(statusFilter === 'shipped' ? 'all' : 'shipped');
                   setDeliveredFilter('all');
                   setTimeout(() => setIsStatusFiltering(false), 900);
@@ -738,6 +743,7 @@ const PartsTab = ({
                   }
 
                   setIsStatusFiltering(true);
+                  setHasClickedStatusCard(true);
                   // Cycle through: all -> only -> hide -> all
                   setDeliveredFilter(prev =>
                     prev === 'all' ? 'only' :
@@ -760,14 +766,14 @@ const PartsTab = ({
                 } ${deliveredFilter !== 'all' ? `ring-2 ${deliveredFilter === 'hide' ? 'ring-red-500' : 'ring-green-500'}` : ''}`}
                 style={{ touchAction: 'manipulation' }}
               >
-                <span key={deliveredFilter === 'hide' ? 'icon-clock' : 'icon-check'} className="status-card-icon absolute top-2 right-2">
+                <span key={deliveredFilter === 'hide' ? 'icon-clock' : 'icon-check'} className={`${hasClickedStatusCard ? 'status-card-icon' : ''} absolute top-2 right-2`}>
                   {deliveredFilter === 'hide' ? (
                     <Clock className={`w-6 h-6 text-red-500 transition-opacity ${deliveredFilter !== 'all' ? 'opacity-70' : 'opacity-20'}`} />
                   ) : (
                     <CheckCircle className={`w-6 h-6 text-green-500 transition-opacity ${deliveredFilter !== 'all' ? 'opacity-70' : 'opacity-20'}`} />
                   )}
                 </span>
-                <div key={deliveredFilter} className="status-card-content">
+                <div key={deliveredFilter} className={hasClickedStatusCard ? 'status-card-content' : ''}>
                   <p className={`text-xs mb-1 ${
                     darkMode ? 'text-gray-400' : 'text-slate-600'
                   }`}>{deliveredFilter === 'hide' ? 'Undelivered' : 'Delivered'}</p>
