@@ -1212,10 +1212,7 @@ const Shako = () => {
                     // Always animate when coming from vehicles tab (filters are appearing)
                     // Otherwise only animate if a filter is active (not 'all')
                     if (previousTab !== 'vehicles' && projectVehicleFilter === 'all' && partsDateFilter === 'all') return '';
-                    const tabOrder = ['vehicles', 'projects', 'parts'];
-                    const prevIndex = tabOrder.indexOf(previousTab);
-                    const currIndex = tabOrder.indexOf(activeTab);
-                    return currIndex >= prevIndex ? 'slide-in-right' : 'slide-in-left';
+                    return 'slide-in-top';
                   })()}>
               {/* Vehicle Filter - Only visible on Projects tab */}
               {activeTab === 'projects' && (
@@ -1437,7 +1434,7 @@ const Shako = () => {
                     setVehicleLayoutMode(newMode);
                     localStorage.setItem('vehicleLayoutMode', newMode);
                   }}
-                  className={`slide-in-right relative flex items-center rounded-lg border cursor-pointer ${
+                  className={`slide-in-top relative flex items-center rounded-lg border cursor-pointer ${
                     darkMode ? 'bg-gray-800 border-gray-600' : 'bg-slate-100 border-slate-300'
                   }`}
                 >
