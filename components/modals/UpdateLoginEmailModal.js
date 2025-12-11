@@ -142,7 +142,7 @@ const UpdateLoginEmailModal = ({
               </>
             ) : (
               <>
-                Sign in with new account
+                Migrate to new account
                 <ArrowRight className="w-4 h-4" />
               </>
             )}
