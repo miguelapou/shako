@@ -304,6 +304,14 @@ const useAuth = () => {
             // Reset flags on sign out
             migrationAttemptedRef.current = false;
             newUserCheckRef.current = false;
+
+            // Check for stored migration error (stored just before signOut was called)
+            const storedError = localStorage.getItem(MIGRATION_ERROR_KEY);
+            if (storedError) {
+              console.log('[Migration] Found stored error on sign out:', storedError);
+              localStorage.removeItem(MIGRATION_ERROR_KEY);
+              setMigrationResult({ success: false, error: storedError });
+            }
             break;
 
           case 'TOKEN_REFRESHED':
