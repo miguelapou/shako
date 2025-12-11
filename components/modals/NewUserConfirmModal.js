@@ -1,7 +1,6 @@
 'use client';
 
 import { AlertTriangle, ArrowLeft, CheckCircle } from 'lucide-react';
-import { getModalOverlayClasses, getModalContentClasses } from '../../utils/styleUtils';
 import PrimaryButton from '../ui/PrimaryButton';
 
 /**
@@ -19,9 +18,14 @@ const NewUserConfirmModal = ({
   if (!isOpen) return null;
 
   return (
-    <div className={getModalOverlayClasses(darkMode)} onClick={onCancel}>
+    <div
+      className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4 modal-backdrop modal-backdrop-enter"
+      onClick={onCancel}
+    >
       <div
-        className={`${getModalContentClasses(darkMode)} max-w-md`}
+        className={`rounded-lg shadow-xl max-w-md w-full p-6 modal-content modal-popup-enter ${
+          darkMode ? 'bg-gray-800' : 'bg-white'
+        }`}
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header */}
