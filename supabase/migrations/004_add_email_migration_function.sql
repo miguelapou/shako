@@ -59,8 +59,8 @@ BEGIN
   -- Delete any existing pending migrations for this user
   DELETE FROM pending_migrations WHERE old_user_id = current_user_id;
 
-  -- Generate a secure random token
-  new_token := encode(gen_random_bytes(32), 'hex');
+  -- Generate a secure random token (using gen_random_uuid instead of gen_random_bytes for compatibility)
+  new_token := replace(gen_random_uuid()::text || gen_random_uuid()::text, '-', '');
 
   -- Create the pending migration record
   INSERT INTO pending_migrations (old_user_id, migration_token)
@@ -89,6 +89,7 @@ DECLARE
   old_user_email text;
   records_updated integer := 0;
   temp_count integer;
+  has_existing_data boolean := false;
 BEGIN
   -- Get the new user's ID (the one completing the migration)
   new_user_id := auth.uid();
@@ -117,6 +118,22 @@ BEGIN
     RETURN jsonb_build_object(
       'success', false,
       'error', 'Cannot migrate to the same account. Please sign in with a different Google account.'
+    );
+  END IF;
+
+  -- Check if new account already has existing data
+  SELECT EXISTS (SELECT 1 FROM public.vehicles WHERE user_id = new_user_id LIMIT 1)
+      OR EXISTS (SELECT 1 FROM public.projects WHERE user_id = new_user_id LIMIT 1)
+      OR EXISTS (SELECT 1 FROM public.parts WHERE user_id = new_user_id LIMIT 1)
+  INTO has_existing_data;
+
+  IF has_existing_data THEN
+    -- Delete the pending migration record since we can't proceed
+    DELETE FROM pending_migrations WHERE id = migration_record.id;
+
+    RETURN jsonb_build_object(
+      'success', false,
+      'error', 'The selected Google account already has existing data. Please sign in with a fresh Google account that has never been used with this app.'
     );
   END IF;
 
