@@ -3,6 +3,7 @@ import { supabase } from '../lib/supabase';
 
 // Constants for email migration
 const MIGRATION_TOKEN_KEY = 'shako-pending-email-migration';
+const MIGRATION_ERROR_KEY = 'shako-migration-error';
 
 /**
  * Custom hook for managing authentication state with Supabase
@@ -133,6 +134,14 @@ const useAuth = () => {
 
   // Initialize auth state and listen for changes
   useEffect(() => {
+    // Check for stored migration error (from failed migration that caused sign out)
+    const storedMigrationError = localStorage.getItem(MIGRATION_ERROR_KEY);
+    if (storedMigrationError) {
+      console.log('[Migration] Found stored error:', storedMigrationError);
+      localStorage.removeItem(MIGRATION_ERROR_KEY);
+      setMigrationResult({ success: false, error: storedMigrationError });
+    }
+
     // Get initial session
     const initializeAuth = async () => {
       try {
@@ -210,13 +219,15 @@ const useAuth = () => {
 
                     if (completeError) {
                       console.error('[Migration] Error completing migration:', completeError);
-                      setMigrationResult({ success: false, error: completeError.message });
+                      // Store error in localStorage so it persists after sign out
+                      localStorage.setItem(MIGRATION_ERROR_KEY, completeError.message);
                       // Sign out so user can try again
                       console.log('[Migration] Signing out due to error...');
                       try { await supabase.auth.signOut(); } catch { /* ignore */ }
                     } else if (!result || !result.success) {
                       console.error('[Migration] Migration failed:', result?.error);
-                      setMigrationResult({ success: false, error: result?.error || 'Unknown error' });
+                      // Store error in localStorage so it persists after sign out
+                      localStorage.setItem(MIGRATION_ERROR_KEY, result?.error || 'Unknown error');
                       // Sign out so user can try again with a different account
                       console.log('[Migration] Signing out due to failed migration...');
                       try { await supabase.auth.signOut(); } catch { /* ignore */ }
@@ -234,7 +245,8 @@ const useAuth = () => {
                   } catch (err) {
                     console.error('[Migration] Exception during migration:', err);
                     localStorage.removeItem(MIGRATION_TOKEN_KEY);
-                    setMigrationResult({ success: false, error: err.message });
+                    // Store error in localStorage so it persists after sign out
+                    localStorage.setItem(MIGRATION_ERROR_KEY, err.message);
                     // Sign out so user can try again
                     try { await supabase.auth.signOut(); } catch { /* ignore */ }
                   }
