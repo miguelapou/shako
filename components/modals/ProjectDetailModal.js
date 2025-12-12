@@ -211,12 +211,12 @@ const ProjectDetailModal = ({
               {viewingProject.name}
             </h2>
             <div className="flex items-center gap-3">
-              {/* Vehicle badge - hidden in edit mode */}
+              {/* Vehicle badge - desktop only, hidden in edit mode */}
               {viewingProject.vehicle_id && !projectModalEditMode && (() => {
                 const vehicle = vehicles.find(v => v.id === viewingProject.vehicle_id);
                 return vehicle ? (
                   <span
-                    className={`inline-flex items-center px-2 py-1 rounded text-xs font-medium border ${
+                    className={`hidden lg:inline-flex items-center px-2 py-1 rounded text-xs font-medium border ${
                       darkMode ? 'bg-gray-700 text-gray-300 border-gray-600' : 'bg-gray-100 text-gray-700 border-gray-300'
                     }`}
                   >
