@@ -2030,6 +2030,10 @@ const VehicleDetailModal = ({
                       }
                     }
                     await updateVehicle(viewingVehicle.id, updatedVehicle);
+                    // Use the local preview as resolved URL so image shows immediately
+                    if (vehicleImagePreview) {
+                      updatedVehicle.image_url_resolved = vehicleImagePreview;
+                    }
                     clearImageSelection();
                     // Update viewing data with saved changes
                     setViewingVehicle(updatedVehicle);

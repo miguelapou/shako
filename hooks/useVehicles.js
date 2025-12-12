@@ -161,7 +161,29 @@ const useVehicles = (userId, toast) => {
   const updateVehicle = async (vehicleId, updates) => {
     try {
       await vehiclesService.updateVehicle(vehicleId, updates);
-      await loadVehicles();
+
+      // Update local state directly instead of reloading everything
+      // This avoids the flash of loading state when saving
+      setVehicles(prevVehicles => prevVehicles.map(vehicle => {
+        if (vehicle.id === vehicleId) {
+          const updatedVehicle = { ...vehicle, ...updates };
+          // If image_url was updated and it's a storage path, resolve it
+          if (updates.image_url && !updates.image_url.startsWith('http')) {
+            // Resolve the signed URL asynchronously
+            vehiclesService.getVehicleImageUrl(updates.image_url).then(signedUrl => {
+              setVehicles(prev => prev.map(v =>
+                v.id === vehicleId
+                  ? { ...v, image_url_resolved: signedUrl }
+                  : v
+              ));
+            });
+          } else if (updates.image_url) {
+            updatedVehicle.image_url_resolved = updates.image_url;
+          }
+          return updatedVehicle;
+        }
+        return vehicle;
+      }));
     } catch (error) {
       toast?.error('Error updating vehicle');
     }
