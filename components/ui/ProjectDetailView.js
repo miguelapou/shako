@@ -628,7 +628,14 @@ const ProjectDetailView = ({
                 <p className={`text-xs mb-1 ${darkMode ? 'text-gray-400' : 'text-slate-600'}`}>
                   Priority</p>
                 <p className={`text-lg font-bold ${priorityColors[project.priority]}`}>
-                  {project.priority?.replace(/_/g, ' ').toUpperCase()}
+                  {project.priority === 'not_set' ? 'NONE' : (
+                    project.priority === 'medium' ? (
+                      <>
+                        <span className="lg:hidden">MED</span>
+                        <span className="hidden lg:inline">MEDIUM</span>
+                      </>
+                    ) : project.priority?.replace(/_/g, ' ').toUpperCase()
+                  )}
                 </p>
               </div>
             </div>
