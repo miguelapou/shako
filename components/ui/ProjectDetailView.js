@@ -508,14 +508,16 @@ const ProjectDetailView = ({
             </div>
 
             {/* Priority - Desktop only, in third column */}
-            <div className="hidden lg:block">
-              <p className={`text-xs mb-1 ${darkMode ? 'text-gray-400' : 'text-slate-600'}`}>
-                Priority</p>
+            <div className="hidden lg:flex lg:items-center lg:justify-center">
+              <div>
+                <p className={`text-xs mb-1 ${darkMode ? 'text-gray-400' : 'text-slate-600'}`}>
+                  Priority</p>
               <p className={`text-lg font-bold ${priorityColors[project.priority]}`}>
                 {project.priority === 'not_set' ? 'NONE' : (
                   project.priority === 'medium' ? 'MEDIUM' : project.priority?.replace(/_/g, ' ').toUpperCase()
                 )}
               </p>
+              </div>
             </div>
           </div>
 
@@ -657,7 +659,7 @@ const ProjectDetailView = ({
             {/* Column 1: Budget Bar */}
             <div className="flex flex-col items-center">
               <div
-                className={`w-14 rounded-lg relative overflow-hidden flex-1 min-h-[60px] ${
+                className={`w-14 rounded-lg relative overflow-hidden flex-1 min-h-[100px] ${
                   darkMode ? 'bg-gray-700' : 'bg-gray-200'
                 }`}
                 style={{
@@ -681,7 +683,7 @@ const ProjectDetailView = ({
             {/* Column 2: To-Dos Bar */}
             <div className="flex flex-col items-center">
               <div
-                className={`w-14 rounded-lg relative overflow-hidden flex-1 min-h-[60px] ${
+                className={`w-14 rounded-lg relative overflow-hidden flex-1 min-h-[100px] ${
                   darkMode ? 'bg-gray-700' : 'bg-gray-200'
                 }`}
                 style={{
