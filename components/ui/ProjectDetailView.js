@@ -477,7 +477,7 @@ const ProjectDetailView = ({
               >
                 <p
                   ref={descriptionRef}
-                  className={`text-base ${
+                  className={`text-base lg:min-h-[4.5em] ${
                     project.description
                       ? (darkMode ? 'text-gray-400' : 'text-slate-600')
                       : (darkMode ? 'text-gray-500 italic' : 'text-gray-500 italic')
