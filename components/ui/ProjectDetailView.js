@@ -641,8 +641,8 @@ const ProjectDetailView = ({
           {/* Desktop: Vertical Bar Graphs (3 equal columns) */}
           <div className="hidden lg:grid lg:grid-cols-3 lg:gap-4 lg:flex-1">
             {/* Column 1: Budget Bar */}
-            <div className="flex flex-col">
-              <div className={`w-10 rounded-lg relative overflow-hidden flex-1 min-h-[60px] ${
+            <div className="flex flex-col items-center">
+              <div className={`w-14 rounded-lg relative overflow-hidden flex-1 min-h-[60px] ${
                 darkMode ? 'bg-gray-700' : 'bg-gray-200'
               }`}>
                 {/* Budget fill from bottom */}
@@ -660,8 +660,8 @@ const ProjectDetailView = ({
             </div>
 
             {/* Column 2: To-Dos Bar */}
-            <div className="flex flex-col">
-              <div className={`w-10 rounded-lg relative overflow-hidden flex-1 min-h-[60px] ${
+            <div className="flex flex-col items-center">
+              <div className={`w-14 rounded-lg relative overflow-hidden flex-1 min-h-[60px] ${
                 darkMode ? 'bg-gray-700' : 'bg-gray-200'
               }`}>
                 {/* Todo fill from bottom */}
