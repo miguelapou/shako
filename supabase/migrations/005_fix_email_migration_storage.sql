@@ -217,46 +217,14 @@ END;
 $$;
 
 -- =============================================
--- STEP 3: Fix any previously corrupted data
+-- VERIFICATION (run after migration)
 -- =============================================
--- If a migration already ran with the broken logic, the storage.objects.name
--- was updated but the file wasn't moved. This attempts to restore the original
--- paths by reverting the name changes based on owner vs path mismatch.
---
--- Note: This is a best-effort fix. If the old user account was deleted,
--- we can't determine the original user ID from auth.users.
--- However, the file path still contains the original user ID.
-
--- Revert storage.objects.name changes where name doesn't match the actual file
--- This finds records where the owner doesn't match the user ID in the path
--- and assumes the path was incorrectly updated
-DO $$
-DECLARE
-  obj RECORD;
-  path_user_id text;
-BEGIN
-  FOR obj IN
-    SELECT id, name, owner
-    FROM storage.objects
-    WHERE bucket_id = 'vehicles'
-      AND (name LIKE 'vehicle-images/%' OR name LIKE 'vehicle-documents/%')
-  LOOP
-    -- Extract user ID from path (second folder component)
-    path_user_id := (string_to_array(obj.name, '/'))[2];
-
-    -- If path user ID doesn't match owner and looks like a UUID,
-    -- the path was likely incorrectly updated. But we can't easily fix this
-    -- without knowing the original path. Skip this automatic fix.
-    -- Users with corrupted data will need to re-upload their images.
-    NULL;
-  END LOOP;
-END $$;
-
--- =============================================
--- VERIFICATION
--- =============================================
--- After running this migration, verify the policies are correct:
---
 -- SELECT policyname, cmd, qual, with_check
 -- FROM pg_policies
 -- WHERE schemaname = 'storage' AND tablename = 'objects';
+
+-- =============================================
+-- NOTE: Previously corrupted data
+-- =============================================
+-- If a migration already ran with the broken logic, images may be inaccessible.
+-- Users with corrupted data will need to re-upload their vehicle images.
