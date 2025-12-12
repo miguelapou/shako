@@ -566,36 +566,6 @@ const PartDetailModal = ({
                     )
                   );
                 })()}
-              {/* Navigation buttons and position indicator - hidden on mobile */}
-              {filteredParts.length > 1 && currentIndex !== -1 && partDetailView === 'detail' && (
-                <div className="hidden md:flex items-center gap-2">
-                  <button
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      goToPrevPart();
-                    }}
-                    disabled={!hasPrev}
-                    className={`nav-btn ${darkMode ? 'dark' : 'light'}`}
-                    title="Previous part (←)"
-                  >
-                    <ChevronLeft className="w-5 h-5" />
-                  </button>
-                  <span className={`text-xs font-medium min-w-[4rem] text-center ${darkMode ? 'text-gray-500' : 'text-gray-400'}`}>
-                    {currentIndex + 1} of {filteredParts.length}
-                  </span>
-                  <button
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      goToNextPart();
-                    }}
-                    disabled={!hasNext}
-                    className={`nav-btn ${darkMode ? 'dark' : 'light'}`}
-                    title="Next part (→)"
-                  >
-                    <ChevronRight className="w-5 h-5" />
-                  </button>
-                </div>
-              )}
               <button
                 onClick={() =>
                   handleCloseModal(() => {
@@ -998,7 +968,7 @@ const PartDetailModal = ({
             <div className="flex items-center gap-3">
               {/* Navigation controls */}
               {filteredParts.length > 1 && currentIndex !== -1 && (
-                <div className="flex items-center gap-1">
+                <div className="flex items-center">
                   <button
                     onClick={(e) => {
                       e.stopPropagation();
