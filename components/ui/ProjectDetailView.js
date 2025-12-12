@@ -442,7 +442,7 @@ const ProjectDetailView = ({
       <div className="flex items-center justify-between mb-6 gap-3">
         <span className={`inline-block px-4 py-2 rounded-full text-sm font-medium ${
           statusColors[project.status]
-        }`}>
+        } ${!darkMode ? 'ring-1 ring-inset ring-current' : ''}`}>
           {project.status.replace('_', ' ').toUpperCase()}
         </span>
         {vehicle && (
@@ -660,7 +660,7 @@ const ProjectDetailView = ({
             <div className="flex flex-col items-center">
               <div
                 className={`w-14 rounded-lg relative overflow-hidden flex-1 min-h-[100px] ${
-                  darkMode ? 'bg-gray-700' : 'bg-gray-200'
+                  darkMode ? 'bg-gray-700' : 'bg-gray-300'
                 }`}
                 style={{
                   borderBottom: `3px solid ${progress > 90 ? '#ef4444' : progress > 70 ? '#eab308' : '#22c55e'}`
@@ -684,7 +684,7 @@ const ProjectDetailView = ({
             <div className="flex flex-col items-center">
               <div
                 className={`w-14 rounded-lg relative overflow-hidden flex-1 min-h-[100px] ${
-                  darkMode ? 'bg-gray-700' : 'bg-gray-200'
+                  darkMode ? 'bg-gray-700' : 'bg-gray-300'
                 }`}
                 style={{
                   borderBottom: '3px solid #8b5cf6'
