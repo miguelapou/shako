@@ -464,7 +464,7 @@ const ProjectDetailView = ({
         {/* Left Column: Project Details */}
         <div className="space-y-6">
           {/* Description */}
-          <div>
+          <div className="lg:min-h-[6.5rem]">
             <h3 className={`text-lg font-semibold mb-2 ${
               darkMode ? 'text-gray-200' : 'text-gray-800'
             }`}>Description</h3>

@@ -188,7 +188,7 @@ const ProjectsTab = ({
                 </div>
 
                 {/* Description */}
-                <div className="mb-4" style={{ height: '3.75rem' }}>
+                <div className="mb-4 md:h-[3.75rem]">
                   <p className={`text-sm line-clamp-3 overflow-hidden ${
                     project.description
                       ? secondaryText(darkMode)
