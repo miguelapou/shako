@@ -567,15 +567,15 @@ const ProjectDetailView = ({
                   className="transition-all duration-500"
                 />
               </svg>
-              {/* Center percentage display - alternates on click with fade */}
+              {/* Center percentage display - alternates on click with shrink/expand */}
               <div className="absolute inset-0 flex items-center justify-center">
                 <span
-                  className={`absolute text-sm font-bold transition-opacity duration-300 ${darkMode ? 'text-gray-200' : 'text-gray-700'} ${!showTodoProgress ? 'opacity-100' : 'opacity-0'}`}
+                  className={`absolute text-sm font-bold transition-all duration-300 ${darkMode ? 'text-gray-200' : 'text-gray-700'} ${!showTodoProgress ? 'opacity-100 scale-100' : 'opacity-0 scale-50'}`}
                 >
                   {progress.toFixed(0)}%
                 </span>
                 <span
-                  className={`absolute text-sm font-bold transition-opacity duration-300 ${darkMode ? 'text-gray-200' : 'text-gray-700'} ${showTodoProgress ? 'opacity-100' : 'opacity-0'}`}
+                  className={`absolute text-sm font-bold transition-all duration-300 ${darkMode ? 'text-gray-200' : 'text-gray-700'} ${showTodoProgress ? 'opacity-100 scale-100' : 'opacity-0 scale-50'}`}
                 >
                   {Math.round((project.todos?.filter(t => t.completed).length || 0) / (project.todos?.length || 1) * 100)}%
                 </span>
@@ -613,13 +613,15 @@ const ProjectDetailView = ({
               </div>
             </div>
 
-            {/* Priority - aligned right */}
-            <div className="ml-auto text-right">
-              <p className={`text-xs mb-1 ${darkMode ? 'text-gray-400' : 'text-slate-600'}`}>
-                Priority</p>
-              <p className={`text-lg font-bold ${priorityColors[project.priority]}`}>
-                {project.priority?.replace(/_/g, ' ').toUpperCase()}
-              </p>
+            {/* Priority - centered in remaining space, text left-aligned */}
+            <div className="flex-1 flex justify-center">
+              <div>
+                <p className={`text-xs mb-1 ${darkMode ? 'text-gray-400' : 'text-slate-600'}`}>
+                  Priority</p>
+                <p className={`text-lg font-bold ${priorityColors[project.priority]}`}>
+                  {project.priority?.replace(/_/g, ' ').toUpperCase()}
+                </p>
+              </div>
             </div>
           </div>
         </div>
