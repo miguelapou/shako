@@ -420,7 +420,7 @@ const VehicleDetailModal = ({
             <div className="flex items-center gap-3">
               {/* Navigation buttons - hidden on mobile, hidden in edit/project view */}
               {!vehicleModalProjectView && !vehicleModalEditMode && navigableVehicles.length > 1 && currentIndex !== -1 && (
-                <div className="hidden md:flex items-center gap-2">
+                <div className="hidden md:flex items-center">
                   <button
                     onClick={(e) => {
                       e.stopPropagation();
@@ -2092,7 +2092,7 @@ const VehicleDetailModal = ({
             <>
               {/* Navigation controls on the left - mobile only */}
               {navigableVehicles.length > 1 && currentIndex !== -1 && (
-                <div className="flex md:hidden items-center gap-1">
+                <div className="flex md:hidden items-center">
                   <button
                     onClick={(e) => {
                       e.stopPropagation();

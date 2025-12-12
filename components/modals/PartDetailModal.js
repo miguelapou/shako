@@ -568,7 +568,7 @@ const PartDetailModal = ({
                 })()}
               {/* Navigation buttons and position indicator - hidden on mobile */}
               {filteredParts.length > 1 && currentIndex !== -1 && partDetailView === 'detail' && (
-                <div className="hidden md:flex items-center gap-2">
+                <div className="hidden md:flex items-center">
                   <button
                     onClick={(e) => {
                       e.stopPropagation();
@@ -998,7 +998,7 @@ const PartDetailModal = ({
             <div className="flex items-center gap-3">
               {/* Navigation controls */}
               {filteredParts.length > 1 && currentIndex !== -1 && (
-                <div className="flex items-center gap-1">
+                <div className="flex items-center">
                   <button
                     onClick={(e) => {
                       e.stopPropagation();
