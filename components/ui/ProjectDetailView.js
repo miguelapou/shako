@@ -42,6 +42,7 @@ const ProjectDetailView = ({
   const [showCompletedTodos, setShowCompletedTodos] = useState(false);
   const [isDescriptionExpanded, setIsDescriptionExpanded] = useState(false);
   const [isDescriptionClamped, setIsDescriptionClamped] = useState(false);
+  const [showTodoProgress, setShowTodoProgress] = useState(false);
   const descriptionRef = useRef(null);
 
   // Check if description is clamped (content overflows the collapsed height)
@@ -501,10 +502,15 @@ const ProjectDetailView = ({
             </div>
           </div>
 
-          {/* Progress Circles */}
+          {/* Progress Circles and Priority */}
           <div className="flex items-center gap-6">
-            {/* Circular Progress Bars */}
-            <div className="relative" style={{ width: '120px', height: '120px' }}>
+            {/* Circular Progress Bars - Clickable */}
+            <button
+              onClick={() => setShowTodoProgress(!showTodoProgress)}
+              className="relative cursor-pointer hover:opacity-80 transition-opacity"
+              style={{ width: '120px', height: '120px' }}
+              title="Click to toggle between Budget and To-Do progress"
+            >
               {/* Budget Progress Circle (outer) */}
               <svg className="w-full h-full transform -rotate-90" viewBox="0 0 120 120">
                 {/* Background circle */}
@@ -555,18 +561,21 @@ const ProjectDetailView = ({
                   className="transition-all duration-500"
                 />
               </svg>
-              {/* Center percentage display */}
+              {/* Center percentage display - alternates on click */}
               <div className="absolute inset-0 flex items-center justify-center">
-                <span className={`text-sm font-bold ${darkMode ? 'text-gray-200' : 'text-gray-700'}`}>
-                  {progress.toFixed(0)}%
+                <span className={`text-sm font-bold transition-all duration-300 ${darkMode ? 'text-gray-200' : 'text-gray-700'}`}>
+                  {showTodoProgress
+                    ? `${Math.round((project.todos?.filter(t => t.completed).length || 0) / (project.todos?.length || 1) * 100)}%`
+                    : `${progress.toFixed(0)}%`
+                  }
                 </span>
               </div>
-            </div>
+            </button>
 
             {/* Legend */}
             <div className="space-y-3">
               {/* Budget Legend */}
-              <div className="flex items-center gap-2">
+              <div className={`flex items-center gap-2 ${!showTodoProgress ? 'opacity-100' : 'opacity-50'} transition-opacity`}>
                 <div
                   className="w-4 h-4 rounded-full"
                   style={{ backgroundColor: progress > 90 ? '#ef4444' : progress > 70 ? '#eab308' : '#22c55e' }}
@@ -581,7 +590,7 @@ const ProjectDetailView = ({
                 </div>
               </div>
               {/* Todo Legend */}
-              <div className="flex items-center gap-2">
+              <div className={`flex items-center gap-2 ${showTodoProgress ? 'opacity-100' : 'opacity-50'} transition-opacity`}>
                 <div className="w-4 h-4 rounded-full bg-violet-500" />
                 <div>
                   <p className={`text-sm font-medium ${darkMode ? 'text-gray-200' : 'text-gray-700'}`}>
@@ -593,32 +602,15 @@ const ProjectDetailView = ({
                 </div>
               </div>
             </div>
-          </div>
 
-          {/* Project Details Grid - 3 columns */}
-          <div className="grid grid-cols-3 gap-4">
-            {/* Priority and Linked Parts with yellow border */}
-            <div className="col-span-2 grid grid-cols-2 gap-4 p-4 rounded-lg border-2 border-yellow-700">
-              <div>
-                <p className={`text-xs mb-1 ${darkMode ? 'text-gray-400' : 'text-slate-600'}`}>
-                  Priority</p>
-                <p className={`text-lg font-bold ${priorityColors[project.priority]}`}>
-                  {project.priority?.replace(/_/g, ' ').toUpperCase()}
-                </p>
-              </div>
-              <div>
-                <p className={`text-xs mb-1 ${
-                  darkMode ? 'text-gray-400' : 'text-slate-600'
-                }`}>Linked Parts</p>
-                <p className={`text-lg font-bold ${
-                  darkMode ? 'text-gray-100' : 'text-slate-800'
-                }`}>
-                  {linkedParts.length}
-                </p>
-              </div>
+            {/* Priority */}
+            <div className="border-2 border-yellow-700 rounded-lg p-3">
+              <p className={`text-xs mb-1 ${darkMode ? 'text-gray-400' : 'text-slate-600'}`}>
+                Priority</p>
+              <p className={`text-lg font-bold ${priorityColors[project.priority]}`}>
+                {project.priority?.replace(/_/g, ' ').toUpperCase()}
+              </p>
             </div>
-            {/* Empty third column */}
-            <div></div>
           </div>
         </div>
 
