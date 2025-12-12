@@ -227,36 +227,6 @@ const ProjectDetailModal = ({
                   </span>
                 ) : null;
               })()}
-              {/* Navigation buttons and position indicator - hidden on mobile, hidden in edit mode */}
-              {navigableProjects.length > 1 && currentIndex !== -1 && !projectModalEditMode && (
-                <div className="hidden md:flex items-center gap-2">
-                  <button
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      goToPrevProject();
-                    }}
-                    disabled={!hasPrev}
-                    className={`nav-btn ${darkMode ? 'dark' : 'light'}`}
-                    title="Previous project (←)"
-                  >
-                    <ChevronLeft className="w-5 h-5" />
-                  </button>
-                  <span className={`text-xs font-medium min-w-[4rem] text-center ${darkMode ? 'text-gray-500' : 'text-gray-400'}`}>
-                    {currentIndex + 1} of {navigableProjects.length}
-                  </span>
-                  <button
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      goToNextProject();
-                    }}
-                    disabled={!hasNext}
-                    className={`nav-btn ${darkMode ? 'dark' : 'light'}`}
-                    title="Next project (→)"
-                  >
-                    <ChevronRight className="w-5 h-5" />
-                  </button>
-                </div>
-              )}
               <button
                 onClick={() => handleCloseModal(() => {
                   // Check for unsaved changes
