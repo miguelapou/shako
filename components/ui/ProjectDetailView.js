@@ -585,52 +585,41 @@ const ProjectDetailView = ({
               </div>
             </button>
 
-            {/* Legend with sliding highlight */}
-            <div className="relative">
-              {/* Sliding highlight indicator */}
-              <div
-                className={`absolute left-0 w-full h-[calc(50%-6px)] rounded-lg transition-all duration-300 ease-in-out ${
-                  darkMode ? 'bg-gray-700/50' : 'bg-gray-200/50'
-                }`}
-                style={{
-                  top: showTodoProgress ? 'calc(50% + 6px)' : '0',
-                }}
-              />
-              <div className="relative space-y-3">
-                {/* Budget Legend */}
-                <button
-                  onClick={() => setShowTodoProgress(false)}
-                  className={`flex items-center gap-2 transition-opacity duration-300 hover:opacity-80 cursor-pointer px-2 py-1 -mx-2 rounded-lg ${!showTodoProgress ? 'opacity-100' : 'opacity-50'}`}
-                >
-                  <div
-                    className="w-4 h-4 rounded-full"
-                    style={{ backgroundColor: progress > 90 ? '#ef4444' : progress > 70 ? '#eab308' : '#22c55e' }}
-                  />
-                  <div className="text-left">
-                    <p className={`text-sm font-medium ${darkMode ? 'text-gray-200' : 'text-gray-700'}`}>
-                      Budget
-                    </p>
-                    <p className={`text-xs ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>
-                      ${linkedPartsTotal.toFixed(2)} / ${Math.round(project.budget || 0)}
-                    </p>
-                  </div>
-                </button>
-                {/* Todo Legend */}
-                <button
-                  onClick={() => setShowTodoProgress(true)}
-                  className={`flex items-center gap-2 transition-opacity duration-300 hover:opacity-80 cursor-pointer px-2 py-1 -mx-2 rounded-lg ${showTodoProgress ? 'opacity-100' : 'opacity-50'}`}
-                >
-                  <div className="w-4 h-4 rounded-full bg-violet-500" />
-                  <div className="text-left">
-                    <p className={`text-sm font-medium ${darkMode ? 'text-gray-200' : 'text-gray-700'}`}>
-                      To-Dos
-                    </p>
-                    <p className={`text-xs ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>
-                      {project.todos?.filter(t => t.completed).length || 0} / {project.todos?.length || 0} completed
-                    </p>
-                  </div>
-                </button>
-              </div>
+            {/* Legend */}
+            <div className="space-y-3">
+              {/* Budget Legend */}
+              <button
+                onClick={() => setShowTodoProgress(false)}
+                className={`flex items-center gap-2 ${!showTodoProgress ? 'opacity-100' : 'opacity-50'} transition-opacity hover:opacity-80 cursor-pointer`}
+              >
+                <div
+                  className="w-4 h-4 rounded-full"
+                  style={{ backgroundColor: progress > 90 ? '#ef4444' : progress > 70 ? '#eab308' : '#22c55e' }}
+                />
+                <div className="text-left">
+                  <p className={`text-sm font-medium ${darkMode ? 'text-gray-200' : 'text-gray-700'}`}>
+                    Budget
+                  </p>
+                  <p className={`text-xs ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>
+                    ${linkedPartsTotal.toFixed(2)} / ${Math.round(project.budget || 0)}
+                  </p>
+                </div>
+              </button>
+              {/* Todo Legend */}
+              <button
+                onClick={() => setShowTodoProgress(true)}
+                className={`flex items-center gap-2 ${showTodoProgress ? 'opacity-100' : 'opacity-50'} transition-opacity hover:opacity-80 cursor-pointer`}
+              >
+                <div className="w-4 h-4 rounded-full bg-violet-500" />
+                <div className="text-left">
+                  <p className={`text-sm font-medium ${darkMode ? 'text-gray-200' : 'text-gray-700'}`}>
+                    To-Dos
+                  </p>
+                  <p className={`text-xs ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>
+                    {project.todos?.filter(t => t.completed).length || 0} / {project.todos?.length || 0} completed
+                  </p>
+                </div>
+              </button>
             </div>
 
             {/* Priority - left on mobile, centered on desktop */}
