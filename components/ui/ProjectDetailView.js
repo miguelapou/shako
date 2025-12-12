@@ -899,29 +899,6 @@ const ProjectDetailView = ({
         </div>
       )}
 
-      {linkedParts.length === 0 && (
-        <div className={`pt-6 border-t ${
-          darkMode ? 'border-gray-700' : 'border-slate-200'
-        }`}>
-          <h3 className={`text-lg font-semibold mb-3 ${
-            darkMode ? 'text-gray-200' : 'text-gray-800'
-          }`}>
-            <div className="flex items-center gap-2">
-              <Package className="w-5 h-5" />
-              <span>Linked Parts (0)</span>
-            </div>
-          </h3>
-          <div className={`text-center py-8 rounded-lg border ${
-            darkMode ? 'bg-gray-700/30 border-gray-600 text-gray-400' : 'bg-gray-50 border-gray-200 text-gray-500'
-          }`}>
-            <Package className="w-12 h-12 mx-auto mb-2 opacity-40" />
-            <p className="text-sm">
-              No parts linked
-            </p>
-          </div>
-        </div>
-      )}
-
       {/* Confirmation Dialog */}
       <ConfirmDialog
         isOpen={confirmDialog.isOpen}
