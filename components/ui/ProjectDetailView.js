@@ -631,7 +631,7 @@ const ProjectDetailView = ({
           <div className="hidden lg:grid lg:grid-cols-3 lg:gap-4 lg:flex-1">
             {/* Column 1: Budget Bar */}
             <div className="flex flex-col items-end pr-2">
-              <div className="flex flex-col items-center">
+              <div className="flex flex-col items-center flex-1">
                 <div
                   className={`w-14 rounded-lg relative overflow-hidden flex-1 min-h-[100px] ${
                     darkMode ? 'bg-gray-700' : 'bg-gray-300'
