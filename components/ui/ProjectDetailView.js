@@ -638,11 +638,11 @@ const ProjectDetailView = ({
             </div>
           </div>
 
-          {/* Desktop: Vertical Bar Graphs */}
-          <div className="hidden lg:flex lg:gap-4 lg:flex-1">
-            {/* Budget Bar */}
-            <div className="flex flex-col items-center w-10">
-              <div className={`w-full rounded-lg relative overflow-hidden flex-1 min-h-[60px] ${
+          {/* Desktop: Vertical Bar Graphs (3 equal columns) */}
+          <div className="hidden lg:grid lg:grid-cols-3 lg:gap-4 lg:flex-1">
+            {/* Column 1: Budget Bar */}
+            <div className="flex flex-col">
+              <div className={`w-10 rounded-lg relative overflow-hidden flex-1 min-h-[60px] ${
                 darkMode ? 'bg-gray-700' : 'bg-gray-200'
               }`}>
                 {/* Budget fill from bottom */}
@@ -659,9 +659,9 @@ const ProjectDetailView = ({
               </p>
             </div>
 
-            {/* To-Dos Bar */}
-            <div className="flex flex-col items-center w-10">
-              <div className={`w-full rounded-lg relative overflow-hidden flex-1 min-h-[60px] ${
+            {/* Column 2: To-Dos Bar */}
+            <div className="flex flex-col">
+              <div className={`w-10 rounded-lg relative overflow-hidden flex-1 min-h-[60px] ${
                 darkMode ? 'bg-gray-700' : 'bg-gray-200'
               }`}>
                 {/* Todo fill from bottom */}
@@ -677,10 +677,10 @@ const ProjectDetailView = ({
               </p>
             </div>
 
-            {/* Priority + Legend */}
-            <div className="flex flex-col justify-end ml-2">
-              {/* Priority */}
-              <div className="mb-3">
+            {/* Column 3: Priority + Legend */}
+            <div className="flex flex-col justify-between">
+              {/* Priority at top */}
+              <div>
                 <p className={`text-xs mb-1 ${darkMode ? 'text-gray-400' : 'text-slate-600'}`}>
                   Priority</p>
                 <p className={`text-lg font-bold ${priorityColors[project.priority]}`}>
@@ -690,22 +690,32 @@ const ProjectDetailView = ({
                 </p>
               </div>
 
-              {/* Legend */}
-              <div className="space-y-1">
+              {/* Legend at bottom */}
+              <div className="space-y-2">
                 <div className="flex items-center gap-2">
                   <div
                     className="w-3 h-3 rounded flex-shrink-0"
                     style={{ backgroundColor: progress > 90 ? '#ef4444' : progress > 70 ? '#eab308' : '#22c55e' }}
                   />
-                  <p className={`text-xs ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>
-                    ${linkedPartsTotal.toFixed(2)} / ${Math.round(project.budget || 0)}
-                  </p>
+                  <div>
+                    <p className={`text-xs font-medium ${darkMode ? 'text-gray-300' : 'text-gray-600'}`}>
+                      Budget
+                    </p>
+                    <p className={`text-xs ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>
+                      ${linkedPartsTotal.toFixed(2)} / ${Math.round(project.budget || 0)}
+                    </p>
+                  </div>
                 </div>
                 <div className="flex items-center gap-2">
                   <div className="w-3 h-3 rounded bg-violet-500 flex-shrink-0" />
-                  <p className={`text-xs ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>
-                    {project.todos?.filter(t => t.completed).length || 0} / {project.todos?.length || 0} done
-                  </p>
+                  <div>
+                    <p className={`text-xs font-medium ${darkMode ? 'text-gray-300' : 'text-gray-600'}`}>
+                      To-Dos
+                    </p>
+                    <p className={`text-xs ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>
+                      {project.todos?.filter(t => t.completed).length || 0} / {project.todos?.length || 0} done
+                    </p>
+                  </div>
                 </div>
               </div>
             </div>
