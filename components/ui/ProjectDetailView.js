@@ -503,7 +503,7 @@ const ProjectDetailView = ({
           </div>
 
           {/* Progress Circles and Priority */}
-          <div className="flex items-center gap-6">
+          <div className="flex items-center gap-6 flex-1">
             {/* Circular Progress Bars - Clickable */}
             <button
               onClick={() => setShowTodoProgress(!showTodoProgress)}
@@ -512,7 +512,10 @@ const ProjectDetailView = ({
               title="Click to toggle between Budget and To-Do progress"
             >
               {/* Budget Progress Circle (outer) */}
-              <svg className="w-full h-full transform -rotate-90" viewBox="0 0 120 120">
+              <svg
+                className={`w-full h-full transform -rotate-90 transition-opacity duration-300 ${showTodoProgress ? 'opacity-40' : 'opacity-100'}`}
+                viewBox="0 0 120 120"
+              >
                 {/* Background circle */}
                 <circle
                   cx="60"
@@ -537,7 +540,10 @@ const ProjectDetailView = ({
                 />
               </svg>
               {/* Todo Progress Circle (inner) */}
-              <svg className="absolute top-0 left-0 w-full h-full transform -rotate-90" viewBox="0 0 120 120">
+              <svg
+                className={`absolute top-0 left-0 w-full h-full transform -rotate-90 transition-opacity duration-300 ${showTodoProgress ? 'opacity-100' : 'opacity-40'}`}
+                viewBox="0 0 120 120"
+              >
                 {/* Background circle */}
                 <circle
                   cx="60"
@@ -561,13 +567,17 @@ const ProjectDetailView = ({
                   className="transition-all duration-500"
                 />
               </svg>
-              {/* Center percentage display - alternates on click */}
+              {/* Center percentage display - alternates on click with fade */}
               <div className="absolute inset-0 flex items-center justify-center">
-                <span className={`text-sm font-bold transition-all duration-300 ${darkMode ? 'text-gray-200' : 'text-gray-700'}`}>
-                  {showTodoProgress
-                    ? `${Math.round((project.todos?.filter(t => t.completed).length || 0) / (project.todos?.length || 1) * 100)}%`
-                    : `${progress.toFixed(0)}%`
-                  }
+                <span
+                  className={`absolute text-sm font-bold transition-opacity duration-300 ${darkMode ? 'text-gray-200' : 'text-gray-700'} ${!showTodoProgress ? 'opacity-100' : 'opacity-0'}`}
+                >
+                  {progress.toFixed(0)}%
+                </span>
+                <span
+                  className={`absolute text-sm font-bold transition-opacity duration-300 ${darkMode ? 'text-gray-200' : 'text-gray-700'} ${showTodoProgress ? 'opacity-100' : 'opacity-0'}`}
+                >
+                  {Math.round((project.todos?.filter(t => t.completed).length || 0) / (project.todos?.length || 1) * 100)}%
                 </span>
               </div>
             </button>
@@ -603,8 +613,8 @@ const ProjectDetailView = ({
               </div>
             </div>
 
-            {/* Priority */}
-            <div className="border-2 border-yellow-700 rounded-lg p-3">
+            {/* Priority - aligned right */}
+            <div className="ml-auto text-right">
               <p className={`text-xs mb-1 ${darkMode ? 'text-gray-400' : 'text-slate-600'}`}>
                 Priority</p>
               <p className={`text-lg font-bold ${priorityColors[project.priority]}`}>
