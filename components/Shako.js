@@ -547,6 +547,34 @@ const Shako = () => {
     return false;
   };
 
+  // Check if there are unsaved changes in part edit mode
+  const hasUnsavedPartChanges = () => {
+    if (partDetailView !== 'edit' || !originalPartData || !editingPart) {
+      return false;
+    }
+    // Check if any field has changed
+    const fieldsToCheck = [
+      'part', 'partNumber', 'vendor', 'tracking',
+      'price', 'shipping', 'duties', 'projectId'
+    ];
+    for (const field of fieldsToCheck) {
+      // Use loose equality for projectId since it can be null or undefined
+      if (field === 'projectId') {
+        if ((editingPart[field] || null) !== (originalPartData[field] || null)) {
+          return true;
+        }
+      } else {
+        // Convert to string for comparison to handle numeric fields
+        const editValue = editingPart[field]?.toString() || '';
+        const origValue = originalPartData[field]?.toString() || '';
+        if (editValue !== origValue) {
+          return true;
+        }
+      }
+    }
+    return false;
+  };
+
   // Tab change handler to track animation direction
   const handleTabChange = (newTab) => {
     setPreviousTab(activeTab);
@@ -1740,6 +1768,7 @@ const Shako = () => {
           filteredParts={filteredParts}
           setShowTrackingModal={setShowTrackingModal}
           setTrackingModalPartId={setTrackingModalPartId}
+          hasUnsavedPartChanges={hasUnsavedPartChanges}
         />
 
         {/* PARTS TAB CONTENT */}
