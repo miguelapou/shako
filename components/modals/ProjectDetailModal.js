@@ -211,22 +211,6 @@ const ProjectDetailModal = ({
               {viewingProject.name}
             </h2>
             <div className="flex items-center gap-3">
-              {/* Vehicle badge - desktop only, hidden in edit mode */}
-              {viewingProject.vehicle_id && !projectModalEditMode && (() => {
-                const vehicle = vehicles.find(v => v.id === viewingProject.vehicle_id);
-                return vehicle ? (
-                  <span
-                    className={`hidden lg:inline-flex items-center px-2 py-1 rounded text-xs font-medium border ${
-                      darkMode ? 'bg-gray-700 text-gray-300 border-gray-600' : 'bg-gray-100 text-gray-700 border-gray-300'
-                    }`}
-                  >
-                    <Car className="w-3 h-3 mr-1" />
-                    <span style={{ color: vehicle.color || '#3B82F6' }}>
-                      {vehicle.nickname || vehicle.name}
-                    </span>
-                  </span>
-                ) : null;
-              })()}
               <button
                 onClick={() => handleCloseModal(() => {
                   // Check for unsaved changes
@@ -277,7 +261,6 @@ const ProjectDetailModal = ({
                 project={viewingProject}
                 parts={parts}
                 darkMode={darkMode}
-                vehicle={viewingProject.vehicle_id ? vehicles.find(v => v.id === viewingProject.vehicle_id) : null}
                 updateProject={(projectId, updates) => {
                   // Optimistic update: update viewingProject immediately for snappy UI
                   setViewingProject(prev => ({ ...prev, ...updates }));
@@ -517,6 +500,22 @@ const ProjectDetailModal = ({
                   </button>
                 </div>
               )}
+              {/* Vehicle badge */}
+              {viewingProject.vehicle_id && (() => {
+                const vehicle = vehicles.find(v => v.id === viewingProject.vehicle_id);
+                return vehicle ? (
+                  <span
+                    className={`inline-flex items-center px-2 py-1 rounded text-xs font-medium border ${
+                      darkMode ? 'bg-gray-700 text-gray-300 border-gray-600' : 'bg-gray-100 text-gray-700 border-gray-300'
+                    }`}
+                  >
+                    <Car className="w-3 h-3 mr-1" />
+                    <span style={{ color: vehicle.color || '#3B82F6' }}>
+                      {vehicle.nickname || vehicle.name}
+                    </span>
+                  </span>
+                ) : null;
+              })()}
               {/* Edit button on the right */}
               <div className="ml-auto">
                 <PrimaryButton
