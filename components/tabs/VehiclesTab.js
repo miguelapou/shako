@@ -4,6 +4,7 @@ import {
   Car, Archive, Package, ListChecks, FolderLock, FolderOpen, Camera
 } from 'lucide-react';
 import { getMutedColor, getPriorityBorderColor } from '../../utils/colorUtils';
+import { cardBg } from '../../utils/styleUtils';
 import AddVehicleModal from '../modals/AddVehicleModal';
 import VehicleDetailModal from '../modals/VehicleDetailModal';
 import FadeInImage from '../ui/FadeInImage';
@@ -136,7 +137,7 @@ const VehiclesTab = ({
                   : dragOverVehicle?.id === vehicle.id
                     ? (darkMode ? 'ring-2 ring-blue-500' : 'ring-2 ring-blue-400')
                     : ''
-              } ${darkMode ? 'bg-gray-800' : 'bg-slate-100'}`}
+              } ${cardBg(darkMode)}`}
               style={{ borderTopColor: borderColor }}
             >
               {/* Drag Handle - Hidden on mobile */}
@@ -155,7 +156,7 @@ const VehiclesTab = ({
                 }}
                 onDragEnd={handleVehicleDragEnd}
                 className={`absolute top-2 left-2 cursor-grab active:cursor-grabbing hidden md:block ${
-                  darkMode ? 'text-gray-500 hover:text-gray-400' : 'text-gray-400 hover:text-gray-600'
+                  darkMode ? 'text-gray-600 hover:text-gray-400' : 'text-gray-400 hover:text-gray-600'
                 }`}
               >
                 <GripVertical className="w-5 h-5" />
@@ -411,9 +412,7 @@ const VehiclesTab = ({
 
         {/* Empty State - No unarchived vehicles */}
         {vehicles.filter(v => !v.archived).length === 0 && vehicles.length > 0 && (
-          <div className={`text-center py-12 rounded-lg ${
-            darkMode ? 'bg-gray-800' : 'bg-slate-100'
-          }`}>
+          <div className={`text-center py-12 rounded-lg ${cardBg(darkMode)}`}>
             <Car className={`w-16 h-16 mx-auto mb-4 ${
               darkMode ? 'text-gray-600' : 'text-gray-400'
             }`} />
@@ -439,9 +438,7 @@ const VehiclesTab = ({
 
         {/* Empty State - No vehicles at all */}
         {vehicles.length === 0 && (
-          <div className={`text-center py-12 rounded-lg ${
-            darkMode ? 'bg-gray-800' : 'bg-slate-100'
-          }`}>
+          <div className={`text-center py-12 rounded-lg ${cardBg(darkMode)}`}>
             <Car className={`w-16 h-16 mx-auto mb-4 ${
               darkMode ? 'text-gray-600' : 'text-gray-400'
             }`} />
@@ -579,9 +576,7 @@ const VehiclesTab = ({
                     setOriginalVehicleData({ ...vehicle }); // Save original data for unsaved changes check
                     setShowVehicleDetailModal(true);
                   }}
-                  className={`relative rounded-lg shadow-lg pt-2 pb-2 px-3 transition-[transform,box-shadow] duration-200 hover:shadow-2xl hover:scale-[1.03] cursor-pointer border-t-4 ${
-                    darkMode ? 'bg-gray-800' : 'bg-slate-100'
-                  }`}
+                  className={`relative rounded-lg shadow-lg pt-2 pb-2 px-3 transition-[transform,box-shadow] duration-200 hover:shadow-2xl hover:scale-[1.03] cursor-pointer border-t-4 ${cardBg(darkMode)}`}
                   style={{ borderTopColor: borderColor }}
                 >
                   {/* Vehicle Image */}

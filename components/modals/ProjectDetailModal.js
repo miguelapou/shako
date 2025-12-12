@@ -233,8 +233,8 @@ const ProjectDetailModal = ({
                   setOriginalProjectData(null);
                   onClose();
                 })}
-                className={`p-2 rounded-md transition-colors flex-shrink-0 ${
-                  darkMode ? 'hover:bg-gray-700 text-gray-400' : 'hover:bg-gray-100 text-gray-600'
+                className={`transition-colors flex-shrink-0 ${
+                  darkMode ? 'text-gray-400 hover:text-gray-300' : 'text-gray-400 hover:text-gray-600'
                 }`}
               >
                 <X className="w-5 h-5" />

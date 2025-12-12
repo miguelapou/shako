@@ -1,6 +1,7 @@
 import React, { useRef, useState, useCallback } from 'react';
 import { X, Car, ChevronDown } from 'lucide-react';
 import { useUI } from '../../contexts';
+import { inputClasses } from '../../utils/styleUtils';
 
 const AddProjectModal = ({
   isOpen,
@@ -86,7 +87,7 @@ const AddProjectModal = ({
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header */}
-        <div className={`px-6 py-4 border-b flex items-center justify-between ${
+        <div className={`sticky top-0 z-10 px-6 py-4 border-b flex items-center justify-between ${
           darkMode ? 'bg-gray-800 border-gray-700' : 'bg-slate-50 border-slate-200'
         }`}>
           <h2 className={`text-2xl font-bold ${
@@ -119,11 +120,7 @@ const AddProjectModal = ({
                   type="text"
                   value={newProject.name}
                   onChange={(e) => setNewProject({ ...newProject, name: e.target.value })}
-                  className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
-                    darkMode
-                      ? 'bg-gray-700 border-gray-600 text-gray-100 placeholder-gray-400'
-                      : 'bg-slate-50 border-slate-300 text-slate-800 placeholder-slate-400'
-                  }`}
+                  className={inputClasses(darkMode)}
                   placeholder="e.g., Interior Restoration"
                   required
                 />
@@ -268,11 +265,7 @@ const AddProjectModal = ({
                     inputMode="decimal"
                     value={newProject.budget}
                     onChange={(e) => setNewProject({ ...newProject, budget: e.target.value })}
-                    className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none ${
-                      darkMode
-                        ? 'bg-gray-700 border-gray-600 text-gray-100 placeholder-gray-400'
-                        : 'bg-slate-50 border-slate-300 text-slate-800 placeholder-slate-400'
-                    }`}
+                    className={inputClasses(darkMode, '[appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none')}
                     placeholder="0.00"
                   />
                 </div>
@@ -289,11 +282,7 @@ const AddProjectModal = ({
               <textarea
                 value={newProject.description}
                 onChange={(e) => setNewProject({ ...newProject, description: e.target.value })}
-                className={`w-full h-48 px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none ${
-                  darkMode
-                    ? 'bg-gray-700 border-gray-600 text-gray-100 placeholder-gray-400'
-                    : 'bg-slate-50 border-slate-300 text-slate-800 placeholder-slate-400'
-                }`}
+                className={inputClasses(darkMode, 'h-48 resize-none')}
                 placeholder="Brief description of the project"
               />
             </div>

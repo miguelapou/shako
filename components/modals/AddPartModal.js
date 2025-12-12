@@ -1,6 +1,6 @@
 import React, { useRef } from 'react';
 import { X } from 'lucide-react';
-import { selectDropdownStyle } from '../../utils/styleUtils';
+import { selectDropdownStyle, inputClasses } from '../../utils/styleUtils';
 
 const AddPartModal = ({
   isOpen,
@@ -35,7 +35,7 @@ const AddPartModal = ({
         } ${darkMode ? 'bg-gray-800' : 'bg-slate-200'}`}
         onClick={(e) => e.stopPropagation()}
       >
-        <div className={`sticky top-0 border-b px-6 py-4 flex items-center justify-between ${
+        <div className={`sticky top-0 z-10 border-b px-6 py-4 flex items-center justify-between ${
           darkMode ? 'bg-gray-800 border-gray-700' : 'bg-slate-50 border-slate-200'
         }`}>
           <h2 className={`text-2xl font-bold ${
@@ -65,11 +65,7 @@ const AddPartModal = ({
                   type="text"
                   value={newPart.part}
                   onChange={(e) => setNewPart({ ...newPart, part: e.target.value })}
-                  className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
-                    darkMode
-                      ? 'bg-gray-700 border-gray-600 text-gray-100 placeholder-gray-400'
-                      : 'bg-slate-50 border-slate-300 text-slate-800 placeholder-slate-400'
-                  }`}
+                  className={inputClasses(darkMode)}
                   placeholder="e.g., Front Bumper"
                   required
                 />
@@ -86,11 +82,7 @@ const AddPartModal = ({
                   type="text"
                   value={newPart.partNumber}
                   onChange={(e) => setNewPart({ ...newPart, partNumber: e.target.value })}
-                  className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
-                    darkMode
-                      ? 'bg-gray-700 border-gray-600 text-gray-100 placeholder-gray-400'
-                      : 'bg-slate-50 border-slate-300 text-slate-800 placeholder-slate-400'
-                  }`}
+                  className={inputClasses(darkMode)}
                   placeholder="e.g., 12345-67890"
                 />
               </div>
@@ -182,11 +174,7 @@ const AddPartModal = ({
                   type="text"
                   value={uniqueVendors.includes(newPart.vendor) ? '' : newPart.vendor}
                   onChange={(e) => setNewPart({ ...newPart, vendor: e.target.value })}
-                  className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
-                    darkMode
-                      ? 'bg-gray-700 border-gray-600 text-gray-100 placeholder-gray-400'
-                      : 'bg-slate-50 border-slate-300 text-slate-800 placeholder-slate-400'
-                  }`}
+                  className={inputClasses(darkMode)}
                   placeholder="Enter new vendor name"
                 />
               </div>
@@ -208,11 +196,7 @@ const AddPartModal = ({
                   type="text"
                   value={newPart.tracking}
                   onChange={(e) => setNewPart({ ...newPart, tracking: e.target.value })}
-                  className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
-                    darkMode
-                      ? 'bg-gray-700 border-gray-600 text-gray-100 placeholder-gray-400'
-                      : 'bg-slate-50 border-slate-300 text-slate-800 placeholder-slate-400'
-                  }`}
+                  className={inputClasses(darkMode)}
                   placeholder="e.g., 1Z999AA10123456784"
                 />
               </div>
@@ -230,11 +214,7 @@ const AddPartModal = ({
                   inputMode="decimal"
                   value={newPart.price}
                   onChange={(e) => setNewPart({ ...newPart, price: e.target.value })}
-                  className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none ${
-                    darkMode
-                      ? 'bg-gray-700 border-gray-600 text-gray-100 placeholder-gray-400'
-                      : 'bg-slate-50 border-slate-300 text-slate-800 placeholder-slate-400'
-                  }`}
+                  className={inputClasses(darkMode, '[appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none')}
                   placeholder="0.00"
                 />
               </div>
@@ -252,11 +232,7 @@ const AddPartModal = ({
                   inputMode="decimal"
                   value={newPart.shipping}
                   onChange={(e) => setNewPart({ ...newPart, shipping: e.target.value })}
-                  className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none ${
-                    darkMode
-                      ? 'bg-gray-700 border-gray-600 text-gray-100 placeholder-gray-400'
-                      : 'bg-slate-50 border-slate-300 text-slate-800 placeholder-slate-400'
-                  }`}
+                  className={inputClasses(darkMode, '[appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none')}
                   placeholder="0.00"
                 />
               </div>
@@ -274,11 +250,7 @@ const AddPartModal = ({
                   inputMode="decimal"
                   value={newPart.duties}
                   onChange={(e) => setNewPart({ ...newPart, duties: e.target.value })}
-                  className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none ${
-                    darkMode
-                      ? 'bg-gray-700 border-gray-600 text-gray-100 placeholder-gray-400'
-                      : 'bg-slate-50 border-slate-300 text-slate-800 placeholder-slate-400'
-                  }`}
+                  className={inputClasses(darkMode, '[appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none')}
                   placeholder="0.00"
                 />
               </div>

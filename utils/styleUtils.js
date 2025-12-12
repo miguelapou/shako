@@ -12,10 +12,10 @@ export const hoverBg = (darkMode) => darkMode ? 'hover:bg-gray-700' : 'hover:bg-
 
 // Common input field classes
 export const inputClasses = (darkMode, additionalClasses = '') => {
-  const base = `w-full md:max-w-md px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${additionalClasses}`;
+  const base = `w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${additionalClasses}`;
   const theme = darkMode
     ? 'bg-gray-700 border-gray-600 text-gray-100 placeholder-gray-400'
-    : 'bg-white border-slate-300 text-slate-800 placeholder-slate-400';
+    : 'bg-slate-50 border-slate-300 text-slate-800 placeholder-slate-400';
   return `${base} ${theme}`;
 };
 
