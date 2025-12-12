@@ -542,7 +542,7 @@ const ProjectDetailView = ({
                   strokeWidth="12"
                   strokeLinecap="round"
                   strokeDasharray={2 * Math.PI * 52}
-                  strokeDashoffset={2 * Math.PI * 52 * (1 - Math.max(Math.min(progress, 100) / 100, 0.03))}
+                  strokeDashoffset={2 * Math.PI * 52 * (1 - Math.max(Math.min(progress, 100) / 100, 0.01))}
                   className="transition-all duration-500"
                 />
               </svg>
@@ -570,7 +570,7 @@ const ProjectDetailView = ({
                   strokeWidth="10"
                   strokeLinecap="round"
                   strokeDasharray={2 * Math.PI * 36}
-                  strokeDashoffset={2 * Math.PI * 36 * (1 - Math.max((project.todos?.filter(t => t.completed).length || 0) / (project.todos?.length || 1), 0.03))}
+                  strokeDashoffset={2 * Math.PI * 36 * (1 - Math.max((project.todos?.filter(t => t.completed).length || 0) / (project.todos?.length || 1), 0.01))}
                   className="transition-all duration-500"
                 />
               </svg>
