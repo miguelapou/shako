@@ -486,7 +486,7 @@ const ProjectDetailView = ({
                   {project.description || 'No description added'}
                 </p>
               </div>
-              {project.description && isDescriptionClamped && (
+              {project.description && isDescriptionClamped ? (
                 <button
                   onClick={() => setIsDescriptionExpanded(!isDescriptionExpanded)}
                   className={`mt-2 flex items-center gap-1 text-sm font-medium transition-colors ${
@@ -498,6 +498,9 @@ const ProjectDetailView = ({
                     isDescriptionExpanded ? 'rotate-180' : ''
                   }`} />
                 </button>
+              ) : (
+                /* Reserve space for "Show more" button on desktop for consistent layout */
+                <div className="hidden lg:block mt-2 h-5" />
               )}
             </div>
           </div>
