@@ -619,8 +619,8 @@ const ProjectDetailView = ({
               </button>
             </div>
 
-            {/* Priority - centered in remaining space, text left-aligned */}
-            <div className="flex-1 flex justify-center">
+            {/* Priority - left on mobile, centered on desktop */}
+            <div className="flex-1 flex justify-start lg:justify-center">
               <div>
                 <p className={`text-xs mb-1 ${darkMode ? 'text-gray-400' : 'text-slate-600'}`}>
                   Priority</p>
