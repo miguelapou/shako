@@ -642,12 +642,17 @@ const ProjectDetailView = ({
           <div className="hidden lg:grid lg:grid-cols-3 lg:gap-4 lg:flex-1">
             {/* Column 1: Budget Bar */}
             <div className="flex flex-col items-center">
-              <div className={`w-14 rounded-lg relative overflow-hidden flex-1 min-h-[60px] ${
-                darkMode ? 'bg-gray-700' : 'bg-gray-200'
-              }`}>
+              <div
+                className={`w-14 rounded-lg relative overflow-hidden flex-1 min-h-[60px] ${
+                  darkMode ? 'bg-gray-700' : 'bg-gray-200'
+                }`}
+                style={{
+                  borderBottom: `3px solid ${progress > 90 ? '#ef4444' : progress > 70 ? '#eab308' : '#22c55e'}`
+                }}
+              >
                 {/* Budget fill from bottom */}
                 <div
-                  className="absolute bottom-0 left-0 right-0 transition-all duration-500 rounded-b-lg"
+                  className="absolute bottom-0 left-0 right-0 transition-all duration-500"
                   style={{
                     height: `${Math.min(progress, 100)}%`,
                     backgroundColor: progress > 90 ? '#ef4444' : progress > 70 ? '#eab308' : '#22c55e'
@@ -661,12 +666,17 @@ const ProjectDetailView = ({
 
             {/* Column 2: To-Dos Bar */}
             <div className="flex flex-col items-center">
-              <div className={`w-14 rounded-lg relative overflow-hidden flex-1 min-h-[60px] ${
-                darkMode ? 'bg-gray-700' : 'bg-gray-200'
-              }`}>
+              <div
+                className={`w-14 rounded-lg relative overflow-hidden flex-1 min-h-[60px] ${
+                  darkMode ? 'bg-gray-700' : 'bg-gray-200'
+                }`}
+                style={{
+                  borderBottom: '3px solid #8b5cf6'
+                }}
+              >
                 {/* Todo fill from bottom */}
                 <div
-                  className="absolute bottom-0 left-0 right-0 transition-all duration-500 rounded-b-lg bg-violet-500"
+                  className="absolute bottom-0 left-0 right-0 transition-all duration-500 bg-violet-500"
                   style={{
                     height: `${Math.round((project.todos?.filter(t => t.completed).length || 0) / (project.todos?.length || 1) * 100)}%`
                   }}
@@ -680,7 +690,7 @@ const ProjectDetailView = ({
             {/* Column 3: Priority + Legend */}
             <div className="flex flex-col justify-between">
               {/* Priority at top */}
-              <div>
+              <div className="pb-6">
                 <p className={`text-xs mb-1 ${darkMode ? 'text-gray-400' : 'text-slate-600'}`}>
                   Priority</p>
                 <p className={`text-lg font-bold ${priorityColors[project.priority]}`}>
