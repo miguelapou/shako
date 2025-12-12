@@ -166,7 +166,7 @@ const ProjectsTab = ({
                   <div className="flex items-center justify-between gap-2">
                     <span className={`inline-block px-3 py-1 rounded-full text-sm font-medium ${
                       statusColors[project.status]
-                    }`}>
+                    } ${!darkMode ? 'ring-1 ring-inset ring-current' : ''}`}>
                       {project.status.replace('_', ' ').toUpperCase()}
                     </span>
                     {(() => {

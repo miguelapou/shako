@@ -53,7 +53,8 @@ const PartDetailModal = ({
   onStatusChange,
   filteredParts = [],
   setShowTrackingModal,
-  setTrackingModalPartId
+  setTrackingModalPartId,
+  hasUnsavedPartChanges
 }) => {
   const [isRefreshingTracking, setIsRefreshingTracking] = useState(false);
   const [trackingError, setTrackingError] = useState(null);
@@ -496,6 +497,24 @@ const PartDetailModal = ({
       }`}
       onClick={() =>
         handleCloseModal(() => {
+          // Check for unsaved changes
+          if (hasUnsavedPartChanges && hasUnsavedPartChanges()) {
+            setConfirmDialog({
+              isOpen: true,
+              title: 'Unsaved Changes',
+              message: 'You have unsaved changes. Are you sure you want to close without saving?',
+              confirmText: 'Discard',
+              cancelText: 'Go Back',
+              onConfirm: () => {
+                setShowPartDetailModal(false);
+                setViewingPart(null);
+                setPartDetailView('detail');
+                setEditingPart(null);
+                setOriginalPartData(null);
+              }
+            });
+            return;
+          }
           setShowPartDetailModal(false);
           setViewingPart(null);
           setPartDetailView('detail');
@@ -569,6 +588,24 @@ const PartDetailModal = ({
               <button
                 onClick={() =>
                   handleCloseModal(() => {
+                    // Check for unsaved changes
+                    if (hasUnsavedPartChanges && hasUnsavedPartChanges()) {
+                      setConfirmDialog({
+                        isOpen: true,
+                        title: 'Unsaved Changes',
+                        message: 'You have unsaved changes. Are you sure you want to close without saving?',
+                        confirmText: 'Discard',
+                        cancelText: 'Go Back',
+                        onConfirm: () => {
+                          setShowPartDetailModal(false);
+                          setViewingPart(null);
+                          setPartDetailView('detail');
+                          setEditingPart(null);
+                          setOriginalPartData(null);
+                        }
+                      });
+                      return;
+                    }
                     setShowPartDetailModal(false);
                     setViewingPart(null);
                     setPartDetailView('detail');
@@ -1445,6 +1482,22 @@ const PartDetailModal = ({
             <div className="flex items-center gap-2">
               <button
                 onClick={() => {
+                  // Check for unsaved changes
+                  if (hasUnsavedPartChanges && hasUnsavedPartChanges()) {
+                    setConfirmDialog({
+                      isOpen: true,
+                      title: 'Unsaved Changes',
+                      message: 'You have unsaved changes. Are you sure you want to go back without saving?',
+                      confirmText: 'Discard',
+                      cancelText: 'Go Back',
+                      onConfirm: () => {
+                        setPartDetailView('detail');
+                        setEditingPart(null);
+                        setOriginalPartData(null);
+                      }
+                    });
+                    return;
+                  }
                   setPartDetailView('detail');
                   setEditingPart(null);
                   setOriginalPartData(null);
