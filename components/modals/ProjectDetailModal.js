@@ -307,6 +307,7 @@ const ProjectDetailModal = ({
                 project={viewingProject}
                 parts={parts}
                 darkMode={darkMode}
+                vehicle={viewingProject.vehicle_id ? vehicles.find(v => v.id === viewingProject.vehicle_id) : null}
                 updateProject={(projectId, updates) => {
                   // Optimistic update: update viewingProject immediately for snappy UI
                   setViewingProject(prev => ({ ...prev, ...updates }));
