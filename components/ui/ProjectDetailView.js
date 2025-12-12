@@ -519,7 +519,7 @@ const ProjectDetailView = ({
           {/* Progress Section - Different layouts for mobile vs desktop */}
 
           {/* Mobile: Circular Progress Bars */}
-          <div className="flex items-center gap-6 flex-1 lg:hidden">
+          <div className="flex items-start gap-6 flex-1 lg:hidden">
             {/* Circular Progress Bars - Clickable */}
             <button
               onClick={() => setShowTodoProgress(!showTodoProgress)}
