@@ -1,5 +1,5 @@
 import React, { useState, useMemo, useEffect, useLayoutEffect, useRef } from 'react';
-import { Package, CheckCircle, CheckSquare, ChevronDown, X, Car } from 'lucide-react';
+import { Package, CheckCircle, CheckSquare, ChevronDown, X } from 'lucide-react';
 import { getVendorDisplayColor } from '../../utils/colorUtils';
 import ConfirmDialog from './ConfirmDialog';
 
@@ -21,8 +21,7 @@ const ProjectDetailView = ({
   editingTodoText,
   setEditingTodoText,
   newTodoText,
-  setNewTodoText,
-  vehicle
+  setNewTodoText
 }) => {
   const linkedParts = parts.filter(part => part.projectId === project.id);
   const linkedPartsTotal = calculateProjectTotal(project.id, parts);
@@ -42,6 +41,7 @@ const ProjectDetailView = ({
   const [showCompletedTodos, setShowCompletedTodos] = useState(false);
   const [isDescriptionExpanded, setIsDescriptionExpanded] = useState(false);
   const [isDescriptionClamped, setIsDescriptionClamped] = useState(false);
+  const [showTodoProgress, setShowTodoProgress] = useState(false);
   const descriptionRef = useRef(null);
 
   // Check if description is clamped (content overflows the collapsed height)
@@ -437,33 +437,36 @@ const ProjectDetailView = ({
 
   return (
     <>
-      {/* Status Badge (left) and Vehicle Badge (right) on same row */}
+      {/* Status Badge (left) and Priority (right) on same row */}
       <div className="flex items-center justify-between mb-6 gap-3">
         <span className={`inline-block px-4 py-2 rounded-full text-sm font-medium ${
           statusColors[project.status]
-        }`}>
+        } ${!darkMode ? 'ring-1 ring-inset ring-current' : ''}`}>
           {project.status.replace('_', ' ').toUpperCase()}
         </span>
-        {vehicle && (
-          <span
-            className={`inline-flex items-center px-2 py-1 rounded text-xs font-medium border ${
-              darkMode ? 'bg-gray-700 text-gray-300 border-gray-600' : 'bg-gray-100 text-gray-700 border-gray-300'
-            }`}
-          >
-            <Car className="w-3 h-3 mr-1" />
-            <span style={{ color: vehicle.color || '#3B82F6' }}>
-              {vehicle.nickname || vehicle.name}
-            </span>
-          </span>
-        )}
+        {/* Priority */}
+        <div className="text-right">
+          <p className={`text-xs mb-1 ${darkMode ? 'text-gray-400' : 'text-slate-600'}`}>
+            Priority</p>
+          <p className={`text-lg font-bold ${priorityColors[project.priority]}`}>
+            {project.priority === 'not_set' ? 'NONE' : (
+              project.priority === 'medium' ? (
+                <>
+                  <span className="lg:hidden">MED</span>
+                  <span className="hidden lg:inline">MEDIUM</span>
+                </>
+              ) : project.priority?.replace(/_/g, ' ').toUpperCase()
+            )}
+          </p>
+        </div>
       </div>
 
       {/* Two Column Layout: Project Details (Left) and Todo List (Right) */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
         {/* Left Column: Project Details */}
-        <div className="space-y-6">
+        <div className="flex flex-col gap-6">
           {/* Description */}
-          <div>
+          <div className="lg:min-h-[6.5rem]">
             <h3 className={`text-lg font-semibold mb-2 ${
               darkMode ? 'text-gray-200' : 'text-gray-800'
             }`}>Description</h3>
@@ -476,7 +479,7 @@ const ProjectDetailView = ({
               >
                 <p
                   ref={descriptionRef}
-                  className={`text-base ${
+                  className={`text-base lg:min-h-[4.5em] ${
                     project.description
                       ? (darkMode ? 'text-gray-400' : 'text-slate-600')
                       : (darkMode ? 'text-gray-500 italic' : 'text-gray-500 italic')
@@ -485,7 +488,7 @@ const ProjectDetailView = ({
                   {project.description || 'No description added'}
                 </p>
               </div>
-              {project.description && isDescriptionClamped && (
+              {project.description && isDescriptionClamped ? (
                 <button
                   onClick={() => setIsDescriptionExpanded(!isDescriptionExpanded)}
                   className={`mt-2 flex items-center gap-1 text-sm font-medium transition-colors ${
@@ -497,67 +500,214 @@ const ProjectDetailView = ({
                     isDescriptionExpanded ? 'rotate-180' : ''
                   }`} />
                 </button>
+              ) : (
+                /* Reserve space for "Show more" button on desktop for consistent layout */
+                <div className="hidden lg:block mt-2 h-5" />
               )}
             </div>
           </div>
 
-          {/* Budget Progress */}
-          <div>
-            <h3 className={`text-lg font-semibold mb-3 ${
-              darkMode ? 'text-gray-200' : 'text-gray-800'
-            }`}>Budget Used</h3>
-            <div className="flex justify-between items-center mb-2">
-              <span className={`text-sm font-medium ${
-                darkMode ? 'text-gray-300' : 'text-slate-700'
-              }`}>
-                ${linkedPartsTotal.toFixed(2)} / ${Math.round(project.budget || 0)}
-              </span>
-              <span className={`text-sm font-bold ${
-                darkMode ? 'text-gray-200' : 'text-gray-900'
-              }`}>
-                {progress.toFixed(0)}%
-              </span>
-            </div>
-            <div className={`w-full rounded-full h-4 ${
-              darkMode ? 'bg-gray-700' : 'bg-gray-200'
-            }`}>
-              <div
-                className={`h-4 rounded-full transition-all ${
-                  progress > 90
-                    ? 'bg-red-500'
-                    : progress > 70
-                    ? 'bg-yellow-500'
-                    : 'bg-green-500'
-                }`}
-                style={{ width: `${Math.min(progress, 100)}%` }}
-              />
+          {/* Progress Section - Different layouts for mobile vs desktop */}
+
+          {/* Mobile: Circular Progress Bars */}
+          <div className="flex items-start gap-6 flex-1 lg:hidden">
+            {/* Circular Progress Bars - Clickable */}
+            <button
+              onClick={() => setShowTodoProgress(!showTodoProgress)}
+              className="relative cursor-pointer hover:opacity-80 transition-opacity"
+              style={{ width: '120px', height: '120px' }}
+              title="Click to toggle between Budget and To-Do progress"
+            >
+              {/* Budget Progress Circle (outer) */}
+              <svg
+                className={`w-full h-full transform -rotate-90 transition-opacity duration-300 ${showTodoProgress ? 'opacity-40' : 'opacity-100'}`}
+                viewBox="0 0 120 120"
+              >
+                {/* Background circle */}
+                <circle
+                  cx="60"
+                  cy="60"
+                  r="52"
+                  fill="none"
+                  stroke={darkMode ? '#374151' : '#e5e7eb'}
+                  strokeWidth="12"
+                />
+                {/* Progress circle */}
+                <circle
+                  cx="60"
+                  cy="60"
+                  r="52"
+                  fill="none"
+                  stroke={progress > 90 ? '#ef4444' : progress > 70 ? '#eab308' : '#22c55e'}
+                  strokeWidth="12"
+                  strokeLinecap="round"
+                  strokeDasharray={2 * Math.PI * 52}
+                  strokeDashoffset={2 * Math.PI * 52 * (1 - Math.min(progress, 100) / 100)}
+                  className="transition-all duration-500"
+                />
+              </svg>
+              {/* Todo Progress Circle (inner) */}
+              <svg
+                className={`absolute top-0 left-0 w-full h-full transform -rotate-90 transition-opacity duration-300 ${showTodoProgress ? 'opacity-100' : 'opacity-40'}`}
+                viewBox="0 0 120 120"
+              >
+                {/* Background circle */}
+                <circle
+                  cx="60"
+                  cy="60"
+                  r="36"
+                  fill="none"
+                  stroke={darkMode ? '#374151' : '#e5e7eb'}
+                  strokeWidth="10"
+                />
+                {/* Progress circle */}
+                <circle
+                  cx="60"
+                  cy="60"
+                  r="36"
+                  fill="none"
+                  stroke="#8b5cf6"
+                  strokeWidth="10"
+                  strokeLinecap="round"
+                  strokeDasharray={2 * Math.PI * 36}
+                  strokeDashoffset={2 * Math.PI * 36 * (1 - ((project.todos?.filter(t => t.completed).length || 0) / (project.todos?.length || 1)))}
+                  className="transition-all duration-500"
+                />
+              </svg>
+              {/* Center percentage display - alternates on click with shrink/expand */}
+              <div className="absolute inset-0 flex items-center justify-center">
+                <span
+                  className={`absolute text-sm font-bold transition-all duration-300 ${darkMode ? 'text-gray-200' : 'text-gray-700'} ${!showTodoProgress ? 'opacity-100 scale-100' : 'opacity-0 scale-50'}`}
+                >
+                  {progress.toFixed(0)}%
+                </span>
+                <span
+                  className={`absolute text-sm font-bold transition-all duration-300 ${darkMode ? 'text-gray-200' : 'text-gray-700'} ${showTodoProgress ? 'opacity-100 scale-100' : 'opacity-0 scale-50'}`}
+                >
+                  {Math.round((project.todos?.filter(t => t.completed).length || 0) / (project.todos?.length || 1) * 100)}%
+                </span>
+              </div>
+            </button>
+
+            {/* Mobile Legend */}
+            <div className="space-y-3">
+              {/* Budget Legend */}
+              <button
+                onClick={() => setShowTodoProgress(false)}
+                className={`flex items-center gap-2 ${!showTodoProgress ? 'opacity-100' : 'opacity-50'} transition-opacity hover:opacity-80 cursor-pointer`}
+              >
+                <div
+                  className="w-4 h-4 rounded-full"
+                  style={{ backgroundColor: progress > 90 ? '#ef4444' : progress > 70 ? '#eab308' : '#22c55e' }}
+                />
+                <div className="text-left">
+                  <p className={`text-sm font-medium ${darkMode ? 'text-gray-200' : 'text-gray-700'}`}>
+                    Budget
+                  </p>
+                  <p className={`text-xs ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>
+                    ${linkedPartsTotal.toFixed(2)} / ${Math.round(project.budget || 0)}
+                  </p>
+                </div>
+              </button>
+              {/* Todo Legend */}
+              <button
+                onClick={() => setShowTodoProgress(true)}
+                className={`flex items-center gap-2 ${showTodoProgress ? 'opacity-100' : 'opacity-50'} transition-opacity hover:opacity-80 cursor-pointer`}
+              >
+                <div className="w-4 h-4 rounded-full bg-violet-500" />
+                <div className="text-left">
+                  <p className={`text-sm font-medium ${darkMode ? 'text-gray-200' : 'text-gray-700'}`}>
+                    To-Dos
+                  </p>
+                  <p className={`text-xs ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>
+                    {project.todos?.filter(t => t.completed).length || 0} / {project.todos?.length || 0} completed
+                  </p>
+                </div>
+              </button>
             </div>
           </div>
 
-          {/* Project Details Grid - 3 columns */}
-          <div className="grid grid-cols-3 gap-4">
-            {/* Priority and Linked Parts with yellow border */}
-            <div className="col-span-2 grid grid-cols-2 gap-4 p-4 rounded-lg border-2 border-yellow-700">
-              <div>
-                <p className={`text-xs mb-1 ${darkMode ? 'text-gray-400' : 'text-slate-600'}`}>
-                  Priority</p>
-                <p className={`text-lg font-bold ${priorityColors[project.priority]}`}>
-                  {project.priority?.replace(/_/g, ' ').toUpperCase()}
-                </p>
-              </div>
-              <div>
-                <p className={`text-xs mb-1 ${
-                  darkMode ? 'text-gray-400' : 'text-slate-600'
-                }`}>Linked Parts</p>
-                <p className={`text-lg font-bold ${
-                  darkMode ? 'text-gray-100' : 'text-slate-800'
-                }`}>
-                  {linkedParts.length}
+          {/* Desktop: Vertical Bar Graphs (3 equal columns) */}
+          <div className="hidden lg:grid lg:grid-cols-3 lg:gap-4 lg:flex-1">
+            {/* Column 1: Budget Bar */}
+            <div className="flex flex-col items-end pr-2">
+              <div className="flex flex-col items-center flex-1">
+                <div
+                  className={`w-14 rounded-lg relative overflow-hidden flex-1 min-h-[100px] ${
+                    darkMode ? 'bg-gray-700' : 'bg-gray-300'
+                  }`}
+                  style={{
+                    borderBottom: `3px solid ${progress > 90 ? '#ef4444' : progress > 70 ? '#eab308' : '#22c55e'}`
+                  }}
+                >
+                  {/* Budget fill from bottom */}
+                  <div
+                    className="absolute bottom-0 left-0 right-0 transition-all duration-500"
+                    style={{
+                      height: `${Math.min(progress, 100)}%`,
+                      backgroundColor: progress > 90 ? '#ef4444' : progress > 70 ? '#eab308' : '#22c55e'
+                    }}
+                  />
+                </div>
+                <p className={`text-xs font-bold mt-1 ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>
+                  {progress.toFixed(0)}%
                 </p>
               </div>
             </div>
-            {/* Empty third column */}
-            <div></div>
+
+            {/* Column 2: To-Dos Bar */}
+            <div className="flex flex-col items-center">
+              <div
+                className={`w-14 rounded-lg relative overflow-hidden flex-1 min-h-[100px] ${
+                  darkMode ? 'bg-gray-700' : 'bg-gray-300'
+                }`}
+                style={{
+                  borderBottom: '3px solid #8b5cf6'
+                }}
+              >
+                {/* Todo fill from bottom */}
+                <div
+                  className="absolute bottom-0 left-0 right-0 transition-all duration-500 bg-violet-500"
+                  style={{
+                    height: `${Math.round((project.todos?.filter(t => t.completed).length || 0) / (project.todos?.length || 1) * 100)}%`
+                  }}
+                />
+              </div>
+              <p className={`text-xs font-bold mt-1 ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>
+                {Math.round((project.todos?.filter(t => t.completed).length || 0) / (project.todos?.length || 1) * 100)}%
+              </p>
+            </div>
+
+            {/* Column 3: Legend */}
+            <div className="flex flex-col justify-end pb-2">
+              <div className="space-y-2">
+                <div className="flex items-center gap-2">
+                  <div
+                    className="w-3 h-3 rounded flex-shrink-0"
+                    style={{ backgroundColor: progress > 90 ? '#ef4444' : progress > 70 ? '#eab308' : '#22c55e' }}
+                  />
+                  <div>
+                    <p className={`text-xs font-medium ${darkMode ? 'text-gray-300' : 'text-gray-600'}`}>
+                      Budget
+                    </p>
+                    <p className={`text-xs ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>
+                      ${linkedPartsTotal.toFixed(2)} / ${Math.round(project.budget || 0)}
+                    </p>
+                  </div>
+                </div>
+                <div className="flex items-center gap-2">
+                  <div className="w-3 h-3 rounded bg-violet-500 flex-shrink-0" />
+                  <div>
+                    <p className={`text-xs font-medium ${darkMode ? 'text-gray-300' : 'text-gray-600'}`}>
+                      To-Dos
+                    </p>
+                    <p className={`text-xs ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>
+                      {project.todos?.filter(t => t.completed).length || 0} / {project.todos?.length || 0} done
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
 
@@ -711,7 +861,7 @@ const ProjectDetailView = ({
 
       {/* Linked Parts List - Full Width Below */}
       {linkedParts.length > 0 && (
-        <div className={`pt-6 border-t ${
+        <div className={`pt-6 pb-6 border-t ${
           darkMode ? 'border-gray-700' : 'border-slate-200'
         }`}>
           <h3 className={`text-lg font-semibold mb-3 ${
@@ -828,8 +978,9 @@ const ProjectDetailView = ({
         </div>
       )}
 
+      {/* Empty State for Linked Parts */}
       {linkedParts.length === 0 && (
-        <div className={`pt-6 border-t ${
+        <div className={`pt-6 pb-6 border-t ${
           darkMode ? 'border-gray-700' : 'border-slate-200'
         }`}>
           <h3 className={`text-lg font-semibold mb-3 ${
@@ -837,7 +988,7 @@ const ProjectDetailView = ({
           }`}>
             <div className="flex items-center gap-2">
               <Package className="w-5 h-5" />
-              <span>Linked Parts (0)</span>
+              <span>Linked Parts</span>
             </div>
           </h3>
           <div className={`text-center py-8 rounded-lg border ${

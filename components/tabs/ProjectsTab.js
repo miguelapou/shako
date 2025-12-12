@@ -188,7 +188,7 @@ const ProjectsTab = ({
                 </div>
 
                 {/* Description */}
-                <div className="mb-4" style={{ height: '3.75rem' }}>
+                <div className="mb-4 md:h-[3.75rem]">
                   <p className={`text-sm line-clamp-3 overflow-hidden ${
                     project.description
                       ? secondaryText(darkMode)
@@ -203,7 +203,7 @@ const ProjectsTab = ({
                 <div className="mb-4">
                   <p className={`text-sm font-semibold mb-2 ${
                     darkMode ? 'text-gray-300' : 'text-slate-700'
-                  }`}>Budget Used</p>
+                  }`}>Budget</p>
                   <div className="flex justify-between items-center mb-2">
                     <span className="text-sm font-medium">
                       <span className={
@@ -255,86 +255,53 @@ const ProjectsTab = ({
                   </div>
                 </div>
 
-                {/* Linked Parts */}
+                {/* Parts Counter and Todos - Inline */}
                 {(() => {
                   const linkedParts = parts.filter(part => part.projectId === project.id);
                   return (
-                    <div className={`mt-4 pt-4 border-t ${
+                    <div className={`mt-4 pt-4 border-t flex items-center justify-between ${
                       darkMode ? 'border-gray-600' : 'border-gray-200'
                     }`}>
-                      <div className="flex items-center justify-between mb-2">
-                        <span className={`text-sm font-semibold flex items-center gap-1.5 ${
+                      {/* Parts Counter */}
+                      <div className="flex items-center gap-1.5">
+                        <Package className={`w-4 h-4 ${
+                          darkMode ? 'text-gray-400' : 'text-gray-500'
+                        }`} />
+                        <span className={`text-sm font-medium ${
                           darkMode ? 'text-gray-300' : 'text-slate-700'
                         }`}>
-                          <Package className="w-4 h-4" />
-                          Linked Parts
+                          {linkedParts.length}
                         </span>
                       </div>
-                      {linkedParts.length > 0 ? (
-                        <div className={`grid grid-cols-2 gap-1 ${
-                          linkedParts.length <= 6 ? 'pb-6' : ''
-                        }`}>
-                          {linkedParts.slice(0, 6).map((part) => (
-                            <div
-                              key={part.id}
-                              className={`text-xs px-2 py-1 rounded ${
-                                darkMode ? 'bg-gray-700 text-gray-300' : 'bg-gray-100 text-gray-700'
-                              }`}
-                            >
-                              <span className="truncate block">{part.part}</span>
-                            </div>
-                          ))}
-                          {linkedParts.length > 6 && (
-                            <div className={`col-span-2 text-xs text-center pt-1 ${
-                              darkMode ? 'text-gray-400' : 'text-slate-600'
+
+                      {/* Todo Counter */}
+                      {project.todos && project.todos.length > 0 && (
+                        <div className="flex items-center gap-2">
+                          <div className="flex items-center gap-1">
+                            <CheckCircle className={`w-3.5 h-3.5 ${
+                              darkMode ? 'text-green-400' : 'text-green-600'
+                            }`} />
+                            <span className={`text-xs font-medium ${
+                              darkMode ? 'text-gray-300' : 'text-slate-700'
                             }`}>
-                              +{linkedParts.length - 6} more
-                            </div>
-                          )}
-                        </div>
-                      ) : (
-                        <div className="text-center py-3">
-                          <Package className={`w-8 h-8 mx-auto mb-1.5 opacity-40 ${
-                            darkMode ? 'text-gray-400' : 'text-gray-500'
-                          }`} />
-                          <p className={`text-xs ${
-                            darkMode ? 'text-gray-400' : 'text-gray-500'
-                          }`}>
-                            No parts linked
-                          </p>
+                              {project.todos.filter(t => t.completed).length}
+                            </span>
+                          </div>
+                          <div className="flex items-center gap-1">
+                            <Clock className={`w-3.5 h-3.5 ${
+                              darkMode ? 'text-gray-400' : 'text-gray-500'
+                            }`} />
+                            <span className={`text-xs font-medium ${
+                              darkMode ? 'text-gray-300' : 'text-slate-700'
+                            }`}>
+                              {project.todos.filter(t => !t.completed).length}
+                            </span>
+                          </div>
                         </div>
                       )}
                     </div>
                   );
                 })()}
-
-                {/* Todo Counter - Bottom Right */}
-                {project.todos && project.todos.length > 0 && (
-                  <div className="absolute bottom-2 right-2">
-                    <div className="flex items-center gap-2">
-                      <div className="flex items-center gap-1">
-                        <CheckCircle className={`w-3.5 h-3.5 ${
-                          darkMode ? 'text-green-400' : 'text-green-600'
-                        }`} />
-                        <span className={`text-xs font-medium ${
-                          darkMode ? 'text-gray-300' : 'text-slate-700'
-                        }`}>
-                          {project.todos.filter(t => t.completed).length}
-                        </span>
-                      </div>
-                      <div className="flex items-center gap-1">
-                        <Clock className={`w-3.5 h-3.5 ${
-                          darkMode ? 'text-gray-400' : 'text-gray-500'
-                        }`} />
-                        <span className={`text-xs font-medium ${
-                          darkMode ? 'text-gray-300' : 'text-slate-700'
-                        }`}>
-                          {project.todos.filter(t => !t.completed).length}
-                        </span>
-                      </div>
-                    </div>
-                  </div>
-                )}
               </div>
             );
           })}
