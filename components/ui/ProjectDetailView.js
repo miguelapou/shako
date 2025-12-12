@@ -501,36 +501,97 @@ const ProjectDetailView = ({
             </div>
           </div>
 
-          {/* Budget Progress */}
-          <div>
-            <h3 className={`text-lg font-semibold mb-3 ${
-              darkMode ? 'text-gray-200' : 'text-gray-800'
-            }`}>Budget Used</h3>
-            <div className="flex justify-between items-center mb-2">
-              <span className={`text-sm font-medium ${
-                darkMode ? 'text-gray-300' : 'text-slate-700'
-              }`}>
-                ${linkedPartsTotal.toFixed(2)} / ${Math.round(project.budget || 0)}
-              </span>
-              <span className={`text-sm font-bold ${
-                darkMode ? 'text-gray-200' : 'text-gray-900'
-              }`}>
-                {progress.toFixed(0)}%
-              </span>
+          {/* Progress Circles */}
+          <div className="flex items-center gap-6">
+            {/* Circular Progress Bars */}
+            <div className="relative" style={{ width: '120px', height: '120px' }}>
+              {/* Budget Progress Circle (outer) */}
+              <svg className="w-full h-full transform -rotate-90" viewBox="0 0 120 120">
+                {/* Background circle */}
+                <circle
+                  cx="60"
+                  cy="60"
+                  r="52"
+                  fill="none"
+                  stroke={darkMode ? '#374151' : '#e5e7eb'}
+                  strokeWidth="12"
+                />
+                {/* Progress circle */}
+                <circle
+                  cx="60"
+                  cy="60"
+                  r="52"
+                  fill="none"
+                  stroke={progress > 90 ? '#ef4444' : progress > 70 ? '#eab308' : '#22c55e'}
+                  strokeWidth="12"
+                  strokeLinecap="round"
+                  strokeDasharray={2 * Math.PI * 52}
+                  strokeDashoffset={2 * Math.PI * 52 * (1 - Math.min(progress, 100) / 100)}
+                  className="transition-all duration-500"
+                />
+              </svg>
+              {/* Todo Progress Circle (inner) */}
+              <svg className="absolute top-0 left-0 w-full h-full transform -rotate-90" viewBox="0 0 120 120">
+                {/* Background circle */}
+                <circle
+                  cx="60"
+                  cy="60"
+                  r="36"
+                  fill="none"
+                  stroke={darkMode ? '#374151' : '#e5e7eb'}
+                  strokeWidth="10"
+                />
+                {/* Progress circle */}
+                <circle
+                  cx="60"
+                  cy="60"
+                  r="36"
+                  fill="none"
+                  stroke="#8b5cf6"
+                  strokeWidth="10"
+                  strokeLinecap="round"
+                  strokeDasharray={2 * Math.PI * 36}
+                  strokeDashoffset={2 * Math.PI * 36 * (1 - ((project.todos?.filter(t => t.completed).length || 0) / (project.todos?.length || 1)))}
+                  className="transition-all duration-500"
+                />
+              </svg>
+              {/* Center percentage display */}
+              <div className="absolute inset-0 flex items-center justify-center">
+                <span className={`text-sm font-bold ${darkMode ? 'text-gray-200' : 'text-gray-700'}`}>
+                  {progress.toFixed(0)}%
+                </span>
+              </div>
             </div>
-            <div className={`w-full rounded-full h-4 ${
-              darkMode ? 'bg-gray-700' : 'bg-gray-200'
-            }`}>
-              <div
-                className={`h-4 rounded-full transition-all ${
-                  progress > 90
-                    ? 'bg-red-500'
-                    : progress > 70
-                    ? 'bg-yellow-500'
-                    : 'bg-green-500'
-                }`}
-                style={{ width: `${Math.min(progress, 100)}%` }}
-              />
+
+            {/* Legend */}
+            <div className="space-y-3">
+              {/* Budget Legend */}
+              <div className="flex items-center gap-2">
+                <div
+                  className="w-4 h-4 rounded-full"
+                  style={{ backgroundColor: progress > 90 ? '#ef4444' : progress > 70 ? '#eab308' : '#22c55e' }}
+                />
+                <div>
+                  <p className={`text-sm font-medium ${darkMode ? 'text-gray-200' : 'text-gray-700'}`}>
+                    Budget
+                  </p>
+                  <p className={`text-xs ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>
+                    ${linkedPartsTotal.toFixed(2)} / ${Math.round(project.budget || 0)}
+                  </p>
+                </div>
+              </div>
+              {/* Todo Legend */}
+              <div className="flex items-center gap-2">
+                <div className="w-4 h-4 rounded-full bg-violet-500" />
+                <div>
+                  <p className={`text-sm font-medium ${darkMode ? 'text-gray-200' : 'text-gray-700'}`}>
+                    To-Dos
+                  </p>
+                  <p className={`text-xs ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>
+                    {project.todos?.filter(t => t.completed).length || 0} / {project.todos?.length || 0} completed
+                  </p>
+                </div>
+              </div>
             </div>
           </div>
 
