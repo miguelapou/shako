@@ -61,10 +61,9 @@ const ManageVendorsModal = ({
       >
         {/* HEADER */}
         <div
-          className={`sticky top-0 border-b px-6 py-4 rounded-t-lg ${
+          className={`sticky top-0 z-10 border-b px-6 py-4 rounded-t-lg ${
             darkMode ? 'bg-gray-800 border-gray-700' : 'bg-slate-50 border-slate-200'
           }`}
-          style={{ zIndex: 10 }}
         >
           <div className="flex items-center justify-between gap-3">
             <h2

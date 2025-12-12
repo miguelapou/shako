@@ -86,7 +86,7 @@ const AddProjectModal = ({
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header */}
-        <div className={`px-6 py-4 border-b flex items-center justify-between ${
+        <div className={`sticky top-0 z-10 px-6 py-4 border-b flex items-center justify-between ${
           darkMode ? 'bg-gray-800 border-gray-700' : 'bg-slate-50 border-slate-200'
         }`}>
           <h2 className={`text-2xl font-bold ${
