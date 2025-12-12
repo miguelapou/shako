@@ -636,7 +636,7 @@ const ProjectDetailView = ({
             </div>
 
             {/* Mobile Priority */}
-            <div className="flex-1 flex justify-start">
+            <div className="flex-1 flex justify-start items-start">
               <div>
                 <p className={`text-xs mb-1 ${darkMode ? 'text-gray-400' : 'text-slate-600'}`}>
                   Priority</p>
