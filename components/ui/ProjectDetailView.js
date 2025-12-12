@@ -785,7 +785,7 @@ const ProjectDetailView = ({
 
       {/* Linked Parts List - Full Width Below */}
       {linkedParts.length > 0 && (
-        <div className={`pt-6 border-t ${
+        <div className={`pt-6 pb-6 border-t ${
           darkMode ? 'border-gray-700' : 'border-slate-200'
         }`}>
           <h3 className={`text-lg font-semibold mb-3 ${
