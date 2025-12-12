@@ -585,12 +585,15 @@ const ProjectDetailView = ({
             {/* Legend */}
             <div className="space-y-3">
               {/* Budget Legend */}
-              <div className={`flex items-center gap-2 ${!showTodoProgress ? 'opacity-100' : 'opacity-50'} transition-opacity`}>
+              <button
+                onClick={() => setShowTodoProgress(false)}
+                className={`flex items-center gap-2 ${!showTodoProgress ? 'opacity-100' : 'opacity-50'} transition-opacity hover:opacity-80 cursor-pointer`}
+              >
                 <div
                   className="w-4 h-4 rounded-full"
                   style={{ backgroundColor: progress > 90 ? '#ef4444' : progress > 70 ? '#eab308' : '#22c55e' }}
                 />
-                <div>
+                <div className="text-left">
                   <p className={`text-sm font-medium ${darkMode ? 'text-gray-200' : 'text-gray-700'}`}>
                     Budget
                   </p>
@@ -598,11 +601,14 @@ const ProjectDetailView = ({
                     ${linkedPartsTotal.toFixed(2)} / ${Math.round(project.budget || 0)}
                   </p>
                 </div>
-              </div>
+              </button>
               {/* Todo Legend */}
-              <div className={`flex items-center gap-2 ${showTodoProgress ? 'opacity-100' : 'opacity-50'} transition-opacity`}>
+              <button
+                onClick={() => setShowTodoProgress(true)}
+                className={`flex items-center gap-2 ${showTodoProgress ? 'opacity-100' : 'opacity-50'} transition-opacity hover:opacity-80 cursor-pointer`}
+              >
                 <div className="w-4 h-4 rounded-full bg-violet-500" />
-                <div>
+                <div className="text-left">
                   <p className={`text-sm font-medium ${darkMode ? 'text-gray-200' : 'text-gray-700'}`}>
                     To-Dos
                   </p>
@@ -610,7 +616,7 @@ const ProjectDetailView = ({
                     {project.todos?.filter(t => t.completed).length || 0} / {project.todos?.length || 0} completed
                   </p>
                 </div>
-              </div>
+              </button>
             </div>
 
             {/* Priority - centered in remaining space, text left-aligned */}
