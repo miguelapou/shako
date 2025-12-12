@@ -474,7 +474,7 @@ const ProjectDetailModal = ({
             <>
               {/* Navigation controls on the left */}
               {navigableProjects.length > 1 && currentIndex !== -1 && (
-                <div className="flex items-center">
+                <div className="flex items-center pr-2">
                   <button
                     onClick={(e) => {
                       e.stopPropagation();
