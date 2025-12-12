@@ -505,8 +505,10 @@ const ProjectDetailView = ({
             </div>
           </div>
 
-          {/* Progress Circles and Priority */}
-          <div className="flex items-center gap-6 flex-1">
+          {/* Progress Section - Different layouts for mobile vs desktop */}
+
+          {/* Mobile: Circular Progress Bars */}
+          <div className="flex items-center gap-6 flex-1 lg:hidden">
             {/* Circular Progress Bars - Clickable */}
             <button
               onClick={() => setShowTodoProgress(!showTodoProgress)}
@@ -585,7 +587,7 @@ const ProjectDetailView = ({
               </div>
             </button>
 
-            {/* Legend */}
+            {/* Mobile Legend */}
             <div className="space-y-3">
               {/* Budget Legend */}
               <button
@@ -622,21 +624,111 @@ const ProjectDetailView = ({
               </button>
             </div>
 
-            {/* Priority - left on mobile, centered on desktop */}
-            <div className="flex-1 flex justify-start lg:justify-center">
+            {/* Mobile Priority */}
+            <div className="flex-1 flex justify-start">
               <div>
                 <p className={`text-xs mb-1 ${darkMode ? 'text-gray-400' : 'text-slate-600'}`}>
                   Priority</p>
                 <p className={`text-lg font-bold ${priorityColors[project.priority]}`}>
                   {project.priority === 'not_set' ? 'NONE' : (
-                    project.priority === 'medium' ? (
-                      <>
-                        <span className="lg:hidden">MED</span>
-                        <span className="hidden lg:inline">MEDIUM</span>
-                      </>
-                    ) : project.priority?.replace(/_/g, ' ').toUpperCase()
+                    project.priority === 'medium' ? 'MED' : project.priority?.replace(/_/g, ' ').toUpperCase()
                   )}
                 </p>
+              </div>
+            </div>
+          </div>
+
+          {/* Desktop: Vertical Bar Graphs (3 columns) */}
+          <div className="hidden lg:grid lg:grid-cols-3 gap-4 flex-1">
+            {/* Column 1: Budget Bar */}
+            <div className="flex flex-col items-center">
+              <div className={`w-full rounded-lg relative overflow-hidden flex-1 min-h-[120px] ${
+                darkMode ? 'bg-gray-700' : 'bg-gray-200'
+              }`}>
+                {/* Budget fill from bottom */}
+                <div
+                  className="absolute bottom-0 left-0 right-0 transition-all duration-500 rounded-b-lg"
+                  style={{
+                    height: `${Math.min(progress, 100)}%`,
+                    backgroundColor: progress > 90 ? '#ef4444' : progress > 70 ? '#eab308' : '#22c55e'
+                  }}
+                />
+                {/* Percentage label inside bar */}
+                <div className="absolute inset-0 flex items-center justify-center">
+                  <span className={`text-lg font-bold ${
+                    darkMode ? 'text-white' : 'text-gray-800'
+                  }`} style={{ textShadow: '0 1px 2px rgba(0,0,0,0.3)' }}>
+                    {progress.toFixed(0)}%
+                  </span>
+                </div>
+              </div>
+              <p className={`text-sm font-medium mt-2 ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>
+                Budget
+              </p>
+            </div>
+
+            {/* Column 2: To-Dos Bar */}
+            <div className="flex flex-col items-center">
+              <div className={`w-full rounded-lg relative overflow-hidden flex-1 min-h-[120px] ${
+                darkMode ? 'bg-gray-700' : 'bg-gray-200'
+              }`}>
+                {/* Todo fill from bottom */}
+                <div
+                  className="absolute bottom-0 left-0 right-0 transition-all duration-500 rounded-b-lg bg-violet-500"
+                  style={{
+                    height: `${Math.round((project.todos?.filter(t => t.completed).length || 0) / (project.todos?.length || 1) * 100)}%`
+                  }}
+                />
+                {/* Percentage label inside bar */}
+                <div className="absolute inset-0 flex items-center justify-center">
+                  <span className={`text-lg font-bold ${
+                    darkMode ? 'text-white' : 'text-gray-800'
+                  }`} style={{ textShadow: '0 1px 2px rgba(0,0,0,0.3)' }}>
+                    {Math.round((project.todos?.filter(t => t.completed).length || 0) / (project.todos?.length || 1) * 100)}%
+                  </span>
+                </div>
+              </div>
+              <p className={`text-sm font-medium mt-2 ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>
+                To-Dos
+              </p>
+            </div>
+
+            {/* Column 3: Priority + Legend */}
+            <div className="flex flex-col">
+              {/* Priority at top */}
+              <div className="mb-4">
+                <p className={`text-xs mb-1 ${darkMode ? 'text-gray-400' : 'text-slate-600'}`}>
+                  Priority</p>
+                <p className={`text-lg font-bold ${priorityColors[project.priority]}`}>
+                  {project.priority === 'not_set' ? 'NONE' : (
+                    project.priority === 'medium' ? 'MEDIUM' : project.priority?.replace(/_/g, ' ').toUpperCase()
+                  )}
+                </p>
+              </div>
+
+              {/* Legend items */}
+              <div className="space-y-3 mt-auto">
+                {/* Budget Legend */}
+                <div className="flex items-center gap-2">
+                  <div
+                    className="w-4 h-4 rounded"
+                    style={{ backgroundColor: progress > 90 ? '#ef4444' : progress > 70 ? '#eab308' : '#22c55e' }}
+                  />
+                  <div className="text-left">
+                    <p className={`text-xs ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>
+                      ${linkedPartsTotal.toFixed(2)} / ${Math.round(project.budget || 0)}
+                    </p>
+                  </div>
+                </div>
+                {/* Todo Legend */}
+                <div className="flex items-center gap-2">
+                  <div className="w-4 h-4 rounded bg-violet-500" />
+                  <div className="text-left">
+                    <p className={`text-xs ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>
+                      {project.todos?.filter(t => t.completed).length || 0} / {project.todos?.length || 0} completed
+                    </p>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
