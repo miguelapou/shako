@@ -75,7 +75,7 @@ export default function PartsScreen() {
           <View style={styles.headerRow}>
             <View style={{ flex: 1 }}>
               <Text style={styles.title}>{item.part}</Text>
-              {item.partNumber && <Text style={styles.subtitle}>#{item.partNumber}</Text>}
+              {item.part_number && <Text style={styles.subtitle}>#{item.part_number}</Text>}
             </View>
             <View style={[styles.statusBadge, { backgroundColor: status.color }]}>
               <Text style={styles.statusText}>{status.label}</Text>
@@ -83,7 +83,7 @@ export default function PartsScreen() {
           </View>
           <View style={styles.badges}>
             {item.vendor && <View style={styles.badge}><Text style={styles.badgeText}>{item.vendor}</Text></View>}
-            <View style={styles.badge}><Text style={styles.badgeText}>{getProjectName(item.projectId)}</Text></View>
+            <View style={styles.badge}><Text style={styles.badgeText}>{getProjectName(item.project_id)}</Text></View>
           </View>
           {item.tracking && (
             <TouchableOpacity style={styles.trackingRow} onPress={() => {

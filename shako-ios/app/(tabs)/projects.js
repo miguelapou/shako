@@ -61,7 +61,7 @@ export default function ProjectsScreen() {
   };
 
   const getProjectTotal = (projectId) => {
-    return parts.filter(p => p.projectId === projectId).reduce((sum, p) => sum + (p.total || 0), 0);
+    return parts.filter(p => p.project_id === projectId).reduce((sum, p) => sum + (p.total || 0), 0);
   };
 
   const priorityColors = { high: '#ef4444', medium: '#f59e0b', low: '#10b981', not_set: '#3b82f6' };

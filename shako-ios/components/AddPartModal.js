@@ -56,9 +56,9 @@ export default function AddPartModal({ visible, projects, vendors, onClose, onSa
     try {
       await createPart({
         part: partName.trim(),
-        partNumber: partNumber.trim() || null,
+        part_number: partNumber.trim() || null,
         vendor: vendor.trim() || null,
-        projectId: projectId ? parseInt(projectId) : null,
+        project_id: projectId ? parseInt(projectId) : null,
         price: price ? parseFloat(price) : 0,
         shipping: shipping ? parseFloat(shipping) : 0,
         duties: duties ? parseFloat(duties) : 0,
