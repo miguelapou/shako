@@ -38,7 +38,7 @@ export default function VehiclesScreen() {
         getAllProjects(user.id),
       ]);
       setVehicles(vehicleData.filter(v => !v.archived));
-      setProjects(projectData);
+      setProjects(projectData.filter(p => !p.archived));
 
       const paths = vehicleData.filter(v => v.image_url).map(v => v.image_url);
       if (paths.length > 0) {
@@ -62,18 +62,26 @@ export default function VehiclesScreen() {
     setRefreshing(false);
   }, [user]);
 
-  const getVehicleProjectCount = (vehicleId) => {
-    return projects.filter(p => p.vehicle_id === vehicleId && !p.archived).length;
+  const getVehicleProjects = (vehicleId) => {
+    return projects.filter(p => p.vehicle_id === vehicleId);
+  };
+
+  const getPriorityColor = (priority) => {
+    const colors = { high: '#ef4444', medium: '#f59e0b', low: '#10b981', not_set: '#3b82f6' };
+    return colors[priority] || colors.not_set;
   };
 
   const getBorderColor = (color) => {
-    if (!color) return '#3b82f6'; // default blue
+    if (!color) return '#3b82f6';
     return color;
   };
 
   const renderVehicle = ({ item }) => {
-    const projectCount = getVehicleProjectCount(item.id);
+    const vehicleProjects = getVehicleProjects(item.id);
     const borderColor = getBorderColor(item.color);
+    const hasImage = item.image_url && imageUrls[item.image_url];
+    const displayName = item.nickname || [item.year, item.make, item.name].filter(Boolean).join(' ');
+    const badgeText = item.nickname ? [item.year, item.make, item.name].filter(Boolean).join(' ') : null;
 
     return (
       <TouchableOpacity
@@ -85,48 +93,52 @@ export default function VehiclesScreen() {
         }}
       >
         {/* Vehicle Image */}
-        {item.image_url && imageUrls[item.image_url] ? (
-          <Image source={{ uri: imageUrls[item.image_url] }} style={styles.image} />
+        {hasImage ? (
+          <Image
+            source={{ uri: imageUrls[item.image_url] }}
+            style={styles.image}
+            resizeMode="cover"
+          />
         ) : (
           <View style={styles.imagePlaceholder}>
-            <Ionicons name="camera" size={32} color={isDark ? '#4b5563' : '#9ca3af'} />
+            <Ionicons name="camera" size={48} color={isDark ? '#4b5563' : '#9ca3af'} style={{ opacity: 0.4 }} />
+            <Text style={styles.noImageText}>No image</Text>
           </View>
         )}
 
+        {/* Vehicle Header */}
         <View style={styles.cardContent}>
-          {/* Vehicle Name */}
-          <Text style={styles.title}>{item.nickname || item.name}</Text>
-
-          {/* Year/Make/Model badge if nickname exists */}
-          {item.nickname && (
-            <View style={[styles.colorBadge, { backgroundColor: item.color || '#3b82f6' }]}>
-              <Text style={styles.colorBadgeText}>
-                {[item.year, item.make, item.name].filter(Boolean).join(' ')}
-              </Text>
-            </View>
-          )}
-
-          {/* Info Row */}
-          <View style={styles.infoRow}>
-            {/* Projects count */}
-            <View style={styles.infoItem}>
-              <Ionicons name="folder-outline" size={16} color={isDark ? '#9ca3af' : '#6b7280'} />
-              <Text style={styles.infoText}>
-                {projectCount} {projectCount === 1 ? 'project' : 'projects'}
-              </Text>
-            </View>
-
-            {/* Year if no nickname */}
-            {!item.nickname && item.year && (
-              <View style={styles.badge}>
-                <Text style={styles.badgeText}>{item.year}</Text>
+          <View style={styles.headerRow}>
+            <Text style={styles.vehicleName} numberOfLines={1}>{displayName}</Text>
+            {badgeText && (
+              <View style={[styles.colorBadge, { backgroundColor: item.color || '#3b82f6' }]}>
+                <Text style={styles.colorBadgeText}>{badgeText}</Text>
               </View>
             )}
+          </View>
 
-            {/* License Plate */}
-            {item.license_plate && (
-              <View style={styles.badge}>
-                <Text style={styles.badgeText}>{item.license_plate}</Text>
+          {/* Projects Section */}
+          <View style={styles.projectsSection}>
+            <Text style={styles.sectionTitle}>PROJECTS</Text>
+            {vehicleProjects.length > 0 ? (
+              <View style={styles.projectsGrid}>
+                {vehicleProjects.slice(0, 4).map((project) => (
+                  <View
+                    key={project.id}
+                    style={[styles.projectBadge, { borderLeftColor: getPriorityColor(project.priority) }]}
+                  >
+                    <Ionicons name="list" size={12} color={isDark ? '#d1d5db' : '#374151'} />
+                    <Text style={styles.projectBadgeText} numberOfLines={1}>{project.name}</Text>
+                  </View>
+                ))}
+                {vehicleProjects.length > 4 && (
+                  <Text style={styles.moreProjects}>+{vehicleProjects.length - 4} more</Text>
+                )}
+              </View>
+            ) : (
+              <View style={styles.noProjects}>
+                <Ionicons name="list" size={24} color={isDark ? '#4b5563' : '#9ca3af'} style={{ opacity: 0.4 }} />
+                <Text style={styles.noProjectsText}>No projects linked</Text>
               </View>
             )}
           </View>
@@ -149,23 +161,28 @@ export default function VehiclesScreen() {
         data={vehicles}
         renderItem={renderVehicle}
         keyExtractor={(item) => item.id.toString()}
-        contentContainerStyle={{ padding: 16 }}
+        contentContainerStyle={styles.listContent}
         refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={isDark ? '#fff' : '#000'} />}
         ListEmptyComponent={
           <View style={styles.emptyState}>
             <Ionicons name="car-outline" size={64} color={isDark ? '#4b5563' : '#9ca3af'} />
-            <Text style={styles.emptyTitle}>No vehicles yet</Text>
-            <Text style={styles.emptySubtitle}>Tap the + button to add your first vehicle</Text>
+            <Text style={styles.emptyTitle}>No Vehicles Yet</Text>
+            <Text style={styles.emptySubtitle}>Add your first vehicle to track maintenance and information</Text>
+            <TouchableOpacity style={styles.addButton} onPress={() => setShowAddModal(true)}>
+              <Ionicons name="add" size={20} color="#fff" />
+              <Text style={styles.addButtonText}>Add a vehicle</Text>
+            </TouchableOpacity>
           </View>
         }
       />
 
       {/* FAB */}
-      <TouchableOpacity style={styles.fab} onPress={() => setShowAddModal(true)} activeOpacity={0.8}>
-        <Ionicons name="add" size={28} color="white" />
-      </TouchableOpacity>
+      {vehicles.length > 0 && (
+        <TouchableOpacity style={styles.fab} onPress={() => setShowAddModal(true)} activeOpacity={0.8}>
+          <Ionicons name="add" size={28} color="white" />
+        </TouchableOpacity>
+      )}
 
-      {/* Add Modal */}
       <AddVehicleModal
         visible={showAddModal}
         onClose={() => setShowAddModal(false)}
@@ -173,7 +190,6 @@ export default function VehiclesScreen() {
         isDark={isDark}
       />
 
-      {/* Detail Modal */}
       <VehicleDetailModal
         visible={showDetailModal}
         vehicle={selectedVehicle}
@@ -187,107 +203,165 @@ export default function VehiclesScreen() {
 }
 
 const createStyles = (isDark) => StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: isDark ? '#111827' : '#f3f4f6'
-  },
-  centered: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center'
-  },
-  loadingText: {
-    fontSize: 16,
-    color: isDark ? '#9ca3af' : '#6b7280',
-  },
+  container: { flex: 1, backgroundColor: isDark ? '#111827' : '#f1f5f9' },
+  centered: { flex: 1, justifyContent: 'center', alignItems: 'center' },
+  loadingText: { fontSize: 16, color: isDark ? '#9ca3af' : '#6b7280' },
+  listContent: { padding: 16, paddingBottom: 100 },
+
+  // Card
   card: {
     backgroundColor: isDark ? '#1f2937' : '#fff',
     borderRadius: 12,
-    marginBottom: 16,
+    marginBottom: 24,
     overflow: 'hidden',
     shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: isDark ? 0.3 : 0.1,
-    shadowRadius: 8,
-    elevation: 4,
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: isDark ? 0.3 : 0.15,
+    shadowRadius: 12,
+    elevation: 8,
     borderTopWidth: 4,
-  },
-  cardContent: {
-    padding: 16
   },
   image: {
     width: '100%',
-    height: 180,
-    backgroundColor: isDark ? '#374151' : '#e5e7eb',
+    height: 192,
+    backgroundColor: isDark ? '#374151' : '#e2e8f0',
   },
   imagePlaceholder: {
     width: '100%',
-    height: 120,
-    backgroundColor: isDark ? '#374151' : '#e5e7eb',
+    height: 192,
+    backgroundColor: isDark ? '#1f2937' : '#f1f5f9',
     justifyContent: 'center',
     alignItems: 'center',
   },
-  title: {
-    fontSize: 20,
-    fontWeight: 'bold',
-    color: isDark ? '#fff' : '#1f2937'
-  },
-  colorBadge: {
-    alignSelf: 'flex-start',
-    paddingHorizontal: 10,
-    paddingVertical: 4,
-    borderRadius: 12,
+  noImageText: {
+    fontSize: 14,
+    color: isDark ? '#6b7280' : '#94a3b8',
     marginTop: 8,
   },
-  colorBadgeText: {
-    color: '#fff',
-    fontSize: 12,
-    fontWeight: '500',
+  cardContent: {
+    padding: 16,
   },
-  infoRow: {
+
+  // Header
+  headerRow: {
     flexDirection: 'row',
-    alignItems: 'center',
-    marginTop: 12,
-    gap: 12,
-    flexWrap: 'wrap',
+    justifyContent: 'space-between',
+    alignItems: 'flex-start',
+    gap: 8,
+    marginBottom: 4,
   },
-  infoItem: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 4,
+  vehicleName: {
+    flex: 1,
+    fontSize: 20,
+    fontWeight: 'bold',
+    color: isDark ? '#f3f4f6' : '#1e293b',
   },
-  infoText: {
-    fontSize: 14,
-    color: isDark ? '#9ca3af' : '#6b7280',
-  },
-  badge: {
-    backgroundColor: isDark ? '#374151' : '#e5e7eb',
+  colorBadge: {
     paddingHorizontal: 10,
     paddingVertical: 4,
-    borderRadius: 6
+    borderRadius: 16,
   },
-  badgeText: {
+  colorBadgeText: {
     fontSize: 12,
-    color: isDark ? '#d1d5db' : '#4b5563',
     fontWeight: '500',
+    color: '#fff',
   },
+
+  // Projects Section
+  projectsSection: {
+    marginTop: 16,
+    paddingTop: 16,
+    borderTopWidth: 1,
+    borderTopColor: isDark ? '#374151' : '#e2e8f0',
+  },
+  sectionTitle: {
+    fontSize: 11,
+    fontWeight: '600',
+    color: isDark ? '#9ca3af' : '#64748b',
+    letterSpacing: 1,
+    marginBottom: 12,
+  },
+  projectsGrid: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 8,
+  },
+  projectBadge: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: isDark ? '#374151' : '#f1f5f9',
+    paddingHorizontal: 8,
+    paddingVertical: 6,
+    borderRadius: 4,
+    borderLeftWidth: 3,
+    gap: 6,
+    width: '48%',
+  },
+  projectBadgeText: {
+    flex: 1,
+    fontSize: 12,
+    fontWeight: '500',
+    color: isDark ? '#d1d5db' : '#374151',
+  },
+  moreProjects: {
+    width: '100%',
+    textAlign: 'center',
+    fontSize: 12,
+    color: isDark ? '#6b7280' : '#94a3b8',
+    marginTop: 4,
+  },
+  noProjects: {
+    alignItems: 'center',
+    paddingVertical: 8,
+  },
+  noProjectsText: {
+    fontSize: 12,
+    color: isDark ? '#6b7280' : '#94a3b8',
+    marginTop: 4,
+  },
+
+  // Empty State
   emptyState: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    paddingTop: 100,
+    paddingVertical: 60,
+    paddingHorizontal: 32,
   },
   emptyTitle: {
-    fontSize: 18,
+    fontSize: 20,
     fontWeight: '600',
-    color: isDark ? '#9ca3af' : '#6b7280',
+    color: isDark ? '#d1d5db' : '#475569',
     marginTop: 16,
+    marginBottom: 8,
   },
   emptySubtitle: {
     fontSize: 14,
-    color: isDark ? '#6b7280' : '#9ca3af',
-    marginTop: 4,
+    color: isDark ? '#9ca3af' : '#64748b',
+    textAlign: 'center',
+    marginBottom: 24,
   },
+  addButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#3b82f6',
+    paddingHorizontal: 24,
+    paddingVertical: 12,
+    borderRadius: 8,
+    gap: 8,
+    shadowColor: '#3b82f6',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 8,
+    elevation: 4,
+  },
+  addButtonText: {
+    fontSize: 16,
+    fontWeight: '500',
+    color: '#fff',
+  },
+
+  // FAB
   fab: {
     position: 'absolute',
     bottom: 24,
@@ -302,6 +376,6 @@ const createStyles = (isDark) => StyleSheet.create({
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.3,
     shadowRadius: 8,
-    elevation: 6
+    elevation: 6,
   },
 });
