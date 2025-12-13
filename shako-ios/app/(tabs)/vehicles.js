@@ -8,13 +8,12 @@ import {
   Image,
   useColorScheme,
   Alert,
+  StyleSheet,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useAuth } from '../../contexts/AuthContext';
 import { getAllVehicles, getVehicleImageUrls } from '../../services/vehiclesService';
-import { formatCurrency } from '../../utils/dataUtils';
 import AddVehicleModal from '../../components/AddVehicleModal';
-import VehicleDetailModal from '../../components/VehicleDetailModal';
 
 export default function VehiclesScreen() {
   const [vehicles, setVehicles] = useState([]);
@@ -22,17 +21,16 @@ export default function VehiclesScreen() {
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const [showAddModal, setShowAddModal] = useState(false);
-  const [selectedVehicle, setSelectedVehicle] = useState(null);
   const { user } = useAuth();
   const colorScheme = useColorScheme();
   const isDark = colorScheme === 'dark';
+
+  const styles = createStyles(isDark);
 
   const loadVehicles = async () => {
     try {
       const data = await getAllVehicles(user.id);
       setVehicles(data.filter(v => !v.archived));
-
-      // Load image URLs
       const paths = data.filter(v => v.image_url).map(v => v.image_url);
       if (paths.length > 0) {
         const urls = await getVehicleImageUrls(paths);
@@ -46,9 +44,7 @@ export default function VehiclesScreen() {
   };
 
   useEffect(() => {
-    if (user) {
-      loadVehicles();
-    }
+    if (user) loadVehicles();
   }, [user]);
 
   const onRefresh = useCallback(async () => {
@@ -58,41 +54,18 @@ export default function VehiclesScreen() {
   }, [user]);
 
   const renderVehicle = ({ item }) => (
-    <TouchableOpacity
-      onPress={() => setSelectedVehicle(item)}
-      className={`mb-3 rounded-xl overflow-hidden ${isDark ? 'bg-gray-800' : 'bg-white'} shadow`}
-    >
+    <TouchableOpacity style={styles.card}>
       {item.image_url && imageUrls[item.image_url] && (
-        <Image
-          source={{ uri: imageUrls[item.image_url] }}
-          className="w-full h-40"
-          resizeMode="cover"
-        />
+        <Image source={{ uri: imageUrls[item.image_url] }} style={styles.image} />
       )}
-      <View className="p-4">
-        <Text className={`text-lg font-bold ${isDark ? 'text-white' : 'text-gray-900'}`}>
-          {item.nickname || item.name}
-        </Text>
+      <View style={styles.cardContent}>
+        <Text style={styles.title}>{item.nickname || item.name}</Text>
         {item.nickname && item.name && (
-          <Text className={`text-sm ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>
-            {item.name}
-          </Text>
+          <Text style={styles.subtitle}>{item.name}</Text>
         )}
-        <View className="flex-row mt-2 flex-wrap gap-2">
-          {item.year && (
-            <View className={`px-2 py-1 rounded ${isDark ? 'bg-gray-700' : 'bg-gray-100'}`}>
-              <Text className={`text-xs ${isDark ? 'text-gray-300' : 'text-gray-600'}`}>
-                {item.year}
-              </Text>
-            </View>
-          )}
-          {item.license_plate && (
-            <View className={`px-2 py-1 rounded ${isDark ? 'bg-gray-700' : 'bg-gray-100'}`}>
-              <Text className={`text-xs ${isDark ? 'text-gray-300' : 'text-gray-600'}`}>
-                {item.license_plate}
-              </Text>
-            </View>
-          )}
+        <View style={styles.badges}>
+          {item.year && <View style={styles.badge}><Text style={styles.badgeText}>{item.year}</Text></View>}
+          {item.license_plate && <View style={styles.badge}><Text style={styles.badgeText}>{item.license_plate}</Text></View>}
         </View>
       </View>
     </TouchableOpacity>
@@ -100,73 +73,50 @@ export default function VehiclesScreen() {
 
   if (loading) {
     return (
-      <View className={`flex-1 justify-center items-center ${isDark ? 'bg-gray-900' : 'bg-gray-50'}`}>
-        <Text className={isDark ? 'text-gray-400' : 'text-gray-600'}>Loading vehicles...</Text>
+      <View style={styles.centered}>
+        <Text style={styles.subtitle}>Loading vehicles...</Text>
       </View>
     );
   }
 
   return (
-    <View className={`flex-1 ${isDark ? 'bg-gray-900' : 'bg-gray-50'}`}>
+    <View style={styles.container}>
       <FlatList
         data={vehicles}
         renderItem={renderVehicle}
         keyExtractor={(item) => item.id.toString()}
         contentContainerStyle={{ padding: 16 }}
-        refreshControl={
-          <RefreshControl
-            refreshing={refreshing}
-            onRefresh={onRefresh}
-            tintColor={isDark ? '#60a5fa' : '#3b82f6'}
-          />
-        }
+        refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
         ListEmptyComponent={
-          <View className="items-center py-12">
-            <Ionicons
-              name="car-outline"
-              size={64}
-              color={isDark ? '#4b5563' : '#9ca3af'}
-            />
-            <Text className={`mt-4 text-lg ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>
-              No vehicles yet
-            </Text>
-            <Text className={`mt-1 ${isDark ? 'text-gray-500' : 'text-gray-500'}`}>
-              Tap + to add your first vehicle
-            </Text>
+          <View style={styles.centered}>
+            <Ionicons name="car-outline" size={64} color="#9ca3af" />
+            <Text style={[styles.subtitle, { marginTop: 16 }]}>No vehicles yet</Text>
           </View>
         }
       />
-
-      {/* Floating Add Button */}
-      <TouchableOpacity
-        onPress={() => setShowAddModal(true)}
-        className="absolute bottom-6 right-6 w-14 h-14 bg-blue-600 rounded-full items-center justify-center shadow-lg"
-      >
+      <TouchableOpacity style={styles.fab} onPress={() => setShowAddModal(true)}>
         <Ionicons name="add" size={28} color="white" />
       </TouchableOpacity>
-
-      {/* Add Vehicle Modal */}
       <AddVehicleModal
         visible={showAddModal}
         onClose={() => setShowAddModal(false)}
-        onSave={async () => {
-          setShowAddModal(false);
-          await loadVehicles();
-        }}
-        isDark={isDark}
-      />
-
-      {/* Vehicle Detail Modal */}
-      <VehicleDetailModal
-        visible={!!selectedVehicle}
-        vehicle={selectedVehicle}
-        imageUrl={selectedVehicle?.image_url ? imageUrls[selectedVehicle.image_url] : null}
-        onClose={() => setSelectedVehicle(null)}
-        onUpdate={async () => {
-          await loadVehicles();
-        }}
+        onSave={() => { setShowAddModal(false); loadVehicles(); }}
         isDark={isDark}
       />
     </View>
   );
 }
+
+const createStyles = (isDark) => StyleSheet.create({
+  container: { flex: 1, backgroundColor: isDark ? '#111827' : '#f3f4f6' },
+  centered: { flex: 1, justifyContent: 'center', alignItems: 'center' },
+  card: { backgroundColor: isDark ? '#1f2937' : '#fff', borderRadius: 12, marginBottom: 12, overflow: 'hidden', shadowColor: '#000', shadowOpacity: 0.1, shadowRadius: 4, elevation: 2 },
+  cardContent: { padding: 16 },
+  image: { width: '100%', height: 160 },
+  title: { fontSize: 18, fontWeight: 'bold', color: isDark ? '#fff' : '#111' },
+  subtitle: { fontSize: 14, color: isDark ? '#9ca3af' : '#6b7280', marginTop: 4 },
+  badges: { flexDirection: 'row', marginTop: 8, gap: 8 },
+  badge: { backgroundColor: isDark ? '#374151' : '#e5e7eb', paddingHorizontal: 8, paddingVertical: 4, borderRadius: 4 },
+  badgeText: { fontSize: 12, color: isDark ? '#d1d5db' : '#4b5563' },
+  fab: { position: 'absolute', bottom: 24, right: 24, width: 56, height: 56, backgroundColor: '#3b82f6', borderRadius: 28, justifyContent: 'center', alignItems: 'center', shadowColor: '#000', shadowOpacity: 0.3, shadowRadius: 4, elevation: 4 },
+});

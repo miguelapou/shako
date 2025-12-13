@@ -7,14 +7,13 @@ import {
   RefreshControl,
   useColorScheme,
   Alert,
+  StyleSheet,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useAuth } from '../../contexts/AuthContext';
 import { getAllProjects } from '../../services/projectsService';
 import { getAllVehicles } from '../../services/vehiclesService';
 import { getAllParts } from '../../services/partsService';
-import { calculateProjectTotal, formatCurrency } from '../../utils/dataUtils';
-import { getPriorityBorderColor } from '../../utils/colorUtils';
 import AddProjectModal from '../../components/AddProjectModal';
 
 export default function ProjectsScreen() {
@@ -27,6 +26,7 @@ export default function ProjectsScreen() {
   const { user } = useAuth();
   const colorScheme = useColorScheme();
   const isDark = colorScheme === 'dark';
+  const styles = createStyles(isDark);
 
   const loadData = async () => {
     try {
@@ -46,9 +46,7 @@ export default function ProjectsScreen() {
   };
 
   useEffect(() => {
-    if (user) {
-      loadData();
-    }
+    if (user) loadData();
   }, [user]);
 
   const onRefresh = useCallback(async () => {
@@ -62,137 +60,69 @@ export default function ProjectsScreen() {
     return vehicle?.nickname || vehicle?.name || 'No vehicle';
   };
 
-  const getPriorityLabel = (priority) => {
-    const labels = {
-      not_set: 'Not Set',
-      low: 'Low',
-      medium: 'Medium',
-      high: 'High',
-    };
-    return labels[priority] || 'Not Set';
+  const getProjectTotal = (projectId) => {
+    return parts.filter(p => p.projectId === projectId).reduce((sum, p) => sum + (p.total || 0), 0);
   };
 
-  const renderProject = ({ item }) => {
-    const total = calculateProjectTotal(item.id, parts);
-    const borderColor = getPriorityBorderColor(item.priority || 'not_set');
-    const todoCount = item.todos?.length || 0;
-    const completedTodos = item.todos?.filter(t => t.completed)?.length || 0;
+  const priorityColors = { high: '#ef4444', medium: '#f59e0b', low: '#10b981', not_set: '#3b82f6' };
 
-    return (
-      <TouchableOpacity
-        className={`mb-3 rounded-xl overflow-hidden ${isDark ? 'bg-gray-800' : 'bg-white'} shadow`}
-        style={{ borderLeftWidth: 4, borderLeftColor: borderColor }}
-      >
-        <View className="p-4">
-          <View className="flex-row justify-between items-start">
-            <View className="flex-1">
-              <Text className={`text-lg font-bold ${isDark ? 'text-white' : 'text-gray-900'}`}>
-                {item.name}
-              </Text>
-              <Text className={`text-sm mt-1 ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>
-                {getVehicleName(item.vehicle_id)}
-              </Text>
-            </View>
-            {item.paused && (
-              <View className="bg-yellow-500/20 px-2 py-1 rounded">
-                <Text className="text-yellow-500 text-xs font-medium">Paused</Text>
-              </View>
-            )}
-          </View>
-
-          {item.description && (
-            <Text className={`mt-2 ${isDark ? 'text-gray-400' : 'text-gray-600'}`} numberOfLines={2}>
-              {item.description}
-            </Text>
-          )}
-
-          <View className="flex-row mt-3 gap-4">
-            <View className="flex-row items-center">
-              <Ionicons name="flag" size={14} color={borderColor} />
-              <Text className={`ml-1 text-sm ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>
-                {getPriorityLabel(item.priority)}
-              </Text>
-            </View>
-
-            {todoCount > 0 && (
-              <View className="flex-row items-center">
-                <Ionicons name="checkbox" size={14} color={isDark ? '#9ca3af' : '#6b7280'} />
-                <Text className={`ml-1 text-sm ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>
-                  {completedTodos}/{todoCount}
-                </Text>
-              </View>
-            )}
-
-            <View className="flex-row items-center">
-              <Ionicons name="cash" size={14} color={isDark ? '#9ca3af' : '#6b7280'} />
-              <Text className={`ml-1 text-sm ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>
-                {formatCurrency(total)}
-              </Text>
-            </View>
-          </View>
+  const renderProject = ({ item }) => (
+    <TouchableOpacity style={[styles.card, { borderLeftWidth: 4, borderLeftColor: priorityColors[item.priority] || '#3b82f6' }]}>
+      <View style={styles.cardContent}>
+        <Text style={styles.title}>{item.name}</Text>
+        <Text style={styles.subtitle}>{getVehicleName(item.vehicle_id)}</Text>
+        {item.description && <Text style={[styles.subtitle, { marginTop: 8 }]} numberOfLines={2}>{item.description}</Text>}
+        <View style={styles.row}>
+          <Text style={styles.meta}>${getProjectTotal(item.id).toFixed(2)}</Text>
+          {item.paused && <View style={styles.pausedBadge}><Text style={styles.pausedText}>Paused</Text></View>}
         </View>
-      </TouchableOpacity>
-    );
-  };
+      </View>
+    </TouchableOpacity>
+  );
 
   if (loading) {
-    return (
-      <View className={`flex-1 justify-center items-center ${isDark ? 'bg-gray-900' : 'bg-gray-50'}`}>
-        <Text className={isDark ? 'text-gray-400' : 'text-gray-600'}>Loading projects...</Text>
-      </View>
-    );
+    return <View style={styles.centered}><Text style={styles.subtitle}>Loading projects...</Text></View>;
   }
 
   return (
-    <View className={`flex-1 ${isDark ? 'bg-gray-900' : 'bg-gray-50'}`}>
+    <View style={styles.container}>
       <FlatList
         data={projects}
         renderItem={renderProject}
         keyExtractor={(item) => item.id.toString()}
         contentContainerStyle={{ padding: 16 }}
-        refreshControl={
-          <RefreshControl
-            refreshing={refreshing}
-            onRefresh={onRefresh}
-            tintColor={isDark ? '#60a5fa' : '#3b82f6'}
-          />
-        }
+        refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
         ListEmptyComponent={
-          <View className="items-center py-12">
-            <Ionicons
-              name="folder-outline"
-              size={64}
-              color={isDark ? '#4b5563' : '#9ca3af'}
-            />
-            <Text className={`mt-4 text-lg ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>
-              No projects yet
-            </Text>
-            <Text className={`mt-1 ${isDark ? 'text-gray-500' : 'text-gray-500'}`}>
-              Tap + to create your first project
-            </Text>
+          <View style={styles.centered}>
+            <Ionicons name="folder-outline" size={64} color="#9ca3af" />
+            <Text style={[styles.subtitle, { marginTop: 16 }]}>No projects yet</Text>
           </View>
         }
       />
-
-      {/* Floating Add Button */}
-      <TouchableOpacity
-        onPress={() => setShowAddModal(true)}
-        className="absolute bottom-6 right-6 w-14 h-14 bg-blue-600 rounded-full items-center justify-center shadow-lg"
-      >
+      <TouchableOpacity style={styles.fab} onPress={() => setShowAddModal(true)}>
         <Ionicons name="add" size={28} color="white" />
       </TouchableOpacity>
-
-      {/* Add Project Modal */}
       <AddProjectModal
         visible={showAddModal}
         vehicles={vehicles}
         onClose={() => setShowAddModal(false)}
-        onSave={async () => {
-          setShowAddModal(false);
-          await loadData();
-        }}
+        onSave={() => { setShowAddModal(false); loadData(); }}
         isDark={isDark}
       />
     </View>
   );
 }
+
+const createStyles = (isDark) => StyleSheet.create({
+  container: { flex: 1, backgroundColor: isDark ? '#111827' : '#f3f4f6' },
+  centered: { flex: 1, justifyContent: 'center', alignItems: 'center' },
+  card: { backgroundColor: isDark ? '#1f2937' : '#fff', borderRadius: 12, marginBottom: 12, overflow: 'hidden', shadowColor: '#000', shadowOpacity: 0.1, shadowRadius: 4, elevation: 2 },
+  cardContent: { padding: 16 },
+  title: { fontSize: 18, fontWeight: 'bold', color: isDark ? '#fff' : '#111' },
+  subtitle: { fontSize: 14, color: isDark ? '#9ca3af' : '#6b7280', marginTop: 4 },
+  row: { flexDirection: 'row', alignItems: 'center', marginTop: 12, gap: 12 },
+  meta: { fontSize: 14, color: isDark ? '#9ca3af' : '#6b7280' },
+  pausedBadge: { backgroundColor: '#fef3c7', paddingHorizontal: 8, paddingVertical: 2, borderRadius: 4 },
+  pausedText: { color: '#d97706', fontSize: 12, fontWeight: '500' },
+  fab: { position: 'absolute', bottom: 24, right: 24, width: 56, height: 56, backgroundColor: '#3b82f6', borderRadius: 28, justifyContent: 'center', alignItems: 'center', shadowColor: '#000', shadowOpacity: 0.3, shadowRadius: 4, elevation: 4 },
+});
