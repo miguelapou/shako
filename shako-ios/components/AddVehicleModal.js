@@ -10,6 +10,7 @@ import {
   Image,
   KeyboardAvoidingView,
   Platform,
+  StyleSheet,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import * as ImagePicker from 'expo-image-picker';
@@ -25,6 +26,7 @@ export default function AddVehicleModal({ visible, onClose, onSave, isDark }) {
   const [imageUri, setImageUri] = useState(null);
   const [saving, setSaving] = useState(false);
   const { user } = useAuth();
+  const styles = createStyles(isDark);
 
   const resetForm = () => {
     setName('');
@@ -85,14 +87,6 @@ export default function AddVehicleModal({ visible, onClose, onSave, isDark }) {
     }
   };
 
-  const inputStyle = `border rounded-lg px-4 py-3 text-base ${
-    isDark
-      ? 'bg-gray-700 border-gray-600 text-white'
-      : 'bg-gray-50 border-gray-300 text-gray-900'
-  }`;
-
-  const labelStyle = `text-sm font-medium mb-2 ${isDark ? 'text-gray-300' : 'text-gray-700'}`;
-
   return (
     <Modal
       visible={visible}
@@ -102,108 +96,117 @@ export default function AddVehicleModal({ visible, onClose, onSave, isDark }) {
     >
       <KeyboardAvoidingView
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-        className={`flex-1 ${isDark ? 'bg-gray-900' : 'bg-gray-50'}`}
+        style={styles.container}
       >
         {/* Header */}
-        <View className={`flex-row items-center justify-between px-4 py-4 border-b ${isDark ? 'border-gray-700 bg-gray-800' : 'border-gray-200 bg-white'}`}>
+        <View style={styles.header}>
           <TouchableOpacity onPress={onClose}>
-            <Text className={isDark ? 'text-blue-400' : 'text-blue-600'}>Cancel</Text>
+            <Text style={styles.cancelText}>Cancel</Text>
           </TouchableOpacity>
-          <Text className={`text-lg font-semibold ${isDark ? 'text-white' : 'text-gray-900'}`}>
-            Add Vehicle
-          </Text>
+          <Text style={styles.headerTitle}>Add Vehicle</Text>
           <TouchableOpacity onPress={handleSave} disabled={saving}>
-            <Text className={`font-semibold ${saving ? 'text-gray-400' : isDark ? 'text-blue-400' : 'text-blue-600'}`}>
+            <Text style={[styles.saveText, saving && styles.disabledText]}>
               {saving ? 'Saving...' : 'Save'}
             </Text>
           </TouchableOpacity>
         </View>
 
-        <ScrollView className="flex-1 px-4 py-4">
+        <ScrollView style={styles.content}>
           {/* Image Picker */}
-          <TouchableOpacity onPress={pickImage} className="mb-6">
+          <TouchableOpacity onPress={pickImage} style={styles.imagePicker}>
             {imageUri ? (
-              <Image
-                source={{ uri: imageUri }}
-                className="w-full h-48 rounded-xl"
-                resizeMode="cover"
-              />
+              <Image source={{ uri: imageUri }} style={styles.imagePreview} resizeMode="cover" />
             ) : (
-              <View className={`w-full h-48 rounded-xl items-center justify-center ${isDark ? 'bg-gray-800' : 'bg-gray-200'}`}>
+              <View style={styles.imagePlaceholder}>
                 <Ionicons name="camera" size={48} color={isDark ? '#6b7280' : '#9ca3af'} />
-                <Text className={`mt-2 ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>
-                  Tap to add photo
-                </Text>
+                <Text style={styles.imagePlaceholderText}>Tap to add photo</Text>
               </View>
             )}
           </TouchableOpacity>
 
           {/* Name (required) */}
-          <View className="mb-4">
-            <Text className={labelStyle}>Name *</Text>
+          <View style={styles.field}>
+            <Text style={styles.label}>Name *</Text>
             <TextInput
               value={name}
               onChangeText={setName}
               placeholder="e.g., 2020 Toyota Tacoma"
               placeholderTextColor={isDark ? '#6b7280' : '#9ca3af'}
-              className={inputStyle}
+              style={styles.input}
             />
           </View>
 
           {/* Nickname */}
-          <View className="mb-4">
-            <Text className={labelStyle}>Nickname</Text>
+          <View style={styles.field}>
+            <Text style={styles.label}>Nickname</Text>
             <TextInput
               value={nickname}
               onChangeText={setNickname}
               placeholder="e.g., The Beast"
               placeholderTextColor={isDark ? '#6b7280' : '#9ca3af'}
-              className={inputStyle}
+              style={styles.input}
             />
           </View>
 
           {/* Year */}
-          <View className="mb-4">
-            <Text className={labelStyle}>Year</Text>
+          <View style={styles.field}>
+            <Text style={styles.label}>Year</Text>
             <TextInput
               value={year}
               onChangeText={setYear}
               placeholder="e.g., 2020"
               placeholderTextColor={isDark ? '#6b7280' : '#9ca3af'}
               keyboardType="numeric"
-              className={inputStyle}
+              style={styles.input}
             />
           </View>
 
           {/* License Plate */}
-          <View className="mb-4">
-            <Text className={labelStyle}>License Plate</Text>
+          <View style={styles.field}>
+            <Text style={styles.label}>License Plate</Text>
             <TextInput
               value={licensePlate}
               onChangeText={setLicensePlate}
               placeholder="e.g., ABC 1234"
               placeholderTextColor={isDark ? '#6b7280' : '#9ca3af'}
               autoCapitalize="characters"
-              className={inputStyle}
+              style={styles.input}
             />
           </View>
 
           {/* VIN */}
-          <View className="mb-4">
-            <Text className={labelStyle}>VIN</Text>
+          <View style={styles.field}>
+            <Text style={styles.label}>VIN</Text>
             <TextInput
               value={vin}
               onChangeText={setVin}
               placeholder="Vehicle Identification Number"
               placeholderTextColor={isDark ? '#6b7280' : '#9ca3af'}
               autoCapitalize="characters"
-              className={inputStyle}
+              style={styles.input}
             />
           </View>
 
-          <View className="h-20" />
+          <View style={{ height: 80 }} />
         </ScrollView>
       </KeyboardAvoidingView>
     </Modal>
   );
 }
+
+const createStyles = (isDark) => StyleSheet.create({
+  container: { flex: 1, backgroundColor: isDark ? '#111827' : '#f3f4f6' },
+  header: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 16, paddingVertical: 16, borderBottomWidth: 1, borderBottomColor: isDark ? '#374151' : '#e5e7eb', backgroundColor: isDark ? '#1f2937' : '#fff' },
+  cancelText: { color: '#3b82f6', fontSize: 16 },
+  headerTitle: { fontSize: 18, fontWeight: '600', color: isDark ? '#fff' : '#111' },
+  saveText: { color: '#3b82f6', fontSize: 16, fontWeight: '600' },
+  disabledText: { color: '#9ca3af' },
+  content: { flex: 1, padding: 16 },
+  imagePicker: { marginBottom: 24 },
+  imagePreview: { width: '100%', height: 192, borderRadius: 12 },
+  imagePlaceholder: { width: '100%', height: 192, borderRadius: 12, backgroundColor: isDark ? '#1f2937' : '#e5e7eb', alignItems: 'center', justifyContent: 'center' },
+  imagePlaceholderText: { marginTop: 8, color: isDark ? '#9ca3af' : '#6b7280' },
+  field: { marginBottom: 16 },
+  label: { fontSize: 14, fontWeight: '500', marginBottom: 8, color: isDark ? '#d1d5db' : '#374151' },
+  input: { borderWidth: 1, borderColor: isDark ? '#374151' : '#d1d5db', backgroundColor: isDark ? '#1f2937' : '#fff', borderRadius: 8, paddingHorizontal: 16, paddingVertical: 12, fontSize: 16, color: isDark ? '#fff' : '#111' },
+});

@@ -7,6 +7,7 @@ import {
   ScrollView,
   Image,
   Alert,
+  StyleSheet,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useAuth } from '../contexts/AuthContext';
@@ -15,6 +16,7 @@ import { deleteVehicle, updateVehicle } from '../services/vehiclesService';
 export default function VehicleDetailModal({ visible, vehicle, imageUrl, onClose, onUpdate, isDark }) {
   const [deleting, setDeleting] = useState(false);
   const { user } = useAuth();
+  const styles = createStyles(isDark);
 
   if (!vehicle) return null;
 
@@ -57,9 +59,9 @@ export default function VehicleDetailModal({ visible, vehicle, imageUrl, onClose
   const InfoRow = ({ label, value }) => {
     if (!value) return null;
     return (
-      <View className="flex-row justify-between py-3 border-b border-gray-700">
-        <Text className={isDark ? 'text-gray-400' : 'text-gray-600'}>{label}</Text>
-        <Text className={`font-medium ${isDark ? 'text-white' : 'text-gray-900'}`}>{value}</Text>
+      <View style={styles.infoRow}>
+        <Text style={styles.infoLabel}>{label}</Text>
+        <Text style={styles.infoValue}>{value}</Text>
       </View>
     );
   };
@@ -71,44 +73,34 @@ export default function VehicleDetailModal({ visible, vehicle, imageUrl, onClose
       presentationStyle="pageSheet"
       onRequestClose={onClose}
     >
-      <View className={`flex-1 ${isDark ? 'bg-gray-900' : 'bg-gray-50'}`}>
+      <View style={styles.container}>
         {/* Header */}
-        <View className={`flex-row items-center justify-between px-4 py-4 border-b ${isDark ? 'border-gray-700 bg-gray-800' : 'border-gray-200 bg-white'}`}>
+        <View style={styles.header}>
           <TouchableOpacity onPress={onClose}>
             <Ionicons name="close" size={24} color={isDark ? '#9ca3af' : '#6b7280'} />
           </TouchableOpacity>
-          <Text className={`text-lg font-semibold ${isDark ? 'text-white' : 'text-gray-900'}`}>
-            Vehicle Details
-          </Text>
+          <Text style={styles.headerTitle}>Vehicle Details</Text>
           <TouchableOpacity onPress={handleDelete} disabled={deleting}>
             <Ionicons name="trash-outline" size={24} color="#ef4444" />
           </TouchableOpacity>
         </View>
 
-        <ScrollView className="flex-1">
+        <ScrollView style={styles.content}>
           {/* Image */}
           {imageUrl && (
-            <Image
-              source={{ uri: imageUrl }}
-              className="w-full h-56"
-              resizeMode="cover"
-            />
+            <Image source={{ uri: imageUrl }} style={styles.image} resizeMode="cover" />
           )}
 
           {/* Vehicle Name */}
-          <View className="px-4 py-6">
-            <Text className={`text-2xl font-bold ${isDark ? 'text-white' : 'text-gray-900'}`}>
-              {vehicle.nickname || vehicle.name}
-            </Text>
+          <View style={styles.nameSection}>
+            <Text style={styles.vehicleName}>{vehicle.nickname || vehicle.name}</Text>
             {vehicle.nickname && vehicle.name && (
-              <Text className={`text-lg mt-1 ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>
-                {vehicle.name}
-              </Text>
+              <Text style={styles.vehicleSubname}>{vehicle.name}</Text>
             )}
           </View>
 
           {/* Info Section */}
-          <View className={`mx-4 rounded-xl px-4 ${isDark ? 'bg-gray-800' : 'bg-white'}`}>
+          <View style={styles.card}>
             <InfoRow label="Year" value={vehicle.year} />
             <InfoRow label="Make" value={vehicle.make} />
             <InfoRow label="License Plate" value={vehicle.license_plate} />
@@ -119,11 +111,9 @@ export default function VehicleDetailModal({ visible, vehicle, imageUrl, onClose
 
           {/* Maintenance Info */}
           {(vehicle.oil_type || vehicle.oil_filter || vehicle.air_filter || vehicle.fuel_filter || vehicle.battery) && (
-            <View className="mt-6">
-              <Text className={`px-4 mb-2 text-sm font-medium ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>
-                MAINTENANCE
-              </Text>
-              <View className={`mx-4 rounded-xl px-4 ${isDark ? 'bg-gray-800' : 'bg-white'}`}>
+            <View style={styles.section}>
+              <Text style={styles.sectionTitle}>MAINTENANCE</Text>
+              <View style={styles.card}>
                 <InfoRow label="Oil Type" value={vehicle.oil_type} />
                 <InfoRow label="Oil Capacity" value={vehicle.oil_capacity} />
                 <InfoRow label="Oil Brand" value={vehicle.oil_brand} />
@@ -138,25 +128,39 @@ export default function VehicleDetailModal({ visible, vehicle, imageUrl, onClose
 
           {/* Insurance */}
           {vehicle.insurance_policy && (
-            <View className="mt-6">
-              <Text className={`px-4 mb-2 text-sm font-medium ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>
-                INSURANCE
-              </Text>
-              <View className={`mx-4 rounded-xl px-4 ${isDark ? 'bg-gray-800' : 'bg-white'}`}>
+            <View style={styles.section}>
+              <Text style={styles.sectionTitle}>INSURANCE</Text>
+              <View style={styles.card}>
                 <InfoRow label="Policy" value={vehicle.insurance_policy} />
               </View>
             </View>
           )}
 
           {/* Archive Button */}
-          <TouchableOpacity
-            onPress={handleArchive}
-            className={`mx-4 mt-6 mb-8 py-3 rounded-xl items-center ${isDark ? 'bg-gray-800' : 'bg-white'}`}
-          >
-            <Text className="text-orange-500 font-medium">Archive Vehicle</Text>
+          <TouchableOpacity onPress={handleArchive} style={styles.archiveButton}>
+            <Text style={styles.archiveButtonText}>Archive Vehicle</Text>
           </TouchableOpacity>
         </ScrollView>
       </View>
     </Modal>
   );
 }
+
+const createStyles = (isDark) => StyleSheet.create({
+  container: { flex: 1, backgroundColor: isDark ? '#111827' : '#f3f4f6' },
+  header: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 16, paddingVertical: 16, borderBottomWidth: 1, borderBottomColor: isDark ? '#374151' : '#e5e7eb', backgroundColor: isDark ? '#1f2937' : '#fff' },
+  headerTitle: { fontSize: 18, fontWeight: '600', color: isDark ? '#fff' : '#111' },
+  content: { flex: 1 },
+  image: { width: '100%', height: 224 },
+  nameSection: { paddingHorizontal: 16, paddingVertical: 24 },
+  vehicleName: { fontSize: 24, fontWeight: 'bold', color: isDark ? '#fff' : '#111' },
+  vehicleSubname: { fontSize: 18, marginTop: 4, color: isDark ? '#9ca3af' : '#6b7280' },
+  section: { marginTop: 24 },
+  sectionTitle: { fontSize: 12, fontWeight: '500', color: isDark ? '#9ca3af' : '#6b7280', paddingHorizontal: 16, marginBottom: 8 },
+  card: { marginHorizontal: 16, borderRadius: 12, paddingHorizontal: 16, backgroundColor: isDark ? '#1f2937' : '#fff' },
+  infoRow: { flexDirection: 'row', justifyContent: 'space-between', paddingVertical: 12, borderBottomWidth: 1, borderBottomColor: isDark ? '#374151' : '#e5e7eb' },
+  infoLabel: { fontSize: 14, color: isDark ? '#9ca3af' : '#6b7280' },
+  infoValue: { fontSize: 14, fontWeight: '500', color: isDark ? '#fff' : '#111' },
+  archiveButton: { marginHorizontal: 16, marginTop: 24, marginBottom: 32, paddingVertical: 12, borderRadius: 12, alignItems: 'center', backgroundColor: isDark ? '#1f2937' : '#fff' },
+  archiveButtonText: { color: '#f97316', fontWeight: '500', fontSize: 16 },
+});

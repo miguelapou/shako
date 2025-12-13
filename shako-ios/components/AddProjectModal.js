@@ -9,6 +9,7 @@ import {
   Alert,
   KeyboardAvoidingView,
   Platform,
+  StyleSheet,
 } from 'react-native';
 import { Picker } from '@react-native-picker/picker';
 import { useAuth } from '../contexts/AuthContext';
@@ -22,6 +23,7 @@ export default function AddProjectModal({ visible, vehicles, onClose, onSave, is
   const [budget, setBudget] = useState('');
   const [saving, setSaving] = useState(false);
   const { user } = useAuth();
+  const styles = createStyles(isDark);
 
   const resetForm = () => {
     setName('');
@@ -56,14 +58,6 @@ export default function AddProjectModal({ visible, vehicles, onClose, onSave, is
     }
   };
 
-  const inputStyle = `border rounded-lg px-4 py-3 text-base ${
-    isDark
-      ? 'bg-gray-700 border-gray-600 text-white'
-      : 'bg-gray-50 border-gray-300 text-gray-900'
-  }`;
-
-  const labelStyle = `text-sm font-medium mb-2 ${isDark ? 'text-gray-300' : 'text-gray-700'}`;
-
   return (
     <Modal
       visible={visible}
@@ -73,39 +67,37 @@ export default function AddProjectModal({ visible, vehicles, onClose, onSave, is
     >
       <KeyboardAvoidingView
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-        className={`flex-1 ${isDark ? 'bg-gray-900' : 'bg-gray-50'}`}
+        style={styles.container}
       >
         {/* Header */}
-        <View className={`flex-row items-center justify-between px-4 py-4 border-b ${isDark ? 'border-gray-700 bg-gray-800' : 'border-gray-200 bg-white'}`}>
+        <View style={styles.header}>
           <TouchableOpacity onPress={onClose}>
-            <Text className={isDark ? 'text-blue-400' : 'text-blue-600'}>Cancel</Text>
+            <Text style={styles.cancelText}>Cancel</Text>
           </TouchableOpacity>
-          <Text className={`text-lg font-semibold ${isDark ? 'text-white' : 'text-gray-900'}`}>
-            Add Project
-          </Text>
+          <Text style={styles.headerTitle}>Add Project</Text>
           <TouchableOpacity onPress={handleSave} disabled={saving}>
-            <Text className={`font-semibold ${saving ? 'text-gray-400' : isDark ? 'text-blue-400' : 'text-blue-600'}`}>
+            <Text style={[styles.saveText, saving && styles.disabledText]}>
               {saving ? 'Saving...' : 'Save'}
             </Text>
           </TouchableOpacity>
         </View>
 
-        <ScrollView className="flex-1 px-4 py-4">
+        <ScrollView style={styles.content}>
           {/* Name (required) */}
-          <View className="mb-4">
-            <Text className={labelStyle}>Name *</Text>
+          <View style={styles.field}>
+            <Text style={styles.label}>Name *</Text>
             <TextInput
               value={name}
               onChangeText={setName}
               placeholder="e.g., Engine Rebuild"
               placeholderTextColor={isDark ? '#6b7280' : '#9ca3af'}
-              className={inputStyle}
+              style={styles.input}
             />
           </View>
 
           {/* Description */}
-          <View className="mb-4">
-            <Text className={labelStyle}>Description</Text>
+          <View style={styles.field}>
+            <Text style={styles.label}>Description</Text>
             <TextInput
               value={description}
               onChangeText={setDescription}
@@ -114,14 +106,14 @@ export default function AddProjectModal({ visible, vehicles, onClose, onSave, is
               multiline
               numberOfLines={3}
               textAlignVertical="top"
-              className={`${inputStyle} h-24`}
+              style={[styles.input, styles.textArea]}
             />
           </View>
 
           {/* Vehicle Selection */}
-          <View className="mb-4">
-            <Text className={labelStyle}>Vehicle</Text>
-            <View className={`border rounded-lg ${isDark ? 'bg-gray-700 border-gray-600' : 'bg-gray-50 border-gray-300'}`}>
+          <View style={styles.field}>
+            <Text style={styles.label}>Vehicle</Text>
+            <View style={styles.pickerContainer}>
               <Picker
                 selectedValue={vehicleId}
                 onValueChange={setVehicleId}
@@ -140,9 +132,9 @@ export default function AddProjectModal({ visible, vehicles, onClose, onSave, is
           </View>
 
           {/* Priority */}
-          <View className="mb-4">
-            <Text className={labelStyle}>Priority</Text>
-            <View className={`border rounded-lg ${isDark ? 'bg-gray-700 border-gray-600' : 'bg-gray-50 border-gray-300'}`}>
+          <View style={styles.field}>
+            <Text style={styles.label}>Priority</Text>
+            <View style={styles.pickerContainer}>
               <Picker
                 selectedValue={priority}
                 onValueChange={setPriority}
@@ -157,21 +149,36 @@ export default function AddProjectModal({ visible, vehicles, onClose, onSave, is
           </View>
 
           {/* Budget */}
-          <View className="mb-4">
-            <Text className={labelStyle}>Budget</Text>
+          <View style={styles.field}>
+            <Text style={styles.label}>Budget</Text>
             <TextInput
               value={budget}
               onChangeText={setBudget}
               placeholder="0.00"
               placeholderTextColor={isDark ? '#6b7280' : '#9ca3af'}
               keyboardType="decimal-pad"
-              className={inputStyle}
+              style={styles.input}
             />
           </View>
 
-          <View className="h-20" />
+          <View style={{ height: 80 }} />
         </ScrollView>
       </KeyboardAvoidingView>
     </Modal>
   );
 }
+
+const createStyles = (isDark) => StyleSheet.create({
+  container: { flex: 1, backgroundColor: isDark ? '#111827' : '#f3f4f6' },
+  header: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 16, paddingVertical: 16, borderBottomWidth: 1, borderBottomColor: isDark ? '#374151' : '#e5e7eb', backgroundColor: isDark ? '#1f2937' : '#fff' },
+  cancelText: { color: '#3b82f6', fontSize: 16 },
+  headerTitle: { fontSize: 18, fontWeight: '600', color: isDark ? '#fff' : '#111' },
+  saveText: { color: '#3b82f6', fontSize: 16, fontWeight: '600' },
+  disabledText: { color: '#9ca3af' },
+  content: { flex: 1, padding: 16 },
+  field: { marginBottom: 16 },
+  label: { fontSize: 14, fontWeight: '500', marginBottom: 8, color: isDark ? '#d1d5db' : '#374151' },
+  input: { borderWidth: 1, borderColor: isDark ? '#374151' : '#d1d5db', backgroundColor: isDark ? '#1f2937' : '#fff', borderRadius: 8, paddingHorizontal: 16, paddingVertical: 12, fontSize: 16, color: isDark ? '#fff' : '#111' },
+  textArea: { height: 96, textAlignVertical: 'top' },
+  pickerContainer: { borderWidth: 1, borderColor: isDark ? '#374151' : '#d1d5db', backgroundColor: isDark ? '#1f2937' : '#fff', borderRadius: 8, overflow: 'hidden' },
+});

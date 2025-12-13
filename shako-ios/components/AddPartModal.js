@@ -9,6 +9,7 @@ import {
   Alert,
   KeyboardAvoidingView,
   Platform,
+  StyleSheet,
 } from 'react-native';
 import { Picker } from '@react-native-picker/picker';
 import { useAuth } from '../contexts/AuthContext';
@@ -25,6 +26,7 @@ export default function AddPartModal({ visible, projects, vendors, onClose, onSa
   const [tracking, setTracking] = useState('');
   const [saving, setSaving] = useState(false);
   const { user } = useAuth();
+  const styles = createStyles(isDark);
 
   const resetForm = () => {
     setPartName('');
@@ -76,15 +78,7 @@ export default function AddPartModal({ visible, projects, vendors, onClose, onSa
     }
   };
 
-  const inputStyle = `border rounded-lg px-4 py-3 text-base ${
-    isDark
-      ? 'bg-gray-700 border-gray-600 text-white'
-      : 'bg-gray-50 border-gray-300 text-gray-900'
-  }`;
-
-  const labelStyle = `text-sm font-medium mb-2 ${isDark ? 'text-gray-300' : 'text-gray-700'}`;
-
-  // Get unique vendor names from both vendors list and custom entry
+  // Get unique vendor names from vendors list
   const vendorNames = [...new Set(vendors.map(v => v.name))];
 
   return (
@@ -96,72 +90,66 @@ export default function AddPartModal({ visible, projects, vendors, onClose, onSa
     >
       <KeyboardAvoidingView
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-        className={`flex-1 ${isDark ? 'bg-gray-900' : 'bg-gray-50'}`}
+        style={styles.container}
       >
         {/* Header */}
-        <View className={`flex-row items-center justify-between px-4 py-4 border-b ${isDark ? 'border-gray-700 bg-gray-800' : 'border-gray-200 bg-white'}`}>
+        <View style={styles.header}>
           <TouchableOpacity onPress={onClose}>
-            <Text className={isDark ? 'text-blue-400' : 'text-blue-600'}>Cancel</Text>
+            <Text style={styles.cancelText}>Cancel</Text>
           </TouchableOpacity>
-          <Text className={`text-lg font-semibold ${isDark ? 'text-white' : 'text-gray-900'}`}>
-            Add Part
-          </Text>
+          <Text style={styles.headerTitle}>Add Part</Text>
           <TouchableOpacity onPress={handleSave} disabled={saving}>
-            <Text className={`font-semibold ${saving ? 'text-gray-400' : isDark ? 'text-blue-400' : 'text-blue-600'}`}>
+            <Text style={[styles.saveText, saving && styles.disabledText]}>
               {saving ? 'Saving...' : 'Save'}
             </Text>
           </TouchableOpacity>
         </View>
 
-        <ScrollView className="flex-1 px-4 py-4">
+        <ScrollView style={styles.content}>
           {/* Part Name (required) */}
-          <View className="mb-4">
-            <Text className={labelStyle}>Part Name *</Text>
+          <View style={styles.field}>
+            <Text style={styles.label}>Part Name *</Text>
             <TextInput
               value={partName}
               onChangeText={setPartName}
               placeholder="e.g., Oil Filter"
               placeholderTextColor={isDark ? '#6b7280' : '#9ca3af'}
-              className={inputStyle}
+              style={styles.input}
             />
           </View>
 
           {/* Part Number */}
-          <View className="mb-4">
-            <Text className={labelStyle}>Part Number</Text>
+          <View style={styles.field}>
+            <Text style={styles.label}>Part Number</Text>
             <TextInput
               value={partNumber}
               onChangeText={setPartNumber}
               placeholder="e.g., 90915-YZZD3"
               placeholderTextColor={isDark ? '#6b7280' : '#9ca3af'}
               autoCapitalize="characters"
-              className={inputStyle}
+              style={styles.input}
             />
           </View>
 
           {/* Vendor */}
-          <View className="mb-4">
-            <Text className={labelStyle}>Vendor</Text>
+          <View style={styles.field}>
+            <Text style={styles.label}>Vendor</Text>
             <TextInput
               value={vendor}
               onChangeText={setVendor}
               placeholder="e.g., Amazon, eBay, Toyota"
               placeholderTextColor={isDark ? '#6b7280' : '#9ca3af'}
-              className={inputStyle}
+              style={styles.input}
             />
             {vendorNames.length > 0 && (
-              <ScrollView horizontal showsHorizontalScrollIndicator={false} className="mt-2">
+              <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.vendorChips}>
                 {vendorNames.map(name => (
                   <TouchableOpacity
                     key={name}
                     onPress={() => setVendor(name)}
-                    className={`mr-2 px-3 py-1 rounded-full ${
-                      vendor === name
-                        ? 'bg-blue-600'
-                        : isDark ? 'bg-gray-700' : 'bg-gray-200'
-                    }`}
+                    style={[styles.chip, vendor === name && styles.chipSelected]}
                   >
-                    <Text className={vendor === name ? 'text-white' : isDark ? 'text-gray-300' : 'text-gray-700'}>
+                    <Text style={[styles.chipText, vendor === name && styles.chipTextSelected]}>
                       {name}
                     </Text>
                   </TouchableOpacity>
@@ -171,9 +159,9 @@ export default function AddPartModal({ visible, projects, vendors, onClose, onSa
           </View>
 
           {/* Project */}
-          <View className="mb-4">
-            <Text className={labelStyle}>Project</Text>
-            <View className={`border rounded-lg ${isDark ? 'bg-gray-700 border-gray-600' : 'bg-gray-50 border-gray-300'}`}>
+          <View style={styles.field}>
+            <Text style={styles.label}>Project</Text>
+            <View style={styles.pickerContainer}>
               <Picker
                 selectedValue={projectId}
                 onValueChange={setProjectId}
@@ -192,68 +180,88 @@ export default function AddPartModal({ visible, projects, vendors, onClose, onSa
           </View>
 
           {/* Pricing Row */}
-          <View className="flex-row gap-3 mb-4">
-            <View className="flex-1">
-              <Text className={labelStyle}>Price</Text>
+          <View style={styles.priceRow}>
+            <View style={styles.priceField}>
+              <Text style={styles.label}>Price</Text>
               <TextInput
                 value={price}
                 onChangeText={setPrice}
                 placeholder="0.00"
                 placeholderTextColor={isDark ? '#6b7280' : '#9ca3af'}
                 keyboardType="decimal-pad"
-                className={inputStyle}
+                style={styles.input}
               />
             </View>
-            <View className="flex-1">
-              <Text className={labelStyle}>Shipping</Text>
+            <View style={styles.priceField}>
+              <Text style={styles.label}>Shipping</Text>
               <TextInput
                 value={shipping}
                 onChangeText={setShipping}
                 placeholder="0.00"
                 placeholderTextColor={isDark ? '#6b7280' : '#9ca3af'}
                 keyboardType="decimal-pad"
-                className={inputStyle}
+                style={styles.input}
               />
             </View>
-            <View className="flex-1">
-              <Text className={labelStyle}>Duties</Text>
+            <View style={styles.priceField}>
+              <Text style={styles.label}>Duties</Text>
               <TextInput
                 value={duties}
                 onChangeText={setDuties}
                 placeholder="0.00"
                 placeholderTextColor={isDark ? '#6b7280' : '#9ca3af'}
                 keyboardType="decimal-pad"
-                className={inputStyle}
+                style={styles.input}
               />
             </View>
           </View>
 
           {/* Total Display */}
-          <View className={`p-4 rounded-lg mb-4 ${isDark ? 'bg-gray-800' : 'bg-gray-100'}`}>
-            <View className="flex-row justify-between">
-              <Text className={isDark ? 'text-gray-400' : 'text-gray-600'}>Total</Text>
-              <Text className={`text-lg font-bold ${isDark ? 'text-white' : 'text-gray-900'}`}>
-                ${calculateTotal().toFixed(2)}
-              </Text>
-            </View>
+          <View style={styles.totalContainer}>
+            <Text style={styles.totalLabel}>Total</Text>
+            <Text style={styles.totalValue}>${calculateTotal().toFixed(2)}</Text>
           </View>
 
           {/* Tracking */}
-          <View className="mb-4">
-            <Text className={labelStyle}>Tracking Number / URL</Text>
+          <View style={styles.field}>
+            <Text style={styles.label}>Tracking Number / URL</Text>
             <TextInput
               value={tracking}
               onChangeText={setTracking}
               placeholder="Tracking number or URL"
               placeholderTextColor={isDark ? '#6b7280' : '#9ca3af'}
               autoCapitalize="none"
-              className={inputStyle}
+              style={styles.input}
             />
           </View>
 
-          <View className="h-20" />
+          <View style={{ height: 80 }} />
         </ScrollView>
       </KeyboardAvoidingView>
     </Modal>
   );
 }
+
+const createStyles = (isDark) => StyleSheet.create({
+  container: { flex: 1, backgroundColor: isDark ? '#111827' : '#f3f4f6' },
+  header: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 16, paddingVertical: 16, borderBottomWidth: 1, borderBottomColor: isDark ? '#374151' : '#e5e7eb', backgroundColor: isDark ? '#1f2937' : '#fff' },
+  cancelText: { color: '#3b82f6', fontSize: 16 },
+  headerTitle: { fontSize: 18, fontWeight: '600', color: isDark ? '#fff' : '#111' },
+  saveText: { color: '#3b82f6', fontSize: 16, fontWeight: '600' },
+  disabledText: { color: '#9ca3af' },
+  content: { flex: 1, padding: 16 },
+  field: { marginBottom: 16 },
+  label: { fontSize: 14, fontWeight: '500', marginBottom: 8, color: isDark ? '#d1d5db' : '#374151' },
+  input: { borderWidth: 1, borderColor: isDark ? '#374151' : '#d1d5db', backgroundColor: isDark ? '#1f2937' : '#fff', borderRadius: 8, paddingHorizontal: 16, paddingVertical: 12, fontSize: 16, color: isDark ? '#fff' : '#111' },
+  pickerContainer: { borderWidth: 1, borderColor: isDark ? '#374151' : '#d1d5db', backgroundColor: isDark ? '#1f2937' : '#fff', borderRadius: 8, overflow: 'hidden' },
+  vendorChips: { marginTop: 8 },
+  chip: { marginRight: 8, paddingHorizontal: 12, paddingVertical: 6, borderRadius: 16, backgroundColor: isDark ? '#374151' : '#e5e7eb' },
+  chipSelected: { backgroundColor: '#3b82f6' },
+  chipText: { fontSize: 14, color: isDark ? '#d1d5db' : '#374151' },
+  chipTextSelected: { color: '#fff' },
+  priceRow: { flexDirection: 'row', gap: 12, marginBottom: 16 },
+  priceField: { flex: 1 },
+  totalContainer: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', padding: 16, borderRadius: 8, backgroundColor: isDark ? '#1f2937' : '#e5e7eb', marginBottom: 16 },
+  totalLabel: { fontSize: 14, color: isDark ? '#9ca3af' : '#6b7280' },
+  totalValue: { fontSize: 18, fontWeight: 'bold', color: isDark ? '#fff' : '#111' },
+});
