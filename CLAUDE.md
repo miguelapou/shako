@@ -153,3 +153,13 @@ NEXT_PUBLIC_SUPABASE_ANON_KEY=<your-supabase-anon-key>
 4. **Status Flow**: Parts follow: pending -> purchased -> shipped -> delivered
 
 5. **Price Display**: Use `<PriceDisplay>` component for currency formatting
+
+## Pull Request Guidelines
+
+When creating a pull request, always add a comment to the PR that summarizes what the PR does as succinctly as possible. Use `gh pr comment` after creating the PR:
+
+```bash
+gh pr comment <PR_NUMBER> --body "Summary: <one-line description of what this PR does>"
+```
+
+Keep the summary to one sentence that captures the essence of the change.
