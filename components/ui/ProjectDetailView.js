@@ -288,9 +288,16 @@ const ProjectDetailView = ({
             }
             return t;
           });
-          updateProject(project.id, {
-            todos: updatedTodos
-          });
+
+          // Check if unchecking results in no completed todos - set status to planning
+          // But never change on_hold status - that's only controlled by pause/resume button
+          const hasCompletedTodos = updatedTodos.some(t => t.completed);
+          const updates = { todos: updatedTodos };
+          if (!hasCompletedTodos && project.status !== 'planning' && project.status !== 'on_hold') {
+            updates.status = 'planning';
+          }
+
+          updateProject(project.id, updates);
         }}
         className={`flex-shrink-0 w-5 h-5 rounded border-2 flex items-center justify-center transition-all duration-150 active:scale-90 ${
           todo.completed
@@ -418,9 +425,16 @@ const ProjectDetailView = ({
             message: 'Are you sure you want to delete this to-do item? This action cannot be undone.',
             onConfirm: () => {
               const updatedTodos = project.todos.filter(t => t.id !== todo.id);
-              updateProject(project.id, {
-                todos: updatedTodos
-              });
+
+              // Check if deletion results in no completed todos or no todos at all - set status to planning
+              // But never change on_hold status - that's only controlled by pause/resume button
+              const hasCompletedTodos = updatedTodos.some(t => t.completed);
+              const updates = { todos: updatedTodos };
+              if ((!hasCompletedTodos || updatedTodos.length === 0) && project.status !== 'planning' && project.status !== 'on_hold') {
+                updates.status = 'planning';
+              }
+
+              updateProject(project.id, updates);
             }
           });
         }}
@@ -628,12 +642,12 @@ const ProjectDetailView = ({
           </div>
 
           {/* Desktop: Vertical Bar Graphs (3 equal columns) */}
-          <div className="hidden lg:grid lg:grid-cols-3 lg:gap-4 lg:flex-1">
+          <div className="hidden lg:grid lg:grid-cols-3 lg:gap-4">
             {/* Column 1: Budget Bar */}
             <div className="flex flex-col items-end pr-2">
               <div className="flex flex-col items-center flex-1">
                 <div
-                  className={`w-14 rounded-lg relative overflow-hidden flex-1 min-h-[100px] ${
+                  className={`w-14 rounded-lg relative overflow-hidden flex-1 min-h-[165px] max-h-[300px] ${
                     darkMode ? 'bg-gray-700' : 'bg-gray-300'
                   }`}
                   style={{
@@ -658,7 +672,7 @@ const ProjectDetailView = ({
             {/* Column 2: To-Dos Bar */}
             <div className="flex flex-col items-center">
               <div
-                className={`w-14 rounded-lg relative overflow-hidden flex-1 min-h-[100px] ${
+                className={`w-14 rounded-lg relative overflow-hidden flex-1 min-h-[165px] max-h-[300px] ${
                   darkMode ? 'bg-gray-700' : 'bg-gray-300'
                 }`}
                 style={{
@@ -679,7 +693,7 @@ const ProjectDetailView = ({
             </div>
 
             {/* Column 3: Legend */}
-            <div className="flex flex-col justify-end pb-2">
+            <div className="flex flex-col justify-end">
               <div className="space-y-2">
                 <div className="flex items-center gap-2">
                   <div

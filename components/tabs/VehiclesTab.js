@@ -663,7 +663,31 @@ const VehiclesTab = ({
           handleImageDragLeave={handleImageDragLeave}
           handleImageDragOver={handleImageDragOver}
           handleImageDrop={handleImageDrop}
-          onClose={() => setShowAddVehicleModal(false)}
+          onClose={() => {
+            setShowAddVehicleModal(false);
+            // Reset form to initial state
+            setNewVehicle({
+              nickname: '',
+              name: '',
+              make: '',
+              year: '',
+              license_plate: '',
+              vin: '',
+              odometer_range: '',
+              odometer_unit: 'km',
+              fuel_filter: '',
+              air_filter: '',
+              oil_filter: '',
+              oil_type: '',
+              oil_capacity: '',
+              oil_brand: '',
+              drain_plug: '',
+              battery: '',
+              image_url: '',
+              color: '#3B82F6'
+            });
+          }}
+          setConfirmDialog={setConfirmDialog}
         />
 
 

@@ -1258,7 +1258,7 @@ const PartsTab = ({
                         </span>
                       )}
                     </td>
-                    <td className="px-6 py-4 text-center">
+                    <td className="px-1 min-[1000px]:px-3 min-[1100px]:px-6 py-4 text-center">
                       <ProjectDropdown part={part} />
                     </td>
                     <td className="hidden min-[1100px]:table-cell px-6 py-4 text-center">

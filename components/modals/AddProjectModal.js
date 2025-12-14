@@ -14,7 +14,8 @@ const AddProjectModal = ({
   isModalClosing,
   handleCloseModal,
   addProject,
-  onClose
+  onClose,
+  setConfirmDialog
 }) => {
   const vehicleButtonRef = useRef(null);
   const [dropdownPosition, setDropdownPosition] = useState({ top: 0, left: 0 });
@@ -28,6 +29,32 @@ const AddProjectModal = ({
       setShowAddProjectVehicleDropdown(false);
     }, 150);
   }, [setShowAddProjectVehicleDropdown]);
+
+  // Check if any fields have been filled in
+  const hasUnsavedChanges = () => {
+    return (
+      newProject.name?.trim() ||
+      newProject.description?.trim() ||
+      parseFloat(newProject.budget) > 0 ||
+      newProject.priority !== 'not_set' ||
+      newProject.vehicle_id
+    );
+  };
+
+  const handleClose = () => {
+    if (hasUnsavedChanges()) {
+      setConfirmDialog({
+        isOpen: true,
+        title: 'Discard Changes?',
+        message: 'You have unsaved changes. Are you sure you want to close without saving?',
+        confirmText: 'Discard',
+        cancelText: 'Keep Editing',
+        onConfirm: onClose
+      });
+    } else {
+      onClose();
+    }
+  };
 
   // Track if this modal was open (for close animation)
   const wasOpen = useRef(false);
@@ -74,7 +101,7 @@ const AddProjectModal = ({
       className={`fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4 modal-backdrop ${
         isModalClosing ? 'modal-backdrop-exit' : 'modal-backdrop-enter'
       }`}
-      onClick={() => handleCloseModal(onClose)}
+      onClick={() => handleCloseModal(handleClose)}
     >
       <div
         className={`rounded-lg shadow-xl max-w-4xl w-full modal-content grid ${
@@ -96,7 +123,7 @@ const AddProjectModal = ({
             Add Project
           </h2>
           <button
-            onClick={() => handleCloseModal(onClose)}
+            onClick={() => handleCloseModal(handleClose)}
             className={`transition-colors ${
               darkMode ? 'text-gray-400 hover:text-gray-300' : 'text-gray-400 hover:text-gray-600'
             }`}
@@ -295,7 +322,7 @@ const AddProjectModal = ({
         }`}>
           <div className="flex gap-3">
             <button
-              onClick={onClose}
+              onClick={handleClose}
               className={`flex-1 px-6 py-3 rounded-lg font-medium transition-colors ${
                 darkMode
                   ? 'bg-gray-700 hover:bg-gray-600 text-gray-100'

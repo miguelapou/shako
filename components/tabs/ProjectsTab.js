@@ -534,7 +534,19 @@ const ProjectsTab = ({
           isModalClosing={isModalClosing}
           handleCloseModal={handleCloseModal}
           addProject={addProject}
-          onClose={() => setShowAddProjectModal(false)}
+          onClose={() => {
+            setShowAddProjectModal(false);
+            // Reset form to initial state
+            setNewProject({
+              name: '',
+              description: '',
+              budget: '',
+              priority: 'not_set',
+              status: 'planning',
+              vehicle_id: null
+            });
+          }}
+          setConfirmDialog={setConfirmDialog}
         />
 
         {/* Project Detail Modal */}
