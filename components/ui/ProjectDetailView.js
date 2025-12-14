@@ -633,7 +633,7 @@ const ProjectDetailView = ({
             <div className="flex flex-col items-end pr-2">
               <div className="flex flex-col items-center flex-1">
                 <div
-                  className={`w-14 rounded-lg relative overflow-hidden flex-1 min-h-[100px] ${
+                  className={`w-14 rounded-lg relative overflow-hidden flex-1 min-h-[165px] max-h-[300px] ${
                     darkMode ? 'bg-gray-700' : 'bg-gray-300'
                   }`}
                   style={{
@@ -658,7 +658,7 @@ const ProjectDetailView = ({
             {/* Column 2: To-Dos Bar */}
             <div className="flex flex-col items-center">
               <div
-                className={`w-14 rounded-lg relative overflow-hidden flex-1 min-h-[100px] ${
+                className={`w-14 rounded-lg relative overflow-hidden flex-1 min-h-[165px] max-h-[300px] ${
                   darkMode ? 'bg-gray-700' : 'bg-gray-300'
                 }`}
                 style={{
