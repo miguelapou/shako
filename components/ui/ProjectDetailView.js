@@ -288,9 +288,15 @@ const ProjectDetailView = ({
             }
             return t;
           });
-          updateProject(project.id, {
-            todos: updatedTodos
-          });
+
+          // Check if unchecking results in no completed todos - set status to planning
+          const hasCompletedTodos = updatedTodos.some(t => t.completed);
+          const updates = { todos: updatedTodos };
+          if (!hasCompletedTodos && project.status !== 'planning') {
+            updates.status = 'planning';
+          }
+
+          updateProject(project.id, updates);
         }}
         className={`flex-shrink-0 w-5 h-5 rounded border-2 flex items-center justify-center transition-all duration-150 active:scale-90 ${
           todo.completed
@@ -418,9 +424,15 @@ const ProjectDetailView = ({
             message: 'Are you sure you want to delete this to-do item? This action cannot be undone.',
             onConfirm: () => {
               const updatedTodos = project.todos.filter(t => t.id !== todo.id);
-              updateProject(project.id, {
-                todos: updatedTodos
-              });
+
+              // Check if deletion results in no completed todos or no todos at all - set status to planning
+              const hasCompletedTodos = updatedTodos.some(t => t.completed);
+              const updates = { todos: updatedTodos };
+              if ((!hasCompletedTodos || updatedTodos.length === 0) && project.status !== 'planning') {
+                updates.status = 'planning';
+              }
+
+              updateProject(project.id, updates);
             }
           });
         }}
