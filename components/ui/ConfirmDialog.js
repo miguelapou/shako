@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 
 // ConfirmDialog - Custom styled confirmation modal
 const ConfirmDialog = ({
@@ -14,22 +14,37 @@ const ConfirmDialog = ({
 }) => {
   const [isClosing, setIsClosing] = useState(false);
 
-  const handleClose = () => {
+  const handleClose = useCallback(() => {
     setIsClosing(true);
     setTimeout(() => {
       setIsClosing(false);
       onClose();
     }, 150);
-  };
+  }, [onClose]);
 
-  const handleConfirm = () => {
+  const handleConfirm = useCallback(() => {
     setIsClosing(true);
     setTimeout(() => {
       setIsClosing(false);
       onConfirm();
       onClose();
     }, 150);
-  };
+  }, [onConfirm, onClose]);
+
+  // Handle Enter key to confirm
+  useEffect(() => {
+    if (!isOpen) return;
+
+    const handleKeyDown = (e) => {
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        handleConfirm();
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [isOpen, handleConfirm]);
 
   if (!isOpen) return null;
 

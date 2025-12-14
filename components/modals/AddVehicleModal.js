@@ -24,8 +24,49 @@ const AddVehicleModal = ({
   handleImageDragOver,
   handleImageDrop,
   onClose,
+  setConfirmDialog
 }) => {
   const { toast } = useUI();
+
+  // Check if any fields have been filled in
+  const hasUnsavedChanges = () => {
+    return (
+      newVehicle.nickname?.trim() ||
+      newVehicle.name?.trim() ||
+      newVehicle.make?.trim() ||
+      newVehicle.year?.toString().trim() ||
+      newVehicle.license_plate?.trim() ||
+      newVehicle.vin?.trim() ||
+      newVehicle.fuel_filter?.trim() ||
+      newVehicle.air_filter?.trim() ||
+      newVehicle.oil_filter?.trim() ||
+      newVehicle.oil_type?.trim() ||
+      newVehicle.oil_capacity?.trim() ||
+      newVehicle.oil_brand?.trim() ||
+      newVehicle.drain_plug?.trim() ||
+      newVehicle.battery?.trim() ||
+      vehicleImageFile
+    );
+  };
+
+  const handleClose = () => {
+    if (hasUnsavedChanges()) {
+      setConfirmDialog({
+        isOpen: true,
+        title: 'Discard Changes?',
+        message: 'You have unsaved changes. Are you sure you want to close without saving?',
+        confirmText: 'Discard',
+        cancelText: 'Keep Editing',
+        onConfirm: () => {
+          onClose();
+          clearImageSelection();
+        }
+      });
+    } else {
+      onClose();
+      clearImageSelection();
+    }
+  };
 
   // Track if this modal was open (for close animation)
   const wasOpen = useRef(false);
@@ -44,7 +85,7 @@ const AddVehicleModal = ({
       className={`fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4 modal-backdrop ${
         isModalClosing ? 'modal-backdrop-exit' : 'modal-backdrop-enter'
       }`}
-      onClick={() => handleCloseModal(onClose)}
+      onClick={() => handleCloseModal(handleClose)}
     >
       <div
         className={`rounded-lg shadow-xl max-w-4xl w-full max-h-[90vh] modal-content ${
@@ -61,7 +102,7 @@ const AddVehicleModal = ({
             Add Vehicle
           </h2>
           <button
-            onClick={() => handleCloseModal(onClose)}
+            onClick={() => handleCloseModal(handleClose)}
             className={`transition-colors ${
               darkMode ? 'text-gray-400 hover:text-gray-300' : 'text-gray-400 hover:text-gray-600'
             }`}
@@ -480,10 +521,7 @@ const AddVehicleModal = ({
         }`}>
           <div className="flex gap-3">
             <button
-              onClick={() => {
-                onClose();
-                clearImageSelection();
-              }}
+              onClick={handleClose}
               className={`flex-1 px-6 py-3 rounded-lg font-medium transition-colors ${
                 darkMode
                   ? 'bg-gray-700 hover:bg-gray-600 text-gray-100'
