@@ -1720,7 +1720,21 @@ const Shako = () => {
           isModalClosing={isModalClosing}
           handleCloseModal={handleCloseModal}
           addNewPart={handleAddNewPart}
-          onClose={() => setShowAddModal(false)}
+          onClose={() => {
+            setShowAddModal(false);
+            // Reset form to initial state
+            setNewPart({
+              part: '',
+              partNumber: '',
+              vendor: '',
+              price: '',
+              shipping: '',
+              duties: '',
+              tracking: '',
+              status: 'pending',
+              projectId: null
+            });
+          }}
           setConfirmDialog={setConfirmDialog}
         />
 
