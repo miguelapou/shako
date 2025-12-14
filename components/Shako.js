@@ -1721,6 +1721,7 @@ const Shako = () => {
           handleCloseModal={handleCloseModal}
           addNewPart={handleAddNewPart}
           onClose={() => setShowAddModal(false)}
+          setConfirmDialog={setConfirmDialog}
         />
 
         {/* Tracking Info Modal */}
