@@ -290,9 +290,10 @@ const ProjectDetailView = ({
           });
 
           // Check if unchecking results in no completed todos - set status to planning
+          // But never change on_hold status - that's only controlled by pause/resume button
           const hasCompletedTodos = updatedTodos.some(t => t.completed);
           const updates = { todos: updatedTodos };
-          if (!hasCompletedTodos && project.status !== 'planning') {
+          if (!hasCompletedTodos && project.status !== 'planning' && project.status !== 'on_hold') {
             updates.status = 'planning';
           }
 
@@ -426,9 +427,10 @@ const ProjectDetailView = ({
               const updatedTodos = project.todos.filter(t => t.id !== todo.id);
 
               // Check if deletion results in no completed todos or no todos at all - set status to planning
+              // But never change on_hold status - that's only controlled by pause/resume button
               const hasCompletedTodos = updatedTodos.some(t => t.completed);
               const updates = { todos: updatedTodos };
-              if ((!hasCompletedTodos || updatedTodos.length === 0) && project.status !== 'planning') {
+              if ((!hasCompletedTodos || updatedTodos.length === 0) && project.status !== 'planning' && project.status !== 'on_hold') {
                 updates.status = 'planning';
               }
 
