@@ -310,8 +310,10 @@ const VehicleDetailModal = ({
   }, [serviceEvents]);
 
   const serviceEventsHiddenCount = Math.max(0, sortedServiceEvents.length - 3);
-  const serviceEventHeight = 85;
-  const serviceEventsCollapsedHeight = 3 * serviceEventHeight;
+  const serviceEventHeight = 85; // Approximate height per event including gap
+  const serviceEventsCollapsedHeight = Math.min(sortedServiceEvents.length, 3) * serviceEventHeight;
+  // Calculate offset to shift content up when collapsed (to show last 3 items)
+  const serviceEventsCollapseOffset = serviceEventsHiddenCount * serviceEventHeight;
 
   // Measure service history content height
   useEffect(() => {
@@ -771,18 +773,27 @@ const VehicleDetailModal = ({
                   })()}
                 </div>
                 <div className={`relative ${!loadingServiceEvents ? 'animate-fade-in' : ''}`} onClick={() => setSelectedEventId(null)}>
-                    {/* Collapsible events container */}
+                    {/* Outer wrapper - clips content and controls visible height */}
                     <div
-                      ref={serviceHistoryRef}
-                      className="flex flex-col gap-4 transition-all duration-500 ease-in-out"
+                      className="transition-all duration-500 ease-in-out"
                       style={{
                         maxHeight: serviceHistoryExpanded
                           ? `${serviceHistoryHeight || sortedServiceEvents.length * serviceEventHeight}px`
                           : `${serviceEventsCollapsedHeight}px`,
-                        overflow: serviceHistoryExpanded ? 'visible' : 'hidden'
+                        overflow: 'hidden'
                       }}
                     >
-                      {sortedServiceEvents.map((event, index) => {
+                      {/* Inner container - shifts up when collapsed to show last 3 items */}
+                      <div
+                        ref={serviceHistoryRef}
+                        className="flex flex-col gap-4 transition-transform duration-500 ease-in-out"
+                        style={{
+                          transform: serviceHistoryExpanded
+                            ? 'translateY(0)'
+                            : `translateY(-${serviceEventsCollapseOffset}px)`
+                        }}
+                      >
+                        {sortedServiceEvents.map((event, index) => {
                         const eventDate = new Date(event.event_date + 'T00:00:00');
                         const formattedDate = eventDate.toLocaleDateString('en-US', {
                           month: 'short',
@@ -956,7 +967,8 @@ const VehicleDetailModal = ({
                             </div>
                           </div>
                         );
-                      })}
+                        })}
+                      </div>
                     </div>
 
                     {/* Show more/less toggle button */}
