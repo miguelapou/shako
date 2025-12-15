@@ -186,11 +186,11 @@ const AddPartModal = ({
                   onChange={(e) => {
                     const projectId = e.target.value ? parseInt(e.target.value) : null;
                     const project = projectId ? projects.find(p => p.id === projectId) : null;
-                    // When project changes, update vehicleId if the new project has a vehicle
+                    // When project changes, update vehicleId: set to project's vehicle, or clear if no project
                     setNewPart({
                       ...newPart,
                       projectId,
-                      vehicleId: project?.vehicle_id || (projectId ? newPart.vehicleId : newPart.vehicleId)
+                      vehicleId: projectId ? (project?.vehicle_id || null) : null
                     });
                   }}
                   className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent min-h-[42px] box-border ${
