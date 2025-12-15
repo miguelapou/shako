@@ -7,6 +7,7 @@ import { getStatusColors, getPriorityColors, getMutedColor, getPriorityBorderCol
 import { calculateProjectTotal } from '../../utils/dataUtils';
 import { cardBg, primaryText, secondaryText } from '../../utils/styleUtils';
 import AddProjectModal from '../modals/AddProjectModal';
+import ProjectDetailModal from '../modals/ProjectDetailModal';
 
 const ProjectsTab = ({
   tabContentRef,
@@ -546,6 +547,46 @@ const ProjectsTab = ({
             });
           }}
           setConfirmDialog={setConfirmDialog}
+        />
+
+        {/* Project Detail Modal */}
+        <ProjectDetailModal
+          isOpen={showProjectDetailModal}
+          darkMode={darkMode}
+          viewingProject={viewingProject}
+          setViewingProject={setViewingProject}
+          projectModalEditMode={projectModalEditMode}
+          setProjectModalEditMode={setProjectModalEditMode}
+          originalProjectData={originalProjectData}
+          setOriginalProjectData={setOriginalProjectData}
+          isModalClosing={isModalClosing}
+          projects={projects}
+          parts={parts}
+          vehicles={vehicles}
+          vendorColors={vendorColors}
+          editingTodoId={editingTodoId}
+          setEditingTodoId={setEditingTodoId}
+          editingTodoText={editingTodoText}
+          setEditingTodoText={setEditingTodoText}
+          newTodoText={newTodoText}
+          setNewTodoText={setNewTodoText}
+          handleCloseModal={handleCloseModal}
+          hasUnsavedProjectChanges={hasUnsavedProjectChanges}
+          updateProject={updateProject}
+          deleteProject={deleteProject}
+          unlinkPartFromProject={unlinkPartFromProject}
+          loadProjects={loadProjects}
+          getStatusColors={getStatusColors}
+          getPriorityColors={getPriorityColors}
+          getStatusText={getStatusText}
+          getStatusTextColor={getStatusTextColor}
+          getVendorColor={getVendorColor}
+          calculateProjectTotal={calculateProjectTotal}
+          setConfirmDialog={setConfirmDialog}
+          onClose={() => {
+            setShowProjectDetailModal(false);
+            setViewingProject(null);
+          }}
         />
       </>
     </div>
