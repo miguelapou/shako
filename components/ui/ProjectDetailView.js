@@ -44,6 +44,12 @@ const ProjectDetailView = ({
   const [showTodoProgress, setShowTodoProgress] = useState(false);
   const descriptionRef = useRef(null);
 
+  // Refs and state for animated progress bar height
+  const progressGridRef = useRef(null);
+  const leftColumnRef = useRef(null);
+  const twoColumnGridRef = useRef(null);
+  const [progressGridHeight, setProgressGridHeight] = useState(165);
+
   // Check if description is clamped (content overflows the collapsed height)
   useEffect(() => {
     if (descriptionRef.current && project.description) {
@@ -53,6 +59,64 @@ const ProjectDetailView = ({
       setIsDescriptionClamped(content.scrollHeight > collapsedHeight);
     }
   }, [project.description]);
+
+  // Calculate and animate progress grid height based on available space
+  useEffect(() => {
+    const calculateHeight = () => {
+      if (!leftColumnRef.current || !progressGridRef.current) return;
+
+      // Temporarily set height to auto so it doesn't constrain the layout measurement
+      progressGridRef.current.style.transition = 'none';
+      progressGridRef.current.style.height = 'auto';
+
+      // Force a reflow to get accurate measurements
+      void twoColumnGridRef.current?.offsetHeight;
+
+      // Get the left column's total height (matches right column via CSS Grid)
+      const leftColumn = leftColumnRef.current;
+      const leftColumnHeight = leftColumn.clientHeight;
+
+      // Get the description section height (first child)
+      const descriptionSection = leftColumn.querySelector('.lg\\:min-h-\\[6\\.5rem\\]');
+      const descriptionHeight = descriptionSection ? descriptionSection.offsetHeight : 0;
+
+      // Account for gap (24px = gap-6)
+      const gap = 24;
+
+      // Calculate available height for progress grid
+      const availableHeight = leftColumnHeight - descriptionHeight - gap;
+
+      // Clamp to min/max bounds
+      const clampedHeight = Math.min(Math.max(availableHeight, 165), 300);
+
+      // Set height directly first (no transition)
+      progressGridRef.current.style.height = `${progressGridHeight}px`;
+
+      // Re-enable transition and animate to new height
+      requestAnimationFrame(() => {
+        if (progressGridRef.current) {
+          progressGridRef.current.style.transition = '';
+          setProgressGridHeight(clampedHeight);
+        }
+      });
+    };
+
+    // Calculate on mount and when todos change
+    const timeoutId = setTimeout(calculateHeight, 50);
+
+    // Use ResizeObserver to recalculate when the two-column grid resizes
+    const resizeObserver = new ResizeObserver(() => {
+      setTimeout(calculateHeight, 50);
+    });
+    if (twoColumnGridRef.current) {
+      resizeObserver.observe(twoColumnGridRef.current);
+    }
+
+    return () => {
+      clearTimeout(timeoutId);
+      resizeObserver.disconnect();
+    };
+  }, [project.todos, showCompletedTodos, isDescriptionExpanded, progressGridHeight]);
 
   // Confirmation dialog state
   const [confirmDialog, setConfirmDialog] = useState({
@@ -476,9 +540,9 @@ const ProjectDetailView = ({
       </div>
 
       {/* Two Column Layout: Project Details (Left) and Todo List (Right) */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+      <div ref={twoColumnGridRef} className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
         {/* Left Column: Project Details */}
-        <div className="flex flex-col gap-6">
+        <div ref={leftColumnRef} className="flex flex-col gap-6">
           {/* Description */}
           <div className="lg:min-h-[6.5rem]">
             <h3 className={`text-lg font-semibold mb-2 ${
@@ -642,12 +706,16 @@ const ProjectDetailView = ({
           </div>
 
           {/* Desktop: Vertical Bar Graphs (3 equal columns) */}
-          <div className="hidden lg:grid lg:grid-cols-3 lg:gap-4 lg:flex-1 min-h-[165px] max-h-[300px] transition-all duration-300 ease-out">
+          <div
+            ref={progressGridRef}
+            className="hidden lg:grid lg:grid-cols-3 lg:gap-4 transition-all duration-300 ease-out"
+            style={{ height: progressGridHeight }}
+          >
             {/* Column 1: Budget Bar */}
-            <div className="flex flex-col items-end pr-2">
-              <div className="flex flex-col items-center flex-1">
+            <div className="flex flex-col items-end pr-2 transition-all duration-300">
+              <div className="flex flex-col items-center flex-1 transition-all duration-300">
                 <div
-                  className={`w-14 rounded-lg relative overflow-hidden flex-1 ${
+                  className={`w-14 rounded-lg relative overflow-hidden flex-1 transition-all duration-300 ${
                     darkMode ? 'bg-gray-700' : 'bg-gray-300'
                   }`}
                   style={{
@@ -670,10 +738,10 @@ const ProjectDetailView = ({
             </div>
 
             {/* Column 2: To-Dos Bar */}
-            <div className="flex flex-col items-center">
-              <div className="flex flex-col items-center flex-1">
+            <div className="flex flex-col items-center transition-all duration-300">
+              <div className="flex flex-col items-center flex-1 transition-all duration-300">
                 <div
-                  className={`w-14 rounded-lg relative overflow-hidden flex-1 ${
+                  className={`w-14 rounded-lg relative overflow-hidden flex-1 transition-all duration-300 ${
                     darkMode ? 'bg-gray-700' : 'bg-gray-300'
                   }`}
                   style={{
@@ -695,7 +763,7 @@ const ProjectDetailView = ({
             </div>
 
             {/* Column 3: Legend */}
-            <div className="flex flex-col justify-end">
+            <div className="flex flex-col justify-end transition-all duration-300">
               <div className="space-y-2">
                 <div className="flex items-center gap-2">
                   <div
