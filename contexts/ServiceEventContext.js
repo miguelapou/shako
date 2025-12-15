@@ -19,6 +19,7 @@ export const ServiceEventProvider = ({ children, userId, toast }) => {
   const [newEventDescription, setNewEventDescription] = useState('');
   const [newEventOdometer, setNewEventOdometer] = useState('');
   const [newEventNotes, setNewEventNotes] = useState('');
+  const [newEventLinkedParts, setNewEventLinkedParts] = useState([]);
 
   // Load service events for a vehicle
   const loadServiceEvents = useCallback(async (vehicleId) => {
@@ -38,7 +39,7 @@ export const ServiceEventProvider = ({ children, userId, toast }) => {
   }, []);
 
   // Add a new service event
-  const addServiceEvent = useCallback(async (vehicleId, eventDate, description, odometer, notes) => {
+  const addServiceEvent = useCallback(async (vehicleId, eventDate, description, odometer, notes, linkedPartIds = []) => {
     if (!vehicleId || !eventDate || !description || !userId) return null;
 
     // Validate odometer if provided
@@ -58,7 +59,8 @@ export const ServiceEventProvider = ({ children, userId, toast }) => {
         event_date: eventDate,
         description: description.trim(),
         odometer: odometer ? parseInt(odometer, 10) : null,
-        notes: notes?.trim() || null
+        notes: notes?.trim() || null,
+        linked_part_ids: linkedPartIds.length > 0 ? linkedPartIds : null
       };
 
       const newEvent = await serviceEventsService.createServiceEvent(eventData, userId);
@@ -125,6 +127,7 @@ export const ServiceEventProvider = ({ children, userId, toast }) => {
     setNewEventDescription('');
     setNewEventOdometer('');
     setNewEventNotes('');
+    setNewEventLinkedParts([]);
     setEditingServiceEvent(null);
   }, []);
 
@@ -135,6 +138,7 @@ export const ServiceEventProvider = ({ children, userId, toast }) => {
     setNewEventDescription('');
     setNewEventOdometer('');
     setNewEventNotes('');
+    setNewEventLinkedParts([]);
     setEditingServiceEvent(null);
   }, []);
 
@@ -144,6 +148,7 @@ export const ServiceEventProvider = ({ children, userId, toast }) => {
     setNewEventDescription(event.description);
     setNewEventOdometer(event.odometer ? String(event.odometer) : '');
     setNewEventNotes(event.notes || '');
+    setNewEventLinkedParts(event.linked_part_ids || []);
     setEditingServiceEvent(event);
   }, []);
 
@@ -183,6 +188,8 @@ export const ServiceEventProvider = ({ children, userId, toast }) => {
     setNewEventOdometer,
     newEventNotes,
     setNewEventNotes,
+    newEventLinkedParts,
+    setNewEventLinkedParts,
     // Actions
     loadServiceEvents,
     addServiceEvent,

@@ -11,6 +11,7 @@ import {
   Trash2,
   Archive,
   ChevronDown,
+  ChevronUp,
   ChevronLeft,
   ChevronRight,
   Upload,
@@ -24,7 +25,7 @@ import {
   Calendar,
   ListChecks,
   FileDown,
-  BookOpen
+  Info
 } from 'lucide-react';
 import ProjectDetailView from '../ui/ProjectDetailView';
 import ProjectEditForm from '../ui/ProjectEditForm';
@@ -35,13 +36,15 @@ import AddServiceEventModal from './AddServiceEventModal';
 import ExportReportModal from './ExportReportModal';
 import {
   calculateVehicleTotalSpent,
-  calculateProjectTotal
+  calculateProjectTotal,
+  calculateServicePartsTotal
 } from '../../utils/dataUtils';
 import {
   getPriorityBorderColor,
   getStatusColors,
   getPriorityColors,
-  getVendorColor
+  getVendorColor,
+  getVendorDisplayColor
 } from '../../utils/colorUtils';
 import { inputClasses } from '../../utils/styleUtils';
 import { generateVehicleReportPDF, downloadBlob } from '../../utils/pdfUtils';
@@ -104,16 +107,23 @@ const VehicleDetailModal = ({
   // State for document/service event action overlays
   const [selectedDocId, setSelectedDocId] = useState(null);
   const [selectedEventId, setSelectedEventId] = useState(null);
-  // State for viewing service event notes
-  const [viewingNoteEvent, setViewingNoteEvent] = useState(null);
-  const [isNotesModalClosing, setIsNotesModalClosing] = useState(false);
+  // State for viewing service event info (notes + parts)
+  const [viewingInfoEvent, setViewingInfoEvent] = useState(null);
+  const [isInfoModalClosing, setIsInfoModalClosing] = useState(false);
+  // State for service history expansion
+  const [serviceHistoryExpanded, setServiceHistoryExpanded] = useState(false);
 
-  // Handle closing the notes modal with animation
-  const handleCloseNotesModal = () => {
-    setIsNotesModalClosing(true);
+  // Reset service history expansion when viewing a different vehicle
+  useEffect(() => {
+    setServiceHistoryExpanded(false);
+  }, [viewingVehicle?.id]);
+
+  // Handle closing the info modal with animation
+  const handleCloseInfoModal = () => {
+    setIsInfoModalClosing(true);
     setTimeout(() => {
-      setViewingNoteEvent(null);
-      setIsNotesModalClosing(false);
+      setViewingInfoEvent(null);
+      setIsInfoModalClosing(false);
     }, 150);
   };
 
@@ -277,6 +287,8 @@ const VehicleDetailModal = ({
     setNewEventOdometer,
     newEventNotes,
     setNewEventNotes,
+    newEventLinkedParts,
+    setNewEventLinkedParts,
     editingServiceEvent,
     loadServiceEvents,
     addServiceEvent,
@@ -286,6 +298,16 @@ const VehicleDetailModal = ({
     openEditServiceEventModal,
     handleCloseServiceEventModal
   } = useServiceEvents();
+
+  // Sorted service events for display
+  const sortedServiceEvents = useMemo(() => {
+    if (!serviceEvents) return [];
+    return [...serviceEvents].sort((a, b) =>
+      new Date(a.event_date + 'T00:00:00') - new Date(b.event_date + 'T00:00:00')
+    );
+  }, [serviceEvents]);
+
+  const serviceEventsHiddenCount = Math.max(0, sortedServiceEvents.length - 3);
 
   // Load documents and service events when modal opens
   useEffect(() => {
@@ -523,9 +545,15 @@ const VehicleDetailModal = ({
                     </h3>
                     {(() => {
                       const vehicleProjects = projects.filter(p => p.vehicle_id === viewingVehicle.id);
-                      const linkedPartsCount = vehicleProjects.reduce((count, project) => {
+                      // Count parts linked through projects
+                      const projectLinkedPartsCount = vehicleProjects.reduce((count, project) => {
                         return count + parts.filter(part => part.projectId === project.id).length;
                       }, 0);
+                      // Count parts directly linked to vehicle (not through a project)
+                      const directlyLinkedPartsCount = parts.filter(part =>
+                        part.vehicleId === viewingVehicle.id && !part.projectId
+                      ).length;
+                      const linkedPartsCount = projectLinkedPartsCount + directlyLinkedPartsCount;
                       return (vehicleProjects.length > 0 || linkedPartsCount > 0) && (
                         <div className={`flex items-center gap-3 text-xs ${
                           darkMode ? 'text-gray-400' : 'text-gray-500'
@@ -620,7 +648,7 @@ const VehicleDetailModal = ({
                     {/* Budget Progress for Linked Projects */}
                     {(() => {
                       const vehicleProjects = projects.filter(p => p.vehicle_id === viewingVehicle.id);
-                      const totalSpent = calculateVehicleTotalSpent(viewingVehicle.id, projects, parts);
+                      const totalSpent = calculateVehicleTotalSpent(viewingVehicle.id, projects, parts, serviceEvents);
                       const totalBudget = vehicleProjects.reduce((sum, project) => sum + (project.budget || 0), 0);
                       const progress = totalBudget > 0 ? (totalSpent / totalBudget) * 100 : 0;
                       return (
@@ -709,13 +737,51 @@ const VehicleDetailModal = ({
                   }`}>
                     Service History
                   </h3>
+                  {(() => {
+                    const servicePartsTotal = calculateServicePartsTotal(viewingVehicle.id, parts, serviceEvents);
+                    if (servicePartsTotal === 0) return null;
+                    return (
+                      <span className={`px-2 py-1 rounded-md text-xs font-semibold flex items-center gap-1 ${
+                        darkMode ? 'bg-green-900/40 text-green-300' : 'bg-green-100 text-green-700'
+                      }`}>
+                        <Wrench className="w-3 h-3" />
+                        ${servicePartsTotal.toFixed(2)}
+                      </span>
+                    );
+                  })()}
                 </div>
                 <div className={`relative ${!loadingServiceEvents ? 'animate-fade-in' : ''}`} onClick={() => setSelectedEventId(null)}>
-                    {/* Timeline items */}
+                    {/* Show more/less toggle button */}
+                    {serviceEventsHiddenCount > 0 && (
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setServiceHistoryExpanded(!serviceHistoryExpanded);
+                        }}
+                        className={`flex items-center gap-1 text-sm font-medium mb-2 ${
+                          darkMode
+                            ? 'text-blue-400 hover:text-blue-300'
+                            : 'text-blue-600 hover:text-blue-700'
+                        }`}
+                      >
+                        {serviceHistoryExpanded ? (
+                          <>
+                            <ChevronUp className="w-4 h-4" />
+                            Show less
+                          </>
+                        ) : (
+                          <>
+                            <ChevronDown className="w-4 h-4" />
+                            Show {serviceEventsHiddenCount} more
+                          </>
+                        )}
+                      </button>
+                    )}
+
+                    {/* Service events container */}
                     <div className="flex flex-col gap-4">
-                      {serviceEvents && [...serviceEvents].sort((a, b) =>
-                        new Date(a.event_date + 'T00:00:00') - new Date(b.event_date + 'T00:00:00')
-                      ).map((event, index, arr) => {
+                      {/* Show last 3 events when collapsed, all when expanded */}
+                      {(serviceHistoryExpanded ? sortedServiceEvents : sortedServiceEvents.slice(-3)).map((event, index, arr) => {
                         const eventDate = new Date(event.event_date + 'T00:00:00');
                         const formattedDate = eventDate.toLocaleDateString('en-US', {
                           month: 'short',
@@ -724,11 +790,12 @@ const VehicleDetailModal = ({
                         });
                         const isLast = index === arr.length - 1;
 
-                        // Calculate mileage difference from previous event with same description
+                        // Calculate mileage difference from previous event (chronologically) with same description
                         let mileageDiff = null;
                         if (event.odometer) {
-                          const previousSameEvent = arr
-                            .slice(0, index)
+                          const chronologicalIndex = sortedServiceEvents.findIndex(e => e.id === event.id);
+                          const previousSameEvent = sortedServiceEvents
+                            .slice(0, chronologicalIndex)
                             .filter(e => e.description.toLowerCase() === event.description.toLowerCase() && e.odometer)
                             .pop();
                           if (previousSameEvent) {
@@ -776,14 +843,23 @@ const VehicleDetailModal = ({
                                   ? `bg-gray-700/50 border-gray-600 ${selectedEventId !== event.id ? 'can-hover:group-hover:border-white' : ''}`
                                   : `bg-gray-50 border-gray-200 ${selectedEventId !== event.id ? 'can-hover:group-hover:border-gray-400' : ''}`
                               }`}>
-                                {/* Notes indicator */}
-                                {event.notes && (
-                                  <FileText className={`absolute top-2 right-2 w-3.5 h-3.5 transition-colors ${
-                                    darkMode
-                                      ? `text-gray-500 ${selectedEventId !== event.id ? 'can-hover:group-hover:text-gray-300' : ''}`
-                                      : `text-gray-400 ${selectedEventId !== event.id ? 'can-hover:group-hover:text-gray-600' : ''}`
-                                  }`} />
-                                )}
+                                {/* Indicators for notes and linked parts */}
+                                <div className="absolute top-2 right-2 flex items-center gap-1.5">
+                                  {event.linked_part_ids && event.linked_part_ids.length > 0 && (
+                                    <Package className={`w-3.5 h-3.5 transition-colors ${
+                                      darkMode
+                                        ? `text-gray-500 ${selectedEventId !== event.id ? 'can-hover:group-hover:text-gray-300' : ''}`
+                                        : `text-gray-400 ${selectedEventId !== event.id ? 'can-hover:group-hover:text-gray-600' : ''}`
+                                    }`} />
+                                  )}
+                                  {event.notes && (
+                                    <FileText className={`w-3.5 h-3.5 transition-colors ${
+                                      darkMode
+                                        ? `text-gray-500 ${selectedEventId !== event.id ? 'can-hover:group-hover:text-gray-300' : ''}`
+                                        : `text-gray-400 ${selectedEventId !== event.id ? 'can-hover:group-hover:text-gray-600' : ''}`
+                                    }`} />
+                                  )}
+                                </div>
                                 <div className="flex-1 min-w-0">
                                   <p className={`text-sm font-medium ${
                                     darkMode ? 'text-gray-200' : 'text-gray-800'
@@ -858,37 +934,35 @@ const VehicleDetailModal = ({
                                     <Edit2 className="w-5 h-5 mb-0.5" />
                                     <span className="text-[10px] font-medium">Edit</span>
                                   </button>
-                                  {event.notes && (
+                                  {(event.notes || (event.linked_part_ids && event.linked_part_ids.length > 0)) && (
                                     <button
                                       onClick={() => {
                                         setSelectedEventId(null);
-                                        setViewingNoteEvent(event);
+                                        setViewingInfoEvent(event);
                                       }}
                                       className={`flex flex-col items-center justify-center w-14 h-14 rounded-lg transition-all ${
                                         darkMode
-                                          ? 'bg-gray-700 text-gray-300 can-hover:hover:ring-2 can-hover:hover:ring-gray-300'
-                                          : 'bg-white text-gray-600 shadow-sm can-hover:hover:ring-2 can-hover:hover:ring-gray-600'
+                                          ? 'bg-gray-700 text-yellow-400 can-hover:hover:ring-2 can-hover:hover:ring-yellow-400'
+                                          : 'bg-white text-yellow-600 shadow-sm can-hover:hover:ring-2 can-hover:hover:ring-yellow-600'
                                       }`}
                                     >
-                                      <BookOpen className="w-5 h-5 mb-0.5" />
-                                      <span className="text-[10px] font-medium">Notes</span>
+                                      <Info className="w-5 h-5 mb-0.5" />
+                                      <span className="text-[10px] font-medium">Info</span>
                                     </button>
                                   )}
                                 </div>
                               </div>
                             </div>
                           </div>
-                        );
-                      })}
+                          );
+                        })}
 
-                      {/* Add new service event card */}
+                      {/* Add service event card */}
                       <div
                         onClick={openAddServiceEventModal}
                         className="relative flex items-stretch gap-4 cursor-pointer group"
                       >
-                        {/* Timeline column with icon */}
                         <div className="relative flex flex-col items-center">
-                          {/* Timeline dot for add card - with background to cover line */}
                           <div className={`relative z-10 flex-shrink-0 w-10 h-10 rounded-full flex items-center justify-center border-2 border-dashed ${
                             darkMode
                               ? 'bg-gray-800 border-gray-600 can-hover:group-hover:border-blue-500'
@@ -899,8 +973,6 @@ const VehicleDetailModal = ({
                             } transition-colors`} />
                           </div>
                         </div>
-
-                        {/* Add card content */}
                         <div className={`flex-1 rounded-lg p-3 border-2 border-dashed transition-all ${
                           darkMode
                             ? 'border-gray-600 can-hover:group-hover:border-blue-500 can-hover:group-hover:bg-gray-700/30'
@@ -934,6 +1006,10 @@ const VehicleDetailModal = ({
                   setOdometer={setNewEventOdometer}
                   notes={newEventNotes}
                   setNotes={setNewEventNotes}
+                  linkedPartIds={newEventLinkedParts}
+                  setLinkedPartIds={setNewEventLinkedParts}
+                  parts={parts}
+                  vendorColors={vendorColors}
                   editingEvent={editingServiceEvent}
                   onSave={async () => {
                     if (editingServiceEvent) {
@@ -941,7 +1017,8 @@ const VehicleDetailModal = ({
                         event_date: newEventDate,
                         description: newEventDescription.trim(),
                         odometer: newEventOdometer ? parseInt(newEventOdometer, 10) : null,
-                        notes: newEventNotes.trim() || null
+                        notes: newEventNotes.trim() || null,
+                        linked_part_ids: newEventLinkedParts.length > 0 ? newEventLinkedParts : null
                       });
                       return result;
                     } else {
@@ -950,7 +1027,8 @@ const VehicleDetailModal = ({
                         newEventDate,
                         newEventDescription,
                         newEventOdometer,
-                        newEventNotes
+                        newEventNotes,
+                        newEventLinkedParts
                       );
                       return result;
                     }
@@ -976,7 +1054,7 @@ const VehicleDetailModal = ({
                   Maintenance
                 </h3>
                 {(viewingVehicle.fuel_filter || viewingVehicle.air_filter || viewingVehicle.oil_filter || viewingVehicle.oil_type || viewingVehicle.oil_capacity || viewingVehicle.oil_brand || viewingVehicle.drain_plug || viewingVehicle.battery) ? (
-                  <div className="grid grid-cols-2 gap-4">
+                  <div className="grid grid-cols-2 gap-4 px-4">
                     {/* Mobile two-column layout: Left (fuel filter, air filter, battery, drain plug) | Right (oil filter, oil capacity, oil type, oil brand) */}
                     {viewingVehicle.fuel_filter && (
                       <div>
@@ -2161,20 +2239,20 @@ const VehicleDetailModal = ({
         generating={generatingReport}
       />
 
-      {/* Notes Viewing Modal */}
-      {(viewingNoteEvent || isNotesModalClosing) && (
+      {/* Service Event Info Modal (Notes + Parts) */}
+      {(viewingInfoEvent || isInfoModalClosing) && (
         <div
           className={`fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-[70] modal-backdrop ${
-            isNotesModalClosing ? 'modal-backdrop-exit' : 'modal-backdrop-enter'
+            isInfoModalClosing ? 'modal-backdrop-exit' : 'modal-backdrop-enter'
           }`}
           onClick={(e) => {
             e.stopPropagation();
-            handleCloseNotesModal();
+            handleCloseInfoModal();
           }}
         >
           <div
-            className={`rounded-lg shadow-xl max-w-md w-full mx-4 modal-content ${
-              isNotesModalClosing ? 'modal-popup-exit' : 'modal-popup-enter'
+            className={`rounded-lg shadow-xl max-w-lg w-full mx-4 modal-content ${
+              isInfoModalClosing ? 'modal-popup-exit' : 'modal-popup-enter'
             } ${darkMode ? 'bg-gray-800' : 'bg-white'}`}
             onClick={(e) => e.stopPropagation()}
           >
@@ -2184,21 +2262,22 @@ const VehicleDetailModal = ({
               <div>
                 <h3 className={`text-base font-semibold ${
                   darkMode ? 'text-gray-100' : 'text-gray-800'
-                }`}>
-                  {viewingNoteEvent?.description}
+                }`} style={{ fontFamily: "'FoundationOne', 'Courier New', monospace" }}>
+                  {viewingInfoEvent?.description}
                 </h3>
                 <p className={`text-xs mt-0.5 ${
                   darkMode ? 'text-gray-400' : 'text-gray-500'
                 }`}>
-                  {viewingNoteEvent && new Date(viewingNoteEvent.event_date + 'T00:00:00').toLocaleDateString('en-US', {
+                  {viewingInfoEvent && new Date(viewingInfoEvent.event_date + 'T00:00:00').toLocaleDateString('en-US', {
                     month: 'short',
                     day: 'numeric',
                     year: 'numeric'
                   })}
+                  {viewingInfoEvent?.odometer && ` • ${parseInt(viewingInfoEvent.odometer).toLocaleString()}${viewingVehicle.odometer_unit ? ` ${viewingVehicle.odometer_unit}` : ''}`}
                 </p>
               </div>
               <button
-                onClick={handleCloseNotesModal}
+                onClick={handleCloseInfoModal}
                 className={`p-1 rounded transition-colors ${
                   darkMode ? 'hover:bg-gray-700 text-gray-400' : 'hover:bg-gray-100 text-gray-600'
                 }`}
@@ -2206,12 +2285,145 @@ const VehicleDetailModal = ({
                 <X className="w-5 h-5" />
               </button>
             </div>
-            <div className="p-5">
-              <p className={`text-sm whitespace-pre-wrap ${
-                darkMode ? 'text-gray-300' : 'text-gray-700'
-              }`}>
-                {viewingNoteEvent?.notes}
-              </p>
+            <div className="p-5 max-h-[60vh] overflow-y-auto space-y-5">
+              {/* Notes Section */}
+              {viewingInfoEvent?.notes && (
+                <div>
+                  <h4 className={`text-sm font-semibold mb-2 ${
+                    darkMode ? 'text-gray-300' : 'text-gray-700'
+                  }`}>
+                    Notes
+                  </h4>
+                  <p className={`text-sm whitespace-pre-wrap ${
+                    darkMode ? 'text-gray-400' : 'text-gray-600'
+                  }`}>
+                    {viewingInfoEvent.notes}
+                  </p>
+                </div>
+              )}
+
+              {/* Linked Parts Section */}
+              {(() => {
+                const linkedParts = viewingInfoEvent?.linked_part_ids
+                  ? parts.filter(p => viewingInfoEvent.linked_part_ids.includes(p.id))
+                  : [];
+
+                if (linkedParts.length === 0) return null;
+
+                return (
+                  <div>
+                    <h4 className={`text-sm font-semibold mb-3 ${
+                      darkMode ? 'text-gray-300' : 'text-gray-700'
+                    }`}>
+                      Linked Parts ({linkedParts.length})
+                    </h4>
+                    <div className="flex flex-col gap-4">
+                      {linkedParts.map((part) => {
+                        const vendorColor = part.vendor && vendorColors[part.vendor];
+                        const colors = vendorColor ? getVendorDisplayColor(vendorColor, darkMode) : null;
+                        return (
+                          <div
+                            key={part.id}
+                            className={`p-4 rounded-lg border flex flex-col ${
+                              darkMode ? 'bg-gray-700 border-gray-600' : 'bg-gray-50 border-gray-200'
+                            }`}
+                          >
+                            <div className="flex justify-between items-start mb-3">
+                              <div className="flex-1">
+                                <h4 className={`font-medium ${
+                                  darkMode ? 'text-gray-100' : 'text-slate-800'
+                                }`}>
+                                  {part.part}
+                                </h4>
+                                {part.vendor && (
+                                  colors ? (
+                                    <span
+                                      className="inline-block mt-1 px-2 py-0.5 rounded-full text-xs font-medium border"
+                                      style={{
+                                        backgroundColor: colors.bg,
+                                        color: colors.text,
+                                        borderColor: colors.border
+                                      }}
+                                    >
+                                      {part.vendor}
+                                    </span>
+                                  ) : (
+                                    <span className={`inline-block mt-1 px-2 py-0.5 rounded-full text-xs font-medium ${
+                                      darkMode ? 'bg-gray-600 text-gray-300' : 'bg-gray-200 text-gray-700'
+                                    }`}>
+                                      {part.vendor}
+                                    </span>
+                                  )
+                                )}
+                              </div>
+                              <div className={`text-xs font-medium ${getStatusTextColor(part)}`}>
+                                {getStatusText(part)}
+                              </div>
+                            </div>
+                            {part.partNumber && part.partNumber !== '-' && (
+                              <p className={`text-xs font-mono mb-3 ${
+                                darkMode ? 'text-gray-400' : 'text-slate-600'
+                              }`}>
+                                Part #: {part.partNumber}
+                              </p>
+                            )}
+                            <div className={`border-t flex-1 flex flex-col justify-end ${
+                              darkMode ? 'border-gray-600' : 'border-gray-200'
+                            }`}>
+                              <div className="pt-3 space-y-2">
+                                <div className="flex justify-between text-sm">
+                                  <span className={darkMode ? 'text-gray-400' : 'text-slate-600'}>
+                                    Part Price:
+                                  </span>
+                                  <span className={`font-medium ${
+                                    darkMode ? 'text-gray-200' : 'text-gray-800'
+                                  }`}>
+                                    ${(part.price || 0).toFixed(2)}
+                                  </span>
+                                </div>
+                                {part.shipping > 0 && (
+                                  <div className="flex justify-between text-sm">
+                                    <span className={darkMode ? 'text-gray-400' : 'text-slate-600'}>
+                                      Shipping:
+                                    </span>
+                                    <span className={`font-medium ${
+                                      darkMode ? 'text-gray-200' : 'text-gray-800'
+                                    }`}>
+                                      ${part.shipping.toFixed(2)}
+                                    </span>
+                                  </div>
+                                )}
+                                {part.duties > 0 && (
+                                  <div className="flex justify-between text-sm">
+                                    <span className={darkMode ? 'text-gray-400' : 'text-slate-600'}>
+                                      Duties:
+                                    </span>
+                                    <span className={`font-medium ${
+                                      darkMode ? 'text-gray-200' : 'text-gray-800'
+                                    }`}>
+                                      ${part.duties.toFixed(2)}
+                                    </span>
+                                  </div>
+                                )}
+                                <div className={`flex justify-between text-base font-bold pt-2 border-t ${
+                                  darkMode ? 'border-gray-600' : 'border-gray-200'
+                                }`}>
+                                  <span className={darkMode ? 'text-gray-100' : 'text-slate-800'}>
+                                    Total:
+                                  </span>
+                                  <span className={darkMode ? 'text-gray-100' : 'text-slate-800'}>
+                                    ${(part.total || 0).toFixed(2)}
+                                  </span>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </div>
+                );
+              })()}
             </div>
           </div>
         </div>

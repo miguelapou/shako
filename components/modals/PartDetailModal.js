@@ -68,6 +68,26 @@ const PartDetailModal = ({
   const isScrollingRef = useRef(false);
   const minSwipeDistance = 50; // Minimum swipe distance in pixels
 
+  // Vehicle dropdown state for edit view
+  const [showVehicleDropdown, setShowVehicleDropdown] = useState(false);
+  const [isVehicleDropdownClosing, setIsVehicleDropdownClosing] = useState(false);
+
+  const closeVehicleDropdownWithAnimation = useCallback(() => {
+    setIsVehicleDropdownClosing(true);
+    setTimeout(() => {
+      setIsVehicleDropdownClosing(false);
+      setShowVehicleDropdown(false);
+    }, 150);
+  }, []);
+
+  // Get the selected project for edit view
+  const selectedEditProject = editingPart?.projectId ? projects.find(p => p.id === editingPart.projectId) : null;
+  // Determine the effective vehicle (project's vehicle takes priority)
+  const effectiveEditVehicleId = selectedEditProject ? selectedEditProject.vehicle_id : editingPart?.vehicleId;
+  const effectiveEditVehicle = effectiveEditVehicleId ? vehicles?.find(v => v.id === effectiveEditVehicleId) : null;
+  // Check if vehicle is auto-populated from project
+  const isEditVehicleAutoPopulated = selectedEditProject && selectedEditProject.vehicle_id;
+
   // Track if this modal was open (for close animation)
   const wasOpen = useRef(false);
   if (isOpen) wasOpen.current = true;
@@ -558,32 +578,6 @@ const PartDetailModal = ({
                 : viewingPart.part}
             </h2>
             <div className="flex items-center gap-3">
-              {/* Vehicle Badge - Mobile only in edit view */}
-              {partDetailView === 'edit' &&
-                (() => {
-                  const partProject = editingPart?.projectId
-                    ? projects.find((p) => p.id === editingPart.projectId)
-                    : null;
-                  const vehicle = partProject?.vehicle_id
-                    ? vehicles.find((v) => v.id === partProject.vehicle_id)
-                    : null;
-                  return (
-                    vehicle && (
-                      <span
-                        className={`md:hidden inline-flex items-center px-2 py-1 rounded text-xs font-medium border ${
-                          darkMode
-                            ? 'bg-gray-700 text-gray-300 border-gray-600'
-                            : 'bg-gray-100 text-gray-700 border-gray-300'
-                        }`}
-                      >
-                        <Car className="w-3 h-3 mr-1" />
-                        <span style={{ color: vehicle.color || '#3B82F6' }}>
-                          {vehicle.nickname || vehicle.name}
-                        </span>
-                      </span>
-                    )
-                  );
-                })()}
               <button
                 onClick={() =>
                   handleCloseModal(() => {
@@ -721,8 +715,10 @@ const PartDetailModal = ({
                       const partProject = viewingPart.projectId
                         ? projects.find((p) => p.id === viewingPart.projectId)
                         : null;
-                      const vehicle = partProject?.vehicle_id
-                        ? vehicles.find((v) => v.id === partProject.vehicle_id)
+                      // Get vehicle from project or directly from part
+                      const vehicleId = partProject?.vehicle_id || viewingPart.vehicleId;
+                      const vehicle = vehicleId
+                        ? vehicles.find((v) => v.id === vehicleId)
                         : null;
                       return (
                         <div>
@@ -1091,34 +1087,6 @@ const PartDetailModal = ({
         {/* EDIT VIEW */}
         {partDetailView === 'edit' && editingPart && (
           <div className="p-6 modal-scrollable slide-in-right relative">
-            {/* Vehicle Badge - Desktop only in upper right */}
-            {(() => {
-              const partProject = editingPart.projectId
-                ? projects.find((p) => p.id === editingPart.projectId)
-                : null;
-              const vehicle = partProject?.vehicle_id
-                ? vehicles.find((v) => v.id === partProject.vehicle_id)
-                : null;
-              return (
-                vehicle && (
-                  <div className="hidden md:block absolute top-6 right-6 z-10">
-                    <span
-                      className={`inline-flex items-center px-2 py-1 rounded text-xs font-medium border ${
-                        darkMode
-                          ? 'bg-gray-700 text-gray-300 border-gray-600'
-                          : 'bg-gray-100 text-gray-700 border-gray-300'
-                      }`}
-                    >
-                      <Car className="w-3 h-3 mr-1" />
-                      <span style={{ color: vehicle.color || '#3B82F6' }}>
-                        {vehicle.nickname || vehicle.name}
-                      </span>
-                    </span>
-                  </div>
-                )
-              );
-            })()}
-
             <div className="flex flex-col md:grid md:grid-cols-2 gap-4">
               {/* LEFT COLUMN - Non-price fields */}
               <div className="order-1 md:order-none space-y-4">
@@ -1144,33 +1112,6 @@ const PartDetailModal = ({
                     }`}
                     placeholder="e.g., Front Bumper"
                     required
-                  />
-                </div>
-
-                {/* Part Number */}
-                <div>
-                  <label
-                    className={`block text-sm font-medium mb-2 ${
-                      darkMode ? 'text-gray-300' : 'text-slate-700'
-                    }`}
-                  >
-                    Part Number
-                  </label>
-                  <input
-                    type="text"
-                    value={editingPart.partNumber}
-                    onChange={(e) =>
-                      setEditingPart({
-                        ...editingPart,
-                        partNumber: e.target.value
-                      })
-                    }
-                    className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
-                      darkMode
-                        ? 'bg-gray-700 border-gray-600 text-gray-100 placeholder-gray-400'
-                        : 'bg-slate-50 border-slate-300 text-slate-800 placeholder-slate-400'
-                    }`}
-                    placeholder="e.g., 12345-67890"
                   />
                 </div>
 
@@ -1223,14 +1164,16 @@ const PartDetailModal = ({
                   </label>
                   <select
                     value={editingPart.projectId || ''}
-                    onChange={(e) =>
+                    onChange={(e) => {
+                      const projectId = e.target.value ? parseInt(e.target.value) : null;
+                      const project = projectId ? projects.find(p => p.id === projectId) : null;
+                      // When project changes, update vehicleId: set to project's vehicle, or clear if no project
                       setEditingPart({
                         ...editingPart,
-                        projectId: e.target.value
-                          ? parseInt(e.target.value)
-                          : null
-                      })
-                    }
+                        projectId,
+                        vehicleId: projectId ? (project?.vehicle_id || null) : null
+                      });
+                    }}
                     className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent min-h-[42px] box-border ${
                       darkMode
                         ? 'bg-gray-700 border-gray-600 text-gray-100'
@@ -1245,6 +1188,129 @@ const PartDetailModal = ({
                       </option>
                     ))}
                   </select>
+                </div>
+
+                {/* Vehicle */}
+                <div>
+                  <label
+                    className={`block text-sm font-medium mb-2 ${
+                      darkMode ? 'text-gray-300' : 'text-slate-700'
+                    }`}
+                  >
+                    <div className="flex items-center gap-2">
+                      <Car className="w-4 h-4" />
+                      <span>Vehicle</span>
+                      {isEditVehicleAutoPopulated && (
+                        <span className={`text-xs font-normal ${darkMode ? 'text-blue-400' : 'text-blue-600'}`}>
+                          (from project)
+                        </span>
+                      )}
+                      {!isEditVehicleAutoPopulated && (
+                        <span className={`text-xs font-normal ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>(optional)</span>
+                      )}
+                    </div>
+                  </label>
+                  <div className="relative">
+                    <button
+                      type="button"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        // Don't allow changing vehicle if it's auto-populated from project
+                        if (isEditVehicleAutoPopulated) return;
+                        if (showVehicleDropdown) {
+                          closeVehicleDropdownWithAnimation();
+                        } else {
+                          setShowVehicleDropdown(true);
+                        }
+                      }}
+                      className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-left flex items-center justify-between gap-2 min-h-[42px] box-border ${
+                        isEditVehicleAutoPopulated
+                          ? darkMode
+                            ? 'bg-gray-600 border-gray-500 text-gray-300 cursor-default'
+                            : 'bg-slate-100 border-slate-300 text-slate-600 cursor-default'
+                          : darkMode
+                            ? 'bg-gray-700 border-gray-600 text-gray-100'
+                            : 'bg-slate-50 border-slate-300 text-slate-800'
+                      }`}
+                    >
+                      <div className="flex items-center gap-2 flex-1 min-w-0">
+                        {effectiveEditVehicle ? (
+                          <>
+                            <div
+                              className="w-3 h-3 rounded-full border flex-shrink-0"
+                              style={{
+                                backgroundColor: effectiveEditVehicle.color || '#3B82F6',
+                                borderColor: darkMode ? '#4B5563' : '#D1D5DB'
+                              }}
+                            />
+                            <span className="truncate">{effectiveEditVehicle.nickname || effectiveEditVehicle.name}</span>
+                          </>
+                        ) : (
+                          <span className={darkMode ? 'text-gray-400' : 'text-slate-500'}>No vehicle</span>
+                        )}
+                      </div>
+                      {!isEditVehicleAutoPopulated && (
+                        <ChevronDown className={`w-4 h-4 flex-shrink-0 transition-transform ${showVehicleDropdown ? 'rotate-180' : ''}`} />
+                      )}
+                    </button>
+                    {showVehicleDropdown && !isEditVehicleAutoPopulated && (
+                      <>
+                        <div
+                          className="fixed inset-0 z-10"
+                          onClick={closeVehicleDropdownWithAnimation}
+                        />
+                        <div
+                          className={`absolute left-0 z-20 mt-1 rounded-lg border shadow-lg py-1 max-h-60 overflow-y-auto vehicle-dropdown-scroll w-full ${
+                            isVehicleDropdownClosing ? 'dropdown-fade-out' : 'dropdown-fade-in'
+                          } ${darkMode ? 'bg-gray-700 border-gray-600' : 'bg-slate-50 border-slate-300'}`}
+                          style={{
+                            minWidth: '200px'
+                          }}
+                        >
+                          <button
+                            type="button"
+                            onClick={() => {
+                              setEditingPart({ ...editingPart, vehicleId: null });
+                              setShowVehicleDropdown(false);
+                            }}
+                            className={`w-full px-3 py-2 text-left text-sm flex items-center gap-2 ${
+                              !editingPart.vehicleId
+                                ? darkMode ? 'bg-blue-600 text-white' : 'bg-blue-600 text-white'
+                                : darkMode ? 'hover:bg-gray-600 text-gray-100' : 'hover:bg-gray-100 text-gray-900'
+                            }`}
+                          >
+                            No vehicle
+                          </button>
+                          {vehicles?.filter(v => !v.archived).map(vehicle => (
+                            <button
+                              key={vehicle.id}
+                              type="button"
+                              onClick={() => {
+                                setEditingPart({ ...editingPart, vehicleId: vehicle.id });
+                                setShowVehicleDropdown(false);
+                              }}
+                              className={`w-full px-3 py-2 text-left text-sm flex items-center gap-2 ${
+                                editingPart.vehicleId === vehicle.id
+                                  ? darkMode ? 'bg-blue-600 text-white' : 'bg-blue-600 text-white'
+                                  : darkMode ? 'hover:bg-gray-600 text-gray-100' : 'hover:bg-gray-100 text-gray-900'
+                              }`}
+                            >
+                              <div
+                                className="w-3 h-3 rounded-full border flex-shrink-0"
+                                style={{
+                                  backgroundColor: vehicle.color || '#3B82F6',
+                                  borderColor: darkMode ? '#4B5563' : '#D1D5DB'
+                                }}
+                              />
+                              <span className="truncate">
+                                {vehicle.nickname ? `${vehicle.nickname} (${vehicle.name})` : `${vehicle.name}`}
+                              </span>
+                            </button>
+                          ))}
+                        </div>
+                      </>
+                    )}
+                  </div>
                 </div>
 
                 {/* Vendor Dropdown */}
@@ -1319,17 +1385,14 @@ const PartDetailModal = ({
 
               {/* RIGHT COLUMN - Price fields */}
               <div className="order-2 md:order-none flex flex-col gap-4">
-                {/* Empty space to align with Part Name on left */}
-                <div className="hidden md:block h-[70px]"></div>
-
-                {/* Tracking Number */}
+                {/* Tracking Number/Link */}
                 <div>
                   <label
                     className={`block text-sm font-medium mb-2 ${
                       darkMode ? 'text-gray-300' : 'text-slate-700'
                     }`}
                   >
-                    Tracking Number
+                    Tracking Number/Link
                   </label>
                   <input
                     type="text"
@@ -1344,6 +1407,33 @@ const PartDetailModal = ({
                         : 'bg-slate-50 border-slate-300 text-slate-800 placeholder-slate-400'
                     }`}
                     placeholder="e.g., 1Z999AA10123456784"
+                  />
+                </div>
+
+                {/* Part Number */}
+                <div>
+                  <label
+                    className={`block text-sm font-medium mb-2 ${
+                      darkMode ? 'text-gray-300' : 'text-slate-700'
+                    }`}
+                  >
+                    Part Number
+                  </label>
+                  <input
+                    type="text"
+                    value={editingPart.partNumber}
+                    onChange={(e) =>
+                      setEditingPart({
+                        ...editingPart,
+                        partNumber: e.target.value
+                      })
+                    }
+                    className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
+                      darkMode
+                        ? 'bg-gray-700 border-gray-600 text-gray-100 placeholder-gray-400'
+                        : 'bg-slate-50 border-slate-300 text-slate-800 placeholder-slate-400'
+                    }`}
+                    placeholder="e.g., 12345-67890"
                   />
                 </div>
 

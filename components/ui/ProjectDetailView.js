@@ -953,7 +953,7 @@ const ProjectDetailView = ({
           }`}>
             <div className="flex items-center gap-2">
               <Package className="w-5 h-5" />
-              <span>Linked Parts</span>
+              <span>Linked Parts ({linkedParts.length})</span>
             </div>
           </h3>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">

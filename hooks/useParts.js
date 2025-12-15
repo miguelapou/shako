@@ -34,7 +34,8 @@ const useParts = (userId, toast) => {
     duties: '',
     tracking: '',
     status: 'pending',
-    projectId: null
+    projectId: null,
+    vehicleId: null
   });
 
   /**
@@ -62,6 +63,7 @@ const useParts = (userId, toast) => {
           total: parseFloat(part.total) || 0,
           tracking: part.tracking || '',
           projectId: part.project_id || null,
+          vehicleId: part.vehicle_id || null,
           createdAt: part.created_at || null,
           // Tracking data from Ship24
           ship24_id: part.ship24_id || null,
@@ -162,6 +164,7 @@ const useParts = (userId, toast) => {
         total,
         tracking: newPart.tracking,
         project_id: newPart.projectId || null,
+        vehicle_id: newPart.vehicleId || null,
         created_at: createdAt
       }, userId);
       // Add to local state with the ID from database
@@ -177,6 +180,7 @@ const useParts = (userId, toast) => {
         total,
         tracking: newPart.tracking,
         projectId: newPart.projectId || null,
+        vehicleId: newPart.vehicleId || null,
         createdAt: createdAt
       };
       setParts([...parts, partToAdd]);
@@ -190,7 +194,8 @@ const useParts = (userId, toast) => {
         duties: '',
         tracking: '',
         status: 'pending',
-        projectId: null
+        projectId: null,
+        vehicleId: null
       });
     } catch (error) {
       toast?.error('Error adding part. Please try again.');
@@ -363,7 +368,8 @@ const useParts = (userId, toast) => {
         duties,
         total,
         tracking: editingPart.tracking,
-        project_id: editingPart.projectId || null
+        project_id: editingPart.projectId || null,
+        vehicle_id: editingPart.vehicleId || null
       };
 
       // If tracking was removed or changed, purge all tracking data
@@ -388,7 +394,8 @@ const useParts = (userId, toast) => {
             duties,
             total,
             tracking: editingPart.tracking,
-            projectId: editingPart.projectId || null
+            projectId: editingPart.projectId || null,
+            vehicleId: editingPart.vehicleId || null
           };
 
           // If tracking was removed or changed, clear tracking data from local state
@@ -589,6 +596,7 @@ const useParts = (userId, toast) => {
           total,
           tracking: partData.tracking || '',
           project_id: partData.projectId || null,
+          vehicle_id: partData.vehicleId || null,
           created_at: createdAt
         }, userId);
 
@@ -604,6 +612,7 @@ const useParts = (userId, toast) => {
           total,
           tracking: partData.tracking || '',
           projectId: partData.projectId || null,
+          vehicleId: partData.vehicleId || null,
           createdAt: createdAt
         });
       } catch (error) {

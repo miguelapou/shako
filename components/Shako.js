@@ -1716,6 +1716,7 @@ const Shako = () => {
           newPart={newPart}
           setNewPart={setNewPart}
           projects={projects}
+          vehicles={vehicles}
           uniqueVendors={uniqueVendors}
           isModalClosing={isModalClosing}
           handleCloseModal={handleCloseModal}
@@ -1732,7 +1733,8 @@ const Shako = () => {
               duties: '',
               tracking: '',
               status: 'pending',
-              projectId: null
+              projectId: null,
+              vehicleId: null
             });
           }}
           setConfirmDialog={setConfirmDialog}
