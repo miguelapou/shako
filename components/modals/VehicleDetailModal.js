@@ -2353,10 +2353,9 @@ const VehicleDetailModal = ({
               darkMode ? 'border-gray-700' : 'border-gray-200'
             }`}>
               <div>
-                <h3 className={`text-base font-semibold flex items-center gap-2 ${
+                <h3 className={`text-base font-semibold ${
                   darkMode ? 'text-gray-100' : 'text-gray-800'
-                }`}>
-                  <Package className="w-5 h-5" />
+                }`} style={{ fontFamily: "'FoundationOne', 'Courier New', monospace" }}>
                   Linked Parts
                 </h3>
                 <p className={`text-xs mt-0.5 ${
@@ -2396,19 +2395,19 @@ const VehicleDetailModal = ({
                 }
 
                 return (
-                  <div className="grid grid-cols-1 gap-3">
+                  <div className="flex flex-col gap-3">
                     {linkedParts.map((part) => {
                       const vendorColor = part.vendor && vendorColors[part.vendor];
                       const colors = vendorColor ? getVendorDisplayColor(vendorColor, darkMode) : null;
                       return (
                         <div
                           key={part.id}
-                          className={`p-3 rounded-lg border ${
+                          className={`p-3 rounded-lg border flex items-center justify-between gap-3 ${
                             darkMode ? 'bg-gray-700 border-gray-600' : 'bg-gray-50 border-gray-200'
                           }`}
                         >
                           <div className="flex-1 min-w-0">
-                            <h4 className={`font-medium ${
+                            <h4 className={`font-medium truncate ${
                               darkMode ? 'text-gray-100' : 'text-slate-800'
                             }`}>
                               {part.part}
@@ -2433,13 +2432,6 @@ const VehicleDetailModal = ({
                                     {part.vendor}
                                   </span>
                                 )
-                              )}
-                              {part.partNumber && (
-                                <span className={`text-xs ${
-                                  darkMode ? 'text-gray-400' : 'text-gray-500'
-                                }`}>
-                                  #{part.partNumber}
-                                </span>
                               )}
                               <span className={`text-sm font-bold ${
                                 darkMode ? 'text-gray-200' : 'text-gray-900'
