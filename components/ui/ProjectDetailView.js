@@ -47,6 +47,7 @@ const ProjectDetailView = ({
   // Refs and state for animated progress bar height
   const progressGridRef = useRef(null);
   const leftColumnRef = useRef(null);
+  const twoColumnGridRef = useRef(null);
   const [progressGridHeight, setProgressGridHeight] = useState(165);
 
   // Check if description is clamped (content overflows the collapsed height)
@@ -64,12 +65,12 @@ const ProjectDetailView = ({
     const calculateHeight = () => {
       if (!leftColumnRef.current || !progressGridRef.current) return;
 
-      // Temporarily set height to 0 so it doesn't constrain the layout measurement
-      const currentHeight = progressGridRef.current.style.height;
-      progressGridRef.current.style.height = '0px';
+      // Temporarily set height to auto so it doesn't constrain the layout measurement
+      progressGridRef.current.style.transition = 'none';
+      progressGridRef.current.style.height = 'auto';
 
       // Force a reflow to get accurate measurements
-      void leftColumnRef.current.offsetHeight;
+      void twoColumnGridRef.current?.offsetHeight;
 
       // Get the left column's total height (matches right column via CSS Grid)
       const leftColumn = leftColumnRef.current;
@@ -88,26 +89,34 @@ const ProjectDetailView = ({
       // Clamp to min/max bounds
       const clampedHeight = Math.min(Math.max(availableHeight, 165), 300);
 
-      // Restore height before setting new value (for smooth transition)
-      progressGridRef.current.style.height = currentHeight;
+      // Set height directly first (no transition)
+      progressGridRef.current.style.height = `${progressGridHeight}px`;
 
-      // Use requestAnimationFrame to allow transition to work
+      // Re-enable transition and animate to new height
       requestAnimationFrame(() => {
-        setProgressGridHeight(clampedHeight);
+        if (progressGridRef.current) {
+          progressGridRef.current.style.transition = '';
+          setProgressGridHeight(clampedHeight);
+        }
       });
     };
 
     // Calculate on mount and when todos change
-    calculateHeight();
+    const timeoutId = setTimeout(calculateHeight, 50);
 
-    // Use ResizeObserver to recalculate when left column resizes
-    const resizeObserver = new ResizeObserver(calculateHeight);
-    if (leftColumnRef.current) {
-      resizeObserver.observe(leftColumnRef.current);
+    // Use ResizeObserver to recalculate when the two-column grid resizes
+    const resizeObserver = new ResizeObserver(() => {
+      setTimeout(calculateHeight, 50);
+    });
+    if (twoColumnGridRef.current) {
+      resizeObserver.observe(twoColumnGridRef.current);
     }
 
-    return () => resizeObserver.disconnect();
-  }, [project.todos?.length, showCompletedTodos, isDescriptionExpanded]);
+    return () => {
+      clearTimeout(timeoutId);
+      resizeObserver.disconnect();
+    };
+  }, [project.todos, showCompletedTodos, isDescriptionExpanded, progressGridHeight]);
 
   // Confirmation dialog state
   const [confirmDialog, setConfirmDialog] = useState({
@@ -531,7 +540,7 @@ const ProjectDetailView = ({
       </div>
 
       {/* Two Column Layout: Project Details (Left) and Todo List (Right) */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+      <div ref={twoColumnGridRef} className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
         {/* Left Column: Project Details */}
         <div ref={leftColumnRef} className="flex flex-col gap-6">
           {/* Description */}
