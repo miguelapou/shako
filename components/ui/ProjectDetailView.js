@@ -642,7 +642,7 @@ const ProjectDetailView = ({
           </div>
 
           {/* Desktop: Vertical Bar Graphs (3 equal columns) */}
-          <div className="hidden lg:grid lg:grid-cols-3 lg:gap-4 min-h-[165px] max-h-[300px]">
+          <div className="hidden lg:grid lg:grid-cols-3 lg:gap-4 lg:flex-1 min-h-[165px] max-h-[300px]">
             {/* Column 1: Budget Bar */}
             <div className="flex flex-col items-end pr-2">
               <div className="flex flex-col items-center flex-1">
