@@ -1788,6 +1788,96 @@ const Shako = () => {
           hasUnsavedPartChanges={hasUnsavedPartChanges}
         />
 
+        {/* Vehicle Detail Modal */}
+        <VehicleDetailModal
+          isOpen={showVehicleDetailModal}
+          setShowVehicleDetailModal={setShowVehicleDetailModal}
+          darkMode={darkMode}
+          viewingVehicle={viewingVehicle}
+          setViewingVehicle={setViewingVehicle}
+          vehicleModalProjectView={vehicleModalProjectView}
+          setVehicleModalProjectView={setVehicleModalProjectView}
+          vehicleModalEditMode={vehicleModalEditMode}
+          setVehicleModalEditMode={setVehicleModalEditMode}
+          originalVehicleData={originalVehicleData}
+          setOriginalVehicleData={setOriginalVehicleData}
+          isModalClosing={isModalClosing}
+          projects={projects}
+          parts={parts}
+          vehicles={vehicles}
+          vendorColors={vendorColors}
+          vehicleImagePreview={vehicleImagePreview}
+          vehicleImageFile={vehicleImageFile}
+          uploadingImage={uploadingImage}
+          isDraggingImage={isDraggingImage}
+          editingTodoId={editingTodoId}
+          setEditingTodoId={setEditingTodoId}
+          editingTodoText={editingTodoText}
+          setEditingTodoText={setEditingTodoText}
+          newTodoText={newTodoText}
+          setNewTodoText={setNewTodoText}
+          handleCloseModal={handleCloseModal}
+          hasUnsavedVehicleChanges={hasUnsavedVehicleChanges}
+          updateVehicle={updateVehicle}
+          deleteVehicle={deleteVehicle}
+          updateProject={updateProject}
+          uploadVehicleImage={uploadVehicleImage}
+          clearImageSelection={clearImageSelection}
+          handleImageFileChange={handleImageFileChange}
+          handleImageDragEnter={handleImageDragEnter}
+          handleImageDragLeave={handleImageDragLeave}
+          handleImageDragOver={handleImageDragOver}
+          handleImageDrop={handleImageDrop}
+          getVehicleProjects={getVehicleProjects}
+          unlinkPartFromProject={unlinkPartFromProject}
+          loadProjects={loadProjects}
+          setConfirmDialog={setConfirmDialog}
+          getStatusColors={getStatusColors}
+          getPriorityColors={getPriorityColors}
+          getStatusText={getStatusText}
+          getStatusTextColor={getStatusTextColor}
+          getVendorColor={getVendorColor}
+          calculateProjectTotal={calculateProjectTotal}
+          toast={toast}
+        />
+
+        {/* Project Detail Modal */}
+        <ProjectDetailModal
+          isOpen={showProjectDetailModal}
+          darkMode={darkMode}
+          viewingProject={viewingProject}
+          setViewingProject={setViewingProject}
+          projectModalEditMode={projectModalEditMode}
+          setProjectModalEditMode={setProjectModalEditMode}
+          originalProjectData={originalProjectData}
+          setOriginalProjectData={setOriginalProjectData}
+          isModalClosing={isModalClosing}
+          projects={projects}
+          parts={parts}
+          vehicles={vehicles}
+          vendorColors={vendorColors}
+          editingTodoId={editingTodoId}
+          setEditingTodoId={setEditingTodoId}
+          editingTodoText={editingTodoText}
+          setEditingTodoText={setEditingTodoText}
+          newTodoText={newTodoText}
+          setNewTodoText={setNewTodoText}
+          handleCloseModal={handleCloseModal}
+          hasUnsavedProjectChanges={hasUnsavedProjectChanges}
+          updateProject={updateProject}
+          deleteProject={deleteProject}
+          unlinkPartFromProject={unlinkPartFromProject}
+          loadProjects={loadProjects}
+          getStatusColors={getStatusColors}
+          getPriorityColors={getPriorityColors}
+          getStatusText={getStatusText}
+          getStatusTextColor={getStatusTextColor}
+          getVendorColor={getVendorColor}
+          calculateProjectTotal={calculateProjectTotal}
+          setConfirmDialog={setConfirmDialog}
+          setShowProjectDetailModal={setShowProjectDetailModal}
+        />
+
         {/* PARTS TAB CONTENT */}
         {activeTab === 'parts' && (
           <PartsTab

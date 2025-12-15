@@ -6,7 +6,6 @@ import {
 import { getMutedColor, getPriorityBorderColor } from '../../utils/colorUtils';
 import { cardBg } from '../../utils/styleUtils';
 import AddVehicleModal from '../modals/AddVehicleModal';
-import VehicleDetailModal from '../modals/VehicleDetailModal';
 import FadeInImage from '../ui/FadeInImage';
 
 const VehiclesTab = ({
@@ -688,60 +687,6 @@ const VehiclesTab = ({
             });
           }}
           setConfirmDialog={setConfirmDialog}
-        />
-
-
-        {/* Vehicle Detail Modal */}
-        <VehicleDetailModal
-          isOpen={showVehicleDetailModal}
-          setShowVehicleDetailModal={setShowVehicleDetailModal}
-          darkMode={darkMode}
-          viewingVehicle={viewingVehicle}
-          setViewingVehicle={setViewingVehicle}
-          vehicleModalProjectView={vehicleModalProjectView}
-          setVehicleModalProjectView={setVehicleModalProjectView}
-          vehicleModalEditMode={vehicleModalEditMode}
-          setVehicleModalEditMode={setVehicleModalEditMode}
-          originalVehicleData={originalVehicleData}
-          setOriginalVehicleData={setOriginalVehicleData}
-          isModalClosing={isModalClosing}
-          projects={projects}
-          parts={parts}
-          vehicles={vehicles}
-          vendorColors={vendorColors}
-          vehicleImagePreview={vehicleImagePreview}
-          vehicleImageFile={vehicleImageFile}
-          uploadingImage={uploadingImage}
-          isDraggingImage={isDraggingImage}
-          editingTodoId={editingTodoId}
-          setEditingTodoId={setEditingTodoId}
-          editingTodoText={editingTodoText}
-          setEditingTodoText={setEditingTodoText}
-          newTodoText={newTodoText}
-          setNewTodoText={setNewTodoText}
-          handleCloseModal={handleCloseModal}
-          hasUnsavedVehicleChanges={hasUnsavedVehicleChanges}
-          updateVehicle={updateVehicle}
-          deleteVehicle={deleteVehicle}
-          updateProject={updateProject}
-          uploadVehicleImage={uploadVehicleImage}
-          clearImageSelection={clearImageSelection}
-          handleImageFileChange={handleImageFileChange}
-          handleImageDragEnter={handleImageDragEnter}
-          handleImageDragLeave={handleImageDragLeave}
-          handleImageDragOver={handleImageDragOver}
-          handleImageDrop={handleImageDrop}
-          getVehicleProjects={getVehicleProjects}
-          unlinkPartFromProject={unlinkPartFromProject}
-          loadProjects={loadProjects}
-          setConfirmDialog={setConfirmDialog}
-          getStatusColors={getStatusColors}
-          getPriorityColors={getPriorityColors}
-          getStatusText={getStatusText}
-          getStatusTextColor={getStatusTextColor}
-          getVendorColor={getVendorColor}
-          calculateProjectTotal={calculateProjectTotal}
-          toast={toast}
         />
       </>
     </div>
