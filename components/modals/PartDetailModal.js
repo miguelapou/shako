@@ -578,34 +578,6 @@ const PartDetailModal = ({
                 : viewingPart.part}
             </h2>
             <div className="flex items-center gap-3">
-              {/* Vehicle Badge - Mobile only in edit view */}
-              {partDetailView === 'edit' &&
-                (() => {
-                  const partProject = editingPart?.projectId
-                    ? projects.find((p) => p.id === editingPart.projectId)
-                    : null;
-                  // Get vehicle from project or directly from part
-                  const vehicleId = partProject?.vehicle_id || editingPart?.vehicleId;
-                  const vehicle = vehicleId
-                    ? vehicles.find((v) => v.id === vehicleId)
-                    : null;
-                  return (
-                    vehicle && (
-                      <span
-                        className={`md:hidden inline-flex items-center px-2 py-1 rounded text-xs font-medium border ${
-                          darkMode
-                            ? 'bg-gray-700 text-gray-300 border-gray-600'
-                            : 'bg-gray-100 text-gray-700 border-gray-300'
-                        }`}
-                      >
-                        <Car className="w-3 h-3 mr-1" />
-                        <span style={{ color: vehicle.color || '#3B82F6' }}>
-                          {vehicle.nickname || vehicle.name}
-                        </span>
-                      </span>
-                    )
-                  );
-                })()}
               <button
                 onClick={() =>
                   handleCloseModal(() => {
@@ -1115,36 +1087,6 @@ const PartDetailModal = ({
         {/* EDIT VIEW */}
         {partDetailView === 'edit' && editingPart && (
           <div className="p-6 modal-scrollable slide-in-right relative">
-            {/* Vehicle Badge - Desktop only in upper right */}
-            {(() => {
-              const partProject = editingPart.projectId
-                ? projects.find((p) => p.id === editingPart.projectId)
-                : null;
-              // Get vehicle from project or directly from part
-              const vehicleId = partProject?.vehicle_id || editingPart?.vehicleId;
-              const vehicle = vehicleId
-                ? vehicles.find((v) => v.id === vehicleId)
-                : null;
-              return (
-                vehicle && (
-                  <div className="hidden md:block absolute top-6 right-6 z-10">
-                    <span
-                      className={`inline-flex items-center px-2 py-1 rounded text-xs font-medium border ${
-                        darkMode
-                          ? 'bg-gray-700 text-gray-300 border-gray-600'
-                          : 'bg-gray-100 text-gray-700 border-gray-300'
-                      }`}
-                    >
-                      <Car className="w-3 h-3 mr-1" />
-                      <span style={{ color: vehicle.color || '#3B82F6' }}>
-                        {vehicle.nickname || vehicle.name}
-                      </span>
-                    </span>
-                  </div>
-                )
-              );
-            })()}
-
             <div className="flex flex-col md:grid md:grid-cols-2 gap-4">
               {/* LEFT COLUMN - Non-price fields */}
               <div className="order-1 md:order-none space-y-4">

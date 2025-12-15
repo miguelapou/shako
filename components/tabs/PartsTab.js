@@ -1264,7 +1264,9 @@ const PartsTab = ({
                     <td className="hidden min-[1100px]:table-cell px-6 py-4 text-center">
                       {(() => {
                         const partProject = part.projectId ? projects.find(p => p.id === part.projectId) : null;
-                        const vehicle = partProject?.vehicle_id ? vehicles.find(v => v.id === partProject.vehicle_id) : null;
+                        // Get vehicle from project or directly from part
+                        const vehicleId = partProject?.vehicle_id || part.vehicleId;
+                        const vehicle = vehicleId ? vehicles.find(v => v.id === vehicleId) : null;
                         return vehicle ? (
                           <span
                             className={`inline-flex items-center px-2 py-1 rounded text-xs font-medium border ${
@@ -1476,7 +1478,9 @@ const PartsTab = ({
                   {/* Vehicle Badge - Top Right */}
                   {(() => {
                     const partProject = part.projectId ? projects.find(p => p.id === part.projectId) : null;
-                    const vehicle = partProject?.vehicle_id ? vehicles.find(v => v.id === partProject.vehicle_id) : null;
+                    // Get vehicle from project or directly from part
+                    const vehicleId = partProject?.vehicle_id || part.vehicleId;
+                    const vehicle = vehicleId ? vehicles.find(v => v.id === vehicleId) : null;
                     return vehicle && (
                       <span
                         className={`inline-flex items-center px-2 py-0.5 rounded text-xs font-medium border ${
