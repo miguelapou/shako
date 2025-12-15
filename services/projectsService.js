@@ -14,6 +14,7 @@ const VALID_PROJECT_COLUMNS = [
   'description',
   'budget',
   'priority',
+  'status',
   'vehicle_id',
   'todos',
   'archived',
