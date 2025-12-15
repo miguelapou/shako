@@ -357,6 +357,22 @@ input[type="number"] {
   }
 }
 
+/* Service History Collapse Animation */
+.service-history-collapse {
+  animation: serviceHistoryCollapse 0.25s ease-in forwards;
+}
+
+@keyframes serviceHistoryCollapse {
+  from {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  to {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+}
+
 /* Mobile Card Status Filtering */
 .cards-status-filtering > div {
   animation: tableFadeOnly 0.6s ease-in;
