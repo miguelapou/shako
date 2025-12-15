@@ -777,6 +777,16 @@ const PartDetailModal = ({
                             >
                               {project.name}
                             </span>
+                          ) : viewingPart.vehicleId ? (
+                            <span
+                              className={`inline-block px-3 py-1 rounded-full text-sm font-medium ${
+                                darkMode
+                                  ? 'bg-blue-900/40 text-blue-200 border border-blue-700'
+                                  : 'bg-blue-100 text-blue-700 border border-blue-300'
+                              }`}
+                            >
+                              Maintenance
+                            </span>
                           ) : (
                             <p
                               className={`text-base ${
