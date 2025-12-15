@@ -642,9 +642,9 @@ const ProjectDetailView = ({
           </div>
 
           {/* Desktop: Vertical Bar Graphs (3 equal columns) */}
-          <div className="hidden lg:grid lg:grid-cols-3 lg:gap-4">
+          <div className="hidden lg:grid lg:grid-cols-3 lg:gap-4 lg:flex-1">
             {/* Column 1: Budget Bar */}
-            <div className="flex flex-col items-end pr-2">
+            <div className="flex flex-col items-end pr-2 h-full">
               <div className="flex flex-col items-center flex-1">
                 <div
                   className={`w-14 rounded-lg relative overflow-hidden flex-1 min-h-[165px] max-h-[300px] ${
@@ -670,30 +670,32 @@ const ProjectDetailView = ({
             </div>
 
             {/* Column 2: To-Dos Bar */}
-            <div className="flex flex-col items-center">
-              <div
-                className={`w-14 rounded-lg relative overflow-hidden flex-1 min-h-[165px] max-h-[300px] ${
-                  darkMode ? 'bg-gray-700' : 'bg-gray-300'
-                }`}
-                style={{
-                  borderBottom: '3px solid #8b5cf6'
-                }}
-              >
-                {/* Todo fill from bottom */}
+            <div className="flex flex-col items-center h-full">
+              <div className="flex flex-col items-center flex-1">
                 <div
-                  className="absolute bottom-0 left-0 right-0 transition-all duration-500 bg-violet-500"
+                  className={`w-14 rounded-lg relative overflow-hidden flex-1 min-h-[165px] max-h-[300px] ${
+                    darkMode ? 'bg-gray-700' : 'bg-gray-300'
+                  }`}
                   style={{
-                    height: `${Math.round((project.todos?.filter(t => t.completed).length || 0) / (project.todos?.length || 1) * 100)}%`
+                    borderBottom: '3px solid #8b5cf6'
                   }}
-                />
+                >
+                  {/* Todo fill from bottom */}
+                  <div
+                    className="absolute bottom-0 left-0 right-0 transition-all duration-500 bg-violet-500"
+                    style={{
+                      height: `${Math.round((project.todos?.filter(t => t.completed).length || 0) / (project.todos?.length || 1) * 100)}%`
+                    }}
+                  />
+                </div>
+                <p className={`text-xs font-bold mt-1 ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>
+                  {Math.round((project.todos?.filter(t => t.completed).length || 0) / (project.todos?.length || 1) * 100)}%
+                </p>
               </div>
-              <p className={`text-xs font-bold mt-1 ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>
-                {Math.round((project.todos?.filter(t => t.completed).length || 0) / (project.todos?.length || 1) * 100)}%
-              </p>
             </div>
 
             {/* Column 3: Legend */}
-            <div className="flex flex-col justify-end">
+            <div className="flex flex-col justify-end h-full">
               <div className="space-y-2">
                 <div className="flex items-center gap-2">
                   <div
