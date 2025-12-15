@@ -2395,28 +2395,28 @@ const VehicleDetailModal = ({
                 }
 
                 return (
-                  <div className="flex flex-col gap-3">
+                  <div className="flex flex-col gap-4">
                     {linkedParts.map((part) => {
                       const vendorColor = part.vendor && vendorColors[part.vendor];
                       const colors = vendorColor ? getVendorDisplayColor(vendorColor, darkMode) : null;
                       return (
                         <div
                           key={part.id}
-                          className={`p-3 rounded-lg border flex items-center justify-between gap-3 ${
+                          className={`p-4 rounded-lg border flex flex-col ${
                             darkMode ? 'bg-gray-700 border-gray-600' : 'bg-gray-50 border-gray-200'
                           }`}
                         >
-                          <div className="flex-1 min-w-0">
-                            <h4 className={`font-medium truncate ${
-                              darkMode ? 'text-gray-100' : 'text-slate-800'
-                            }`}>
-                              {part.part}
-                            </h4>
-                            <div className="flex items-center gap-2 mt-1 flex-wrap">
+                          <div className="flex justify-between items-start mb-3">
+                            <div className="flex-1">
+                              <h4 className={`font-medium ${
+                                darkMode ? 'text-gray-100' : 'text-slate-800'
+                              }`}>
+                                {part.part}
+                              </h4>
                               {part.vendor && (
                                 colors ? (
                                   <span
-                                    className="inline-block px-2 py-0.5 rounded-full text-xs font-medium border"
+                                    className="inline-block mt-1 px-2 py-0.5 rounded-full text-xs font-medium border"
                                     style={{
                                       backgroundColor: colors.bg,
                                       color: colors.text,
@@ -2426,18 +2426,73 @@ const VehicleDetailModal = ({
                                     {part.vendor}
                                   </span>
                                 ) : (
-                                  <span className={`inline-block px-2 py-0.5 rounded-full text-xs font-medium ${
+                                  <span className={`inline-block mt-1 px-2 py-0.5 rounded-full text-xs font-medium ${
                                     darkMode ? 'bg-gray-600 text-gray-300' : 'bg-gray-200 text-gray-700'
                                   }`}>
                                     {part.vendor}
                                   </span>
                                 )
                               )}
-                              <span className={`text-sm font-bold ${
-                                darkMode ? 'text-gray-200' : 'text-gray-900'
+                            </div>
+                            <div className={`text-xs font-medium ${getStatusTextColor(part)}`}>
+                              {getStatusText(part)}
+                            </div>
+                          </div>
+                          {part.partNumber && part.partNumber !== '-' && (
+                            <p className={`text-xs font-mono mb-3 ${
+                              darkMode ? 'text-gray-400' : 'text-slate-600'
+                            }`}>
+                              Part #: {part.partNumber}
+                            </p>
+                          )}
+                          <div className={`border-t flex-1 flex flex-col justify-end ${
+                            darkMode ? 'border-gray-600' : 'border-gray-200'
+                          }`}>
+                            <div className="pt-3 space-y-2">
+                              <div className="flex justify-between text-sm">
+                                <span className={darkMode ? 'text-gray-400' : 'text-slate-600'}>
+                                  Part Price:
+                                </span>
+                                <span className={`font-medium ${
+                                  darkMode ? 'text-gray-200' : 'text-gray-800'
+                                }`}>
+                                  ${(part.price || 0).toFixed(2)}
+                                </span>
+                              </div>
+                              {part.shipping > 0 && (
+                                <div className="flex justify-between text-sm">
+                                  <span className={darkMode ? 'text-gray-400' : 'text-slate-600'}>
+                                    Shipping:
+                                  </span>
+                                  <span className={`font-medium ${
+                                    darkMode ? 'text-gray-200' : 'text-gray-800'
+                                  }`}>
+                                    ${part.shipping.toFixed(2)}
+                                  </span>
+                                </div>
+                              )}
+                              {part.duties > 0 && (
+                                <div className="flex justify-between text-sm">
+                                  <span className={darkMode ? 'text-gray-400' : 'text-slate-600'}>
+                                    Duties:
+                                  </span>
+                                  <span className={`font-medium ${
+                                    darkMode ? 'text-gray-200' : 'text-gray-800'
+                                  }`}>
+                                    ${part.duties.toFixed(2)}
+                                  </span>
+                                </div>
+                              )}
+                              <div className={`flex justify-between text-base font-bold pt-2 border-t ${
+                                darkMode ? 'border-gray-600' : 'border-gray-200'
                               }`}>
-                                ${part.total?.toFixed(2) || '0.00'}
-                              </span>
+                                <span className={darkMode ? 'text-gray-100' : 'text-slate-800'}>
+                                  Total:
+                                </span>
+                                <span className={darkMode ? 'text-gray-100' : 'text-slate-800'}>
+                                  ${(part.total || 0).toFixed(2)}
+                                </span>
+                              </div>
                             </div>
                           </div>
                         </div>
