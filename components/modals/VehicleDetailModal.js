@@ -982,7 +982,7 @@ const VehicleDetailModal = ({
                   Maintenance
                 </h3>
                 {(viewingVehicle.fuel_filter || viewingVehicle.air_filter || viewingVehicle.oil_filter || viewingVehicle.oil_type || viewingVehicle.oil_capacity || viewingVehicle.oil_brand || viewingVehicle.drain_plug || viewingVehicle.battery) ? (
-                  <div className="grid grid-cols-2 gap-4">
+                  <div className="grid grid-cols-2 gap-4 px-4">
                     {/* Mobile two-column layout: Left (fuel filter, air filter, battery, drain plug) | Right (oil filter, oil capacity, oil type, oil brand) */}
                     {viewingVehicle.fuel_filter && (
                       <div>
