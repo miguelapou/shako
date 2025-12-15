@@ -112,11 +112,22 @@ const VehicleDetailModal = ({
   const [isInfoModalClosing, setIsInfoModalClosing] = useState(false);
   // State for service history expansion
   const [serviceHistoryExpanded, setServiceHistoryExpanded] = useState(false);
+  const [isServiceHistoryCollapsing, setIsServiceHistoryCollapsing] = useState(false);
 
   // Reset service history expansion when viewing a different vehicle
   useEffect(() => {
     setServiceHistoryExpanded(false);
+    setIsServiceHistoryCollapsing(false);
   }, [viewingVehicle?.id]);
+
+  // Handle collapsing service history with animation
+  const handleCollapseServiceHistory = () => {
+    setIsServiceHistoryCollapsing(true);
+    setTimeout(() => {
+      setServiceHistoryExpanded(false);
+      setIsServiceHistoryCollapsing(false);
+    }, 250);
+  };
 
   // Handle closing the info modal with animation
   const handleCloseInfoModal = () => {
@@ -776,7 +787,7 @@ const VehicleDetailModal = ({
                               <button
                                 onClick={(e) => {
                                   e.stopPropagation();
-                                  setServiceHistoryExpanded(false);
+                                  handleCollapseServiceHistory();
                                 }}
                                 className={`flex items-center gap-1 text-sm font-medium mb-2 ${
                                   darkMode
@@ -815,13 +826,14 @@ const VehicleDetailModal = ({
                                 }
                               }
 
-                              // Items that were hidden get animation when expanded
+                              // Items that were hidden get animation when expanded, collapsing animation when collapsing
                               const wasHidden = serviceHistoryExpanded && fullIndex < hiddenCount;
+                              const isCollapsing = isServiceHistoryCollapsing && fullIndex < hiddenCount;
 
                               return (
                                 <div
                                   key={event.id}
-                                  className={`relative flex items-stretch gap-4 group cursor-pointer ${wasHidden ? 'service-history-expand' : ''}`}
+                                  className={`relative flex items-stretch gap-4 group cursor-pointer ${wasHidden && !isServiceHistoryCollapsing ? 'service-history-expand' : ''} ${isCollapsing ? 'service-history-collapse' : ''}`}
                                   onClick={(e) => {
                                     e.stopPropagation();
                                     setSelectedEventId(selectedEventId === event.id ? null : event.id);
