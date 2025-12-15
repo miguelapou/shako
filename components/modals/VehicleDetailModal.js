@@ -112,6 +112,51 @@ const VehicleDetailModal = ({
   const [isInfoModalClosing, setIsInfoModalClosing] = useState(false);
   // State for service history expansion
   const [serviceHistoryExpanded, setServiceHistoryExpanded] = useState(false);
+  // State for mobile detection (to show inline service event form instead of modal)
+  const [isMobile, setIsMobile] = useState(false);
+  // State for inline service event parts dropdown
+  const [showInlinePartsDropdown, setShowInlinePartsDropdown] = useState(false);
+  const [isInlineDropdownClosing, setIsInlineDropdownClosing] = useState(false);
+  const [inlinePartsSearchTerm, setInlinePartsSearchTerm] = useState('');
+  const inlinePartsDropdownRef = useRef(null);
+
+  // Track screen size for responsive behavior
+  useEffect(() => {
+    const checkMobile = () => setIsMobile(window.innerWidth < 768);
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
+
+  // Close inline parts dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (inlinePartsDropdownRef.current && !inlinePartsDropdownRef.current.contains(event.target)) {
+        if (showInlinePartsDropdown && !isInlineDropdownClosing) {
+          setIsInlineDropdownClosing(true);
+          setTimeout(() => {
+            setShowInlinePartsDropdown(false);
+            setIsInlineDropdownClosing(false);
+          }, 150);
+        }
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, [showInlinePartsDropdown, isInlineDropdownClosing]);
+
+  // Toggle inline parts dropdown
+  const toggleInlinePartsDropdown = () => {
+    if (showInlinePartsDropdown) {
+      setIsInlineDropdownClosing(true);
+      setTimeout(() => {
+        setShowInlinePartsDropdown(false);
+        setIsInlineDropdownClosing(false);
+      }, 150);
+    } else {
+      setShowInlinePartsDropdown(true);
+    }
+  };
 
   // Reset service history expansion when viewing a different vehicle
   useEffect(() => {
@@ -299,6 +344,15 @@ const VehicleDetailModal = ({
     handleCloseServiceEventModal
   } = useServiceEvents();
 
+  // Reset inline dropdown state when service event modal closes
+  useEffect(() => {
+    if (!showAddServiceEventModal) {
+      setShowInlinePartsDropdown(false);
+      setIsInlineDropdownClosing(false);
+      setInlinePartsSearchTerm('');
+    }
+  }, [showAddServiceEventModal]);
+
   // Sorted service events for display
   const sortedServiceEvents = useMemo(() => {
     if (!serviceEvents) return [];
@@ -316,6 +370,30 @@ const VehicleDetailModal = ({
       loadServiceEvents(viewingVehicle.id);
     }
   }, [isOpen, viewingVehicle?.id, loadDocuments, loadServiceEvents]);
+
+  // Reset service event view when modal closes
+  useEffect(() => {
+    if (!isOpen) {
+      handleCloseServiceEventModal();
+    }
+  }, [isOpen, handleCloseServiceEventModal]);
+
+  // Reset document view when modal closes
+  useEffect(() => {
+    if (!isOpen) {
+      setShowAddDocumentModal(false);
+      setNewDocumentFile(null);
+      setNewDocumentTitle('');
+    }
+  }, [isOpen, setShowAddDocumentModal, setNewDocumentFile, setNewDocumentTitle]);
+
+  // Reset info view when modal closes
+  useEffect(() => {
+    if (!isOpen) {
+      setViewingInfoEvent(null);
+      setIsInfoModalClosing(false);
+    }
+  }, [isOpen]);
 
   // Handle generating vehicle report PDF
   const handleGenerateReport = async (saveToDocuments) => {
@@ -434,12 +512,35 @@ const VehicleDetailModal = ({
           darkMode ? 'bg-gray-800 border-gray-700' : 'bg-slate-50 border-slate-200'
         }`}>
           <div className="flex items-center justify-between gap-4">
-            <h2 className={`text-2xl font-bold ${
-              darkMode ? 'text-gray-100' : 'text-slate-800'
-            }`} style={{ fontFamily: "'FoundationOne', 'Courier New', monospace" }}>
-              {vehicleModalProjectView ? vehicleModalProjectView.name : (viewingVehicle.nickname || viewingVehicle.name || 'Vehicle Details')}
-            </h2>
-            <div className="flex items-center gap-3">
+            <div className="flex flex-col min-w-0 flex-1">
+              <h2 className={`font-bold whitespace-nowrap overflow-hidden text-ellipsis ${
+                viewingInfoEvent && isMobile ? 'text-lg' : 'text-2xl'
+              } ${
+                darkMode ? 'text-gray-100' : 'text-slate-800'
+              }`} style={{
+                fontFamily: "'FoundationOne', 'Courier New', monospace",
+                ...(viewingInfoEvent && isMobile && viewingInfoEvent.description?.length > 25
+                  ? { fontSize: 'clamp(0.875rem, 4vw, 1.125rem)' }
+                  : {})
+              }}>
+                {vehicleModalProjectView
+                  ? vehicleModalProjectView.name
+                  : showAddServiceEventModal && isMobile
+                    ? (editingServiceEvent ? 'Edit Service Event' : 'Add Service Event')
+                    : showAddDocumentModal && isMobile
+                      ? 'Add Document'
+                      : viewingInfoEvent && isMobile
+                        ? viewingInfoEvent.description
+                        : (viewingVehicle.nickname || viewingVehicle.name || 'Vehicle Details')}
+              </h2>
+              {viewingInfoEvent && isMobile && (
+                <p className={`text-sm ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>
+                  {viewingInfoEvent.event_date && new Date(viewingInfoEvent.event_date).toLocaleDateString()}
+                  {viewingInfoEvent.odometer && ` • ${viewingInfoEvent.odometer.toLocaleString()} mi`}
+                </p>
+              )}
+            </div>
+            <div className="flex items-center gap-3 flex-shrink-0">
               {/* Navigation buttons - hidden on mobile, hidden in edit/project view */}
               {!vehicleModalProjectView && !vehicleModalEditMode && navigableVehicles.length > 1 && currentIndex !== -1 && (
                 <div className="hidden md:flex items-center">
@@ -522,7 +623,7 @@ const VehicleDetailModal = ({
           {/* Vehicle Details View */}
           <div
             className={`w-full transition-all duration-500 ease-in-out ${
-              vehicleModalProjectView || vehicleModalEditMode
+              vehicleModalProjectView || vehicleModalEditMode || ((showAddServiceEventModal || showAddDocumentModal || viewingInfoEvent) && isMobile)
                 ? 'absolute opacity-0 pointer-events-none'
                 : 'relative opacity-100'
             }`}
@@ -993,9 +1094,9 @@ const VehicleDetailModal = ({
                     </div>
                   </div>
 
-                {/* Add Service Event Modal */}
+                {/* Add Service Event Modal - Desktop only (mobile uses inline form) */}
                 <AddServiceEventModal
-                  isOpen={showAddServiceEventModal}
+                  isOpen={showAddServiceEventModal && !isMobile}
                   onClose={handleCloseServiceEventModal}
                   darkMode={darkMode}
                   eventDate={newEventDate}
@@ -1273,9 +1374,9 @@ const VehicleDetailModal = ({
                     </div>
                   </div>
 
-                {/* Add Document Modal */}
+                {/* Add Document Modal - Desktop only (mobile uses inline form) */}
                 <AddDocumentModal
-                  isOpen={showAddDocumentModal}
+                  isOpen={showAddDocumentModal && !isMobile}
                   onClose={() => setShowAddDocumentModal(false)}
                   darkMode={darkMode}
                   newDocumentTitle={newDocumentTitle}
@@ -1937,6 +2038,536 @@ const VehicleDetailModal = ({
               </div>
             )}
           </div>
+
+          {/* Inline Service Event Form View - Mobile only */}
+          <div
+            className={`w-full transition-all duration-500 ease-in-out md:hidden ${
+              showAddServiceEventModal && isMobile && !vehicleModalProjectView && !vehicleModalEditMode
+                ? 'relative opacity-100'
+                : 'absolute opacity-0 pointer-events-none'
+            }`}
+          >
+            {showAddServiceEventModal && isMobile && (
+              <div className="p-6 pb-24 space-y-4 max-h-[calc(90vh-164px)] overflow-y-auto">
+                {/* Date field */}
+                <div>
+                  <label className={`block text-sm font-medium mb-2 ${
+                    darkMode ? 'text-gray-300' : 'text-gray-700'
+                  }`}>
+                    Date *
+                  </label>
+                  <input
+                    type="date"
+                    value={newEventDate}
+                    onChange={(e) => setNewEventDate(e.target.value)}
+                    className={`w-full max-w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
+                      darkMode
+                        ? 'bg-gray-700 border-gray-600 text-gray-100'
+                        : 'bg-white border-gray-300 text-gray-800'
+                    }`}
+                    style={{ WebkitAppearance: 'none' }}
+                  />
+                </div>
+
+                {/* Description field */}
+                <div>
+                  <label className={`block text-sm font-medium mb-2 ${
+                    darkMode ? 'text-gray-300' : 'text-gray-700'
+                  }`}>
+                    Description *
+                  </label>
+                  <input
+                    type="text"
+                    value={newEventDescription}
+                    onChange={(e) => setNewEventDescription(e.target.value)}
+                    className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
+                      darkMode
+                        ? 'bg-gray-700 border-gray-600 text-gray-100 placeholder-gray-400'
+                        : 'bg-white border-gray-300 text-gray-800 placeholder-gray-400'
+                    }`}
+                    placeholder="e.g., Oil change, Brake pads replaced"
+                  />
+                </div>
+
+                {/* Odometer field */}
+                <div>
+                  <label className={`block text-sm font-medium mb-2 ${
+                    darkMode ? 'text-gray-300' : 'text-gray-700'
+                  }`}>
+                    Odometer
+                  </label>
+                  <input
+                    type="number"
+                    inputMode="numeric"
+                    pattern="[0-9]*"
+                    value={newEventOdometer}
+                    onChange={(e) => setNewEventOdometer(e.target.value)}
+                    className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
+                      darkMode
+                        ? 'bg-gray-700 border-gray-600 text-gray-100 placeholder-gray-400'
+                        : 'bg-white border-gray-300 text-gray-800 placeholder-gray-400'
+                    }`}
+                    placeholder="e.g., 125000"
+                  />
+                </div>
+
+                {/* Notes field */}
+                <div>
+                  <label className={`block text-sm font-medium mb-2 ${
+                    darkMode ? 'text-gray-300' : 'text-gray-700'
+                  }`}>
+                    Notes
+                  </label>
+                  <textarea
+                    value={newEventNotes}
+                    onChange={(e) => setNewEventNotes(e.target.value)}
+                    rows={3}
+                    className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none ${
+                      darkMode
+                        ? 'bg-gray-700 border-gray-600 text-gray-100 placeholder-gray-400'
+                        : 'bg-white border-gray-300 text-gray-800 placeholder-gray-400'
+                    }`}
+                    placeholder="Additional details, parts used, costs, etc."
+                  />
+                </div>
+
+                {/* Linked Parts field */}
+                <div ref={inlinePartsDropdownRef} className="relative">
+                  <label className={`block text-sm font-medium mb-2 ${
+                    darkMode ? 'text-gray-300' : 'text-gray-700'
+                  }`}>
+                    <div className="flex items-center gap-2">
+                      <Package className="w-4 h-4" />
+                      <span>Linked Parts</span>
+                    </div>
+                  </label>
+
+                  {/* Selected parts pills */}
+                  {newEventLinkedParts && newEventLinkedParts.length > 0 && (
+                    <div className="flex flex-wrap gap-2 mb-2">
+                      {parts.filter(part => newEventLinkedParts.includes(part.id)).map(part => {
+                        const vendorColor = part.vendor && vendorColors[part.vendor];
+                        const colors = vendorColor ? getVendorDisplayColor(vendorColor, darkMode) : null;
+                        return (
+                          <span
+                            key={part.id}
+                            className={`inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium border ${
+                              darkMode ? 'bg-gray-700 border-gray-600' : 'bg-gray-100 border-gray-300'
+                            }`}
+                          >
+                            <span className={darkMode ? 'text-gray-200' : 'text-gray-800'}>{part.part}</span>
+                            {part.vendor && (
+                              <span
+                                className="opacity-70"
+                                style={colors ? { color: colors.text } : undefined}
+                              >
+                                ({part.vendor})
+                              </span>
+                            )}
+                            <button
+                              type="button"
+                              onClick={() => setNewEventLinkedParts(newEventLinkedParts.filter(id => id !== part.id))}
+                              className={`ml-1 hover:text-red-500 ${
+                                darkMode ? 'text-gray-400' : 'text-gray-500'
+                              }`}
+                            >
+                              <X className="w-3 h-3" />
+                            </button>
+                          </span>
+                        );
+                      })}
+                    </div>
+                  )}
+
+                  {/* Dropdown trigger */}
+                  <div className="relative">
+                    <button
+                      type="button"
+                      onClick={toggleInlinePartsDropdown}
+                      className={`w-full px-4 py-2 border rounded-lg flex items-center justify-between transition-colors ${
+                        darkMode
+                          ? 'bg-gray-700 border-gray-600 text-gray-300 hover:border-gray-500'
+                          : 'bg-white border-gray-300 text-gray-600 hover:border-gray-400'
+                      }`}
+                    >
+                      <span>{!newEventLinkedParts || newEventLinkedParts.length === 0 ? 'Select parts...' : `${newEventLinkedParts.length} part${newEventLinkedParts.length !== 1 ? 's' : ''} selected`}</span>
+                      <ChevronDown className={`w-4 h-4 transition-transform duration-200 ${showInlinePartsDropdown ? 'rotate-180' : ''}`} />
+                    </button>
+
+                    {/* Dropdown menu - opens upward since this field is at the bottom */}
+                    {showInlinePartsDropdown && (
+                      <div
+                        className={`absolute z-50 bottom-full mb-1 w-full max-h-64 overflow-y-auto rounded-lg border shadow-lg transition-all duration-150 ${
+                          isInlineDropdownClosing
+                            ? 'opacity-0 translate-y-2'
+                            : 'opacity-100 translate-y-0'
+                        } ${
+                          darkMode ? 'bg-gray-700 border-gray-600' : 'bg-white border-gray-300'
+                        }`}
+                        style={{ animation: isInlineDropdownClosing ? 'none' : 'slideUp 150ms ease-out' }}
+                      >
+                        {/* Search input */}
+                        <div className={`sticky top-0 p-2 border-b ${
+                          darkMode ? 'bg-gray-700 border-gray-600' : 'bg-white border-gray-200'
+                        }`}>
+                          <div className="relative">
+                            <input
+                              type="text"
+                              value={inlinePartsSearchTerm}
+                              onChange={(e) => setInlinePartsSearchTerm(e.target.value)}
+                              placeholder="Search parts..."
+                              className={`w-full px-3 py-1.5 pr-8 text-sm border rounded focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
+                                darkMode
+                                  ? 'bg-gray-600 border-gray-500 text-gray-100 placeholder-gray-400'
+                                  : 'bg-gray-50 border-gray-300 text-gray-800 placeholder-gray-400'
+                              }`}
+                            />
+                            {inlinePartsSearchTerm && (
+                              <button
+                                type="button"
+                                onClick={() => setInlinePartsSearchTerm('')}
+                                className={`absolute right-2 top-1/2 -translate-y-1/2 p-0.5 rounded-full transition-colors ${
+                                  darkMode ? 'text-gray-400 hover:text-gray-200 hover:bg-gray-500' : 'text-gray-400 hover:text-gray-600 hover:bg-gray-200'
+                                }`}
+                              >
+                                <X className="w-3.5 h-3.5" />
+                              </button>
+                            )}
+                          </div>
+                        </div>
+
+                        {/* Parts list */}
+                        {(() => {
+                          const filteredParts = parts.filter(part =>
+                            part.part.toLowerCase().includes(inlinePartsSearchTerm.toLowerCase()) ||
+                            (part.vendor && part.vendor.toLowerCase().includes(inlinePartsSearchTerm.toLowerCase()))
+                          );
+                          return filteredParts.length === 0 ? (
+                            <div className={`p-3 text-sm text-center ${
+                              darkMode ? 'text-gray-400' : 'text-gray-500'
+                            }`}>
+                              No parts found
+                            </div>
+                          ) : (
+                            filteredParts.map(part => {
+                              const vendorColor = part.vendor && vendorColors[part.vendor];
+                              const colors = vendorColor ? getVendorDisplayColor(vendorColor, darkMode) : null;
+                              const isSelected = newEventLinkedParts && newEventLinkedParts.includes(part.id);
+                              return (
+                                <button
+                                  key={part.id}
+                                  type="button"
+                                  onClick={() => {
+                                    if (isSelected) {
+                                      setNewEventLinkedParts(newEventLinkedParts.filter(id => id !== part.id));
+                                    } else {
+                                      setNewEventLinkedParts([...(newEventLinkedParts || []), part.id]);
+                                    }
+                                  }}
+                                  className={`w-full px-3 py-2 flex items-center gap-2 text-left transition-colors ${
+                                    isSelected
+                                      ? darkMode ? 'bg-blue-900/30' : 'bg-blue-50'
+                                      : darkMode ? 'hover:bg-gray-600' : 'hover:bg-gray-50'
+                                  }`}
+                                >
+                                  <div className={`w-4 h-4 rounded border flex items-center justify-center flex-shrink-0 ${
+                                    isSelected
+                                      ? 'bg-blue-500 border-blue-500'
+                                      : darkMode ? 'border-gray-500' : 'border-gray-300'
+                                  }`}>
+                                    {isSelected && <CheckCircle className="w-3 h-3 text-white" />}
+                                  </div>
+                                  <div className="flex-1 min-w-0">
+                                    <span className={`text-sm font-medium truncate block ${
+                                      darkMode ? 'text-gray-200' : 'text-gray-800'
+                                    }`}>
+                                      {part.part}
+                                    </span>
+                                    {part.vendor && (
+                                      <span
+                                        className="text-xs"
+                                        style={colors ? { color: colors.text } : { color: darkMode ? '#9CA3AF' : '#6B7280' }}
+                                      >
+                                        {part.vendor}
+                                      </span>
+                                    )}
+                                  </div>
+                                  <span className={`text-xs font-medium ${
+                                    darkMode ? 'text-gray-400' : 'text-gray-500'
+                                  }`}>
+                                    ${part.total?.toFixed(2) || '0.00'}
+                                  </span>
+                                </button>
+                              );
+                            })
+                          );
+                        })()}
+                      </div>
+                    )}
+                  </div>
+                </div>
+              </div>
+            )}
+          </div>
+
+          {/* Inline Add Document Form View - Mobile only */}
+          <div
+            className={`w-full transition-all duration-500 ease-in-out md:hidden ${
+              showAddDocumentModal && isMobile && !vehicleModalProjectView && !vehicleModalEditMode && !showAddServiceEventModal
+                ? 'relative opacity-100'
+                : 'absolute opacity-0 pointer-events-none'
+            }`}
+          >
+            {showAddDocumentModal && isMobile && (
+              <div className="p-6 pb-24 space-y-4 max-h-[calc(90vh-164px)] overflow-y-auto">
+                {/* Document Title field */}
+                <div>
+                  <label className={`block text-sm font-medium mb-2 ${
+                    darkMode ? 'text-gray-300' : 'text-gray-700'
+                  }`}>
+                    Document Title *
+                  </label>
+                  <input
+                    type="text"
+                    value={newDocumentTitle}
+                    onChange={(e) => setNewDocumentTitle(e.target.value)}
+                    className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
+                      darkMode
+                        ? 'bg-gray-700 border-gray-600 text-gray-100 placeholder-gray-400'
+                        : 'bg-white border-gray-300 text-gray-800 placeholder-gray-400'
+                    }`}
+                    placeholder="e.g., Insurance Certificate"
+                  />
+                </div>
+
+                {/* File field */}
+                <div>
+                  <label className={`block text-sm font-medium mb-2 ${
+                    darkMode ? 'text-gray-300' : 'text-gray-700'
+                  }`}>
+                    File *
+                  </label>
+                  {newDocumentFile ? (
+                    <div className={`flex items-center gap-3 p-3 rounded-lg border ${
+                      darkMode ? 'bg-gray-700 border-gray-600' : 'bg-gray-50 border-gray-200'
+                    }`}>
+                      <FileText className={`w-8 h-8 ${
+                        darkMode ? 'text-blue-400' : 'text-blue-600'
+                      }`} />
+                      <div className="flex-1 min-w-0">
+                        <p className={`text-sm font-medium truncate ${
+                          darkMode ? 'text-gray-200' : 'text-gray-800'
+                        }`}>
+                          {newDocumentFile.name}
+                        </p>
+                        <p className={`text-xs ${
+                          darkMode ? 'text-gray-500' : 'text-gray-500'
+                        }`}>
+                          {(newDocumentFile.size / 1024 / 1024).toFixed(2)} MB
+                        </p>
+                      </div>
+                      <button
+                        onClick={() => setNewDocumentFile(null)}
+                        className={`p-1 rounded ${
+                          darkMode ? 'hover:bg-gray-600 text-gray-400' : 'hover:bg-gray-200 text-gray-600'
+                        }`}
+                      >
+                        <X className="w-4 h-4" />
+                      </button>
+                    </div>
+                  ) : (
+                    <label
+                      onDragEnter={handleDocumentDragEnter}
+                      onDragLeave={handleDocumentDragLeave}
+                      onDragOver={handleDocumentDragOver}
+                      onDrop={handleDocumentDrop}
+                      className={`flex flex-col items-center justify-center w-full h-32 border-2 border-dashed rounded-lg cursor-pointer transition-all ${
+                        isDraggingDocument
+                          ? darkMode
+                            ? 'border-blue-400 bg-blue-900/20'
+                            : 'border-blue-500 bg-blue-50'
+                          : darkMode
+                            ? 'border-gray-600 hover:border-gray-500 hover:bg-gray-700/50'
+                            : 'border-gray-300 hover:border-gray-400 hover:bg-gray-50'
+                      }`}
+                    >
+                      <Upload className={`w-8 h-8 mb-2 ${
+                        darkMode ? 'text-gray-500' : 'text-gray-400'
+                      }`} />
+                      <p className={`text-sm ${
+                        darkMode ? 'text-gray-400' : 'text-gray-500'
+                      }`}>
+                        Click to upload or drag and drop
+                      </p>
+                      <p className={`text-xs mt-1 ${
+                        darkMode ? 'text-gray-500' : 'text-gray-400'
+                      }`}>
+                        PDF, DOC, Images (max 10MB)
+                      </p>
+                      <input
+                        type="file"
+                        className="hidden"
+                        accept=".pdf,.doc,.docx,.jpg,.jpeg,.png,.gif,.webp"
+                        onChange={handleDocumentFileChange}
+                      />
+                    </label>
+                  )}
+                </div>
+              </div>
+            )}
+          </div>
+
+          {/* Inline Service Event Info View - Mobile only */}
+          <div
+            className={`w-full transition-all duration-500 ease-in-out md:hidden ${
+              viewingInfoEvent && isMobile && !vehicleModalProjectView && !vehicleModalEditMode && !showAddServiceEventModal && !showAddDocumentModal
+                ? 'relative opacity-100'
+                : 'absolute opacity-0 pointer-events-none'
+            }`}
+          >
+            {viewingInfoEvent && isMobile && (
+              <div className="p-6 pb-24 space-y-5 max-h-[calc(90vh-164px)] overflow-y-auto">
+                {/* Notes Section */}
+                {viewingInfoEvent.notes && (
+                  <div>
+                    <h4 className={`text-sm font-semibold mb-2 ${
+                      darkMode ? 'text-gray-300' : 'text-gray-700'
+                    }`}>
+                      Notes
+                    </h4>
+                    <p className={`text-sm whitespace-pre-wrap ${
+                      darkMode ? 'text-gray-400' : 'text-gray-600'
+                    }`}>
+                      {viewingInfoEvent.notes}
+                    </p>
+                  </div>
+                )}
+
+                {/* Linked Parts Section */}
+                {(() => {
+                  const linkedParts = viewingInfoEvent.linked_part_ids
+                    ? parts.filter(p => viewingInfoEvent.linked_part_ids.includes(p.id))
+                    : [];
+
+                  if (linkedParts.length === 0) return null;
+
+                  return (
+                    <div>
+                      <h4 className={`text-sm font-semibold mb-3 ${
+                        darkMode ? 'text-gray-300' : 'text-gray-700'
+                      }`}>
+                        Linked Parts ({linkedParts.length})
+                      </h4>
+                      <div className="flex flex-col gap-4">
+                        {linkedParts.map((part) => {
+                          const vendorColor = part.vendor && vendorColors[part.vendor];
+                          const colors = vendorColor ? getVendorDisplayColor(vendorColor, darkMode) : null;
+                          return (
+                            <div
+                              key={part.id}
+                              className={`p-4 rounded-lg border flex flex-col ${
+                                darkMode ? 'bg-gray-700 border-gray-600' : 'bg-gray-50 border-gray-200'
+                              }`}
+                            >
+                              <div className="flex justify-between items-start mb-3">
+                                <div className="flex-1">
+                                  <h4 className={`font-medium ${
+                                    darkMode ? 'text-gray-100' : 'text-slate-800'
+                                  }`}>
+                                    {part.part}
+                                  </h4>
+                                  {part.vendor && (
+                                    colors ? (
+                                      <span
+                                        className="inline-block mt-1 px-2 py-0.5 rounded-full text-xs font-medium border"
+                                        style={{
+                                          backgroundColor: colors.bg,
+                                          color: colors.text,
+                                          borderColor: colors.border
+                                        }}
+                                      >
+                                        {part.vendor}
+                                      </span>
+                                    ) : (
+                                      <span className={`inline-block mt-1 px-2 py-0.5 rounded-full text-xs font-medium ${
+                                        darkMode ? 'bg-gray-600 text-gray-300' : 'bg-gray-200 text-gray-700'
+                                      }`}>
+                                        {part.vendor}
+                                      </span>
+                                    )
+                                  )}
+                                </div>
+                                <div className={`text-xs font-medium ${getStatusTextColor(part)}`}>
+                                  {getStatusText(part)}
+                                </div>
+                              </div>
+                              {part.partNumber && part.partNumber !== '-' && (
+                                <p className={`text-xs font-mono mb-3 ${
+                                  darkMode ? 'text-gray-400' : 'text-slate-600'
+                                }`}>
+                                  Part #: {part.partNumber}
+                                </p>
+                              )}
+                              <div className={`border-t flex-1 flex flex-col justify-end ${
+                                darkMode ? 'border-gray-600' : 'border-gray-200'
+                              }`}>
+                                <div className="pt-3 space-y-2">
+                                  <div className="flex justify-between text-sm">
+                                    <span className={darkMode ? 'text-gray-400' : 'text-slate-600'}>
+                                      Part Price:
+                                    </span>
+                                    <span className={`font-medium ${
+                                      darkMode ? 'text-gray-200' : 'text-gray-800'
+                                    }`}>
+                                      ${(part.price || 0).toFixed(2)}
+                                    </span>
+                                  </div>
+                                  {part.shipping > 0 && (
+                                    <div className="flex justify-between text-sm">
+                                      <span className={darkMode ? 'text-gray-400' : 'text-slate-600'}>
+                                        Shipping:
+                                      </span>
+                                      <span className={`font-medium ${
+                                        darkMode ? 'text-gray-200' : 'text-gray-800'
+                                      }`}>
+                                        ${part.shipping.toFixed(2)}
+                                      </span>
+                                    </div>
+                                  )}
+                                  {part.duties > 0 && (
+                                    <div className="flex justify-between text-sm">
+                                      <span className={darkMode ? 'text-gray-400' : 'text-slate-600'}>
+                                        Duties:
+                                      </span>
+                                      <span className={`font-medium ${
+                                        darkMode ? 'text-gray-200' : 'text-gray-800'
+                                      }`}>
+                                        ${part.duties.toFixed(2)}
+                                      </span>
+                                    </div>
+                                  )}
+                                  <div className={`flex justify-between text-base font-bold pt-2 border-t ${
+                                    darkMode ? 'border-gray-600' : 'border-gray-200'
+                                  }`}>
+                                    <span className={darkMode ? 'text-gray-100' : 'text-slate-800'}>
+                                      Total:
+                                    </span>
+                                    <span className={darkMode ? 'text-gray-100' : 'text-slate-800'}>
+                                      ${(part.total || 0).toFixed(2)}
+                                    </span>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  );
+                })()}
+              </div>
+            )}
+          </div>
         </div>
 
         {/* Footer with Edit Button */}
@@ -2170,6 +2801,161 @@ const VehicleDetailModal = ({
                 Edit Project
               </button>
             </div>
+          ) : showAddServiceEventModal && isMobile ? (
+            <div className="flex items-center justify-between w-full gap-2">
+              <button
+                onClick={handleCloseServiceEventModal}
+                className={`flex items-center gap-2 px-4 py-2 rounded-lg font-medium transition-colors border ${
+                  darkMode
+                    ? 'bg-gray-700 hover:bg-gray-600 text-gray-100 border-gray-600 hover:border-gray-500'
+                    : 'bg-gray-200 hover:bg-gray-300 text-gray-800 border-gray-300 hover:border-gray-400'
+                }`}
+                title="Back to vehicle"
+              >
+                <ChevronDown className="w-5 h-5 rotate-90" />
+              </button>
+              <div className="flex items-center gap-2">
+                {editingServiceEvent && (
+                  <button
+                    onClick={() => {
+                      setConfirmDialog({
+                        isOpen: true,
+                        title: 'Delete Service Event',
+                        message: `Are you sure you want to delete "${editingServiceEvent.description}"? This action cannot be undone.`,
+                        confirmText: 'Delete',
+                        onConfirm: () => {
+                          deleteServiceEvent(editingServiceEvent.id);
+                          handleCloseServiceEventModal();
+                        }
+                      });
+                    }}
+                    className={`px-4 py-2 rounded-lg font-medium transition-colors ${
+                      darkMode
+                        ? 'bg-red-900/50 hover:bg-red-900 text-red-400'
+                        : 'bg-red-100 hover:bg-red-200 text-red-600'
+                    }`}
+                  >
+                    <Trash2 className="w-4 h-4" />
+                  </button>
+                )}
+                <button
+                  onClick={async () => {
+                    if (!newEventDate) {
+                      toast?.warning('Please select a date');
+                      return;
+                    }
+                    if (!newEventDescription.trim()) {
+                      toast?.warning('Please enter a description');
+                      return;
+                    }
+                    let result;
+                    if (editingServiceEvent) {
+                      result = await updateServiceEvent(editingServiceEvent.id, {
+                        event_date: newEventDate,
+                        description: newEventDescription.trim(),
+                        odometer: newEventOdometer ? parseInt(newEventOdometer, 10) : null,
+                        notes: newEventNotes.trim() || null,
+                        linked_part_ids: newEventLinkedParts.length > 0 ? newEventLinkedParts : null
+                      });
+                    } else {
+                      result = await addServiceEvent(
+                        viewingVehicle.id,
+                        newEventDate,
+                        newEventDescription,
+                        newEventOdometer,
+                        newEventNotes,
+                        newEventLinkedParts
+                      );
+                    }
+                    if (result) {
+                      handleCloseServiceEventModal();
+                    }
+                  }}
+                  disabled={savingServiceEvent || !newEventDate || !newEventDescription.trim()}
+                  className={`px-4 py-2 rounded-lg font-medium transition-colors flex items-center gap-2 text-sm ${
+                    savingServiceEvent || !newEventDate || !newEventDescription.trim()
+                      ? 'bg-gray-600 cursor-not-allowed text-gray-300'
+                      : 'bg-blue-600 hover:bg-blue-700 text-white'
+                  }`}
+                >
+                  {savingServiceEvent ? 'Saving...' : (editingServiceEvent ? 'Update' : 'Add')}
+                </button>
+              </div>
+            </div>
+          ) : showAddDocumentModal && isMobile ? (
+            <div className="flex items-center justify-between w-full gap-2">
+              <button
+                onClick={() => {
+                  setShowAddDocumentModal(false);
+                  setNewDocumentFile(null);
+                  setNewDocumentTitle('');
+                }}
+                className={`flex items-center gap-2 px-4 py-2 rounded-lg font-medium transition-colors border ${
+                  darkMode
+                    ? 'bg-gray-700 hover:bg-gray-600 text-gray-100 border-gray-600 hover:border-gray-500'
+                    : 'bg-gray-200 hover:bg-gray-300 text-gray-800 border-gray-300 hover:border-gray-400'
+                }`}
+                title="Back to vehicle"
+              >
+                <ChevronDown className="w-5 h-5 rotate-90" />
+              </button>
+              <button
+                onClick={async () => {
+                  if (!newDocumentTitle.trim()) {
+                    toast?.warning('Please enter a document title');
+                    return;
+                  }
+                  if (!newDocumentFile) {
+                    toast?.warning('Please select a file to upload');
+                    return;
+                  }
+                  const result = await addDocument(
+                    viewingVehicle.id,
+                    newDocumentTitle.trim(),
+                    newDocumentFile
+                  );
+                  if (result) {
+                    setShowAddDocumentModal(false);
+                    setNewDocumentFile(null);
+                    setNewDocumentTitle('');
+                  }
+                }}
+                disabled={uploadingDocument || !newDocumentTitle.trim() || !newDocumentFile}
+                className={`px-4 py-2 rounded-lg font-medium transition-colors flex items-center gap-2 text-sm ${
+                  uploadingDocument || !newDocumentTitle.trim() || !newDocumentFile
+                    ? 'bg-gray-600 cursor-not-allowed text-gray-300'
+                    : 'bg-blue-600 hover:bg-blue-700 text-white'
+                }`}
+              >
+                {uploadingDocument ? 'Uploading...' : 'Upload'}
+              </button>
+            </div>
+          ) : viewingInfoEvent && isMobile ? (
+            <div className="flex items-center justify-between w-full gap-2">
+              <button
+                onClick={() => {
+                  setViewingInfoEvent(null);
+                }}
+                className={`flex items-center gap-2 px-4 py-2 rounded-lg font-medium transition-colors border ${
+                  darkMode
+                    ? 'bg-gray-700 hover:bg-gray-600 text-gray-100 border-gray-600 hover:border-gray-500'
+                    : 'bg-gray-200 hover:bg-gray-300 text-gray-800 border-gray-300 hover:border-gray-400'
+                }`}
+                title="Back to vehicle"
+              >
+                <ChevronDown className="w-5 h-5 rotate-90" />
+              </button>
+              <button
+                onClick={() => {
+                  openEditServiceEventModal(viewingInfoEvent);
+                  setViewingInfoEvent(null);
+                }}
+                className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium transition-colors flex items-center gap-2 text-sm"
+              >
+                <Edit2 className="w-3 h-3" />
+                Edit
+              </button>
+            </div>
           ) : (
             <>
               {/* Navigation controls on the left - mobile only */}
@@ -2239,8 +3025,8 @@ const VehicleDetailModal = ({
         generating={generatingReport}
       />
 
-      {/* Service Event Info Modal (Notes + Parts) */}
-      {(viewingInfoEvent || isInfoModalClosing) && (
+      {/* Service Event Info Modal (Notes + Parts) - Desktop only */}
+      {(viewingInfoEvent || isInfoModalClosing) && !isMobile && (
         <div
           className={`fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-[70] modal-backdrop ${
             isInfoModalClosing ? 'modal-backdrop-exit' : 'modal-backdrop-enter'
