@@ -2312,7 +2312,7 @@ const VehicleDetailModal = ({
                     day: 'numeric',
                     year: 'numeric'
                   })}
-                  {viewingInfoEvent?.odometer && ` • ${parseInt(viewingInfoEvent.odometer).toLocaleString()} mi`}
+                  {viewingInfoEvent?.odometer && ` • ${parseInt(viewingInfoEvent.odometer).toLocaleString()}${viewingVehicle.odometer_unit ? ` ${viewingVehicle.odometer_unit}` : ''}`}
                 </p>
               </div>
               <button
