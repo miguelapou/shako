@@ -744,14 +744,14 @@ const VehicleDetailModal = ({
                                   e.stopPropagation();
                                   setServiceHistoryExpanded(true);
                                 }}
-                                className={`flex items-center justify-center gap-2 py-2 px-4 rounded-lg border-2 border-dashed transition-all ${
+                                className={`flex items-center gap-1 text-sm font-medium mb-2 ${
                                   darkMode
-                                    ? 'border-gray-600 text-gray-400 hover:border-gray-500 hover:text-gray-300 hover:bg-gray-700/30'
-                                    : 'border-gray-300 text-gray-500 hover:border-gray-400 hover:text-gray-600 hover:bg-gray-50'
+                                    ? 'text-blue-400 hover:text-blue-300'
+                                    : 'text-blue-600 hover:text-blue-700'
                                 }`}
                               >
                                 <ChevronDown className="w-4 h-4" />
-                                <span className="text-sm font-medium">Show {hiddenCount} more</span>
+                                Show {hiddenCount} more
                               </button>
                             )}
 
@@ -762,14 +762,14 @@ const VehicleDetailModal = ({
                                   e.stopPropagation();
                                   setServiceHistoryExpanded(false);
                                 }}
-                                className={`flex items-center justify-center gap-2 py-2 px-4 rounded-lg border-2 border-dashed transition-all ${
+                                className={`flex items-center gap-1 text-sm font-medium mb-2 ${
                                   darkMode
-                                    ? 'border-gray-600 text-gray-400 hover:border-gray-500 hover:text-gray-300 hover:bg-gray-700/30'
-                                    : 'border-gray-300 text-gray-500 hover:border-gray-400 hover:text-gray-600 hover:bg-gray-50'
+                                    ? 'text-blue-400 hover:text-blue-300'
+                                    : 'text-blue-600 hover:text-blue-700'
                                 }`}
                               >
                                 <ChevronUp className="w-4 h-4" />
-                                <span className="text-sm font-medium">Show less</span>
+                                Show less
                               </button>
                             )}
 
