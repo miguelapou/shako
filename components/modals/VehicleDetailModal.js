@@ -2427,25 +2427,6 @@ const VehicleDetailModal = ({
           >
             {viewingInfoEvent && isMobile && (
               <div className="p-6 pb-24 space-y-5 max-h-[calc(90vh-164px)] overflow-y-auto">
-                {/* Event Header */}
-                <div>
-                  <h3 className={`text-lg font-semibold ${
-                    darkMode ? 'text-gray-100' : 'text-gray-800'
-                  }`}>
-                    {viewingInfoEvent.description}
-                  </h3>
-                  <p className={`text-sm mt-1 ${
-                    darkMode ? 'text-gray-400' : 'text-gray-500'
-                  }`}>
-                    {new Date(viewingInfoEvent.event_date + 'T00:00:00').toLocaleDateString('en-US', {
-                      month: 'short',
-                      day: 'numeric',
-                      year: 'numeric'
-                    })}
-                    {viewingInfoEvent.odometer && ` • ${parseInt(viewingInfoEvent.odometer).toLocaleString()}${viewingVehicle.odometer_unit ? ` ${viewingVehicle.odometer_unit}` : ''}`}
-                  </p>
-                </div>
-
                 {/* Notes Section */}
                 {viewingInfoEvent.notes && (
                   <div>
