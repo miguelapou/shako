@@ -36,7 +36,8 @@ import AddServiceEventModal from './AddServiceEventModal';
 import ExportReportModal from './ExportReportModal';
 import {
   calculateVehicleTotalSpent,
-  calculateProjectTotal
+  calculateProjectTotal,
+  calculateServicePartsTotal
 } from '../../utils/dataUtils';
 import {
   getPriorityBorderColor,
@@ -649,7 +650,7 @@ const VehicleDetailModal = ({
                     {/* Budget Progress for Linked Projects */}
                     {(() => {
                       const vehicleProjects = projects.filter(p => p.vehicle_id === viewingVehicle.id);
-                      const totalSpent = calculateVehicleTotalSpent(viewingVehicle.id, projects, parts);
+                      const totalSpent = calculateVehicleTotalSpent(viewingVehicle.id, projects, parts, serviceEvents);
                       const totalBudget = vehicleProjects.reduce((sum, project) => sum + (project.budget || 0), 0);
                       const progress = totalBudget > 0 ? (totalSpent / totalBudget) * 100 : 0;
                       return (
@@ -1184,6 +1185,35 @@ const VehicleDetailModal = ({
                     </p>
                   </div>
                 )}
+
+                {/* Service Parts Total */}
+                {(() => {
+                  const servicePartsTotal = calculateServicePartsTotal(viewingVehicle.id, parts, serviceEvents);
+                  if (servicePartsTotal === 0) return null;
+                  return (
+                    <div className={`mt-4 p-4 rounded-lg border-2 border-dashed ${
+                      darkMode ? 'bg-blue-900/20 border-blue-500/50' : 'bg-blue-50 border-blue-300'
+                    }`}>
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-2">
+                          <Wrench className={`w-5 h-5 ${
+                            darkMode ? 'text-blue-400' : 'text-blue-600'
+                          }`} />
+                          <span className={`text-sm font-medium ${
+                            darkMode ? 'text-blue-300' : 'text-blue-700'
+                          }`}>
+                            Service Parts Total
+                          </span>
+                        </div>
+                        <span className={`text-lg font-bold ${
+                          darkMode ? 'text-blue-200' : 'text-blue-800'
+                        }`}>
+                          ${servicePartsTotal.toFixed(2)}
+                        </span>
+                      </div>
+                    </div>
+                  );
+                })()}
                 </div>
               </div>
 
