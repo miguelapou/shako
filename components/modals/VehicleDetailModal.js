@@ -112,8 +112,6 @@ const VehicleDetailModal = ({
   const [isInfoModalClosing, setIsInfoModalClosing] = useState(false);
   // State for service history expansion
   const [serviceHistoryExpanded, setServiceHistoryExpanded] = useState(false);
-  const serviceHistoryRef = useRef(null);
-  const [serviceHistoryHeight, setServiceHistoryHeight] = useState(0);
 
   // Reset service history expansion when viewing a different vehicle
   useEffect(() => {
@@ -310,24 +308,6 @@ const VehicleDetailModal = ({
   }, [serviceEvents]);
 
   const serviceEventsHiddenCount = Math.max(0, sortedServiceEvents.length - 3);
-  // Collapsed height - shows newest 3 events (older events clipped at bottom)
-  const serviceEventsCollapsedHeight = 240;
-
-  // Measure service history content height
-  useEffect(() => {
-    const measureHeight = () => {
-      if (serviceHistoryRef.current) {
-        setServiceHistoryHeight(serviceHistoryRef.current.scrollHeight);
-      }
-    };
-    measureHeight();
-    // Re-measure when service events change
-    const resizeObserver = new ResizeObserver(measureHeight);
-    if (serviceHistoryRef.current) {
-      resizeObserver.observe(serviceHistoryRef.current);
-    }
-    return () => resizeObserver.disconnect();
-  }, [sortedServiceEvents]);
 
   // Load documents and service events when modal opens
   useEffect(() => {
@@ -771,7 +751,7 @@ const VehicleDetailModal = ({
                   })()}
                 </div>
                 <div className={`relative ${!loadingServiceEvents ? 'animate-fade-in' : ''}`} onClick={() => setSelectedEventId(null)}>
-                    {/* Show more/less toggle button - at top since older events + add card are hidden there */}
+                    {/* Show more/less toggle button */}
                     {serviceEventsHiddenCount > 0 && (
                       <button
                         onClick={(e) => {
@@ -798,82 +778,32 @@ const VehicleDetailModal = ({
                       </button>
                     )}
 
-                    {/* Outer wrapper - animates height, column-reverse clips from visual top */}
-                    <div
-                      className="transition-all duration-500 ease-in-out overflow-hidden"
-                      style={{
-                        maxHeight: serviceHistoryExpanded
-                          ? `${serviceHistoryHeight || 2000}px`
-                          : `${serviceEventsCollapsedHeight}px`
-                      }}
-                    >
-                      {/* Inner container - column-reverse: DOM bottom-to-top = visual top-to-bottom */}
-                      <div
-                        ref={serviceHistoryRef}
-                        className="flex flex-col-reverse gap-4"
-                      >
-                        {/* DOM order: [add, newest...oldest] → Visual: [oldest...newest, add] */}
+                    {/* Service events container */}
+                    <div className="flex flex-col gap-4">
+                      {/* Show last 3 events when collapsed, all when expanded */}
+                      {(serviceHistoryExpanded ? sortedServiceEvents : sortedServiceEvents.slice(-3)).map((event, index, arr) => {
+                        const eventDate = new Date(event.event_date + 'T00:00:00');
+                        const formattedDate = eventDate.toLocaleDateString('en-US', {
+                          month: 'short',
+                          day: 'numeric',
+                          year: 'numeric'
+                        });
+                        const isLast = index === arr.length - 1;
 
-                        {/* Add card - first in DOM, appears at bottom visually */}
-                        <div
-                          onClick={openAddServiceEventModal}
-                          className="relative flex items-stretch gap-4 cursor-pointer group"
-                        >
-                          <div className="relative flex flex-col items-center">
-                            <div className={`relative z-10 flex-shrink-0 w-10 h-10 rounded-full flex items-center justify-center border-2 border-dashed ${
-                              darkMode
-                                ? 'bg-gray-800 border-gray-600 can-hover:group-hover:border-blue-500'
-                                : 'bg-slate-200 border-gray-300 can-hover:group-hover:border-blue-500'
-                            } transition-colors`}>
-                              <Plus className={`w-4 h-4 ${
-                                darkMode ? 'text-gray-500 can-hover:group-hover:text-blue-400' : 'text-gray-400 can-hover:group-hover:text-blue-600'
-                              } transition-colors`} />
-                            </div>
-                          </div>
-                          <div className={`flex-1 rounded-lg p-3 border-2 border-dashed transition-all ${
-                            darkMode
-                              ? 'border-gray-600 can-hover:group-hover:border-blue-500 can-hover:group-hover:bg-gray-700/30'
-                              : 'border-gray-300 can-hover:group-hover:border-blue-500 can-hover:group-hover:bg-blue-50/30'
-                          }`}>
-                            <p className={`text-sm font-medium ${
-                              darkMode ? 'text-gray-400 can-hover:group-hover:text-gray-200' : 'text-gray-500 can-hover:group-hover:text-gray-700'
-                            } transition-colors`}>
-                              Add service event
-                            </p>
-                            <p className={`text-xs mt-0.5 ${
-                              darkMode ? 'text-gray-600' : 'text-gray-400'
-                            }`}>
-                              Track maintenance and repairs
-                            </p>
-                          </div>
-                        </div>
-
-                        {/* Events: newest first in DOM → oldest first visually (chronological) */}
-                        {[...sortedServiceEvents].reverse().map((event, index, arr) => {
-                          const eventDate = new Date(event.event_date + 'T00:00:00');
-                          const formattedDate = eventDate.toLocaleDateString('en-US', {
-                            month: 'short',
-                            day: 'numeric',
-                            year: 'numeric'
-                          });
-                          // In reversed array: index 0 = newest (visual bottom), last index = oldest (visual top)
-                          // isLast visually = connects to add card = index 0 in reversed array
-                          const isLast = index === 0;
-
-                          // Calculate mileage difference from previous event (chronologically) with same description
-                          let mileageDiff = null;
-                          if (event.odometer) {
-                            const chronologicalIndex = sortedServiceEvents.findIndex(e => e.id === event.id);
-                            const previousSameEvent = sortedServiceEvents
-                              .slice(0, chronologicalIndex)
-                              .filter(e => e.description.toLowerCase() === event.description.toLowerCase() && e.odometer)
-                              .pop();
-                            if (previousSameEvent) {
-                              mileageDiff = event.odometer - previousSameEvent.odometer;
-                            }
+                        // Calculate mileage difference from previous event (chronologically) with same description
+                        let mileageDiff = null;
+                        if (event.odometer) {
+                          const chronologicalIndex = sortedServiceEvents.findIndex(e => e.id === event.id);
+                          const previousSameEvent = sortedServiceEvents
+                            .slice(0, chronologicalIndex)
+                            .filter(e => e.description.toLowerCase() === event.description.toLowerCase() && e.odometer)
+                            .pop();
+                          if (previousSameEvent) {
+                            mileageDiff = event.odometer - previousSameEvent.odometer;
                           }
+                        }
 
-                          return (
+                        return (
                           <div
                             key={event.id}
                             className="relative flex items-stretch gap-4 group cursor-pointer"
@@ -1026,6 +956,39 @@ const VehicleDetailModal = ({
                           </div>
                           );
                         })}
+
+                      {/* Add service event card */}
+                      <div
+                        onClick={openAddServiceEventModal}
+                        className="relative flex items-stretch gap-4 cursor-pointer group"
+                      >
+                        <div className="relative flex flex-col items-center">
+                          <div className={`relative z-10 flex-shrink-0 w-10 h-10 rounded-full flex items-center justify-center border-2 border-dashed ${
+                            darkMode
+                              ? 'bg-gray-800 border-gray-600 can-hover:group-hover:border-blue-500'
+                              : 'bg-slate-200 border-gray-300 can-hover:group-hover:border-blue-500'
+                          } transition-colors`}>
+                            <Plus className={`w-4 h-4 ${
+                              darkMode ? 'text-gray-500 can-hover:group-hover:text-blue-400' : 'text-gray-400 can-hover:group-hover:text-blue-600'
+                            } transition-colors`} />
+                          </div>
+                        </div>
+                        <div className={`flex-1 rounded-lg p-3 border-2 border-dashed transition-all ${
+                          darkMode
+                            ? 'border-gray-600 can-hover:group-hover:border-blue-500 can-hover:group-hover:bg-gray-700/30'
+                            : 'border-gray-300 can-hover:group-hover:border-blue-500 can-hover:group-hover:bg-blue-50/30'
+                        }`}>
+                          <p className={`text-sm font-medium ${
+                            darkMode ? 'text-gray-400 can-hover:group-hover:text-gray-200' : 'text-gray-500 can-hover:group-hover:text-gray-700'
+                          } transition-colors`}>
+                            Add service event
+                          </p>
+                          <p className={`text-xs mt-0.5 ${
+                            darkMode ? 'text-gray-600' : 'text-gray-400'
+                          }`}>
+                            Track maintenance and repairs
+                          </p>
+                        </div>
                       </div>
                     </div>
                   </div>
