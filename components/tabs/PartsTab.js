@@ -443,6 +443,24 @@ const PartsTab = ({
         setIsPositioned(false);
       }
     }, [isOpen, projects.length]);
+    // If part has a vehicle but no project, show Maintenance badge
+    if (part.vehicleId && !part.projectId) {
+      return (
+        <div className="relative">
+          <span
+            className={`inline-flex items-center px-3 py-1.5 text-xs font-medium rounded-full border ${
+              darkMode
+                ? 'bg-blue-900/40 text-blue-200 border-blue-700'
+                : 'bg-blue-100 text-blue-700 border-blue-300'
+            }`}
+            style={{ minWidth: '8.25rem', maxWidth: '10rem' }}
+          >
+            <span className="flex-1 text-center">Maintenance</span>
+          </span>
+        </div>
+      );
+    }
+
     return (
       <div className="relative">
         <button
