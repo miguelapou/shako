@@ -112,6 +112,16 @@ const VehicleDetailModal = ({
   const [isInfoModalClosing, setIsInfoModalClosing] = useState(false);
   // State for service history expansion
   const [serviceHistoryExpanded, setServiceHistoryExpanded] = useState(false);
+  // State for mobile detection (to show inline service event form instead of modal)
+  const [isMobile, setIsMobile] = useState(false);
+
+  // Track screen size for responsive behavior
+  useEffect(() => {
+    const checkMobile = () => setIsMobile(window.innerWidth < 768);
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
 
   // Reset service history expansion when viewing a different vehicle
   useEffect(() => {
@@ -437,7 +447,11 @@ const VehicleDetailModal = ({
             <h2 className={`text-2xl font-bold ${
               darkMode ? 'text-gray-100' : 'text-slate-800'
             }`} style={{ fontFamily: "'FoundationOne', 'Courier New', monospace" }}>
-              {vehicleModalProjectView ? vehicleModalProjectView.name : (viewingVehicle.nickname || viewingVehicle.name || 'Vehicle Details')}
+              {vehicleModalProjectView
+                ? vehicleModalProjectView.name
+                : showAddServiceEventModal && isMobile
+                  ? (editingServiceEvent ? 'Edit Service Event' : 'Add Service Event')
+                  : (viewingVehicle.nickname || viewingVehicle.name || 'Vehicle Details')}
             </h2>
             <div className="flex items-center gap-3">
               {/* Navigation buttons - hidden on mobile, hidden in edit/project view */}
@@ -522,7 +536,7 @@ const VehicleDetailModal = ({
           {/* Vehicle Details View */}
           <div
             className={`w-full transition-all duration-500 ease-in-out ${
-              vehicleModalProjectView || vehicleModalEditMode
+              vehicleModalProjectView || vehicleModalEditMode || (showAddServiceEventModal && isMobile)
                 ? 'absolute opacity-0 pointer-events-none'
                 : 'relative opacity-100'
             }`}
@@ -993,9 +1007,9 @@ const VehicleDetailModal = ({
                     </div>
                   </div>
 
-                {/* Add Service Event Modal */}
+                {/* Add Service Event Modal - Desktop only (mobile uses inline form) */}
                 <AddServiceEventModal
-                  isOpen={showAddServiceEventModal}
+                  isOpen={showAddServiceEventModal && !isMobile}
                   onClose={handleCloseServiceEventModal}
                   darkMode={darkMode}
                   eventDate={newEventDate}
@@ -1937,6 +1951,214 @@ const VehicleDetailModal = ({
               </div>
             )}
           </div>
+
+          {/* Inline Service Event Form View - Mobile only */}
+          <div
+            className={`w-full transition-all duration-500 ease-in-out md:hidden ${
+              showAddServiceEventModal && isMobile && !vehicleModalProjectView && !vehicleModalEditMode
+                ? 'relative opacity-100'
+                : 'absolute opacity-0 pointer-events-none'
+            }`}
+          >
+            {showAddServiceEventModal && isMobile && (
+              <div className="p-6 space-y-4 max-h-[calc(90vh-164px)] overflow-y-auto">
+                {/* Date field */}
+                <div>
+                  <label className={`block text-sm font-medium mb-2 ${
+                    darkMode ? 'text-gray-300' : 'text-gray-700'
+                  }`}>
+                    Date *
+                  </label>
+                  <input
+                    type="date"
+                    value={newEventDate}
+                    onChange={(e) => setNewEventDate(e.target.value)}
+                    className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
+                      darkMode
+                        ? 'bg-gray-700 border-gray-600 text-gray-100'
+                        : 'bg-white border-gray-300 text-gray-800'
+                    }`}
+                  />
+                </div>
+
+                {/* Description field */}
+                <div>
+                  <label className={`block text-sm font-medium mb-2 ${
+                    darkMode ? 'text-gray-300' : 'text-gray-700'
+                  }`}>
+                    Description *
+                  </label>
+                  <input
+                    type="text"
+                    value={newEventDescription}
+                    onChange={(e) => setNewEventDescription(e.target.value)}
+                    className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
+                      darkMode
+                        ? 'bg-gray-700 border-gray-600 text-gray-100 placeholder-gray-400'
+                        : 'bg-white border-gray-300 text-gray-800 placeholder-gray-400'
+                    }`}
+                    placeholder="e.g., Oil change, Brake pads replaced"
+                  />
+                </div>
+
+                {/* Odometer field */}
+                <div>
+                  <label className={`block text-sm font-medium mb-2 ${
+                    darkMode ? 'text-gray-300' : 'text-gray-700'
+                  }`}>
+                    Odometer
+                  </label>
+                  <input
+                    type="number"
+                    inputMode="numeric"
+                    pattern="[0-9]*"
+                    value={newEventOdometer}
+                    onChange={(e) => setNewEventOdometer(e.target.value)}
+                    className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
+                      darkMode
+                        ? 'bg-gray-700 border-gray-600 text-gray-100 placeholder-gray-400'
+                        : 'bg-white border-gray-300 text-gray-800 placeholder-gray-400'
+                    }`}
+                    placeholder="e.g., 125000"
+                  />
+                </div>
+
+                {/* Notes field */}
+                <div>
+                  <label className={`block text-sm font-medium mb-2 ${
+                    darkMode ? 'text-gray-300' : 'text-gray-700'
+                  }`}>
+                    Notes
+                  </label>
+                  <textarea
+                    value={newEventNotes}
+                    onChange={(e) => setNewEventNotes(e.target.value)}
+                    rows={3}
+                    className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none ${
+                      darkMode
+                        ? 'bg-gray-700 border-gray-600 text-gray-100 placeholder-gray-400'
+                        : 'bg-white border-gray-300 text-gray-800 placeholder-gray-400'
+                    }`}
+                    placeholder="Additional details, parts used, costs, etc."
+                  />
+                </div>
+
+                {/* Linked Parts field */}
+                <div>
+                  <label className={`block text-sm font-medium mb-2 ${
+                    darkMode ? 'text-gray-300' : 'text-gray-700'
+                  }`}>
+                    <div className="flex items-center gap-2">
+                      <Package className="w-4 h-4" />
+                      <span>Linked Parts</span>
+                    </div>
+                  </label>
+
+                  {/* Selected parts pills */}
+                  {newEventLinkedParts && newEventLinkedParts.length > 0 && (
+                    <div className="flex flex-wrap gap-2 mb-2">
+                      {parts.filter(part => newEventLinkedParts.includes(part.id)).map(part => {
+                        const vendorColor = part.vendor && vendorColors[part.vendor];
+                        const colors = vendorColor ? getVendorDisplayColor(vendorColor, darkMode) : null;
+                        return (
+                          <span
+                            key={part.id}
+                            className={`inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium border ${
+                              darkMode ? 'bg-gray-700 border-gray-600' : 'bg-gray-100 border-gray-300'
+                            }`}
+                          >
+                            <span className={darkMode ? 'text-gray-200' : 'text-gray-800'}>{part.part}</span>
+                            {part.vendor && (
+                              <span
+                                className="opacity-70"
+                                style={colors ? { color: colors.text } : undefined}
+                              >
+                                ({part.vendor})
+                              </span>
+                            )}
+                            <button
+                              type="button"
+                              onClick={() => setNewEventLinkedParts(newEventLinkedParts.filter(id => id !== part.id))}
+                              className={`ml-1 hover:text-red-500 ${
+                                darkMode ? 'text-gray-400' : 'text-gray-500'
+                              }`}
+                            >
+                              <X className="w-3 h-3" />
+                            </button>
+                          </span>
+                        );
+                      })}
+                    </div>
+                  )}
+
+                  {/* Parts list - scrollable */}
+                  <div className={`max-h-40 overflow-y-auto rounded-lg border ${
+                    darkMode ? 'bg-gray-700 border-gray-600' : 'bg-white border-gray-300'
+                  }`}>
+                    {parts.length === 0 ? (
+                      <div className={`p-3 text-sm text-center ${
+                        darkMode ? 'text-gray-400' : 'text-gray-500'
+                      }`}>
+                        No parts available
+                      </div>
+                    ) : (
+                      parts.map(part => {
+                        const vendorColor = part.vendor && vendorColors[part.vendor];
+                        const colors = vendorColor ? getVendorDisplayColor(vendorColor, darkMode) : null;
+                        const isSelected = newEventLinkedParts && newEventLinkedParts.includes(part.id);
+                        return (
+                          <button
+                            key={part.id}
+                            type="button"
+                            onClick={() => {
+                              if (isSelected) {
+                                setNewEventLinkedParts(newEventLinkedParts.filter(id => id !== part.id));
+                              } else {
+                                setNewEventLinkedParts([...(newEventLinkedParts || []), part.id]);
+                              }
+                            }}
+                            className={`w-full px-3 py-2 flex items-center gap-2 text-left transition-colors ${
+                              isSelected
+                                ? darkMode ? 'bg-blue-900/30' : 'bg-blue-50'
+                                : darkMode ? 'hover:bg-gray-600' : 'hover:bg-gray-50'
+                            }`}
+                          >
+                            <div className={`w-4 h-4 rounded border flex items-center justify-center flex-shrink-0 ${
+                              isSelected
+                                ? 'bg-blue-500 border-blue-500'
+                                : darkMode ? 'border-gray-500' : 'border-gray-300'
+                            }`}>
+                              {isSelected && <CheckCircle className="w-3 h-3 text-white" />}
+                            </div>
+                            <div className="flex-1 min-w-0">
+                              <span className={`text-sm font-medium truncate block ${
+                                darkMode ? 'text-gray-200' : 'text-gray-800'
+                              }`}>
+                                {part.part}
+                              </span>
+                              {part.vendor && (
+                                <span
+                                  className="text-xs"
+                                  style={colors ? { color: colors.text } : { color: darkMode ? '#9CA3AF' : '#6B7280' }}
+                                >
+                                  {part.vendor}
+                                </span>
+                              )}
+                            </div>
+                            <span className={`text-xs font-medium ${
+                              darkMode ? 'text-gray-400' : 'text-gray-500'
+                            }`}>
+                              ${part.total?.toFixed(2) || '0.00'}
+                            </span>
+                          </button>
+                        );
+                      })
+                    )}
+                  </div>
+                </div>
+              </div>
+            )}
+          </div>
         </div>
 
         {/* Footer with Edit Button */}
@@ -2169,6 +2391,87 @@ const VehicleDetailModal = ({
                 <Edit2 className="w-3 h-3" />
                 Edit Project
               </button>
+            </div>
+          ) : showAddServiceEventModal && isMobile ? (
+            <div className="flex items-center justify-between w-full gap-2">
+              <button
+                onClick={handleCloseServiceEventModal}
+                className={`flex items-center gap-2 px-4 py-2 rounded-lg font-medium transition-colors border ${
+                  darkMode
+                    ? 'bg-gray-700 hover:bg-gray-600 text-gray-100 border-gray-600 hover:border-gray-500'
+                    : 'bg-gray-200 hover:bg-gray-300 text-gray-800 border-gray-300 hover:border-gray-400'
+                }`}
+                title="Back to vehicle"
+              >
+                <ChevronDown className="w-5 h-5 rotate-90" />
+              </button>
+              <div className="flex items-center gap-2">
+                {editingServiceEvent && (
+                  <button
+                    onClick={() => {
+                      setConfirmDialog({
+                        isOpen: true,
+                        title: 'Delete Service Event',
+                        message: `Are you sure you want to delete "${editingServiceEvent.description}"? This action cannot be undone.`,
+                        confirmText: 'Delete',
+                        onConfirm: () => {
+                          deleteServiceEvent(editingServiceEvent.id);
+                          handleCloseServiceEventModal();
+                        }
+                      });
+                    }}
+                    className={`px-4 py-2 rounded-lg font-medium transition-colors ${
+                      darkMode
+                        ? 'bg-red-900/50 hover:bg-red-900 text-red-400'
+                        : 'bg-red-100 hover:bg-red-200 text-red-600'
+                    }`}
+                  >
+                    <Trash2 className="w-4 h-4" />
+                  </button>
+                )}
+                <button
+                  onClick={async () => {
+                    if (!newEventDate) {
+                      toast?.warning('Please select a date');
+                      return;
+                    }
+                    if (!newEventDescription.trim()) {
+                      toast?.warning('Please enter a description');
+                      return;
+                    }
+                    let result;
+                    if (editingServiceEvent) {
+                      result = await updateServiceEvent(editingServiceEvent.id, {
+                        event_date: newEventDate,
+                        description: newEventDescription.trim(),
+                        odometer: newEventOdometer ? parseInt(newEventOdometer, 10) : null,
+                        notes: newEventNotes.trim() || null,
+                        linked_part_ids: newEventLinkedParts.length > 0 ? newEventLinkedParts : null
+                      });
+                    } else {
+                      result = await addServiceEvent(
+                        viewingVehicle.id,
+                        newEventDate,
+                        newEventDescription,
+                        newEventOdometer,
+                        newEventNotes,
+                        newEventLinkedParts
+                      );
+                    }
+                    if (result) {
+                      handleCloseServiceEventModal();
+                    }
+                  }}
+                  disabled={savingServiceEvent || !newEventDate || !newEventDescription.trim()}
+                  className={`px-4 py-2 rounded-lg font-medium transition-colors flex items-center gap-2 text-sm ${
+                    savingServiceEvent || !newEventDate || !newEventDescription.trim()
+                      ? 'bg-gray-600 cursor-not-allowed text-gray-300'
+                      : 'bg-blue-600 hover:bg-blue-700 text-white'
+                  }`}
+                >
+                  {savingServiceEvent ? 'Saving...' : (editingServiceEvent ? 'Update' : 'Add')}
+                </button>
+              </div>
             </div>
           ) : (
             <>
