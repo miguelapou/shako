@@ -23,7 +23,7 @@ const LinkedPartsSection = ({
       }`}>
         <div className="flex items-center gap-2">
           <Package className="w-5 h-5" />
-          <span>Linked Parts</span>
+          <span>Linked Parts ({linkedParts.length})</span>
         </div>
       </h3>
       {linkedParts.length === 0 ? (

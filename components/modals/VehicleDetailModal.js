@@ -523,9 +523,15 @@ const VehicleDetailModal = ({
                     </h3>
                     {(() => {
                       const vehicleProjects = projects.filter(p => p.vehicle_id === viewingVehicle.id);
-                      const linkedPartsCount = vehicleProjects.reduce((count, project) => {
+                      // Count parts linked through projects
+                      const projectLinkedPartsCount = vehicleProjects.reduce((count, project) => {
                         return count + parts.filter(part => part.projectId === project.id).length;
                       }, 0);
+                      // Count parts directly linked to vehicle (not through a project)
+                      const directlyLinkedPartsCount = parts.filter(part =>
+                        part.vehicleId === viewingVehicle.id && !part.projectId
+                      ).length;
+                      const linkedPartsCount = projectLinkedPartsCount + directlyLinkedPartsCount;
                       return (vehicleProjects.length > 0 || linkedPartsCount > 0) && (
                         <div className={`flex items-center gap-3 text-xs ${
                           darkMode ? 'text-gray-400' : 'text-gray-500'
