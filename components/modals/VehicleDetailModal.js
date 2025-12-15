@@ -145,15 +145,6 @@ const VehicleDetailModal = ({
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, [showInlinePartsDropdown, isInlineDropdownClosing]);
 
-  // Reset inline dropdown state when service event modal closes
-  useEffect(() => {
-    if (!showAddServiceEventModal) {
-      setShowInlinePartsDropdown(false);
-      setIsInlineDropdownClosing(false);
-      setInlinePartsSearchTerm('');
-    }
-  }, [showAddServiceEventModal]);
-
   // Toggle inline parts dropdown
   const toggleInlinePartsDropdown = () => {
     if (showInlinePartsDropdown) {
@@ -352,6 +343,15 @@ const VehicleDetailModal = ({
     openEditServiceEventModal,
     handleCloseServiceEventModal
   } = useServiceEvents();
+
+  // Reset inline dropdown state when service event modal closes
+  useEffect(() => {
+    if (!showAddServiceEventModal) {
+      setShowInlinePartsDropdown(false);
+      setIsInlineDropdownClosing(false);
+      setInlinePartsSearchTerm('');
+    }
+  }, [showAddServiceEventModal]);
 
   // Sorted service events for display
   const sortedServiceEvents = useMemo(() => {
