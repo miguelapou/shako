@@ -275,9 +275,9 @@ const AddServiceEventModal = ({
               <ChevronDown className={`w-4 h-4 transition-transform ${showPartsDropdown ? 'rotate-180' : ''}`} />
             </button>
 
-            {/* Dropdown menu */}
+            {/* Dropdown menu - opens upward since this field is at the bottom */}
             {showPartsDropdown && (
-              <div className={`absolute z-50 mt-1 w-full max-h-48 overflow-y-auto rounded-lg border shadow-lg ${
+              <div className={`absolute z-50 bottom-full mb-1 w-full max-h-48 overflow-y-auto rounded-lg border shadow-lg ${
                 darkMode ? 'bg-gray-700 border-gray-600' : 'bg-white border-gray-300'
               }`}>
                 {/* Search input */}
