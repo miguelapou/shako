@@ -1163,26 +1163,24 @@ const VehicleDetailModal = ({
                   const servicePartsTotal = calculateServicePartsTotal(viewingVehicle.id, parts, serviceEvents);
                   if (servicePartsTotal === 0) return null;
                   return (
-                    <div className={`mt-4 p-4 rounded-lg border-2 border-dashed ${
+                    <div className={`mt-3 px-3 py-2 rounded-md border border-dashed flex items-center justify-between ${
                       darkMode ? 'bg-blue-900/20 border-blue-500/50' : 'bg-blue-50 border-blue-300'
                     }`}>
-                      <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-2">
-                          <Wrench className={`w-5 h-5 ${
-                            darkMode ? 'text-blue-400' : 'text-blue-600'
-                          }`} />
-                          <span className={`text-sm font-medium ${
-                            darkMode ? 'text-blue-300' : 'text-blue-700'
-                          }`}>
-                            Service Parts Total
-                          </span>
-                        </div>
-                        <span className={`text-lg font-bold ${
-                          darkMode ? 'text-blue-200' : 'text-blue-800'
+                      <div className="flex items-center gap-1.5">
+                        <Wrench className={`w-4 h-4 ${
+                          darkMode ? 'text-blue-400' : 'text-blue-600'
+                        }`} />
+                        <span className={`text-xs font-medium ${
+                          darkMode ? 'text-blue-300' : 'text-blue-700'
                         }`}>
-                          ${servicePartsTotal.toFixed(2)}
+                          Service Parts
                         </span>
                       </div>
+                      <span className={`text-sm font-bold ${
+                        darkMode ? 'text-blue-200' : 'text-blue-800'
+                      }`}>
+                        ${servicePartsTotal.toFixed(2)}
+                      </span>
                     </div>
                   );
                 })()}
