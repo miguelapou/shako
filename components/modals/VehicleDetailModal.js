@@ -112,6 +112,7 @@ const VehicleDetailModal = ({
   const [isInfoModalClosing, setIsInfoModalClosing] = useState(false);
   // State for service history expansion
   const [serviceHistoryExpanded, setServiceHistoryExpanded] = useState(false);
+  const [isServiceHistoryCollapsing, setIsServiceHistoryCollapsing] = useState(false);
   // State for mobile detection (to show inline service event form instead of modal)
   const [isMobile, setIsMobile] = useState(false);
   // State for inline service event parts dropdown
@@ -161,6 +162,7 @@ const VehicleDetailModal = ({
   // Reset service history expansion when viewing a different vehicle
   useEffect(() => {
     setServiceHistoryExpanded(false);
+    setIsServiceHistoryCollapsing(false);
   }, [viewingVehicle?.id]);
 
   // Handle closing the info modal with animation
@@ -857,7 +859,17 @@ const VehicleDetailModal = ({
                       <button
                         onClick={(e) => {
                           e.stopPropagation();
-                          setServiceHistoryExpanded(!serviceHistoryExpanded);
+                          if (serviceHistoryExpanded) {
+                            // Collapsing: trigger animation first, then collapse after delay
+                            setIsServiceHistoryCollapsing(true);
+                            setTimeout(() => {
+                              setServiceHistoryExpanded(false);
+                              setIsServiceHistoryCollapsing(false);
+                            }, 250);
+                          } else {
+                            // Expanding: just expand (animation handled via CSS class)
+                            setServiceHistoryExpanded(true);
+                          }
                         }}
                         className={`flex items-center gap-1 text-sm font-medium mb-2 ${
                           darkMode
@@ -891,6 +903,10 @@ const VehicleDetailModal = ({
                         });
                         const isLast = index === arr.length - 1;
 
+                        // Determine if this is a "hidden" event (not shown when collapsed)
+                        const hiddenEventCount = sortedServiceEvents.length - 3;
+                        const isHiddenEvent = serviceHistoryExpanded && index < hiddenEventCount;
+
                         // Calculate mileage difference from previous event (chronologically) with same description
                         let mileageDiff = null;
                         if (event.odometer) {
@@ -904,10 +920,15 @@ const VehicleDetailModal = ({
                           }
                         }
 
+                        // Apply animation class for hidden events during expand/collapse
+                        const animationClass = isHiddenEvent
+                          ? (isServiceHistoryCollapsing ? 'service-history-collapse' : 'service-history-expand')
+                          : '';
+
                         return (
                           <div
                             key={event.id}
-                            className="relative flex items-stretch gap-4 group cursor-pointer"
+                            className={`relative flex items-stretch gap-4 group cursor-pointer ${animationClass}`}
                             onClick={(e) => {
                               e.stopPropagation();
                               setSelectedEventId(selectedEventId === event.id ? null : event.id);
