@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { FileDown, FileText } from 'lucide-react';
 
 const ExportReportModal = ({
@@ -11,6 +11,13 @@ const ExportReportModal = ({
 }) => {
   const [isClosing, setIsClosing] = useState(false);
   const [saveToDocuments, setSaveToDocuments] = useState(false);
+
+  // Reset checkbox when modal opens
+  useEffect(() => {
+    if (isOpen) {
+      setSaveToDocuments(false);
+    }
+  }, [isOpen]);
 
   const handleClose = () => {
     if (generating) return;
