@@ -120,34 +120,6 @@ const VehicleDetailModal = ({
     setServiceHistoryExpanded(false);
   }, [viewingVehicle?.id]);
 
-  // Sorted service events for display
-  const sortedServiceEvents = useMemo(() => {
-    if (!serviceEvents) return [];
-    return [...serviceEvents].sort((a, b) =>
-      new Date(a.event_date + 'T00:00:00') - new Date(b.event_date + 'T00:00:00')
-    );
-  }, [serviceEvents]);
-
-  const serviceEventsHiddenCount = Math.max(0, sortedServiceEvents.length - 3);
-  const serviceEventHeight = 85;
-  const serviceEventsCollapsedHeight = 3 * serviceEventHeight;
-
-  // Measure service history content height
-  useEffect(() => {
-    const measureHeight = () => {
-      if (serviceHistoryRef.current) {
-        setServiceHistoryHeight(serviceHistoryRef.current.scrollHeight);
-      }
-    };
-    measureHeight();
-    // Re-measure when service events change
-    const resizeObserver = new ResizeObserver(measureHeight);
-    if (serviceHistoryRef.current) {
-      resizeObserver.observe(serviceHistoryRef.current);
-    }
-    return () => resizeObserver.disconnect();
-  }, [sortedServiceEvents]);
-
   // Handle closing the info modal with animation
   const handleCloseInfoModal = () => {
     setIsInfoModalClosing(true);
@@ -328,6 +300,34 @@ const VehicleDetailModal = ({
     openEditServiceEventModal,
     handleCloseServiceEventModal
   } = useServiceEvents();
+
+  // Sorted service events for display
+  const sortedServiceEvents = useMemo(() => {
+    if (!serviceEvents) return [];
+    return [...serviceEvents].sort((a, b) =>
+      new Date(a.event_date + 'T00:00:00') - new Date(b.event_date + 'T00:00:00')
+    );
+  }, [serviceEvents]);
+
+  const serviceEventsHiddenCount = Math.max(0, sortedServiceEvents.length - 3);
+  const serviceEventHeight = 85;
+  const serviceEventsCollapsedHeight = 3 * serviceEventHeight;
+
+  // Measure service history content height
+  useEffect(() => {
+    const measureHeight = () => {
+      if (serviceHistoryRef.current) {
+        setServiceHistoryHeight(serviceHistoryRef.current.scrollHeight);
+      }
+    };
+    measureHeight();
+    // Re-measure when service events change
+    const resizeObserver = new ResizeObserver(measureHeight);
+    if (serviceHistoryRef.current) {
+      resizeObserver.observe(serviceHistoryRef.current);
+    }
+    return () => resizeObserver.disconnect();
+  }, [sortedServiceEvents]);
 
   // Load documents and service events when modal opens
   useEffect(() => {
