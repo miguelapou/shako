@@ -773,6 +773,33 @@ const VehicleDetailModal = ({
                   })()}
                 </div>
                 <div className={`relative ${!loadingServiceEvents ? 'animate-fade-in' : ''}`} onClick={() => setSelectedEventId(null)}>
+                    {/* Show more/less toggle button - at top since older events expand upward */}
+                    {serviceEventsHiddenCount > 0 && (
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setServiceHistoryExpanded(!serviceHistoryExpanded);
+                        }}
+                        className={`flex items-center gap-1 text-sm font-medium mb-2 ${
+                          darkMode
+                            ? 'text-blue-400 hover:text-blue-300'
+                            : 'text-blue-600 hover:text-blue-700'
+                        }`}
+                      >
+                        {serviceHistoryExpanded ? (
+                          <>
+                            <ChevronUp className="w-4 h-4" />
+                            Show less
+                          </>
+                        ) : (
+                          <>
+                            <ChevronDown className="w-4 h-4" />
+                            Show {serviceEventsHiddenCount} more
+                          </>
+                        )}
+                      </button>
+                    )}
+
                     {/* Outer wrapper - clips content and controls visible height */}
                     <div
                       className="transition-all duration-500 ease-in-out"
@@ -970,33 +997,6 @@ const VehicleDetailModal = ({
                         })}
                       </div>
                     </div>
-
-                    {/* Show more/less toggle button */}
-                    {serviceEventsHiddenCount > 0 && (
-                      <button
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          setServiceHistoryExpanded(!serviceHistoryExpanded);
-                        }}
-                        className={`flex items-center gap-1 text-sm font-medium mt-2 ${
-                          darkMode
-                            ? 'text-blue-400 hover:text-blue-300'
-                            : 'text-blue-600 hover:text-blue-700'
-                        }`}
-                      >
-                        {serviceHistoryExpanded ? (
-                          <>
-                            <ChevronUp className="w-4 h-4" />
-                            Show less
-                          </>
-                        ) : (
-                          <>
-                            <ChevronDown className="w-4 h-4" />
-                            Show {serviceEventsHiddenCount} more
-                          </>
-                        )}
-                      </button>
-                    )}
 
                     {/* Add new service event card */}
                     <div
