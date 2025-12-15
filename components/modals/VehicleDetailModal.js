@@ -802,23 +802,13 @@ const VehicleDetailModal = ({
                       </button>
                     )}
 
-                    {/* Outer wrapper - uses flex to align content to bottom when collapsed */}
+                    {/* Service events container */}
                     <div
-                      className="transition-all duration-500 ease-in-out flex flex-col"
-                      style={{
-                        maxHeight: serviceHistoryExpanded
-                          ? `${serviceHistoryHeight || sortedServiceEvents.length * serviceEventHeight + addCardHeight}px`
-                          : `${serviceEventsCollapsedHeight}px`,
-                        overflow: 'hidden',
-                        justifyContent: serviceHistoryExpanded ? 'flex-start' : 'flex-end'
-                      }}
+                      ref={serviceHistoryRef}
+                      className="flex flex-col gap-4"
                     >
-                      {/* Inner container */}
-                      <div
-                        ref={serviceHistoryRef}
-                        className="flex flex-col gap-4"
-                      >
-                        {sortedServiceEvents.map((event, index) => {
+                      {/* Only show last 3 events when collapsed, all when expanded */}
+                      {(serviceHistoryExpanded ? sortedServiceEvents : sortedServiceEvents.slice(-3)).map((event, index, arr) => {
                         const eventDate = new Date(event.event_date + 'T00:00:00');
                         const formattedDate = eventDate.toLocaleDateString('en-US', {
                           month: 'short',
@@ -826,13 +816,15 @@ const VehicleDetailModal = ({
                           year: 'numeric'
                         });
                         // isLast checks if this is the last event (shows dashed line to "add" card)
-                        const isLast = index === sortedServiceEvents.length - 1;
+                        const isLast = index === arr.length - 1;
 
                         // Calculate mileage difference from previous event with same description
+                        // Use full sortedServiceEvents array to find previous events correctly
                         let mileageDiff = null;
                         if (event.odometer) {
+                          const eventIndexInFull = sortedServiceEvents.findIndex(e => e.id === event.id);
                           const previousSameEvent = sortedServiceEvents
-                            .slice(0, index)
+                            .slice(0, eventIndexInFull)
                             .filter(e => e.description.toLowerCase() === event.description.toLowerCase() && e.odometer)
                             .pop();
                           if (previousSameEvent) {
@@ -1032,7 +1024,6 @@ const VehicleDetailModal = ({
                           </div>
                         </div>
                       </div>
-                    </div>
                   </div>
 
                 {/* Add Service Event Modal */}
