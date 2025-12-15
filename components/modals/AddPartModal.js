@@ -134,22 +134,6 @@ const AddPartModal = ({
                 />
               </div>
 
-              {/* Part Number */}
-              <div>
-                <label className={`block text-sm font-medium mb-2 ${
-                  darkMode ? 'text-gray-300' : 'text-slate-700'
-                }`}>
-                  Part Number
-                </label>
-                <input
-                  type="text"
-                  value={newPart.partNumber}
-                  onChange={(e) => setNewPart({ ...newPart, partNumber: e.target.value })}
-                  className={inputClasses(darkMode)}
-                  placeholder="e.g., 12345-67890"
-                />
-              </div>
-
               {/* Status */}
               <div>
                 <label className={`block text-sm font-medium mb-2 ${
@@ -375,9 +359,6 @@ const AddPartModal = ({
 
             {/* RIGHT COLUMN */}
             <div className="order-2 md:order-none flex flex-col gap-4">
-              {/* Empty space to align with Part Name on left */}
-              <div className="hidden md:block h-[70px]"></div>
-
               {/* Tracking Link */}
               <div>
                 <label className={`block text-sm font-medium mb-2 ${
@@ -391,6 +372,22 @@ const AddPartModal = ({
                   onChange={(e) => setNewPart({ ...newPart, tracking: e.target.value })}
                   className={inputClasses(darkMode)}
                   placeholder="e.g., 1Z999AA10123456784"
+                />
+              </div>
+
+              {/* Part Number */}
+              <div>
+                <label className={`block text-sm font-medium mb-2 ${
+                  darkMode ? 'text-gray-300' : 'text-slate-700'
+                }`}>
+                  Part Number
+                </label>
+                <input
+                  type="text"
+                  value={newPart.partNumber}
+                  onChange={(e) => setNewPart({ ...newPart, partNumber: e.target.value })}
+                  className={inputClasses(darkMode)}
+                  placeholder="e.g., 12345-67890"
                 />
               </div>
 

@@ -1173,33 +1173,6 @@ const PartDetailModal = ({
                   />
                 </div>
 
-                {/* Part Number */}
-                <div>
-                  <label
-                    className={`block text-sm font-medium mb-2 ${
-                      darkMode ? 'text-gray-300' : 'text-slate-700'
-                    }`}
-                  >
-                    Part Number
-                  </label>
-                  <input
-                    type="text"
-                    value={editingPart.partNumber}
-                    onChange={(e) =>
-                      setEditingPart({
-                        ...editingPart,
-                        partNumber: e.target.value
-                      })
-                    }
-                    className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
-                      darkMode
-                        ? 'bg-gray-700 border-gray-600 text-gray-100 placeholder-gray-400'
-                        : 'bg-slate-50 border-slate-300 text-slate-800 placeholder-slate-400'
-                    }`}
-                    placeholder="e.g., 12345-67890"
-                  />
-                </div>
-
                 {/* Status */}
                 <div>
                   <label
@@ -1470,17 +1443,14 @@ const PartDetailModal = ({
 
               {/* RIGHT COLUMN - Price fields */}
               <div className="order-2 md:order-none flex flex-col gap-4">
-                {/* Empty space to align with Part Name on left */}
-                <div className="hidden md:block h-[70px]"></div>
-
-                {/* Tracking Number */}
+                {/* Tracking Number/Link */}
                 <div>
                   <label
                     className={`block text-sm font-medium mb-2 ${
                       darkMode ? 'text-gray-300' : 'text-slate-700'
                     }`}
                   >
-                    Tracking Number
+                    Tracking Number/Link
                   </label>
                   <input
                     type="text"
@@ -1495,6 +1465,33 @@ const PartDetailModal = ({
                         : 'bg-slate-50 border-slate-300 text-slate-800 placeholder-slate-400'
                     }`}
                     placeholder="e.g., 1Z999AA10123456784"
+                  />
+                </div>
+
+                {/* Part Number */}
+                <div>
+                  <label
+                    className={`block text-sm font-medium mb-2 ${
+                      darkMode ? 'text-gray-300' : 'text-slate-700'
+                    }`}
+                  >
+                    Part Number
+                  </label>
+                  <input
+                    type="text"
+                    value={editingPart.partNumber}
+                    onChange={(e) =>
+                      setEditingPart({
+                        ...editingPart,
+                        partNumber: e.target.value
+                      })
+                    }
+                    className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
+                      darkMode
+                        ? 'bg-gray-700 border-gray-600 text-gray-100 placeholder-gray-400'
+                        : 'bg-slate-50 border-slate-300 text-slate-800 placeholder-slate-400'
+                    }`}
+                    placeholder="e.g., 12345-67890"
                   />
                 </div>
 
