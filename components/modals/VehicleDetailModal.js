@@ -312,8 +312,8 @@ const VehicleDetailModal = ({
   const serviceEventsHiddenCount = Math.max(0, sortedServiceEvents.length - 3);
   const serviceEventHeight = 100; // Height per event including gap
   const addCardHeight = 82; // Height of the "Add service event" card
-  // Collapsed height shows last 3 events + add card + buffer
-  const serviceEventsCollapsedHeight = Math.min(sortedServiceEvents.length, 3) * serviceEventHeight + addCardHeight + 25;
+  // Collapsed height shows last 3 events + add card + generous buffer
+  const serviceEventsCollapsedHeight = Math.min(sortedServiceEvents.length, 3) * serviceEventHeight + addCardHeight + 75;
   // Calculate offset to shift content up when collapsed (to show last 3 items)
   const serviceEventsCollapseOffset = serviceEventsHiddenCount * serviceEventHeight;
 
