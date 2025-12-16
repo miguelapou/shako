@@ -1553,7 +1553,7 @@ const Shako = () => {
                   else if (activeTab === 'projects') setShowAddProjectModal(true);
                   else if (activeTab === 'vehicles') setShowAddVehicleModal(true);
                 }}
-                className={`p-2 sm:px-4 sm:py-2.5 rounded-lg shadow-md transition-colors bg-blue-600 hover:bg-blue-700 text-white flex items-center gap-2 sm:min-w-[130px] justify-center font-medium ${
+                className={`p-2 sm:px-4 sm:py-2.5 rounded-lg shadow-md transition-colors bg-blue-600 hover:bg-blue-700 text-white flex items-center gap-2 sm:min-w-[149px] justify-center font-medium ${
                   darkMode ? '' : ''
                 }`}
               >
