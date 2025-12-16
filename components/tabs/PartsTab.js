@@ -446,16 +446,15 @@ const PartsTab = ({
     // If part has a vehicle but no project, show Maintenance badge
     if (part.vehicleId && !part.projectId) {
       return (
-        <div className="relative">
+        <div className="relative text-left">
           <span
             className={`inline-flex items-center px-3 py-1.5 text-xs font-medium rounded-full border ${
               darkMode
                 ? 'bg-blue-900/40 text-blue-200 border-blue-700'
                 : 'bg-blue-100 text-blue-700 border-blue-300'
             }`}
-            style={{ minWidth: '8.25rem', maxWidth: '10rem' }}
           >
-            <span className="flex-1 text-center">Maintenance</span>
+            Maintenance
           </span>
         </div>
       );
@@ -811,7 +810,7 @@ const PartsTab = ({
                 }`} />
                 <input
                   type="text"
-                  placeholder="Search parts..."
+                  placeholder={stats.total === 0 ? "Add parts to use search" : "Search parts..."}
                   className={`w-full pl-10 pr-10 py-2 border rounded-lg outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
                     darkMode
                       ? 'bg-gray-700 border-gray-600 text-gray-100 placeholder-gray-400'
@@ -823,6 +822,7 @@ const PartsTab = ({
                     setSearchTerm(e.target.value);
                     setTimeout(() => setIsSearching(false), 600);
                   }}
+                  disabled={stats.total === 0}
                 />
                 {searchTerm && (
                   <button
@@ -1006,7 +1006,7 @@ const PartsTab = ({
               }`} />
               <input
                 type="text"
-                placeholder="Search parts..."
+                placeholder={stats.total === 0 ? "Add parts to use search" : "Search parts..."}
                 className={`w-full pl-10 pr-10 py-2 border rounded-lg outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
                   darkMode
                     ? 'bg-gray-700 border-gray-600 text-gray-100 placeholder-gray-400'
@@ -1018,6 +1018,7 @@ const PartsTab = ({
                   setSearchTerm(e.target.value);
                   setTimeout(() => setIsSearching(false), 600);
                 }}
+                disabled={stats.total === 0}
               />
               {searchTerm && (
                 <button

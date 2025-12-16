@@ -1222,7 +1222,7 @@ const VehicleDetailModal = ({
                       <div>
                         <p className={`text-sm font-medium mb-1 ${
                           darkMode ? 'text-gray-400' : 'text-slate-600'
-                        }`}>Battery Type</p>
+                        }`}>Battery</p>
                         <p className={`text-base ${
                           darkMode ? 'text-gray-100' : 'text-slate-800'
                         }`}>{viewingVehicle.battery}</p>
@@ -2043,14 +2043,14 @@ const VehicleDetailModal = ({
                         <label className={`block text-sm font-medium mb-2 ${
                           darkMode ? 'text-gray-300' : 'text-slate-700'
                         }`}>
-                          Battery Type
+                          Battery
                         </label>
                         <input
                           type="text"
                           value={viewingVehicle.battery || ''}
                           onChange={(e) => setViewingVehicle({ ...viewingVehicle, battery: e.target.value })}
                           className={inputClasses(darkMode)}
-                          placeholder=""
+                          placeholder="e.g. Group 35, 650 CCA"
                         />
                       </div>
                     </div>

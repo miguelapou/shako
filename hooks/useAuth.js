@@ -7,6 +7,9 @@ const MIGRATION_ERROR_KEY = 'shako-migration-error';
 const MIGRATION_SUCCESS_KEY = 'shako-migration-success';
 const MIGRATION_STARTED_KEY = 'shako-migration-started';
 
+// Constants for new user confirmation
+const ACCOUNT_CONFIRMED_PREFIX = 'shako-account-confirmed-';
+
 // Migration timeout in milliseconds (5 minutes)
 const MIGRATION_TIMEOUT_MS = 5 * 60 * 1000;
 
@@ -304,6 +307,17 @@ const useAuth = () => {
                   try {
                     const userId = currentSession.user.id;
 
+                    // Check if user has already confirmed their account (in user metadata)
+                    if (currentSession.user.user_metadata?.account_confirmed) {
+                      return;
+                    }
+
+                    // Also check localStorage as fallback cache
+                    const accountConfirmedKey = ACCOUNT_CONFIRMED_PREFIX + userId;
+                    if (localStorage.getItem(accountConfirmedKey)) {
+                      return;
+                    }
+
                     // Check if user has any existing data (explicitly filter by user_id)
                     const { count: vehicleCount } = await supabase
                       .from('vehicles')
@@ -589,9 +603,24 @@ const useAuth = () => {
   }, []);
 
   // Confirm new user - clear the pending state and let them proceed
-  const confirmNewUser = useCallback(() => {
+  const confirmNewUser = useCallback(async () => {
+    // Persist confirmation to user metadata so it works across browsers/devices
+    try {
+      await supabase.auth.updateUser({
+        data: { account_confirmed: true }
+      });
+    } catch (err) {
+      // Ignore errors - localStorage fallback will still work
+    }
+
+    // Also save to localStorage as fallback cache
+    if (pendingNewUser?.id) {
+      const accountConfirmedKey = ACCOUNT_CONFIRMED_PREFIX + pendingNewUser.id;
+      localStorage.setItem(accountConfirmedKey, 'true');
+    }
+
     setPendingNewUser(null);
-  }, []);
+  }, [pendingNewUser]);
 
   // Cancel new user - sign out and delete the empty account
   const cancelNewUser = useCallback(async () => {

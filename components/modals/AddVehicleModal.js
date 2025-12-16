@@ -125,7 +125,7 @@ const AddVehicleModal = ({
                   value={newVehicle.nickname}
                   onChange={(e) => setNewVehicle({ ...newVehicle, nickname: e.target.value })}
                   className={inputClasses(darkMode)}
-                  placeholder=""
+                  placeholder="e.g. Blue Beast"
                 />
               </div>
 
@@ -165,7 +165,7 @@ const AddVehicleModal = ({
                         ? 'bg-gray-700 border-gray-600 text-gray-100 placeholder-gray-400'
                         : 'bg-slate-50 border-slate-300 text-slate-800 placeholder-slate-400'
                     }`}
-                    placeholder=""
+                    placeholder="e.g. 1995"
                     min="1900"
                     max="2100"
                   />
@@ -188,7 +188,7 @@ const AddVehicleModal = ({
                         ? 'bg-gray-700 border-gray-600 text-gray-100 placeholder-gray-400'
                         : 'bg-slate-50 border-slate-300 text-slate-800 placeholder-slate-400'
                     }`}
-                    placeholder=""
+                    placeholder="e.g. Toyota"
                   />
                 </div>
 
@@ -207,7 +207,7 @@ const AddVehicleModal = ({
                         ? 'bg-gray-700 border-gray-600 text-gray-100 placeholder-gray-400'
                         : 'bg-slate-50 border-slate-300 text-slate-800 placeholder-slate-400'
                     }`}
-                    placeholder=""
+                    placeholder="e.g. Supra"
                   />
                 </div>
               </div>
@@ -228,7 +228,7 @@ const AddVehicleModal = ({
                         ? 'bg-gray-700 border-gray-600 text-gray-100 placeholder-gray-400'
                         : 'bg-slate-50 border-slate-300 text-slate-800 placeholder-slate-400'
                     }`}
-                    placeholder=""
+                    placeholder="e.g. ABC-1234"
                   />
                 </div>
 
@@ -247,7 +247,7 @@ const AddVehicleModal = ({
                         ? 'bg-gray-700 border-gray-600 text-gray-100 placeholder-gray-400'
                         : 'bg-slate-50 border-slate-300 text-slate-800 placeholder-slate-400'
                     }`}
-                    placeholder=""
+                    placeholder="e.g. JT2JA82J..."
                   />
                 </div>
               </div>
@@ -275,7 +275,7 @@ const AddVehicleModal = ({
                         ? 'bg-gray-700 border-gray-600 text-gray-100 placeholder-gray-400'
                         : 'bg-slate-50 border-slate-300 text-slate-800 placeholder-slate-400'
                     }`}
-                    placeholder=""
+                    placeholder="e.g. 150000"
                     min="0"
                     step="10000"
                   />
@@ -404,7 +404,7 @@ const AddVehicleModal = ({
                     value={newVehicle.fuel_filter}
                     onChange={(e) => setNewVehicle({ ...newVehicle, fuel_filter: e.target.value })}
                     className={inputClasses(darkMode)}
-                    placeholder=""
+                    placeholder="e.g. Bosch 0450905316"
                   />
                 </div>
 
@@ -419,7 +419,7 @@ const AddVehicleModal = ({
                     value={newVehicle.air_filter}
                     onChange={(e) => setNewVehicle({ ...newVehicle, air_filter: e.target.value })}
                     className={inputClasses(darkMode)}
-                    placeholder=""
+                    placeholder="e.g. K&N 33-2050"
                   />
                 </div>
 
@@ -427,14 +427,14 @@ const AddVehicleModal = ({
                   <label className={`block text-sm font-medium mb-2 ${
                     darkMode ? 'text-gray-300' : 'text-slate-700'
                   }`}>
-                    Battery Type
+                    Battery
                   </label>
                   <input
                     type="text"
                     value={newVehicle.battery}
                     onChange={(e) => setNewVehicle({ ...newVehicle, battery: e.target.value })}
                     className={inputClasses(darkMode)}
-                    placeholder=""
+                    placeholder="e.g. Group 35, 650 CCA"
                   />
                 </div>
 
@@ -449,7 +449,7 @@ const AddVehicleModal = ({
                     value={newVehicle.oil_filter}
                     onChange={(e) => setNewVehicle({ ...newVehicle, oil_filter: e.target.value })}
                     className={inputClasses(darkMode)}
-                    placeholder=""
+                    placeholder="e.g. Mobil 1 M1-110A"
                   />
                 </div>
 
@@ -464,7 +464,7 @@ const AddVehicleModal = ({
                     value={newVehicle.oil_capacity}
                     onChange={(e) => setNewVehicle({ ...newVehicle, oil_capacity: e.target.value })}
                     className={inputClasses(darkMode)}
-                    placeholder=""
+                    placeholder="e.g. 5.7L"
                   />
                 </div>
 
@@ -479,7 +479,7 @@ const AddVehicleModal = ({
                     value={newVehicle.oil_type}
                     onChange={(e) => setNewVehicle({ ...newVehicle, oil_type: e.target.value })}
                     className={inputClasses(darkMode)}
-                    placeholder=""
+                    placeholder="e.g. 5W-30"
                   />
                 </div>
 
@@ -494,7 +494,7 @@ const AddVehicleModal = ({
                     value={newVehicle.oil_brand}
                     onChange={(e) => setNewVehicle({ ...newVehicle, oil_brand: e.target.value })}
                     className={inputClasses(darkMode)}
-                    placeholder=""
+                    placeholder="e.g. Mobil 1"
                   />
                 </div>
 
@@ -509,7 +509,7 @@ const AddVehicleModal = ({
                     value={newVehicle.drain_plug}
                     onChange={(e) => setNewVehicle({ ...newVehicle, drain_plug: e.target.value })}
                     className={inputClasses(darkMode)}
-                    placeholder=""
+                    placeholder="e.g. M14x1.5"
                   />
                 </div>
               </div>
