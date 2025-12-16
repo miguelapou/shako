@@ -1,14 +1,18 @@
 import { useState, useCallback } from 'react';
 import * as vehiclesService from '../services/vehiclesService';
 
+// Maximum number of images per vehicle
+const MAX_VEHICLE_IMAGES = 5;
+
 /**
  * Custom hook for managing vehicles data and CRUD operations
  *
  * Features:
  * - Load vehicles from Supabase
  * - Add, update, and delete vehicles
- * - Image upload to Supabase storage
+ * - Multi-image upload to Supabase storage (max 5 images)
  * - Image drag and drop handling
+ * - Primary image selection
  * - Update vehicle display order (for drag and drop)
  *
  * @param {string} userId - Current user's ID for data isolation
@@ -37,12 +41,36 @@ const useVehicles = (userId, toast) => {
     drain_plug: '',
     battery: '',
     image_url: '',
+    images: [], // Array of { url: string, isPrimary: boolean }
     color: '#3B82F6' // Default blue color
   });
+  // Multi-image state: array of { file: File, preview: string, isPrimary: boolean }
+  const [vehicleImageFiles, setVehicleImageFiles] = useState([]);
+  // Legacy single image state (kept for backwards compatibility)
   const [vehicleImageFile, setVehicleImageFile] = useState(null);
   const [vehicleImagePreview, setVehicleImagePreview] = useState(null);
   const [uploadingImage, setUploadingImage] = useState(false);
   const [isDraggingImage, setIsDraggingImage] = useState(false);
+
+  /**
+   * Get the primary image URL from a vehicle's images array
+   * Falls back to image_url for backwards compatibility
+   * @param {Object} vehicle - Vehicle object
+   * @returns {string|null} Primary image URL or null
+   */
+  const getPrimaryImageUrl = (vehicle) => {
+    // Check images array first (new multi-image format)
+    if (vehicle.images_resolved && vehicle.images_resolved.length > 0) {
+      const primary = vehicle.images_resolved.find(img => img.isPrimary);
+      return primary ? primary.url : vehicle.images_resolved[0].url;
+    }
+    if (vehicle.images && vehicle.images.length > 0) {
+      const primary = vehicle.images.find(img => img.isPrimary);
+      return primary ? primary.url : vehicle.images[0].url;
+    }
+    // Fallback to legacy single image
+    return vehicle.image_url_resolved || vehicle.image_url || null;
+  };
 
   /**
    * Preload images by creating Image objects and waiting for them to load
@@ -50,10 +78,17 @@ const useVehicles = (userId, toast) => {
    * @returns {Promise} Resolves when all images are loaded (or failed)
    */
   const preloadImages = (vehicleList) => {
-    const imageUrls = vehicleList
+    const imageUrls = [];
+
+    vehicleList
       .filter(v => !v.archived) // Only preload non-archived vehicle images
-      .map(v => v.image_url_resolved || v.image_url)
-      .filter(url => url); // Filter out null/undefined
+      .forEach(v => {
+        // Get primary image for preloading
+        const primaryUrl = getPrimaryImageUrl(v);
+        if (primaryUrl) {
+          imageUrls.push(primaryUrl);
+        }
+      });
 
     if (imageUrls.length === 0) {
       return Promise.resolve();
@@ -91,10 +126,23 @@ const useVehicles = (userId, toast) => {
           return a.archived ? 1 : -1;
         });
 
-        // Resolve signed URLs for vehicle images
-        const imagePaths = sorted
-          .map(v => v.image_url)
-          .filter(url => url && !url.startsWith('http'));
+        // Collect all image paths that need URL resolution
+        // (both legacy image_url and new images array)
+        const imagePaths = [];
+        sorted.forEach(v => {
+          // Legacy single image
+          if (v.image_url && !v.image_url.startsWith('http')) {
+            imagePaths.push(v.image_url);
+          }
+          // Multi-image array
+          if (v.images && Array.isArray(v.images)) {
+            v.images.forEach(img => {
+              if (img.url && !img.url.startsWith('http')) {
+                imagePaths.push(img.url);
+              }
+            });
+          }
+        });
 
         let finalVehicles;
         if (imagePaths.length > 0) {
@@ -102,16 +150,32 @@ const useVehicles = (userId, toast) => {
             const urlMap = await vehiclesService.getVehicleImageUrls(imagePaths);
             // Update vehicles with resolved URLs
             finalVehicles = sorted.map(vehicle => {
-              if (vehicle.image_url && !vehicle.image_url.startsWith('http')) {
-                return {
-                  ...vehicle,
-                  image_url_resolved: urlMap[vehicle.image_url] || vehicle.image_url
-                };
+              const result = { ...vehicle };
+
+              // Resolve legacy image_url
+              if (vehicle.image_url) {
+                if (vehicle.image_url.startsWith('http')) {
+                  result.image_url_resolved = vehicle.image_url;
+                } else {
+                  result.image_url_resolved = urlMap[vehicle.image_url] || vehicle.image_url;
+                }
               }
-              return {
-                ...vehicle,
-                image_url_resolved: vehicle.image_url
-              };
+
+              // Resolve multi-image array
+              if (vehicle.images && Array.isArray(vehicle.images) && vehicle.images.length > 0) {
+                result.images_resolved = vehicle.images.map(img => ({
+                  ...img,
+                  url: img.url.startsWith('http') ? img.url : (urlMap[img.url] || img.url)
+                }));
+              } else if (vehicle.image_url) {
+                // Migrate legacy single image to images_resolved for UI consistency
+                result.images_resolved = [{
+                  url: result.image_url_resolved || vehicle.image_url,
+                  isPrimary: true
+                }];
+              }
+
+              return result;
             });
           } catch (urlError) {
             // If URL resolution fails, use original data
@@ -119,10 +183,22 @@ const useVehicles = (userId, toast) => {
           }
         } else {
           // No storage paths to resolve, use URLs as-is
-          finalVehicles = sorted.map(vehicle => ({
-            ...vehicle,
-            image_url_resolved: vehicle.image_url
-          }));
+          finalVehicles = sorted.map(vehicle => {
+            const result = {
+              ...vehicle,
+              image_url_resolved: vehicle.image_url
+            };
+            // Migrate legacy single image to images_resolved for UI consistency
+            if (vehicle.images && Array.isArray(vehicle.images) && vehicle.images.length > 0) {
+              result.images_resolved = vehicle.images;
+            } else if (vehicle.image_url) {
+              result.images_resolved = [{
+                url: vehicle.image_url,
+                isPrimary: true
+              }];
+            }
+            return result;
+          });
         }
 
         setVehicles(finalVehicles);
@@ -260,11 +336,116 @@ const useVehicles = (userId, toast) => {
   };
 
   /**
-   * Clear image selection
+   * Clear image selection (both single and multi-image)
    */
   const clearImageSelection = () => {
     setVehicleImageFile(null);
     setVehicleImagePreview(null);
+    setVehicleImageFiles([]);
+  };
+
+  // ========================================
+  // MULTI-IMAGE HANDLERS
+  // ========================================
+
+  /**
+   * Add an image file to the multi-image selection
+   * @param {File} file - Image file to add
+   * @param {Array} existingImages - Currently existing images on the vehicle (for count check)
+   */
+  const addImageFile = (file, existingImages = []) => {
+    // Validate file type
+    if (!file.type.startsWith('image/')) {
+      toast?.warning('Please select an image file');
+      return;
+    }
+    // Validate file size (max 5MB)
+    if (file.size > 5 * 1024 * 1024) {
+      toast?.warning('Image size must be less than 5MB');
+      return;
+    }
+
+    // Check max images limit
+    const totalImages = existingImages.length + vehicleImageFiles.length;
+    if (totalImages >= MAX_VEHICLE_IMAGES) {
+      toast?.warning(`Maximum ${MAX_VEHICLE_IMAGES} images allowed per vehicle`);
+      return;
+    }
+
+    // Create preview
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      setVehicleImageFiles(prev => {
+        // If this is the first image and no existing images, make it primary
+        const isPrimary = prev.length === 0 && existingImages.length === 0;
+        return [...prev, { file, preview: reader.result, isPrimary }];
+      });
+    };
+    reader.readAsDataURL(file);
+  };
+
+  /**
+   * Remove an image file from the multi-image selection
+   * @param {number} index - Index of the image to remove
+   */
+  const removeImageFile = (index) => {
+    setVehicleImageFiles(prev => {
+      const updated = prev.filter((_, i) => i !== index);
+      // If we removed the primary image, make the first remaining one primary
+      if (prev[index]?.isPrimary && updated.length > 0) {
+        updated[0].isPrimary = true;
+      }
+      return updated;
+    });
+  };
+
+  /**
+   * Set an image file as primary in the multi-image selection
+   * @param {number} index - Index of the image to set as primary
+   */
+  const setPrimaryImageFile = (index) => {
+    setVehicleImageFiles(prev =>
+      prev.map((img, i) => ({ ...img, isPrimary: i === index }))
+    );
+  };
+
+  /**
+   * Upload multiple vehicle images to Supabase storage
+   * @param {Array} files - Array of { file: File, isPrimary: boolean }
+   * @returns {Promise<Array>} Array of { url: string, isPrimary: boolean }
+   */
+  const uploadMultipleVehicleImages = async (files) => {
+    if (!userId || files.length === 0) return [];
+    try {
+      setUploadingImage(true);
+      const uploadedImages = [];
+
+      for (const { file, isPrimary } of files) {
+        const url = await vehiclesService.uploadVehicleImage(file, userId);
+        if (url) {
+          uploadedImages.push({ url, isPrimary });
+        }
+      }
+
+      setUploadingImage(false);
+      return uploadedImages;
+    } catch (error) {
+      setUploadingImage(false);
+      toast?.error('Error uploading images. Please try again.');
+      return [];
+    }
+  };
+
+  /**
+   * Delete a vehicle image from storage
+   * @param {string} imagePath - Storage path of the image
+   */
+  const deleteVehicleImageFromStorage = async (imagePath) => {
+    try {
+      await vehiclesService.deleteVehicleImage(imagePath);
+    } catch (error) {
+      // Silent fail - image may already be deleted or inaccessible
+    }
   };
 
   // ========================================
@@ -347,6 +528,10 @@ const useVehicles = (userId, toast) => {
     setUploadingImage,
     isDraggingImage,
     setIsDraggingImage,
+    // Multi-image state
+    vehicleImageFiles,
+    setVehicleImageFiles,
+    MAX_VEHICLE_IMAGES,
 
     // Operations
     loadVehicles,
@@ -356,6 +541,7 @@ const useVehicles = (userId, toast) => {
     updateVehiclesOrder,
     uploadVehicleImage,
     getImageUrl,
+    getPrimaryImageUrl,
 
     // Image handlers
     handleImageFileChange,
@@ -363,7 +549,14 @@ const useVehicles = (userId, toast) => {
     handleImageDragEnter,
     handleImageDragLeave,
     handleImageDragOver,
-    handleImageDrop
+    handleImageDrop,
+
+    // Multi-image handlers
+    addImageFile,
+    removeImageFile,
+    setPrimaryImageFile,
+    uploadMultipleVehicleImages,
+    deleteVehicleImageFromStorage
   };
 };
 
