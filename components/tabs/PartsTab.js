@@ -448,14 +448,14 @@ const PartsTab = ({
       return (
         <div className="relative">
           <span
-            className={`flex items-center gap-2 px-3 py-1.5 text-xs font-medium rounded-full border ${
+            className={`inline-flex items-center justify-center px-3 py-1.5 text-xs font-medium rounded-full border ${
               darkMode
                 ? 'bg-blue-900/40 text-blue-200 border-blue-700'
                 : 'bg-blue-100 text-blue-700 border-blue-300'
             }`}
             style={{ minWidth: '8.25rem', maxWidth: '10rem' }}
           >
-            <span className="flex-1 text-left truncate">Maintenance</span>
+            Maintenance
           </span>
         </div>
       );
