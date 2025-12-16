@@ -169,12 +169,12 @@ const AddDocumentModal = ({
                 <p className={`text-xs mt-1 ${
                   darkMode ? 'text-gray-500' : 'text-gray-400'
                 }`}>
-                  PDF, DOC, Images (max 10MB)
+                  PDF, DOC, Images, ZIP (max 10MB)
                 </p>
                 <input
                   type="file"
                   className="hidden"
-                  accept=".pdf,.doc,.docx,.jpg,.jpeg,.png,.gif,.webp"
+                  accept=".pdf,.doc,.docx,.jpg,.jpeg,.png,.gif,.webp,.zip"
                   onChange={handleDocumentFileChange}
                 />
               </label>
