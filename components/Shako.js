@@ -767,9 +767,12 @@ const Shako = () => {
     window.scrollTo({ top: 0, behavior: 'instant' });
   }, [activeTab]);
 
-  // Clear search term when switching tabs
+  // Clear parts filters when switching tabs
   useEffect(() => {
     setSearchTerm('');
+    setStatusFilter('all');
+    setVendorFilter('all');
+    setOpenDropdown(null);
   }, [activeTab]);
 
   // Handle email migration result (show toast on success or error)
