@@ -446,7 +446,7 @@ const PartsTab = ({
     // If part has a vehicle but no project, show Maintenance badge
     if (part.vehicleId && !part.projectId) {
       return (
-        <div className="relative">
+        <div className="relative text-left">
           <span
             className={`inline-flex items-center px-3 py-1.5 text-xs font-medium rounded-full border ${
               darkMode
