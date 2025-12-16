@@ -154,12 +154,19 @@ export const uploadDocumentFile = async (file, userId) => {
     const fileName = `${Math.random().toString(36).substring(2)}-${Date.now()}.${fileExt}`;
     const filePath = `vehicle-documents/${userId}/${fileName}`;
 
+    // Determine content type - use file.type or fallback for zip files
+    let contentType = file.type;
+    if (fileExt.toLowerCase() === 'zip' && !contentType) {
+      contentType = 'application/zip';
+    }
+
     // Upload to Supabase Storage
     const { data, error } = await supabase.storage
       .from('vehicles')
       .upload(filePath, file, {
         cacheControl: '3600',
-        upsert: false
+        upsert: false,
+        contentType: contentType || undefined
       });
 
     if (error) throw error;
