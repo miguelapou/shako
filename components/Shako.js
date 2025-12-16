@@ -767,6 +767,11 @@ const Shako = () => {
     window.scrollTo({ top: 0, behavior: 'instant' });
   }, [activeTab]);
 
+  // Clear search term when switching tabs
+  useEffect(() => {
+    setSearchTerm('');
+  }, [activeTab]);
+
   // Handle email migration result (show toast on success or error)
   useEffect(() => {
     if (migrationResult) {
