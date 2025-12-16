@@ -112,10 +112,25 @@ export const DocumentProvider = ({ children, userId, toast }) => {
     }
   }, [toast]);
 
+  // Allowed MIME types for document uploads
+  const allowedMimeTypes = [
+    'image/jpeg',
+    'image/png',
+    'image/gif',
+    'image/webp',
+    'application/pdf',
+    'application/zip',
+    'application/x-zip-compressed'
+  ];
+
   // Handle document file selection
   const handleDocumentFileChange = useCallback((e) => {
     const file = e.target.files[0];
     if (file) {
+      if (!allowedMimeTypes.includes(file.type)) {
+        toast?.warning('File type not supported. Please upload PDF, DOC, Images, or ZIP files.');
+        return;
+      }
       if (file.size > 10 * 1024 * 1024) {
         toast?.warning('Document size must be less than 10MB');
         return;
@@ -178,6 +193,10 @@ export const DocumentProvider = ({ children, userId, toast }) => {
 
     const file = e.dataTransfer.files[0];
     if (file) {
+      if (!allowedMimeTypes.includes(file.type)) {
+        toast?.warning('File type not supported. Please upload PDF, DOC, Images, or ZIP files.');
+        return;
+      }
       if (file.size > 10 * 1024 * 1024) {
         toast?.warning('Document size must be less than 10MB');
         return;

@@ -151,6 +151,17 @@ const useDocuments = (userId, toast) => {
     }
   };
 
+  // Allowed MIME types for document uploads
+  const allowedMimeTypes = [
+    'image/jpeg',
+    'image/png',
+    'image/gif',
+    'image/webp',
+    'application/pdf',
+    'application/zip',
+    'application/x-zip-compressed'
+  ];
+
   /**
    * Handle document file selection
    * @param {Event} e - File input change event
@@ -158,6 +169,11 @@ const useDocuments = (userId, toast) => {
   const handleDocumentFileChange = (e) => {
     const file = e.target.files[0];
     if (file) {
+      // Validate file type
+      if (!allowedMimeTypes.includes(file.type)) {
+        toast?.warning('File type not supported. Please upload PDF, DOC, Images, or ZIP files.');
+        return;
+      }
       // Validate file size (max 10MB for documents)
       if (file.size > 10 * 1024 * 1024) {
         toast?.warning('Document size must be less than 10MB');
@@ -217,6 +233,11 @@ const useDocuments = (userId, toast) => {
 
     const file = e.dataTransfer.files[0];
     if (file) {
+      // Validate file type
+      if (!allowedMimeTypes.includes(file.type)) {
+        toast?.warning('File type not supported. Please upload PDF, DOC, Images, or ZIP files.');
+        return;
+      }
       // Validate file size (max 10MB for documents)
       if (file.size > 10 * 1024 * 1024) {
         toast?.warning('Document size must be less than 10MB');
