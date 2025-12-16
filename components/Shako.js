@@ -195,18 +195,29 @@ const Shako = () => {
     setUploadingImage,
     isDraggingImage,
     setIsDraggingImage,
+    // Multi-image state
+    vehicleImageFiles,
+    setVehicleImageFiles,
+    MAX_VEHICLE_IMAGES,
     loadVehicles,
     addVehicle,
     updateVehicle,
     deleteVehicle,
     updateVehiclesOrder,
     uploadVehicleImage,
+    getPrimaryImageUrl,
     handleImageFileChange,
     clearImageSelection,
     handleImageDragEnter,
     handleImageDragLeave,
     handleImageDragOver,
-    handleImageDrop
+    handleImageDrop,
+    // Multi-image handlers
+    addImageFile,
+    removeImageFile,
+    setPrimaryImageFile,
+    uploadMultipleVehicleImages,
+    deleteVehicleImageFromStorage
   } = useVehicles(userId, toast);
 
   // Note: Document and service event state is now managed via context (DocumentContext, ServiceEventContext)
@@ -1966,6 +1977,15 @@ const Shako = () => {
             handleImageDragOver={handleImageDragOver}
             handleImageDrop={handleImageDrop}
             clearImageSelection={clearImageSelection}
+            vehicleImageFiles={vehicleImageFiles}
+            setVehicleImageFiles={setVehicleImageFiles}
+            MAX_VEHICLE_IMAGES={MAX_VEHICLE_IMAGES}
+            addImageFile={addImageFile}
+            removeImageFile={removeImageFile}
+            setPrimaryImageFile={setPrimaryImageFile}
+            uploadMultipleVehicleImages={uploadMultipleVehicleImages}
+            deleteVehicleImageFromStorage={deleteVehicleImageFromStorage}
+            getPrimaryImageUrl={getPrimaryImageUrl}
             showVehicleDetailModal={showVehicleDetailModal}
             viewingVehicle={viewingVehicle}
             vehicleModalEditMode={vehicleModalEditMode}

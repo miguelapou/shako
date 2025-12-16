@@ -62,6 +62,16 @@ const VehiclesTab = ({
   handleImageDragLeave,
   handleImageDragOver,
   handleImageDrop,
+  // Multi-image props
+  vehicleImageFiles,
+  setVehicleImageFiles,
+  MAX_VEHICLE_IMAGES,
+  addImageFile,
+  removeImageFile,
+  setPrimaryImageFile,
+  uploadMultipleVehicleImages,
+  deleteVehicleImageFromStorage,
+  getPrimaryImageUrl,
   vehicleModalProjectView,
   setVehicleModalProjectView,
   parts,
@@ -663,6 +673,13 @@ const VehiclesTab = ({
           handleImageDragLeave={handleImageDragLeave}
           handleImageDragOver={handleImageDragOver}
           handleImageDrop={handleImageDrop}
+          vehicleImageFiles={vehicleImageFiles}
+          setVehicleImageFiles={setVehicleImageFiles}
+          MAX_VEHICLE_IMAGES={MAX_VEHICLE_IMAGES}
+          addImageFile={addImageFile}
+          removeImageFile={removeImageFile}
+          setPrimaryImageFile={setPrimaryImageFile}
+          uploadMultipleVehicleImages={uploadMultipleVehicleImages}
           onClose={() => {
             setShowAddVehicleModal(false);
             // Reset form to initial state
@@ -684,6 +701,7 @@ const VehiclesTab = ({
               drain_plug: '',
               battery: '',
               image_url: '',
+              images: [],
               color: '#3B82F6'
             });
           }}
@@ -731,6 +749,15 @@ const VehiclesTab = ({
           handleImageDragLeave={handleImageDragLeave}
           handleImageDragOver={handleImageDragOver}
           handleImageDrop={handleImageDrop}
+          vehicleImageFiles={vehicleImageFiles}
+          setVehicleImageFiles={setVehicleImageFiles}
+          MAX_VEHICLE_IMAGES={MAX_VEHICLE_IMAGES}
+          addImageFile={addImageFile}
+          removeImageFile={removeImageFile}
+          setPrimaryImageFile={setPrimaryImageFile}
+          uploadMultipleVehicleImages={uploadMultipleVehicleImages}
+          deleteVehicleImageFromStorage={deleteVehicleImageFromStorage}
+          getPrimaryImageUrl={getPrimaryImageUrl}
           getVehicleProjects={getVehicleProjects}
           unlinkPartFromProject={unlinkPartFromProject}
           loadProjects={loadProjects}
