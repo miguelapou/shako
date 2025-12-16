@@ -107,11 +107,9 @@ const AuthGate = () => {
 
       if (e.newValue && !e.oldValue) {
         // Token was added in another tab - migration started there
-        console.log('[Migration] Detected migration started in another tab');
         setMigrationInOtherTab(true);
       } else if (!e.newValue && e.oldValue) {
         // Token was removed in another tab - migration completed/cancelled
-        console.log('[Migration] Detected migration completed in another tab');
         setMigrationInOtherTab(false);
         // Reload to sync state after migration completes
         window.location.reload();
