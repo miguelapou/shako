@@ -7,6 +7,9 @@ const MIGRATION_ERROR_KEY = 'shako-migration-error';
 const MIGRATION_SUCCESS_KEY = 'shako-migration-success';
 const MIGRATION_STARTED_KEY = 'shako-migration-started';
 
+// Constants for new user confirmation
+const ACCOUNT_CONFIRMED_PREFIX = 'shako-account-confirmed-';
+
 // Migration timeout in milliseconds (5 minutes)
 const MIGRATION_TIMEOUT_MS = 5 * 60 * 1000;
 
@@ -337,6 +340,13 @@ const useAuth = () => {
                   try {
                     const userId = currentSession.user.id;
 
+                    // Check if user has already confirmed their account
+                    const accountConfirmedKey = ACCOUNT_CONFIRMED_PREFIX + userId;
+                    if (localStorage.getItem(accountConfirmedKey)) {
+                      console.log('[NewUser] User has already confirmed account, skipping modal');
+                      return;
+                    }
+
                     // Check if user has any existing data (explicitly filter by user_id)
                     const { count: vehicleCount } = await supabase
                       .from('vehicles')
@@ -649,8 +659,14 @@ const useAuth = () => {
   // Confirm new user - clear the pending state and let them proceed
   const confirmNewUser = useCallback(() => {
     console.log('[NewUser] User confirmed account creation');
+    // Persist confirmation to localStorage so we don't show the modal again
+    if (pendingNewUser?.id) {
+      const accountConfirmedKey = ACCOUNT_CONFIRMED_PREFIX + pendingNewUser.id;
+      localStorage.setItem(accountConfirmedKey, 'true');
+      console.log('[NewUser] Account confirmation persisted to localStorage');
+    }
     setPendingNewUser(null);
-  }, []);
+  }, [pendingNewUser]);
 
   // Cancel new user - sign out and delete the empty account
   const cancelNewUser = useCallback(async () => {
