@@ -1553,12 +1553,14 @@ const Shako = () => {
                   else if (activeTab === 'projects') setShowAddProjectModal(true);
                   else if (activeTab === 'vehicles') setShowAddVehicleModal(true);
                 }}
-                className={`p-2 sm:p-3 rounded-lg shadow-md transition-colors bg-blue-600 hover:bg-blue-700 text-white ${
+                className={`p-2 sm:px-4 sm:py-2.5 rounded-lg shadow-md transition-colors bg-blue-600 hover:bg-blue-700 text-white flex items-center gap-2 sm:min-w-[130px] justify-center font-medium ${
                   darkMode ? '' : ''
                 }`}
-                title={activeTab === 'vehicles' ? 'Add new vehicle' : activeTab === 'projects' ? 'Add new project' : 'Add new part'}
               >
                 <Plus className="w-5 h-5" />
+                <span className="hidden sm:inline">
+                  {activeTab === 'vehicles' ? 'New vehicle' : activeTab === 'projects' ? 'New project' : 'New part'}
+                </span>
               </button>
             </div>
           </div>
