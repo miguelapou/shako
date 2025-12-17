@@ -251,7 +251,7 @@ export const generateVehicleReportPDF = async (vehicle, projects, parts, service
     vehicle.drain_plug || vehicle.battery;
 
   if (hasMaintenance) {
-    addSectionHeader('Maintenance Specifications');
+    addSectionHeader('Maintenance Info');
 
     // Filters
     if (vehicle.fuel_filter || vehicle.air_filter || vehicle.oil_filter) {
@@ -288,6 +288,8 @@ export const generateVehicleReportPDF = async (vehicle, projects, parts, service
   }
 
   // --- SERVICE HISTORY ---
+  let serviceHistoryTotal = 0;
+
   if (serviceEvents && serviceEvents.length > 0) {
     addSectionHeader('Service History');
 
@@ -295,6 +297,18 @@ export const generateVehicleReportPDF = async (vehicle, projects, parts, service
     const sortedEvents = [...serviceEvents].sort((a, b) =>
       new Date(a.event_date + 'T00:00:00') - new Date(b.event_date + 'T00:00:00')
     );
+
+    // Calculate cost for each event from linked parts
+    const getEventCost = (event) => {
+      if (!event.linked_part_ids || event.linked_part_ids.length === 0) return 0;
+      return event.linked_part_ids.reduce((sum, partId) => {
+        const part = parts.find(p => p.id === partId);
+        if (part) {
+          return sum + (part.price || 0) + (part.shipping || 0) + (part.duties || 0);
+        }
+        return sum;
+      }, 0);
+    };
 
     // Table header
     doc.setFontSize(9);
@@ -304,7 +318,8 @@ export const generateVehicleReportPDF = async (vehicle, projects, parts, service
     doc.rect(margin, yPos - 3, contentWidth, 7, 'F');
     doc.text('Date', margin + 2, yPos);
     doc.text('Service', margin + 35, yPos);
-    doc.text('Odometer', pageWidth - margin - 25, yPos);
+    doc.text('Odometer', margin + 115, yPos);
+    doc.text('Cost', pageWidth - margin - 15, yPos);
     yPos += 7;
 
     doc.setFont('helvetica', 'normal');
@@ -331,7 +346,7 @@ export const generateVehicleReportPDF = async (vehicle, projects, parts, service
 
       // Truncate description if too long
       let description = event.description || '';
-      const maxDescWidth = contentWidth - 80;
+      const maxDescWidth = 75;
       while (doc.getTextWidth(description) > maxDescWidth && description.length > 0) {
         description = description.slice(0, -1);
       }
@@ -342,11 +357,31 @@ export const generateVehicleReportPDF = async (vehicle, projects, parts, service
 
       if (event.odometer) {
         const odometerStr = event.odometer.toLocaleString() + (vehicle.odometer_unit ? ` ${vehicle.odometer_unit}` : '');
-        doc.text(odometerStr, pageWidth - margin - 25, yPos);
+        doc.text(odometerStr, margin + 115, yPos);
+      }
+
+      // Cost column
+      const eventCost = getEventCost(event);
+      serviceHistoryTotal += eventCost;
+      if (eventCost > 0) {
+        doc.text(`$${eventCost.toFixed(2)}`, pageWidth - margin - 15, yPos);
+      } else {
+        doc.setTextColor(150, 150, 150);
+        doc.text('-', pageWidth - margin - 10, yPos);
+        doc.setTextColor(40, 40, 40);
       }
 
       yPos += 7;
     });
+
+    // Service history total
+    if (serviceHistoryTotal > 0) {
+      checkPageBreak(10);
+      doc.setFont('helvetica', 'bold');
+      doc.setTextColor(60, 60, 60);
+      doc.text(`Service Total: $${serviceHistoryTotal.toFixed(2)}`, pageWidth - margin - 35, yPos);
+      yPos += 5;
+    }
 
     yPos += 5;
   }
@@ -362,11 +397,29 @@ export const generateVehicleReportPDF = async (vehicle, projects, parts, service
     vehicleProjects.forEach((project) => {
       checkPageBreak(20);
 
-      // Project name
+      // Project name with status
       doc.setFontSize(11);
       doc.setFont('helvetica', 'bold');
       doc.setTextColor(50, 50, 50);
       doc.text(project.name, margin, yPos);
+
+      // Project status badge
+      if (project.status) {
+        const statusText = project.status.replace('_', ' ').toUpperCase();
+        const nameWidth = doc.getTextWidth(project.name);
+        doc.setFontSize(8);
+        doc.setFont('helvetica', 'normal');
+        const statusColors = {
+          planning: { text: [100, 100, 100] },
+          in_progress: { text: [37, 99, 235] },
+          completed: { text: [22, 163, 74] },
+          on_hold: { text: [202, 138, 4] }
+        };
+        const color = statusColors[project.status] || statusColors.planning;
+        doc.setTextColor(...color.text);
+        doc.text(`[${statusText}]`, margin + nameWidth + 5, yPos);
+        doc.setTextColor(50, 50, 50);
+      }
       yPos += 6;
 
       if (project.budget) {
@@ -443,19 +496,35 @@ export const generateVehicleReportPDF = async (vehicle, projects, parts, service
       }
     });
 
-    // Grand total
+    // Grand total (parts only, service history added below)
     if (grandTotal > 0) {
-      checkPageBreak(15);
-      doc.setDrawColor(41, 128, 185);
-      doc.setLineWidth(0.3);
-      doc.line(margin, yPos - 3, pageWidth - margin, yPos - 3);
-      yPos += 3;
-      doc.setFontSize(12);
+      checkPageBreak(10);
       doc.setFont('helvetica', 'bold');
-      doc.setTextColor(41, 128, 185);
-      doc.text(`Total Investment: $${grandTotal.toFixed(2)}`, pageWidth - margin - 50, yPos);
-      yPos += 10;
+      doc.setTextColor(60, 60, 60);
+      doc.text(`Parts Total: $${grandTotal.toFixed(2)}`, pageWidth - margin - 35, yPos);
+      yPos += 8;
     }
+  }
+
+  // --- TOTAL INVESTMENT ---
+  const totalInvestment = (vehicleProjects.length > 0 ? vehicleProjects.reduce((sum, project) => {
+    const projectParts = parts.filter(p => p.projectId === project.id);
+    return sum + projectParts.reduce((partSum, part) => {
+      return partSum + (part.price || 0) + (part.shipping || 0) + (part.duties || 0);
+    }, 0);
+  }, 0) : 0) + serviceHistoryTotal;
+
+  if (totalInvestment > 0) {
+    checkPageBreak(15);
+    doc.setDrawColor(41, 128, 185);
+    doc.setLineWidth(0.3);
+    doc.line(margin, yPos - 3, pageWidth - margin, yPos - 3);
+    yPos += 3;
+    doc.setFontSize(12);
+    doc.setFont('helvetica', 'bold');
+    doc.setTextColor(41, 128, 185);
+    doc.text(`Total Investment: $${totalInvestment.toFixed(2)}`, pageWidth - margin - 50, yPos);
+    yPos += 10;
   }
 
   // --- FOOTER ---
