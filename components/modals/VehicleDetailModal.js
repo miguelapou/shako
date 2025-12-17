@@ -660,7 +660,7 @@ const VehicleDetailModal = ({
               {/* Top Section: Image and Basic Info side by side */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 {/* Basic Info Card - Half width on desktop, two column layout - appears second */}
-                <div className={`order-last rounded-lg p-6 ${
+                <div className={`order-last rounded-lg p-6 md:aspect-[4/3] md:overflow-y-auto ${
                   darkMode ? 'bg-gray-700' : 'bg-gray-50'
                 }`}>
                   <div className="flex items-center justify-between mb-4">
