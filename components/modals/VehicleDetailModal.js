@@ -238,7 +238,7 @@ const VehicleDetailModal = ({
     }
   }, [hasNext, navigableVehicles, currentIndex, setViewingVehicle, setOriginalVehicleData, setVehicleModalProjectView, setVehicleModalEditMode, clearImageSelection]);
 
-  // Keyboard navigation (left/right arrow keys)
+  // Keyboard navigation (left/right arrow keys for vehicles, shift+arrows for images)
   useEffect(() => {
     if (!isOpen || vehicleModalEditMode || vehicleModalProjectView) return;
 
@@ -248,6 +248,24 @@ const VehicleDetailModal = ({
         return;
       }
 
+      const images = viewingVehicle?.images_resolved || [];
+      const hasMultipleImages = images.length > 1;
+
+      // Shift + Arrow keys: cycle through images
+      if (e.shiftKey && hasMultipleImages) {
+        if (e.key === 'ArrowLeft') {
+          e.preventDefault();
+          setSlideDirection('right');
+          setCurrentImageIndex(prev => prev === 0 ? images.length - 1 : prev - 1);
+        } else if (e.key === 'ArrowRight') {
+          e.preventDefault();
+          setSlideDirection('left');
+          setCurrentImageIndex(prev => prev === images.length - 1 ? 0 : prev + 1);
+        }
+        return;
+      }
+
+      // Arrow keys without shift: cycle through vehicles
       if (e.key === 'ArrowLeft' && hasPrev) {
         e.preventDefault();
         goToPrevVehicle();
@@ -259,7 +277,7 @@ const VehicleDetailModal = ({
 
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [isOpen, vehicleModalEditMode, vehicleModalProjectView, hasPrev, hasNext, goToPrevVehicle, goToNextVehicle]);
+  }, [isOpen, vehicleModalEditMode, vehicleModalProjectView, hasPrev, hasNext, goToPrevVehicle, goToNextVehicle, viewingVehicle?.images_resolved, setSlideDirection, setCurrentImageIndex]);
 
   // Touch handlers for swipe gestures
   const handleTouchStart = (e) => {
