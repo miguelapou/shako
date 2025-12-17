@@ -113,11 +113,14 @@ const VehicleDetailModal = ({
 }) => {
   // State for image gallery navigation
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  // Slide direction for animation: 'left' or 'right' or null (initial)
+  const [slideDirection, setSlideDirection] = useState(null);
 
   // Reset image index when vehicle changes or modal opens
   useEffect(() => {
     if (isOpen && viewingVehicle?.id) {
       setCurrentImageIndex(0);
+      setSlideDirection(null);
     }
   }, [isOpen, viewingVehicle?.id]);
 
@@ -823,7 +826,13 @@ const VehicleDetailModal = ({
                 </div>
                 {/* Vehicle Image Gallery - Half width on desktop - appears first */}
                 {(() => {
-                  const images = viewingVehicle.images_resolved || [];
+                  const rawImages = viewingVehicle.images_resolved || [];
+                  // Sort images so primary is always first
+                  const images = [...rawImages].sort((a, b) => {
+                    if (a.isPrimary && !b.isPrimary) return -1;
+                    if (!a.isPrimary && b.isPrimary) return 1;
+                    return 0;
+                  });
                   const hasImages = images.length > 0;
                   const hasMultipleImages = images.length > 1;
                   const safeIndex = Math.min(currentImageIndex, images.length - 1);
@@ -862,34 +871,46 @@ const VehicleDetailModal = ({
                         // Swipe threshold of 50px
                         if (Math.abs(diff) > 50) {
                           if (diff > 0) {
-                            // Swipe left - next image
+                            // Swipe left - next image (slide from right)
+                            setSlideDirection('left');
                             setCurrentImageIndex(prev => prev === images.length - 1 ? 0 : prev + 1);
                           } else {
-                            // Swipe right - previous image
+                            // Swipe right - previous image (slide from left)
+                            setSlideDirection('right');
                             setCurrentImageIndex(prev => prev === 0 ? images.length - 1 : prev - 1);
                           }
                         }
                       }}
                     >
                       <FadeInImage
+                        key={`${viewingVehicle.id}-${safeIndex}`}
                         src={currentImage.url}
                         alt={viewingVehicle.nickname || viewingVehicle.name}
                         loading="lazy"
                         decoding="async"
-                        className="w-full h-full object-cover min-h-[300px]"
+                        className={`w-full h-full object-cover min-h-[300px] ${
+                          slideDirection === 'left' ? 'slide-in-right' :
+                          slideDirection === 'right' ? 'slide-in-left' : ''
+                        }`}
                       />
                       {/* Navigation arrows - visible on mobile, hover on desktop */}
                       {hasMultipleImages && (
                         <>
                           <button
-                            onClick={() => setCurrentImageIndex(prev => prev === 0 ? images.length - 1 : prev - 1)}
+                            onClick={() => {
+                              setSlideDirection('right');
+                              setCurrentImageIndex(prev => prev === 0 ? images.length - 1 : prev - 1);
+                            }}
                             className="absolute left-2 top-1/2 -translate-y-1/2 p-2 rounded-full bg-black/50 text-white md:opacity-0 md:group-hover:opacity-100 transition-opacity hover:bg-black/70"
                             title="Previous image"
                           >
                             <ChevronLeft className="w-5 h-5" />
                           </button>
                           <button
-                            onClick={() => setCurrentImageIndex(prev => prev === images.length - 1 ? 0 : prev + 1)}
+                            onClick={() => {
+                              setSlideDirection('left');
+                              setCurrentImageIndex(prev => prev === images.length - 1 ? 0 : prev + 1);
+                            }}
                             className="absolute right-2 top-1/2 -translate-y-1/2 p-2 rounded-full bg-black/50 text-white md:opacity-0 md:group-hover:opacity-100 transition-opacity hover:bg-black/70"
                             title="Next image"
                           >
@@ -900,7 +921,15 @@ const VehicleDetailModal = ({
                             {images.map((img, idx) => (
                               <button
                                 key={idx}
-                                onClick={() => setCurrentImageIndex(idx)}
+                                onClick={() => {
+                                  // Determine slide direction based on index difference
+                                  if (idx > safeIndex) {
+                                    setSlideDirection('left');
+                                  } else if (idx < safeIndex) {
+                                    setSlideDirection('right');
+                                  }
+                                  setCurrentImageIndex(idx);
+                                }}
                                 className={`rounded-full transition-all ${
                                   idx === safeIndex
                                     ? 'bg-white w-6 h-3 md:w-4 md:h-2'

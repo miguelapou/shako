@@ -3,7 +3,7 @@ import * as vehiclesService from '../services/vehiclesService';
 import { compressImage } from '../utils/imageUtils';
 
 // Maximum number of images per vehicle
-const MAX_VEHICLE_IMAGES = 5;
+const MAX_VEHICLE_IMAGES = 6;
 
 /**
  * Custom hook for managing vehicles data and CRUD operations
@@ -11,7 +11,7 @@ const MAX_VEHICLE_IMAGES = 5;
  * Features:
  * - Load vehicles from Supabase
  * - Add, update, and delete vehicles
- * - Multi-image upload to Supabase storage (max 5 images)
+ * - Multi-image upload to Supabase storage (max 6 images)
  * - Image drag and drop handling
  * - Primary image selection
  * - Update vehicle display order (for drag and drop)
