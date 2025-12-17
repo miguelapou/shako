@@ -957,11 +957,11 @@ const VehicleDetailModal = ({
               </div>
 
               {/* Service History and Maintenance - Side by side on desktop */}
-              <div className={`pt-6 border-t grid grid-cols-1 lg:grid-cols-[2fr_minmax(250px,3fr)] gap-6 ${
+              <div className={`pt-6 border-t grid grid-cols-1 md:grid-cols-[2fr_minmax(250px,3fr)] gap-6 ${
                 darkMode ? 'border-gray-700' : 'border-slate-200'
               }`}>
                 {/* Service Events Timeline Section */}
-                <div className="order-2 lg:order-2">
+                <div className="order-2 md:order-2">
                 <div className="flex items-center justify-between mb-3">
                   <h3 className={`text-lg font-semibold ${
                     darkMode ? 'text-gray-200' : 'text-gray-800'
@@ -1297,7 +1297,7 @@ const VehicleDetailModal = ({
                 </div>
 
                 {/* Maintenance Section (includes filters, oil, battery) */}
-                <div className="order-1 lg:order-1">
+                <div className="order-1 md:order-1">
                   <h3 className={`text-lg font-semibold mb-3 ${
                   darkMode ? 'text-gray-200' : 'text-gray-800'
                 }`}>
