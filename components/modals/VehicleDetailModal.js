@@ -1778,7 +1778,7 @@ const VehicleDetailModal = ({
                             ? 'bg-gray-700 border-gray-600 text-gray-100 placeholder-gray-400'
                             : 'bg-slate-50 border-slate-300 text-slate-800 placeholder-slate-400'
                         }`}
-                        placeholder=""
+                        placeholder="e.g. Blue Beast"
                       />
                     </div>
 
@@ -1818,7 +1818,7 @@ const VehicleDetailModal = ({
                               ? 'bg-gray-700 border-gray-600 text-gray-100 placeholder-gray-400'
                               : 'bg-slate-50 border-slate-300 text-slate-800 placeholder-slate-400'
                           }`}
-                          placeholder=""
+                          placeholder="e.g. 1995"
                           min="1900"
                           max="2100"
                         />
@@ -1841,7 +1841,7 @@ const VehicleDetailModal = ({
                               ? 'bg-gray-700 border-gray-600 text-gray-100 placeholder-gray-400'
                               : 'bg-slate-50 border-slate-300 text-slate-800 placeholder-slate-400'
                           }`}
-                          placeholder=""
+                          placeholder="e.g. Toyota"
                         />
                       </div>
 
@@ -1860,7 +1860,7 @@ const VehicleDetailModal = ({
                               ? 'bg-gray-700 border-gray-600 text-gray-100 placeholder-gray-400'
                               : 'bg-slate-50 border-slate-300 text-slate-800 placeholder-slate-400'
                           }`}
-                          placeholder=""
+                          placeholder="e.g. Supra"
                         />
                       </div>
                     </div>
@@ -1881,7 +1881,7 @@ const VehicleDetailModal = ({
                               ? 'bg-gray-700 border-gray-600 text-gray-100 placeholder-gray-400'
                               : 'bg-slate-50 border-slate-300 text-slate-800 placeholder-slate-400'
                           }`}
-                          placeholder=""
+                          placeholder="e.g. ABC-1234"
                         />
                       </div>
 
@@ -1900,7 +1900,7 @@ const VehicleDetailModal = ({
                               ? 'bg-gray-700 border-gray-600 text-gray-100 placeholder-gray-400'
                               : 'bg-slate-50 border-slate-300 text-slate-800 placeholder-slate-400'
                           }`}
-                          placeholder=""
+                          placeholder="e.g. JT2JA82J..."
                         />
                       </div>
                     </div>
@@ -1928,7 +1928,7 @@ const VehicleDetailModal = ({
                               ? 'bg-gray-700 border-gray-600 text-gray-100 placeholder-gray-400'
                               : 'bg-slate-50 border-slate-300 text-slate-800 placeholder-slate-400'
                           }`}
-                          placeholder=""
+                          placeholder="e.g. 150000"
                           min="0"
                           step="10000"
                         />
@@ -2282,7 +2282,7 @@ const VehicleDetailModal = ({
                               ? 'bg-gray-700 border-gray-600 text-gray-100 placeholder-gray-400'
                               : 'bg-slate-50 border-slate-300 text-slate-800 placeholder-slate-400'
                           }`}
-                          placeholder=""
+                          placeholder="e.g. Bosch 0450905316"
                         />
                       </div>
 
@@ -2301,7 +2301,7 @@ const VehicleDetailModal = ({
                               ? 'bg-gray-700 border-gray-600 text-gray-100 placeholder-gray-400'
                               : 'bg-slate-50 border-slate-300 text-slate-800 placeholder-slate-400'
                           }`}
-                          placeholder=""
+                          placeholder="e.g. K&N 33-2050"
                         />
                       </div>
 
@@ -2320,7 +2320,7 @@ const VehicleDetailModal = ({
                               ? 'bg-gray-700 border-gray-600 text-gray-100 placeholder-gray-400'
                               : 'bg-slate-50 border-slate-300 text-slate-800 placeholder-slate-400'
                           }`}
-                          placeholder=""
+                          placeholder="e.g. Mobil 1 M1-110A"
                         />
                       </div>
 
@@ -2339,7 +2339,7 @@ const VehicleDetailModal = ({
                               ? 'bg-gray-700 border-gray-600 text-gray-100 placeholder-gray-400'
                               : 'bg-slate-50 border-slate-300 text-slate-800 placeholder-slate-400'
                           }`}
-                          placeholder=""
+                          placeholder="e.g. 5W-30"
                         />
                       </div>
 
@@ -2358,7 +2358,7 @@ const VehicleDetailModal = ({
                               ? 'bg-gray-700 border-gray-600 text-gray-100 placeholder-gray-400'
                               : 'bg-slate-50 border-slate-300 text-slate-800 placeholder-slate-400'
                           }`}
-                          placeholder=""
+                          placeholder="e.g. 5.7L"
                         />
                       </div>
 
@@ -2377,7 +2377,7 @@ const VehicleDetailModal = ({
                               ? 'bg-gray-700 border-gray-600 text-gray-100 placeholder-gray-400'
                               : 'bg-slate-50 border-slate-300 text-slate-800 placeholder-slate-400'
                           }`}
-                          placeholder=""
+                          placeholder="e.g. Mobil 1"
                         />
                       </div>
 
@@ -2396,7 +2396,7 @@ const VehicleDetailModal = ({
                               ? 'bg-gray-700 border-gray-600 text-gray-100 placeholder-gray-400'
                               : 'bg-slate-50 border-slate-300 text-slate-800 placeholder-slate-400'
                           }`}
-                          placeholder=""
+                          placeholder="e.g. M14x1.5"
                         />
                       </div>
 
