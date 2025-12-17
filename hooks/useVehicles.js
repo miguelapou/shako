@@ -385,8 +385,11 @@ const useVehicles = (userId, toast) => {
     const reader = new FileReader();
     reader.onloadend = () => {
       setVehicleImageFiles(prev => {
-        // If this is the first image and no existing images, make it primary
-        const isPrimary = prev.length === 0 && existingImages.length === 0;
+        // Check if any image is already primary (in state or existing)
+        const hasPrimaryInState = prev.some(img => img.isPrimary);
+        const hasPrimaryInExisting = existingImages.some(img => img.isPrimary);
+        // Only set as primary if no other image is primary
+        const isPrimary = !hasPrimaryInState && !hasPrimaryInExisting;
         return [...prev, { file: compressedFile, preview: reader.result, isPrimary }];
       });
     };
