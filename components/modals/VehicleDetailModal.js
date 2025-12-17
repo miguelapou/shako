@@ -1767,7 +1767,7 @@ const VehicleDetailModal = ({
                       <label className={`block text-sm font-medium mb-2 ${
                         darkMode ? 'text-gray-300' : 'text-slate-700'
                       }`}>
-                        Nickname *
+                        Nickname <span className="text-red-500">*</span>
                       </label>
                       <input
                         type="text"
@@ -1956,8 +1956,8 @@ const VehicleDetailModal = ({
                   </div>
 
                   {/* Multi-Image Upload - Left on desktop */}
-                  <div className="order-first space-y-4">
-                    <div>
+                  <div className="order-first space-y-4 flex flex-col">
+                    <div className="flex flex-col flex-1">
                       <label className={`block text-sm font-medium mb-2 ${
                         darkMode ? 'text-gray-300' : 'text-slate-700'
                       }`}>
@@ -2202,7 +2202,7 @@ const VehicleDetailModal = ({
                               addImageFile(file, viewingVehicle.images_resolved || []);
                             }
                           }}
-                          className={`flex flex-col items-center justify-center w-full border-2 border-dashed rounded-lg cursor-pointer transition-all ${
+                          className={`flex flex-col items-center justify-center w-full flex-1 border-2 border-dashed rounded-lg cursor-pointer transition-all ${
                             isDraggingImage
                               ? darkMode
                                 ? 'border-blue-500 bg-blue-900/20 scale-105'
@@ -2436,7 +2436,7 @@ const VehicleDetailModal = ({
                   <label className={`block text-sm font-medium mb-2 ${
                     darkMode ? 'text-gray-300' : 'text-gray-700'
                   }`}>
-                    Date *
+                    Date <span className="text-red-500">*</span>
                   </label>
                   <input
                     type="date"
@@ -2456,7 +2456,7 @@ const VehicleDetailModal = ({
                   <label className={`block text-sm font-medium mb-2 ${
                     darkMode ? 'text-gray-300' : 'text-gray-700'
                   }`}>
-                    Description *
+                    Description <span className="text-red-500">*</span>
                   </label>
                   <input
                     type="text"
@@ -2707,7 +2707,7 @@ const VehicleDetailModal = ({
                   <label className={`block text-sm font-medium mb-2 ${
                     darkMode ? 'text-gray-300' : 'text-gray-700'
                   }`}>
-                    Document Title *
+                    Document Title <span className="text-red-500">*</span>
                   </label>
                   <input
                     type="text"
@@ -2727,7 +2727,7 @@ const VehicleDetailModal = ({
                   <label className={`block text-sm font-medium mb-2 ${
                     darkMode ? 'text-gray-300' : 'text-gray-700'
                   }`}>
-                    File *
+                    File <span className="text-red-500">*</span>
                   </label>
                   {newDocumentFile ? (
                     <div className={`flex items-center gap-3 p-3 rounded-lg border ${

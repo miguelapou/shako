@@ -127,7 +127,7 @@ const AddVehicleModal = ({
                 <label className={`block text-sm font-medium mb-2 ${
                   darkMode ? 'text-gray-300' : 'text-slate-700'
                 }`}>
-                  Nickname *
+                  Nickname <span className="text-red-500">*</span>
                 </label>
                 <input
                   type="text"

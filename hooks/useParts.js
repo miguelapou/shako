@@ -472,16 +472,33 @@ const useParts = (userId, toast) => {
       return;
     }
 
+    const trimmedNewName = newName.trim();
+
     try {
       // Update all parts in database
-      await partsService.updatePartsVendor(oldName, newName.trim(), userId);
-      // Update local state
+      await partsService.updatePartsVendor(oldName, trimmedNewName, userId);
+
+      // Update vendor record in database to preserve color association
+      await vendorsService.renameVendor(oldName, trimmedNewName, userId);
+
+      // Update local parts state
       setParts(prevParts => prevParts.map(part =>
-        part.vendor === oldName ? { ...part, vendor: newName.trim() } : part
+        part.vendor === oldName ? { ...part, vendor: trimmedNewName } : part
       ));
+
+      // Update local vendorColors state to preserve the color under the new name
+      setVendorColors(prev => {
+        const newColors = { ...prev };
+        if (newColors[oldName] !== undefined) {
+          newColors[trimmedNewName] = newColors[oldName];
+          delete newColors[oldName];
+        }
+        return newColors;
+      });
+
       // Update editingPart if it has the old vendor
       if (editingPart && editingPart.vendor === oldName && setEditingPart) {
-        setEditingPart({ ...editingPart, vendor: newName.trim() });
+        setEditingPart({ ...editingPart, vendor: trimmedNewName });
       }
       if (setEditingVendor) setEditingVendor(null);
     } catch (error) {

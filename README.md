@@ -6,7 +6,12 @@ A comprehensive web application for tracking vehicle restoration parts, managing
 
 ### Vehicle Management
 - Create and manage vehicles with detailed information (name, year, VIN, license plate, color)
-- Upload vehicle images with drag-and-drop support
+- Multi-image gallery support (up to 6 images per vehicle):
+  - Drag-and-drop upload
+  - Set primary image displayed on vehicle cards
+  - Slide animations between images
+  - Shift+Arrow keyboard shortcuts to cycle through images
+  - Automatic image compression before upload
 - Track odometer readings with configurable units (km/miles)
 - Document storage for vehicle-related files (receipts, manuals, etc.)
 - Comprehensive maintenance tracking:
@@ -19,14 +24,21 @@ A comprehensive web application for tracking vehicle restoration parts, managing
 - Drag-and-drop reordering with archive drop zones
 - Toggle between default and compact card layouts
 - View total parts count and costs per vehicle
-- Generate PDF reports with vehicle info, maintenance specs, service history, and project details
+- Generate PDF reports with:
+  - Vehicle info and maintenance specs
+  - Service history with costs per event
+  - Project status badges (Planning, In Progress, Completed, On Hold)
+  - Parts breakdown by project
+  - Total investment calculation (parts + service costs)
 
 ### Service History
 - Log service events with date, description, and odometer reading
 - Add notes to service events for additional details
+- Link parts to service events for cost tracking
+- Automatic cost calculation from linked parts
 - Timeline view of all service history per vehicle
 - Edit and delete service events
-- Service events included in PDF reports
+- Service events included in PDF reports with costs
 
 ### Project Management
 - Create projects linked to specific vehicles

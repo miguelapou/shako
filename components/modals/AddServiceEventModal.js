@@ -157,7 +157,7 @@ const AddServiceEventModal = ({
             <label className={`block text-sm font-medium mb-2 ${
               darkMode ? 'text-gray-300' : 'text-gray-700'
             }`}>
-              Date *
+              Date <span className="text-red-500">*</span>
             </label>
             <input
               type="date"
@@ -176,7 +176,7 @@ const AddServiceEventModal = ({
             <label className={`block text-sm font-medium mb-2 ${
               darkMode ? 'text-gray-300' : 'text-gray-700'
             }`}>
-              Description *
+              Description <span className="text-red-500">*</span>
             </label>
             <input
               type="text"
