@@ -957,7 +957,7 @@ const VehicleDetailModal = ({
               </div>
 
               {/* Service History and Maintenance - Side by side on desktop */}
-              <div className={`pt-6 border-t grid grid-cols-1 lg:grid-cols-2 gap-6 ${
+              <div className={`pt-6 border-t grid grid-cols-1 lg:grid-cols-[2fr_3fr] gap-6 ${
                 darkMode ? 'border-gray-700' : 'border-slate-200'
               }`}>
                 {/* Service Events Timeline Section */}
