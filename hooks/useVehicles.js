@@ -256,7 +256,42 @@ const useVehicles = (userId, toast) => {
             });
           } else if (updates.image_url) {
             updatedVehicle.image_url_resolved = updates.image_url;
+          } else if (updates.image_url === '') {
+            updatedVehicle.image_url_resolved = '';
           }
+
+          // If images array was updated, resolve URLs for images_resolved
+          if (updates.images !== undefined) {
+            if (updates.images && updates.images.length > 0) {
+              // Collect storage paths that need URL resolution
+              const storagePaths = updates.images
+                .filter(img => img.url && !img.url.startsWith('http'))
+                .map(img => img.url);
+
+              if (storagePaths.length > 0) {
+                // Resolve URLs asynchronously
+                vehiclesService.getVehicleImageUrls(storagePaths).then(urlMap => {
+                  setVehicles(prev => prev.map(v => {
+                    if (v.id === vehicleId) {
+                      const resolvedImages = updates.images.map(img => ({
+                        ...img,
+                        url: img.url.startsWith('http') ? img.url : (urlMap[img.url] || img.url)
+                      }));
+                      return { ...v, images_resolved: resolvedImages };
+                    }
+                    return v;
+                  }));
+                });
+              } else {
+                // All URLs are already http, use as-is
+                updatedVehicle.images_resolved = updates.images;
+              }
+            } else {
+              // Images array is empty
+              updatedVehicle.images_resolved = [];
+            }
+          }
+
           return updatedVehicle;
         }
         return vehicle;
