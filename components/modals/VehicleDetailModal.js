@@ -89,6 +89,16 @@ const VehicleDetailModal = ({
   handleImageDragLeave,
   handleImageDragOver,
   handleImageDrop,
+  // Multi-image props
+  vehicleImageFiles,
+  setVehicleImageFiles,
+  MAX_VEHICLE_IMAGES,
+  addImageFile,
+  removeImageFile,
+  setPrimaryImageFile,
+  uploadMultipleVehicleImages,
+  deleteVehicleImageFromStorage,
+  getPrimaryImageUrl,
   getVehicleProjects,
   unlinkPartFromProject,
   loadProjects,
@@ -101,6 +111,19 @@ const VehicleDetailModal = ({
   calculateProjectTotal,
   toast
 }) => {
+  // State for image gallery navigation
+  const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  // Slide direction for animation: 'left' or 'right' or null (initial)
+  const [slideDirection, setSlideDirection] = useState(null);
+
+  // Reset image index when vehicle changes or modal opens
+  useEffect(() => {
+    if (isOpen && viewingVehicle?.id) {
+      setCurrentImageIndex(0);
+      setSlideDirection(null);
+    }
+  }, [isOpen, viewingVehicle?.id]);
+
   // State for report generation
   const [generatingReport, setGeneratingReport] = useState(false);
   const [showExportModal, setShowExportModal] = useState(false);
@@ -215,7 +238,7 @@ const VehicleDetailModal = ({
     }
   }, [hasNext, navigableVehicles, currentIndex, setViewingVehicle, setOriginalVehicleData, setVehicleModalProjectView, setVehicleModalEditMode, clearImageSelection]);
 
-  // Keyboard navigation (left/right arrow keys)
+  // Keyboard navigation (left/right arrow keys for vehicles, shift+arrows for images)
   useEffect(() => {
     if (!isOpen || vehicleModalEditMode || vehicleModalProjectView) return;
 
@@ -225,6 +248,24 @@ const VehicleDetailModal = ({
         return;
       }
 
+      const images = viewingVehicle?.images_resolved || [];
+      const hasMultipleImages = images.length > 1;
+
+      // Shift + Arrow keys: cycle through images
+      if (e.shiftKey && hasMultipleImages) {
+        if (e.key === 'ArrowLeft') {
+          e.preventDefault();
+          setSlideDirection('right');
+          setCurrentImageIndex(prev => prev === 0 ? images.length - 1 : prev - 1);
+        } else if (e.key === 'ArrowRight') {
+          e.preventDefault();
+          setSlideDirection('left');
+          setCurrentImageIndex(prev => prev === images.length - 1 ? 0 : prev + 1);
+        }
+        return;
+      }
+
+      // Arrow keys without shift: cycle through vehicles
       if (e.key === 'ArrowLeft' && hasPrev) {
         e.preventDefault();
         goToPrevVehicle();
@@ -236,7 +277,7 @@ const VehicleDetailModal = ({
 
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [isOpen, vehicleModalEditMode, vehicleModalProjectView, hasPrev, hasNext, goToPrevVehicle, goToNextVehicle]);
+  }, [isOpen, vehicleModalEditMode, vehicleModalProjectView, hasPrev, hasNext, goToPrevVehicle, goToNextVehicle, viewingVehicle?.images_resolved, setSlideDirection, setCurrentImageIndex]);
 
   // Touch handlers for swipe gestures
   const handleTouchStart = (e) => {
@@ -634,10 +675,10 @@ const VehicleDetailModal = ({
               key={viewingVehicle.id}
               className="p-6 pb-12 space-y-6 max-h-[calc(90vh-164px)] overflow-y-auto animate-fade-in"
             >
-              {/* Top Section: Image and Basic Info side by side */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                {/* Basic Info Card - Half width on desktop, two column layout - appears second */}
-                <div className={`order-last rounded-lg p-6 ${
+              {/* Top Section: Image (3/5) and Basic Info (2/5) side by side */}
+              <div className="grid grid-cols-1 md:grid-cols-[3fr_2fr] gap-6 md:items-start">
+                {/* Basic Info Card - 2/5 width on desktop, aspect ratio calculated to match image height */}
+                <div className={`order-last rounded-lg p-6 md:aspect-[8/9] ${
                   darkMode ? 'bg-gray-700' : 'bg-gray-50'
                 }`}>
                   <div className="flex items-center justify-between mb-4">
@@ -801,39 +842,144 @@ const VehicleDetailModal = ({
                     })()}
                   </div>
                 </div>
-                {/* Vehicle Image - Half width on desktop - appears first */}
-                {(viewingVehicle.image_url_resolved || viewingVehicle.image_url) ? (
-                  <div className="order-first rounded-lg overflow-hidden">
-                    <FadeInImage
-                      src={viewingVehicle.image_url_resolved || viewingVehicle.image_url}
-                      alt={viewingVehicle.nickname || viewingVehicle.name}
-                      loading="lazy"
-                      decoding="async"
-                      className="w-full h-full object-cover min-h-[300px]"
-                    />
-                  </div>
-                ) : (
-                  <div className={`order-first rounded-lg border min-h-[300px] flex flex-col items-center justify-center ${
-                    darkMode ? 'bg-gray-700/30 border-gray-600' : 'bg-gray-50 border-gray-200'
-                  }`}>
-                    <Camera className={`w-12 h-12 mx-auto mb-2 opacity-40 ${
-                      darkMode ? 'text-gray-400' : 'text-gray-500'
-                    }`} />
-                    <p className={`text-sm ${
-                      darkMode ? 'text-gray-400' : 'text-gray-500'
-                    }`}>
-                      No image
-                    </p>
-                  </div>
-                )}
+                {/* Vehicle Image Gallery - Half width on desktop - appears first */}
+                {(() => {
+                  const rawImages = viewingVehicle.images_resolved || [];
+                  // Sort images so primary is always first
+                  const images = [...rawImages].sort((a, b) => {
+                    if (a.isPrimary && !b.isPrimary) return -1;
+                    if (!a.isPrimary && b.isPrimary) return 1;
+                    return 0;
+                  });
+                  const hasImages = images.length > 0;
+                  const hasMultipleImages = images.length > 1;
+                  const safeIndex = Math.min(currentImageIndex, images.length - 1);
+                  const currentImage = hasImages ? images[Math.max(0, safeIndex)] : null;
+
+                  if (!hasImages) {
+                    return (
+                      <div className={`order-first rounded-lg border min-h-[300px] flex flex-col items-center justify-center ${
+                        darkMode ? 'bg-gray-700/30 border-gray-600' : 'bg-gray-50 border-gray-200'
+                      }`}>
+                        <Camera className={`w-12 h-12 mx-auto mb-2 opacity-40 ${
+                          darkMode ? 'text-gray-400' : 'text-gray-500'
+                        }`} />
+                        <p className={`text-sm ${
+                          darkMode ? 'text-gray-400' : 'text-gray-500'
+                        }`}>
+                          No image
+                        </p>
+                      </div>
+                    );
+                  }
+
+                  return (
+                    <div
+                      className="order-first rounded-lg overflow-hidden relative group touch-pan-y aspect-[4/3]"
+                      onTouchStart={(e) => {
+                        if (!hasMultipleImages) return;
+                        const touch = e.touches[0];
+                        e.currentTarget.dataset.touchStartX = touch.clientX;
+                      }}
+                      onTouchEnd={(e) => {
+                        if (!hasMultipleImages) return;
+                        const touchStartX = parseFloat(e.currentTarget.dataset.touchStartX);
+                        const touchEndX = e.changedTouches[0].clientX;
+                        const diff = touchStartX - touchEndX;
+                        // Swipe threshold of 50px
+                        if (Math.abs(diff) > 50) {
+                          if (diff > 0) {
+                            // Swipe left - next image (slide from right)
+                            setSlideDirection('left');
+                            setCurrentImageIndex(prev => prev === images.length - 1 ? 0 : prev + 1);
+                          } else {
+                            // Swipe right - previous image (slide from left)
+                            setSlideDirection('right');
+                            setCurrentImageIndex(prev => prev === 0 ? images.length - 1 : prev - 1);
+                          }
+                        }
+                      }}
+                    >
+                      <FadeInImage
+                        key={`${viewingVehicle.id}-${safeIndex}`}
+                        src={currentImage.url}
+                        alt={viewingVehicle.nickname || viewingVehicle.name}
+                        loading="lazy"
+                        decoding="async"
+                        className={`w-full h-full object-cover ${
+                          slideDirection === 'left' ? 'slide-in-right' :
+                          slideDirection === 'right' ? 'slide-in-left' : ''
+                        }`}
+                      />
+                      {/* Navigation arrows - visible on mobile, hover on desktop */}
+                      {hasMultipleImages && (
+                        <>
+                          <button
+                            onClick={() => {
+                              setSlideDirection('right');
+                              setCurrentImageIndex(prev => prev === 0 ? images.length - 1 : prev - 1);
+                            }}
+                            className="absolute left-2 top-1/2 -translate-y-1/2 p-2 rounded-full bg-black/50 text-white md:opacity-0 md:group-hover:opacity-100 transition-opacity hover:bg-black/70"
+                            title="Previous image"
+                          >
+                            <ChevronLeft className="w-5 h-5" />
+                          </button>
+                          <button
+                            onClick={() => {
+                              setSlideDirection('left');
+                              setCurrentImageIndex(prev => prev === images.length - 1 ? 0 : prev + 1);
+                            }}
+                            className="absolute right-2 top-1/2 -translate-y-1/2 p-2 rounded-full bg-black/50 text-white md:opacity-0 md:group-hover:opacity-100 transition-opacity hover:bg-black/70"
+                            title="Next image"
+                          >
+                            <ChevronRight className="w-5 h-5" />
+                          </button>
+                          {/* Image indicators - larger touch targets on mobile */}
+                          <div className="absolute bottom-3 left-1/2 -translate-x-1/2 flex gap-2 md:gap-1.5">
+                            {images.map((img, idx) => (
+                              <button
+                                key={idx}
+                                onClick={() => {
+                                  // Determine slide direction based on index difference
+                                  if (idx > safeIndex) {
+                                    setSlideDirection('left');
+                                  } else if (idx < safeIndex) {
+                                    setSlideDirection('right');
+                                  }
+                                  setCurrentImageIndex(idx);
+                                }}
+                                className={`rounded-full transition-all ${
+                                  idx === safeIndex
+                                    ? 'bg-white w-6 h-3 md:w-4 md:h-2'
+                                    : 'bg-white/50 hover:bg-white/75 w-3 h-3 md:w-2 md:h-2'
+                                }`}
+                                title={img.isPrimary ? 'Primary image' : `Image ${idx + 1}`}
+                              />
+                            ))}
+                          </div>
+                          {/* Image counter */}
+                          <div className="absolute top-3 right-3 px-2 py-1 rounded bg-black/50 text-white text-xs">
+                            {safeIndex + 1} / {images.length}
+                          </div>
+                        </>
+                      )}
+                      {/* Primary indicator */}
+                      {currentImage.isPrimary && hasMultipleImages && (
+                        <div className="absolute top-3 left-3 px-2 py-1 rounded bg-blue-600 text-white text-xs font-medium">
+                          Primary
+                        </div>
+                      )}
+                    </div>
+                  );
+                })()}
               </div>
 
               {/* Service History and Maintenance - Side by side on desktop */}
-              <div className={`pt-6 border-t grid grid-cols-1 lg:grid-cols-2 gap-6 ${
+              <div className={`pt-6 border-t grid grid-cols-1 md:grid-cols-[2fr_minmax(250px,3fr)] gap-6 ${
                 darkMode ? 'border-gray-700' : 'border-slate-200'
               }`}>
                 {/* Service Events Timeline Section */}
-                <div className="order-2 lg:order-2">
+                <div className="order-2 md:order-2">
                 <div className="flex items-center justify-between mb-3">
                   <h3 className={`text-lg font-semibold ${
                     darkMode ? 'text-gray-200' : 'text-gray-800'
@@ -1169,7 +1315,7 @@ const VehicleDetailModal = ({
                 </div>
 
                 {/* Maintenance Section (includes filters, oil, battery) */}
-                <div className="order-1 lg:order-1">
+                <div className="order-1 md:order-1">
                   <h3 className={`text-lg font-semibold mb-3 ${
                   darkMode ? 'text-gray-200' : 'text-gray-800'
                 }`}>
@@ -1284,7 +1430,7 @@ const VehicleDetailModal = ({
                   </h3>
                 </div>
                 <div
-                    className={`grid grid-cols-2 md:grid-cols-4 gap-3 ${!loadingDocuments ? 'animate-fade-in' : ''}`}
+                    className={`grid grid-cols-[repeat(auto-fill,minmax(200px,1fr))] gap-3 ${!loadingDocuments ? 'animate-fade-in' : ''}`}
                     onClick={() => setSelectedDocId(null)}
                   >
                     {documents.map((doc) => (
@@ -1809,62 +1955,271 @@ const VehicleDetailModal = ({
                     </div>
                   </div>
 
-                  {/* Image Upload - Left on desktop */}
+                  {/* Multi-Image Upload - Left on desktop */}
                   <div className="order-first space-y-4">
                     <div>
                       <label className={`block text-sm font-medium mb-2 ${
                         darkMode ? 'text-gray-300' : 'text-slate-700'
                       }`}>
-                        Vehicle Image
+                        Vehicle Images
+                        <span className={`ml-2 text-xs font-normal ${
+                          darkMode ? 'text-gray-500' : 'text-gray-400'
+                        }`}>
+                          ({(viewingVehicle.images_resolved?.length || 0) + vehicleImageFiles.length} / {MAX_VEHICLE_IMAGES})
+                        </span>
                       </label>
-                      {/* Current Image or Preview */}
-                      {(vehicleImagePreview || viewingVehicle.image_url_resolved || viewingVehicle.image_url) && (
-                        <div className="mb-3 relative">
-                          <FadeInImage
-                            src={vehicleImagePreview || viewingVehicle.image_url_resolved || viewingVehicle.image_url}
-                            alt="Vehicle"
-                            className={`w-full h-full object-cover rounded-lg ${
-                              darkMode ? 'bg-gray-700' : 'bg-gray-200'
-                            }`}
-                            style={{ minHeight: '400px' }}
-                          />
-                          <button
-                            onClick={() => {
-                              if (vehicleImagePreview) {
-                                clearImageSelection();
-                              } else {
-                                setViewingVehicle({ ...viewingVehicle, image_url: '', image_url_resolved: '' });
-                              }
-                            }}
-                            className="absolute top-2 right-2 p-1 rounded-full bg-red-600 hover:bg-red-700 text-white transition-colors"
-                          >
-                            <X className="w-4 h-4" />
-                          </button>
+
+                      {/* Combined Images Grid - existing and new images together */}
+                      {((viewingVehicle.images_resolved?.length || 0) + vehicleImageFiles.length > 0) && (
+                        <div className="grid grid-cols-3 gap-3 mb-3">
+                          {/* Existing Images */}
+                          {viewingVehicle.images_resolved?.map((img, index) => (
+                            <div key={`existing-${index}`} className="relative group">
+                              <div className="aspect-square">
+                                <FadeInImage
+                                  src={img.url}
+                                  alt={`Vehicle image ${index + 1}`}
+                                  className={`w-full h-full object-cover rounded-t-lg md:rounded-lg ${
+                                    darkMode ? 'bg-gray-700' : 'bg-gray-200'
+                                  }`}
+                                />
+                              </div>
+                              {/* Primary badge */}
+                              {img.isPrimary && (
+                                <div className="absolute top-1 left-1 px-1.5 py-0.5 rounded bg-blue-600 text-white text-xs font-medium">
+                                  Primary
+                                </div>
+                              )}
+                              {/* Action buttons - always visible on mobile, hover on desktop */}
+                              {/* Mobile: bottom bar */}
+                              <div className={`md:hidden flex rounded-b-lg overflow-hidden ${
+                                darkMode ? 'bg-gray-700' : 'bg-gray-200'
+                              }`}>
+                                {!img.isPrimary && (
+                                  <button
+                                    onClick={() => {
+                                      const updatedImages = viewingVehicle.images_resolved.map((i, idx) => ({
+                                        ...i,
+                                        isPrimary: idx === index
+                                      }));
+                                      setViewingVehicle({
+                                        ...viewingVehicle,
+                                        images_resolved: updatedImages,
+                                        images: viewingVehicle.images?.map((i, idx) => ({
+                                          ...i,
+                                          isPrimary: idx === index
+                                        }))
+                                      });
+                                      // Clear primary from new images
+                                      setVehicleImageFiles(prev => prev.map(img => ({ ...img, isPrimary: false })));
+                                    }}
+                                    className={`flex-1 py-2 text-xs font-medium ${
+                                      darkMode ? 'bg-blue-600 text-white' : 'bg-blue-500 text-white'
+                                    }`}
+                                  >
+                                    Set Primary
+                                  </button>
+                                )}
+                                <button
+                                  onClick={() => {
+                                    const wasPrimary = img.isPrimary;
+                                    const updatedImages = viewingVehicle.images_resolved.filter((_, idx) => idx !== index);
+                                    const updatedDbImages = viewingVehicle.images?.filter((_, idx) => idx !== index);
+                                    if (wasPrimary && updatedImages.length > 0) {
+                                      updatedImages[0].isPrimary = true;
+                                      if (updatedDbImages && updatedDbImages.length > 0) {
+                                        updatedDbImages[0].isPrimary = true;
+                                      }
+                                    }
+                                    setViewingVehicle({
+                                      ...viewingVehicle,
+                                      images_resolved: updatedImages,
+                                      images: updatedDbImages,
+                                      image_url: updatedImages.length > 0 ? viewingVehicle.image_url : '',
+                                      image_url_resolved: updatedImages.length > 0 ? viewingVehicle.image_url_resolved : ''
+                                    });
+                                  }}
+                                  className={`flex-1 py-2 text-xs font-medium ${
+                                    darkMode ? 'bg-red-600 text-white' : 'bg-red-500 text-white'
+                                  }`}
+                                >
+                                  Remove
+                                </button>
+                              </div>
+                              {/* Desktop: hover overlay */}
+                              <div className="hidden md:flex absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity rounded-lg items-center justify-center gap-2">
+                                {!img.isPrimary && (
+                                  <button
+                                    onClick={() => {
+                                      const updatedImages = viewingVehicle.images_resolved.map((i, idx) => ({
+                                        ...i,
+                                        isPrimary: idx === index
+                                      }));
+                                      setViewingVehicle({
+                                        ...viewingVehicle,
+                                        images_resolved: updatedImages,
+                                        images: viewingVehicle.images?.map((i, idx) => ({
+                                          ...i,
+                                          isPrimary: idx === index
+                                        }))
+                                      });
+                                      // Clear primary from new images
+                                      setVehicleImageFiles(prev => prev.map(img => ({ ...img, isPrimary: false })));
+                                    }}
+                                    className="p-2 rounded-full bg-blue-600 hover:bg-blue-700 text-white transition-colors"
+                                    title="Set as primary"
+                                  >
+                                    <CheckCircle className="w-5 h-5" />
+                                  </button>
+                                )}
+                                <button
+                                  onClick={() => {
+                                    const wasPrimary = img.isPrimary;
+                                    const updatedImages = viewingVehicle.images_resolved.filter((_, idx) => idx !== index);
+                                    const updatedDbImages = viewingVehicle.images?.filter((_, idx) => idx !== index);
+                                    if (wasPrimary && updatedImages.length > 0) {
+                                      updatedImages[0].isPrimary = true;
+                                      if (updatedDbImages && updatedDbImages.length > 0) {
+                                        updatedDbImages[0].isPrimary = true;
+                                      }
+                                    }
+                                    setViewingVehicle({
+                                      ...viewingVehicle,
+                                      images_resolved: updatedImages,
+                                      images: updatedDbImages,
+                                      image_url: updatedImages.length > 0 ? viewingVehicle.image_url : '',
+                                      image_url_resolved: updatedImages.length > 0 ? viewingVehicle.image_url_resolved : ''
+                                    });
+                                  }}
+                                  className="p-2 rounded-full bg-red-600 hover:bg-red-700 text-white transition-colors"
+                                  title="Remove image"
+                                >
+                                  <X className="w-5 h-5" />
+                                </button>
+                              </div>
+                            </div>
+                          ))}
+                          {/* New Images to Upload */}
+                          {vehicleImageFiles.map((imgFile, index) => (
+                            <div key={`new-${index}`} className="relative group">
+                              <div className="aspect-square">
+                                <FadeInImage
+                                  src={imgFile.preview}
+                                  alt={`New image ${index + 1}`}
+                                  className={`w-full h-full object-cover rounded-t-lg md:rounded-lg ${
+                                    darkMode ? 'bg-gray-700' : 'bg-gray-200'
+                                  }`}
+                                />
+                              </div>
+                              {/* New badge */}
+                              <div className="absolute top-1 left-1 px-1.5 py-0.5 rounded bg-green-600 text-white text-xs font-medium">
+                                New
+                              </div>
+                              {/* Primary badge for new images */}
+                              {imgFile.isPrimary && (
+                                <div className="absolute top-1 right-1 px-1.5 py-0.5 rounded bg-blue-600 text-white text-xs font-medium">
+                                  Primary
+                                </div>
+                              )}
+                              {/* Mobile: bottom bar */}
+                              <div className={`md:hidden flex rounded-b-lg overflow-hidden ${
+                                darkMode ? 'bg-gray-700' : 'bg-gray-200'
+                              }`}>
+                                {!imgFile.isPrimary && (
+                                  <button
+                                    onClick={() => {
+                                      // Unset primary from existing images
+                                      if (viewingVehicle.images_resolved?.length > 0) {
+                                        setViewingVehicle({
+                                          ...viewingVehicle,
+                                          images_resolved: viewingVehicle.images_resolved.map(img => ({ ...img, isPrimary: false })),
+                                          images: viewingVehicle.images?.map(img => ({ ...img, isPrimary: false }))
+                                        });
+                                      }
+                                      setPrimaryImageFile(index);
+                                    }}
+                                    className={`flex-1 py-2 text-xs font-medium ${
+                                      darkMode ? 'bg-blue-600 text-white' : 'bg-blue-500 text-white'
+                                    }`}
+                                  >
+                                    Set Primary
+                                  </button>
+                                )}
+                                <button
+                                  onClick={() => removeImageFile(index)}
+                                  className={`flex-1 py-2 text-xs font-medium ${
+                                    darkMode ? 'bg-red-600 text-white' : 'bg-red-500 text-white'
+                                  }`}
+                                >
+                                  Remove
+                                </button>
+                              </div>
+                              {/* Desktop: hover overlay */}
+                              <div className="hidden md:flex absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity rounded-lg items-center justify-center gap-2">
+                                {!imgFile.isPrimary && (
+                                  <button
+                                    onClick={() => {
+                                      // Unset primary from existing images
+                                      if (viewingVehicle.images_resolved?.length > 0) {
+                                        setViewingVehicle({
+                                          ...viewingVehicle,
+                                          images_resolved: viewingVehicle.images_resolved.map(img => ({ ...img, isPrimary: false })),
+                                          images: viewingVehicle.images?.map(img => ({ ...img, isPrimary: false }))
+                                        });
+                                      }
+                                      setPrimaryImageFile(index);
+                                    }}
+                                    className="p-2 rounded-full bg-blue-600 hover:bg-blue-700 text-white transition-colors"
+                                    title="Set as primary"
+                                  >
+                                    <CheckCircle className="w-5 h-5" />
+                                  </button>
+                                )}
+                                <button
+                                  onClick={() => removeImageFile(index)}
+                                  className="p-2 rounded-full bg-red-600 hover:bg-red-700 text-white transition-colors"
+                                  title="Remove image"
+                                >
+                                  <X className="w-5 h-5" />
+                                </button>
+                              </div>
+                            </div>
+                          ))}
                         </div>
                       )}
-                      {/* File Upload Button */}
-                      {!vehicleImagePreview && !viewingVehicle.image_url_resolved && !viewingVehicle.image_url && (
+
+                      {/* Upload Button - Show if under limit */}
+                      {(viewingVehicle.images_resolved?.length || 0) + vehicleImageFiles.length < MAX_VEHICLE_IMAGES && (
                         <label
                           onDragEnter={handleImageDragEnter}
                           onDragLeave={handleImageDragLeave}
                           onDragOver={handleImageDragOver}
-                          onDrop={handleImageDrop}
+                          onDrop={(e) => {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            const file = e.dataTransfer.files[0];
+                            if (file) {
+                              addImageFile(file, viewingVehicle.images_resolved || []);
+                            }
+                          }}
                           className={`flex flex-col items-center justify-center w-full border-2 border-dashed rounded-lg cursor-pointer transition-all ${
-                          isDraggingImage
-                            ? darkMode
-                              ? 'border-blue-500 bg-blue-900/20 scale-105'
-                              : 'border-blue-500 bg-blue-50 scale-105'
-                            : darkMode
-                              ? 'border-gray-600 hover:border-gray-500 bg-gray-700/50 hover:bg-gray-700'
-                              : 'border-gray-300 hover:border-gray-400 bg-gray-50 hover:bg-gray-100'
-                        }`} style={{ minHeight: '400px' }}>
-                          <div className="flex flex-col items-center justify-center pt-5 pb-6">
-                            <Camera className={`w-12 h-12 mb-3 ${
+                            isDraggingImage
+                              ? darkMode
+                                ? 'border-blue-500 bg-blue-900/20 scale-105'
+                                : 'border-blue-500 bg-blue-50 scale-105'
+                              : darkMode
+                                ? 'border-gray-600 hover:border-gray-500 bg-gray-700/50 hover:bg-gray-700'
+                                : 'border-gray-300 hover:border-gray-400 bg-gray-50 hover:bg-gray-100'
+                          }`}
+                          style={{ minHeight: (viewingVehicle.images_resolved?.length || 0) + vehicleImageFiles.length === 0 ? '400px' : '120px' }}
+                        >
+                          <div className="flex flex-col items-center justify-center py-4">
+                            <Camera className={`w-8 h-8 mb-2 ${
                               isDraggingImage
                                 ? 'text-blue-500'
                                 : darkMode ? 'text-gray-400' : 'text-gray-500'
                             }`} />
-                            <p className={`mb-2 text-sm ${
+                            <p className={`mb-1 text-sm ${
                               isDraggingImage
                                 ? 'text-blue-600 font-semibold'
                                 : darkMode ? 'text-gray-400' : 'text-slate-600'
@@ -1873,21 +2228,27 @@ const VehicleDetailModal = ({
                                 'Drop image here'
                               ) : (
                                 <>
-                                  <span className="font-semibold">Click to upload</span> or drag and drop
+                                  <span className="font-semibold">Click to add</span> or drag and drop
                                 </>
                               )}
                             </p>
                             <p className={`text-xs ${
                               darkMode ? 'text-gray-500' : 'text-gray-500'
                             }`}>
-                              PNG, JPG, WEBP (MAX. 5MB)
+                              PNG, JPG, WEBP (MAX. 5MB each)
                             </p>
                           </div>
                           <input
                             type="file"
                             className="hidden"
                             accept="image/*"
-                            onChange={handleImageFileChange}
+                            onChange={(e) => {
+                              const file = e.target.files[0];
+                              if (file) {
+                                addImageFile(file, viewingVehicle.images_resolved || []);
+                              }
+                              e.target.value = '';
+                            }}
                           />
                         </label>
                       )}
@@ -2751,19 +3112,59 @@ const VehicleDetailModal = ({
                 onClick={async () => {
                   // Save logic based on what's being edited
                   if (vehicleModalEditMode === 'vehicle') {
-                    // Upload new image if one is selected
                     let updatedVehicle = { ...viewingVehicle };
-                    if (vehicleImageFile) {
-                      const imageUrl = await uploadVehicleImage(vehicleImageFile);
-                      if (imageUrl) {
-                        updatedVehicle.image_url = imageUrl;
+
+                    // Handle multi-image upload and management
+                    // Start with existing images (from the database format, not resolved)
+                    let finalImages = [...(viewingVehicle.images || [])];
+
+                    // Upload any new images
+                    if (vehicleImageFiles.length > 0) {
+                      const uploadedImages = await uploadMultipleVehicleImages(vehicleImageFiles);
+                      if (uploadedImages.length > 0) {
+                        // If no existing images and we're uploading, first one should be primary
+                        const shouldSetFirstPrimary = finalImages.length === 0 && !uploadedImages.some(img => img.isPrimary);
+                        if (shouldSetFirstPrimary) {
+                          uploadedImages[0].isPrimary = true;
+                        }
+                        finalImages = [...finalImages, ...uploadedImages];
                       }
                     }
-                    await updateVehicle(viewingVehicle.id, updatedVehicle);
-                    // Use the local preview as resolved URL so image shows immediately
-                    if (vehicleImagePreview) {
-                      updatedVehicle.image_url_resolved = vehicleImagePreview;
+
+                    // Update images array
+                    updatedVehicle.images = finalImages;
+
+                    // Set primary image as image_url for backwards compatibility
+                    const primaryImage = finalImages.find(img => img.isPrimary) || finalImages[0];
+                    if (primaryImage) {
+                      updatedVehicle.image_url = primaryImage.url;
+                    } else {
+                      updatedVehicle.image_url = '';
                     }
+
+                    // Remove resolved URLs before saving (they're client-side only)
+                    const { images_resolved, image_url_resolved, ...dataToSave } = updatedVehicle;
+
+                    await updateVehicle(viewingVehicle.id, dataToSave);
+
+                    // Build images_resolved for immediate display
+                    const newImagesResolved = vehicleImageFiles.map((imgFile, idx) => ({
+                      url: imgFile.preview,
+                      isPrimary: imgFile.isPrimary
+                    }));
+
+                    // Combine existing resolved with new previews
+                    updatedVehicle.images_resolved = [
+                      ...(viewingVehicle.images_resolved || []),
+                      ...newImagesResolved
+                    ];
+
+                    // Set primary URL resolved for backwards compat display
+                    const primaryResolved = updatedVehicle.images_resolved.find(img => img.isPrimary) || updatedVehicle.images_resolved[0];
+                    if (primaryResolved) {
+                      updatedVehicle.image_url_resolved = primaryResolved.url;
+                    }
+
                     clearImageSelection();
                     // Update viewing data with saved changes
                     setViewingVehicle(updatedVehicle);

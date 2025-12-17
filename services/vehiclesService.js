@@ -21,6 +21,7 @@ const VALID_VEHICLE_COLUMNS = [
   'odometer_unit',
   'color',
   'image_url',
+  'images', // JSONB array for multiple images: [{ url: string, isPrimary: boolean }]
   'archived',
   'display_order',
   'fuel_filter',
@@ -279,6 +280,30 @@ export const getVehicleImageUrls = async (filePaths, expiresIn = 3600) => {
     return urlMap;
   } catch (error) {
     error.message = `Failed to get vehicle image URLs: ${error.message}`;
+    throw error;
+  }
+};
+
+/**
+ * Delete a vehicle image from Supabase storage
+ * @param {string} filePath - Storage path of the image to delete
+ * @returns {Promise<void>}
+ * @throws {Error} With context about the failed operation
+ */
+export const deleteVehicleImage = async (filePath) => {
+  try {
+    // Don't try to delete legacy URLs (full http URLs)
+    if (!filePath || filePath.startsWith('http')) {
+      return;
+    }
+
+    const { error } = await supabase.storage
+      .from('vehicles')
+      .remove([filePath]);
+
+    if (error) throw error;
+  } catch (error) {
+    error.message = `Failed to delete vehicle image: ${error.message}`;
     throw error;
   }
 };

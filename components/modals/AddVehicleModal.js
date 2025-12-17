@@ -1,5 +1,5 @@
 import React, { useRef } from 'react';
-import { X, Upload } from 'lucide-react';
+import { X, Upload, CheckCircle } from 'lucide-react';
 import { inputClasses } from '../../utils/styleUtils';
 import { useUI } from '../../contexts';
 import FadeInImage from '../ui/FadeInImage';
@@ -23,6 +23,14 @@ const AddVehicleModal = ({
   handleImageDragLeave,
   handleImageDragOver,
   handleImageDrop,
+  // Multi-image props
+  vehicleImageFiles,
+  setVehicleImageFiles,
+  MAX_VEHICLE_IMAGES,
+  addImageFile,
+  removeImageFile,
+  setPrimaryImageFile,
+  uploadMultipleVehicleImages,
   onClose,
   setConfirmDialog
 }) => {
@@ -45,7 +53,8 @@ const AddVehicleModal = ({
       newVehicle.oil_brand?.trim() ||
       newVehicle.drain_plug?.trim() ||
       newVehicle.battery?.trim() ||
-      vehicleImageFile
+      vehicleImageFile ||
+      (vehicleImageFiles && vehicleImageFiles.length > 0)
     );
   };
 
@@ -302,56 +311,119 @@ const AddVehicleModal = ({
               </div>
             </div>
 
-            {/* Right Column - Image Upload */}
+            {/* Right Column - Multi-Image Upload */}
             <div className="space-y-4">
               <div>
                 <label className={`block text-sm font-medium mb-2 ${
                   darkMode ? 'text-gray-300' : 'text-slate-700'
                 }`}>
-                  Vehicle Image
+                  Vehicle Images
+                  <span className={`ml-2 text-xs font-normal ${
+                    darkMode ? 'text-gray-500' : 'text-gray-400'
+                  }`}>
+                    ({vehicleImageFiles?.length || 0} / {MAX_VEHICLE_IMAGES})
+                  </span>
                 </label>
-                {/* Image Preview */}
-                {vehicleImagePreview && (
-                  <div className="mb-3 relative">
-                    <FadeInImage
-                      src={vehicleImagePreview}
-                      alt="Preview"
-                      className={`w-full h-full object-cover rounded-lg ${
-                        darkMode ? 'bg-gray-700' : 'bg-gray-200'
-                      }`}
-                      style={{ minHeight: '400px' }}
-                    />
-                    <button
-                      onClick={clearImageSelection}
-                      className="absolute top-2 right-2 p-1 rounded-full bg-red-600 hover:bg-red-700 text-white transition-colors"
-                    >
-                      <X className="w-4 h-4" />
-                    </button>
+
+                {/* Image Grid */}
+                {vehicleImageFiles && vehicleImageFiles.length > 0 && (
+                  <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 mb-3">
+                    {vehicleImageFiles.map((imgFile, index) => (
+                      <div key={`new-${index}`} className="relative group">
+                        <div className="aspect-square">
+                          <FadeInImage
+                            src={imgFile.preview}
+                            alt={`Image ${index + 1}`}
+                            className={`w-full h-full object-cover rounded-t-lg md:rounded-lg ${
+                              darkMode ? 'bg-gray-700' : 'bg-gray-200'
+                            }`}
+                          />
+                        </div>
+                        {/* Primary badge */}
+                        {imgFile.isPrimary && (
+                          <div className="absolute top-1 left-1 px-1.5 py-0.5 rounded bg-blue-600 text-white text-xs font-medium">
+                            Primary
+                          </div>
+                        )}
+                        {/* Mobile: bottom bar */}
+                        <div className={`md:hidden flex rounded-b-lg overflow-hidden ${
+                          darkMode ? 'bg-gray-700' : 'bg-gray-200'
+                        }`}>
+                          {!imgFile.isPrimary && (
+                            <button
+                              onClick={() => setPrimaryImageFile(index)}
+                              className={`flex-1 py-2 text-xs font-medium ${
+                                darkMode ? 'bg-blue-600 text-white' : 'bg-blue-500 text-white'
+                              }`}
+                            >
+                              Set Primary
+                            </button>
+                          )}
+                          <button
+                            onClick={() => removeImageFile(index)}
+                            className={`flex-1 py-2 text-xs font-medium ${
+                              darkMode ? 'bg-red-600 text-white' : 'bg-red-500 text-white'
+                            }`}
+                          >
+                            Remove
+                          </button>
+                        </div>
+                        {/* Desktop: hover overlay */}
+                        <div className="hidden md:flex absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity rounded-lg items-center justify-center gap-2">
+                          {!imgFile.isPrimary && (
+                            <button
+                              onClick={() => setPrimaryImageFile(index)}
+                              className="p-2 rounded-full bg-blue-600 hover:bg-blue-700 text-white transition-colors"
+                              title="Set as primary"
+                            >
+                              <CheckCircle className="w-5 h-5" />
+                            </button>
+                          )}
+                          <button
+                            onClick={() => removeImageFile(index)}
+                            className="p-2 rounded-full bg-red-600 hover:bg-red-700 text-white transition-colors"
+                            title="Remove image"
+                          >
+                            <X className="w-5 h-5" />
+                          </button>
+                        </div>
+                      </div>
+                    ))}
                   </div>
                 )}
-                {/* File Upload Button */}
-                {!vehicleImagePreview && (
+
+                {/* Upload Button - Show if under limit */}
+                {(!vehicleImageFiles || vehicleImageFiles.length < MAX_VEHICLE_IMAGES) && (
                   <label
                     onDragEnter={handleImageDragEnter}
                     onDragLeave={handleImageDragLeave}
                     onDragOver={handleImageDragOver}
-                    onDrop={handleImageDrop}
+                    onDrop={(e) => {
+                      e.preventDefault();
+                      e.stopPropagation();
+                      const file = e.dataTransfer.files[0];
+                      if (file) {
+                        addImageFile(file, []);
+                      }
+                    }}
                     className={`flex flex-col items-center justify-center w-full border-2 border-dashed rounded-lg cursor-pointer transition-all ${
-                    isDraggingImage
-                      ? darkMode
-                        ? 'border-blue-500 bg-blue-900/20 scale-105'
-                        : 'border-blue-500 bg-blue-50 scale-105'
-                      : darkMode
-                        ? 'border-gray-600 hover:border-gray-500 bg-gray-700/50 hover:bg-gray-700'
-                        : 'border-gray-300 hover:border-gray-400 bg-gray-50 hover:bg-gray-100'
-                  }`} style={{ minHeight: '400px' }}>
-                    <div className="flex flex-col items-center justify-center pt-5 pb-6">
-                      <Upload className={`w-12 h-12 mb-3 ${
+                      isDraggingImage
+                        ? darkMode
+                          ? 'border-blue-500 bg-blue-900/20 scale-105'
+                          : 'border-blue-500 bg-blue-50 scale-105'
+                        : darkMode
+                          ? 'border-gray-600 hover:border-gray-500 bg-gray-700/50 hover:bg-gray-700'
+                          : 'border-gray-300 hover:border-gray-400 bg-gray-50 hover:bg-gray-100'
+                    }`}
+                    style={{ minHeight: (!vehicleImageFiles || vehicleImageFiles.length === 0) ? '400px' : '120px' }}
+                  >
+                    <div className="flex flex-col items-center justify-center py-4">
+                      <Upload className={`w-8 h-8 mb-2 ${
                         isDraggingImage
                           ? 'text-blue-500'
                           : darkMode ? 'text-gray-400' : 'text-gray-500'
                       }`} />
-                      <p className={`mb-2 text-sm ${
+                      <p className={`mb-1 text-sm ${
                         isDraggingImage
                           ? 'text-blue-600 font-semibold'
                           : darkMode ? 'text-gray-400' : 'text-slate-600'
@@ -360,21 +432,27 @@ const AddVehicleModal = ({
                           'Drop image here'
                         ) : (
                           <>
-                            <span className="font-semibold">Click to upload</span> or drag and drop
+                            <span className="font-semibold">Click to add</span> or drag and drop
                           </>
                         )}
                       </p>
                       <p className={`text-xs ${
                         darkMode ? 'text-gray-500' : 'text-gray-500'
                       }`}>
-                        PNG, JPG, WEBP (MAX. 5MB)
+                        PNG, JPG, WEBP (MAX. 5MB each)
                       </p>
                     </div>
                     <input
                       type="file"
                       className="hidden"
                       accept="image/*"
-                      onChange={handleImageFileChange}
+                      onChange={(e) => {
+                        const file = e.target.files[0];
+                        if (file) {
+                          addImageFile(file, []);
+                        }
+                        e.target.value = '';
+                      }}
                     />
                   </label>
                 )}
@@ -536,16 +614,35 @@ const AddVehicleModal = ({
                   toast?.warning('Please enter a nickname');
                   return;
                 }
-                // Upload image if one is selected
+
+                // Handle multi-image upload
+                let images = [];
                 let imageUrl = '';
-                if (vehicleImageFile) {
-                  imageUrl = await uploadVehicleImage(vehicleImageFile);
-                  if (!imageUrl) {
-                    return; // Upload failed, don't proceed
+
+                if (vehicleImageFiles && vehicleImageFiles.length > 0) {
+                  // Upload all images
+                  const uploadedImages = await uploadMultipleVehicleImages(vehicleImageFiles);
+                  if (uploadedImages.length > 0) {
+                    images = uploadedImages;
+                    // Ensure at least one is primary
+                    if (!images.some(img => img.isPrimary)) {
+                      images[0].isPrimary = true;
+                    }
+                    // Set primary as image_url for backwards compatibility
+                    const primaryImage = images.find(img => img.isPrimary) || images[0];
+                    imageUrl = primaryImage?.url || '';
+                  } else if (vehicleImageFiles.length > 0) {
+                    // Upload failed for all images, don't proceed
+                    return;
                   }
                 }
-                // Add vehicle with image URL
-                await addVehicle({ ...newVehicle, image_url: imageUrl });
+
+                // Add vehicle with images
+                await addVehicle({
+                  ...newVehicle,
+                  image_url: imageUrl,
+                  images: images
+                });
                 onClose();
                 setNewVehicle({
                   nickname: '',
@@ -564,7 +661,8 @@ const AddVehicleModal = ({
                   oil_brand: '',
                   drain_plug: '',
                   battery: '',
-                  image_url: ''
+                  image_url: '',
+                  images: []
                 });
                 clearImageSelection();
               }}
