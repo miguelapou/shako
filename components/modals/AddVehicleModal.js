@@ -450,6 +450,8 @@ const AddVehicleModal = ({
                       }
                     }}
                     className={`flex flex-col items-center justify-center w-full border-2 border-dashed rounded-lg cursor-pointer transition-all ${
+                      (!vehicleImageFiles || vehicleImageFiles.length === 0) ? 'min-h-[120px] md:min-h-[400px]' : 'min-h-[120px]'
+                    } ${
                       isDraggingImage
                         ? darkMode
                           ? 'border-blue-500 bg-blue-900/20 scale-105'
@@ -458,7 +460,6 @@ const AddVehicleModal = ({
                           ? 'border-gray-600 hover:border-gray-500 bg-gray-700/50 hover:bg-gray-700'
                           : 'border-gray-300 hover:border-gray-400 bg-gray-50 hover:bg-gray-100'
                     }`}
-                    style={{ minHeight: (!vehicleImageFiles || vehicleImageFiles.length === 0) ? '400px' : '120px' }}
                   >
                     <div className="flex flex-col items-center justify-center py-4">
                       <Upload className={`w-8 h-8 mb-2 ${
@@ -475,7 +476,7 @@ const AddVehicleModal = ({
                           'Drop image here'
                         ) : (
                           <>
-                            <span className="font-semibold">Click to add</span> or drag and drop
+                            <span className="font-semibold">Click to add</span><span className="hidden md:inline"> or drag and drop</span>
                           </>
                         )}
                       </p>
