@@ -774,7 +774,7 @@ const VehicleDetailModal = ({
                       )}
                       {viewingVehicle.vin && (
                         <div>
-                          <p className={`text-sm font-medium mb-2 ${
+                          <p className={`text-sm font-medium mb-1 ${
                             darkMode ? 'text-gray-400' : 'text-slate-600'
                           }`}>VIN</p>
                           <span className={`inline-block px-3 py-1 rounded-full text-xs font-mono ${
