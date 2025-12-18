@@ -1633,7 +1633,9 @@ const VehicleDetailModal = ({
                               {/* Status Badge with optional Archive icon */}
                               <div className="absolute top-2 right-2 flex items-center gap-1.5">
                                 {project.archived && (
-                                  <Archive className={`w-4 h-4 ${darkMode ? 'text-gray-500' : 'text-gray-400'}`} title="Archived" />
+                                  <span title="Archived" className="flex items-center">
+                                    <Archive className={`w-4 h-4 ${darkMode ? 'text-gray-500' : 'text-gray-400'}`} />
+                                  </span>
                                 )}
                                 <span className={`px-2 py-0.5 rounded-full text-xs font-medium ${
                                   statusColors[project.status]
