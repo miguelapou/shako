@@ -2036,7 +2036,7 @@ const VehicleDetailModal = ({
 
                       {/* Combined Images Grid - existing and new images together */}
                       {((viewingVehicle.images_resolved?.length || 0) + vehicleImageFiles.length > 0) && (
-                        <div className="grid grid-cols-3 gap-3 mb-3">
+                        <div className="grid grid-cols-2 gap-3 mb-3">
                           {/* Existing Images */}
                           {viewingVehicle.images_resolved?.map((img, index) => (
                             <div
