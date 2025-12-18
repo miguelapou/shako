@@ -764,14 +764,12 @@ const VehicleDetailModal = ({
                     <div className="space-y-4">
                       {viewingVehicle.license_plate && (
                         <div>
-                          <p className={`text-sm font-medium mb-2 ${
+                          <p className={`text-sm font-medium mb-1 ${
                             darkMode ? 'text-gray-400' : 'text-slate-600'
                           }`}>License Plate</p>
-                          <span className={`inline-block px-3 py-1 rounded text-sm font-medium ${
-                            darkMode ? 'bg-blue-600 text-blue-100' : 'bg-blue-100 text-blue-800'
-                          }`}>
-                            {viewingVehicle.license_plate}
-                          </span>
+                          <p className={`text-base ${
+                            darkMode ? 'text-gray-100' : 'text-slate-800'
+                          }`}>{viewingVehicle.license_plate}</p>
                         </div>
                       )}
                       {viewingVehicle.vin && (
