@@ -1812,7 +1812,7 @@ const VehicleDetailModal = ({
                         <label className={`block text-sm font-medium mb-2 ${
                           darkMode ? 'text-gray-300' : 'text-slate-700'
                         }`}>
-                          Vehicle Color
+                          Highlight Color
                         </label>
                         <div className="flex items-center gap-3">
                           <input
