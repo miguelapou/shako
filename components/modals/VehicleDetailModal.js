@@ -109,6 +109,7 @@ const VehicleDetailModal = ({
   getStatusTextColor,
   getVendorColor,
   calculateProjectTotal,
+  calculateProjectStatus,
   toast
 }) => {
   // State for image gallery navigation
@@ -1718,8 +1719,13 @@ const VehicleDetailModal = ({
                   parts={parts}
                   darkMode={darkMode}
                   updateProject={(projectId, updates) => {
+                    // Auto-calculate status based on todos (same logic as in useProjects hook)
+                    let finalUpdates = { ...updates };
+                    if (updates.todos && updates.status !== 'on_hold') {
+                      finalUpdates.status = calculateProjectStatus(updates.todos, vehicleModalProjectView?.status);
+                    }
                     // Optimistic update: update vehicleModalProjectView immediately for snappy UI
-                    setVehicleModalProjectView(prev => ({ ...prev, ...updates }));
+                    setVehicleModalProjectView(prev => ({ ...prev, ...finalUpdates }));
                     // Persist to database in background (hook handles optimistic update on projects array)
                     updateProject(projectId, updates);
                   }}
