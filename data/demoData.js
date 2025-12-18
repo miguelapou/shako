@@ -39,7 +39,10 @@ export const DEMO_VEHICLES = [
     drain_plug: "17mm",
     battery: "SLI27AGMDP",
     image_url: "https://images.unsplash.com/photo-1583121274602-3e2820c69888?w=800&h=600&fit=crop",
-    images: [{ url: "https://images.unsplash.com/photo-1583121274602-3e2820c69888?w=800&h=600&fit=crop", isPrimary: true }]
+    images: [
+      { url: "https://images.unsplash.com/photo-1583121274602-3e2820c69888?w=800&h=600&fit=crop", isPrimary: true },
+      { url: "https://images.unsplash.com/photo-1494976388531-d1058494cdd8?w=800&h=600&fit=crop", isPrimary: false }
+    ]
   },
   {
     id: 2,
@@ -66,7 +69,10 @@ export const DEMO_VEHICLES = [
     drain_plug: "14mm",
     battery: "--",
     image_url: "https://images.unsplash.com/photo-1519641471654-76ce0107ad1b?w=800&h=600&fit=crop",
-    images: [{ url: "https://images.unsplash.com/photo-1519641471654-76ce0107ad1b?w=800&h=600&fit=crop", isPrimary: true }]
+    images: [
+      { url: "https://images.unsplash.com/photo-1519641471654-76ce0107ad1b?w=800&h=600&fit=crop", isPrimary: true },
+      { url: "https://images.unsplash.com/photo-1533473359331-0135ef1b58bf?w=800&h=600&fit=crop", isPrimary: false }
+    ]
   },
   {
     id: 3,
@@ -93,7 +99,10 @@ export const DEMO_VEHICLES = [
     drain_plug: "",
     battery: "MTX-S46B24R",
     image_url: "https://images.unsplash.com/photo-1549317661-bd32c8ce0db2?w=800&h=600&fit=crop",
-    images: [{ url: "https://images.unsplash.com/photo-1549317661-bd32c8ce0db2?w=800&h=600&fit=crop", isPrimary: true }]
+    images: [
+      { url: "https://images.unsplash.com/photo-1549317661-bd32c8ce0db2?w=800&h=600&fit=crop", isPrimary: true },
+      { url: "https://images.unsplash.com/photo-1552519507-da3b142c6e3d?w=800&h=600&fit=crop", isPrimary: false }
+    ]
   },
   {
     id: 4,
@@ -120,7 +129,10 @@ export const DEMO_VEHICLES = [
     drain_plug: "",
     battery: "",
     image_url: "https://images.unsplash.com/photo-1544636331-e26879cd4d9b?w=800&h=600&fit=crop",
-    images: [{ url: "https://images.unsplash.com/photo-1544636331-e26879cd4d9b?w=800&h=600&fit=crop", isPrimary: true }]
+    images: [
+      { url: "https://images.unsplash.com/photo-1544636331-e26879cd4d9b?w=800&h=600&fit=crop", isPrimary: true },
+      { url: "https://images.unsplash.com/photo-1542362567-b07e54358753?w=800&h=600&fit=crop", isPrimary: false }
+    ]
   },
   {
     id: 5,
@@ -147,7 +159,10 @@ export const DEMO_VEHICLES = [
     drain_plug: "",
     battery: "MTX-S46B24R",
     image_url: "https://images.unsplash.com/photo-1503376780353-7e6692767b70?w=800&h=600&fit=crop",
-    images: [{ url: "https://images.unsplash.com/photo-1503376780353-7e6692767b70?w=800&h=600&fit=crop", isPrimary: true }]
+    images: [
+      { url: "https://images.unsplash.com/photo-1503376780353-7e6692767b70?w=800&h=600&fit=crop", isPrimary: true },
+      { url: "https://images.unsplash.com/photo-1502877338535-766e1452684a?w=800&h=600&fit=crop", isPrimary: false }
+    ]
   }
 ];
 
