@@ -152,7 +152,7 @@ const AddVehicleModal = ({
                       type="color"
                       value={newVehicle.color || '#3B82F6'}
                       onChange={(e) => setNewVehicle({ ...newVehicle, color: e.target.value })}
-                      className="h-10 w-20 rounded cursor-pointer border-2 border-gray-300"
+                      className="h-10 w-20 sm:w-40 rounded cursor-pointer border-2 border-gray-300"
                     />
                     <span className={`text-sm font-mono ${
                       darkMode ? 'text-gray-400' : 'text-slate-600'
