@@ -1633,7 +1633,7 @@ const VehicleDetailModal = ({
                               {/* Status Badge with optional Archive icon */}
                               <div className="absolute top-2 right-2 flex items-center gap-1.5">
                                 {project.archived && (
-                                  <span title="Archived" className="flex items-center">
+                                  <span data-tooltip="Archived" className="instant-tooltip flex items-center">
                                     <Archive className={`w-4 h-4 ${darkMode ? 'text-gray-500' : 'text-gray-400'}`} />
                                   </span>
                                 )}
