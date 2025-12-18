@@ -1630,14 +1630,19 @@ const VehicleDetailModal = ({
                               }`}
                               style={{ borderLeftColor: getPriorityBorderColor(project.priority) }}
                             >
-                              {/* Status Badge */}
-                              <span className={`absolute top-2 right-2 px-2 py-0.5 rounded-full text-xs font-medium ${
-                                statusColors[project.status]
-                              } ${!darkMode ? 'ring-1 ring-inset ring-current' : ''}`}>
-                                {project.status === 'in_progress' ? 'IN PROGRESS' :
-                                 project.status === 'on_hold' ? 'ON HOLD' :
-                                 project.status?.toUpperCase() || 'PLANNING'}
-                              </span>
+                              {/* Status Badge with optional Archive icon */}
+                              <div className="absolute top-2 right-2 flex items-center gap-1.5">
+                                {project.archived && (
+                                  <Archive className={`w-4 h-4 ${darkMode ? 'text-gray-500' : 'text-gray-400'}`} />
+                                )}
+                                <span className={`px-2 py-0.5 rounded-full text-xs font-medium ${
+                                  statusColors[project.status]
+                                } ${!darkMode ? 'ring-1 ring-inset ring-current' : ''}`}>
+                                  {project.status === 'in_progress' ? 'IN PROGRESS' :
+                                   project.status === 'on_hold' ? 'ON HOLD' :
+                                   project.status?.toUpperCase() || 'PLANNING'}
+                                </span>
+                              </div>
                               <h4 className={`font-semibold mb-2 pr-20 ${
                                 darkMode ? 'text-gray-200' : 'text-gray-800'
                               }`}>
