@@ -1783,8 +1783,8 @@ const VehicleDetailModal = ({
             {viewingVehicle && (
               <div className="p-6 space-y-6 max-h-[calc(90vh-164px)] overflow-y-auto">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  {/* Basic Information - Right on desktop */}
-                  <div className="order-last space-y-4">
+                  {/* Basic Information */}
+                  <div className="space-y-4">
                     <div>
                       <label className={`block text-sm font-medium mb-2 ${
                         darkMode ? 'text-gray-300' : 'text-slate-700'
@@ -2018,8 +2018,8 @@ const VehicleDetailModal = ({
                     </div>
                   </div>
 
-                  {/* Multi-Image Upload - Left on desktop */}
-                  <div className="order-first space-y-4 flex flex-col">
+                  {/* Multi-Image Upload */}
+                  <div className="space-y-4 flex flex-col">
                     <div className="flex flex-col flex-1">
                       <label className={`block text-sm font-medium mb-2 ${
                         darkMode ? 'text-gray-300' : 'text-slate-700'
