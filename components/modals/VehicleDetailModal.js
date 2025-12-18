@@ -676,12 +676,12 @@ const VehicleDetailModal = ({
               className="p-6 pb-12 space-y-6 max-h-[calc(90vh-164px)] overflow-y-auto animate-fade-in"
             >
               {/* Top Section: Image (3/5) and Basic Info (2/5) side by side */}
-              <div className="grid grid-cols-1 md:grid-cols-[3fr_2fr] gap-6 md:items-start">
+              <div className="grid grid-cols-1 md:grid-cols-[3fr_2fr] gap-4 md:items-start">
                 {/* Basic Info Card - 2/5 width on desktop, aspect ratio calculated to match image height */}
-                <div className={`order-last rounded-lg p-6 md:aspect-[8/9] ${
+                <div className={`order-last rounded-lg px-6 pt-6 pb-4 md:aspect-[8/9] ${
                   darkMode ? 'bg-gray-700' : 'bg-gray-50'
                 }`}>
-                  <div className="flex items-center justify-between mb-4">
+                  <div className="flex items-center justify-between mb-3">
                     <h3 className={`text-lg font-semibold ${
                       darkMode ? 'text-gray-200' : 'text-gray-800'
                     }`}>
@@ -750,23 +750,31 @@ const VehicleDetailModal = ({
                           }`}>{viewingVehicle.name}</p>
                         </div>
                       )}
+                      {viewingVehicle.purchase_price && (
+                        <div>
+                          <p className={`text-sm font-medium mb-1 ${
+                            darkMode ? 'text-gray-400' : 'text-slate-600'
+                          }`}>Purchase Price</p>
+                          <p className={`text-base font-medium ${
+                            darkMode ? 'text-green-400' : 'text-green-600'
+                          }`}>${parseFloat(viewingVehicle.purchase_price).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</p>
+                        </div>
+                      )}
                     </div>
                     <div className="space-y-4">
                       {viewingVehicle.license_plate && (
                         <div>
-                          <p className={`text-sm font-medium mb-2 ${
+                          <p className={`text-sm font-medium mb-1 ${
                             darkMode ? 'text-gray-400' : 'text-slate-600'
                           }`}>License Plate</p>
-                          <span className={`inline-block px-3 py-1 rounded text-sm font-medium ${
-                            darkMode ? 'bg-blue-600 text-blue-100' : 'bg-blue-100 text-blue-800'
-                          }`}>
-                            {viewingVehicle.license_plate}
-                          </span>
+                          <p className={`text-base ${
+                            darkMode ? 'text-gray-100' : 'text-slate-800'
+                          }`}>{viewingVehicle.license_plate}</p>
                         </div>
                       )}
                       {viewingVehicle.vin && (
                         <div>
-                          <p className={`text-sm font-medium mb-2 ${
+                          <p className={`text-sm font-medium ${
                             darkMode ? 'text-gray-400' : 'text-slate-600'
                           }`}>VIN</p>
                           <span className={`inline-block px-3 py-1 rounded-full text-xs font-mono ${
@@ -788,6 +796,18 @@ const VehicleDetailModal = ({
                           </p>
                         </div>
                       )}
+                      {viewingVehicle.purchase_date && (
+                        <div>
+                          <p className={`text-sm font-medium mb-1 ${
+                            darkMode ? 'text-gray-400' : 'text-slate-600'
+                          }`}>Purchase Date</p>
+                          <p className={`text-base ${
+                            darkMode ? 'text-gray-100' : 'text-slate-800'
+                          }`}>
+                            {new Date(viewingVehicle.purchase_date + 'T00:00:00').toLocaleDateString(undefined, { year: 'numeric', month: 'long', day: 'numeric' })}
+                          </p>
+                        </div>
+                      )}
                     </div>
                     {/* Budget Progress for Linked Projects */}
                     {(() => {
@@ -796,7 +816,7 @@ const VehicleDetailModal = ({
                       const totalBudget = vehicleProjects.reduce((sum, project) => sum + (project.budget || 0), 0);
                       const progress = totalBudget > 0 ? (totalSpent / totalBudget) * 100 : 0;
                       return (
-                        <div className={`col-span-2 pt-4 mt-4 border-t ${
+                        <div className={`col-span-2 pt-4 border-t ${
                           darkMode ? 'border-gray-600' : 'border-gray-300'
                         }`}>
                           <p className={`text-sm font-semibold mb-2 ${
@@ -1951,6 +1971,47 @@ const VehicleDetailModal = ({
                           <option value="km">Kilometers</option>
                           <option value="mi">Miles</option>
                         </select>
+                      </div>
+                    </div>
+
+                    <div className="grid grid-cols-2 gap-4">
+                      <div>
+                        <label className={`block text-sm font-medium mb-2 ${
+                          darkMode ? 'text-gray-300' : 'text-slate-700'
+                        }`}>
+                          Purchase Price
+                        </label>
+                        <input
+                          type="number"
+                          inputMode="decimal"
+                          step="0.01"
+                          value={viewingVehicle.purchase_price || ''}
+                          onChange={(e) => setViewingVehicle({ ...viewingVehicle, purchase_price: e.target.value })}
+                          className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
+                            darkMode
+                              ? 'bg-gray-700 border-gray-600 text-gray-100 placeholder-gray-400'
+                              : 'bg-slate-50 border-slate-300 text-slate-800 placeholder-slate-400'
+                          }`}
+                          placeholder="e.g. 15000"
+                          min="0"
+                        />
+                      </div>
+                      <div>
+                        <label className={`block text-sm font-medium mb-2 ${
+                          darkMode ? 'text-gray-300' : 'text-slate-700'
+                        }`}>
+                          Purchase Date
+                        </label>
+                        <input
+                          type="date"
+                          value={viewingVehicle.purchase_date || ''}
+                          onChange={(e) => setViewingVehicle({ ...viewingVehicle, purchase_date: e.target.value })}
+                          className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
+                            darkMode
+                              ? 'bg-gray-700 border-gray-600 text-gray-100'
+                              : 'bg-slate-50 border-slate-300 text-slate-800'
+                          }`}
+                        />
                       </div>
                     </div>
                   </div>

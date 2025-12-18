@@ -45,6 +45,8 @@ const AddVehicleModal = ({
       newVehicle.year?.toString().trim() ||
       newVehicle.license_plate?.trim() ||
       newVehicle.vin?.trim() ||
+      newVehicle.purchase_price?.toString().trim() ||
+      newVehicle.purchase_date?.trim() ||
       newVehicle.fuel_filter?.trim() ||
       newVehicle.air_filter?.trim() ||
       newVehicle.oil_filter?.trim() ||
@@ -307,6 +309,47 @@ const AddVehicleModal = ({
                     <option value="km">Kilometers</option>
                     <option value="mi">Miles</option>
                   </select>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className={`block text-sm font-medium mb-2 ${
+                    darkMode ? 'text-gray-300' : 'text-slate-700'
+                  }`}>
+                    Purchase Price
+                  </label>
+                  <input
+                    type="number"
+                    inputMode="decimal"
+                    step="0.01"
+                    value={newVehicle.purchase_price}
+                    onChange={(e) => setNewVehicle({ ...newVehicle, purchase_price: e.target.value })}
+                    className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
+                      darkMode
+                        ? 'bg-gray-700 border-gray-600 text-gray-100 placeholder-gray-400'
+                        : 'bg-slate-50 border-slate-300 text-slate-800 placeholder-slate-400'
+                    }`}
+                    placeholder="e.g. 15000"
+                    min="0"
+                  />
+                </div>
+                <div>
+                  <label className={`block text-sm font-medium mb-2 ${
+                    darkMode ? 'text-gray-300' : 'text-slate-700'
+                  }`}>
+                    Purchase Date
+                  </label>
+                  <input
+                    type="date"
+                    value={newVehicle.purchase_date}
+                    onChange={(e) => setNewVehicle({ ...newVehicle, purchase_date: e.target.value })}
+                    className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
+                      darkMode
+                        ? 'bg-gray-700 border-gray-600 text-gray-100'
+                        : 'bg-slate-50 border-slate-300 text-slate-800'
+                    }`}
+                  />
                 </div>
               </div>
             </div>
@@ -653,6 +696,8 @@ const AddVehicleModal = ({
                   vin: '',
                   odometer_range: '',
                   odometer_unit: 'km',
+                  purchase_price: '',
+                  purchase_date: '',
                   fuel_filter: '',
                   air_filter: '',
                   oil_filter: '',
