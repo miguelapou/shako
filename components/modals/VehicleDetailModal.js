@@ -899,11 +899,19 @@ const VehicleDetailModal = ({
                     <div
                       className="order-first rounded-lg overflow-hidden relative group touch-pan-y aspect-[4/3]"
                       onTouchStart={(e) => {
+                        // Stop propagation to prevent vehicle navigation
+                        e.stopPropagation();
                         if (!hasMultipleImages) return;
                         const touch = e.touches[0];
                         e.currentTarget.dataset.touchStartX = touch.clientX;
                       }}
+                      onTouchMove={(e) => {
+                        // Stop propagation to prevent vehicle navigation
+                        e.stopPropagation();
+                      }}
                       onTouchEnd={(e) => {
+                        // Stop propagation to prevent vehicle navigation
+                        e.stopPropagation();
                         if (!hasMultipleImages) return;
                         const touchStartX = parseFloat(e.currentTarget.dataset.touchStartX);
                         const touchEndX = e.changedTouches[0].clientX;
