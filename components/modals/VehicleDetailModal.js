@@ -941,7 +941,7 @@ const VehicleDetailModal = ({
                           slideDirection === 'right' ? 'slide-in-left' : ''
                         }`}
                       />
-                      {/* Navigation arrows - visible on mobile, hover on desktop */}
+                      {/* Navigation arrows - desktop only on hover */}
                       {hasMultipleImages && (
                         <>
                           <button
@@ -949,7 +949,7 @@ const VehicleDetailModal = ({
                               setSlideDirection('right');
                               setCurrentImageIndex(prev => prev === 0 ? images.length - 1 : prev - 1);
                             }}
-                            className="absolute left-2 top-1/2 -translate-y-1/2 p-2 rounded-full bg-black/50 text-white md:opacity-0 md:group-hover:opacity-100 transition-opacity hover:bg-black/70"
+                            className="hidden md:block absolute left-2 top-1/2 -translate-y-1/2 p-2 rounded-full bg-black/50 text-white opacity-0 group-hover:opacity-100 transition-opacity hover:bg-black/70"
                             title="Previous image"
                           >
                             <ChevronLeft className="w-5 h-5" />
@@ -959,17 +959,19 @@ const VehicleDetailModal = ({
                               setSlideDirection('left');
                               setCurrentImageIndex(prev => prev === images.length - 1 ? 0 : prev + 1);
                             }}
-                            className="absolute right-2 top-1/2 -translate-y-1/2 p-2 rounded-full bg-black/50 text-white md:opacity-0 md:group-hover:opacity-100 transition-opacity hover:bg-black/70"
+                            className="hidden md:block absolute right-2 top-1/2 -translate-y-1/2 p-2 rounded-full bg-black/50 text-white opacity-0 group-hover:opacity-100 transition-opacity hover:bg-black/70"
                             title="Next image"
                           >
                             <ChevronRight className="w-5 h-5" />
                           </button>
-                          {/* Image indicators - larger touch targets on mobile */}
+                          {/* Image indicators - visual only on mobile, clickable on desktop */}
                           <div className="absolute bottom-3 left-1/2 -translate-x-1/2 flex gap-2 md:gap-1.5">
                             {images.map((img, idx) => (
                               <button
                                 key={idx}
                                 onClick={() => {
+                                  // Only allow click navigation on desktop
+                                  if (window.innerWidth < 768) return;
                                   // Determine slide direction based on index difference
                                   if (idx > safeIndex) {
                                     setSlideDirection('left');
@@ -978,10 +980,10 @@ const VehicleDetailModal = ({
                                   }
                                   setCurrentImageIndex(idx);
                                 }}
-                                className={`rounded-full transition-all ${
+                                className={`rounded-full transition-all md:cursor-pointer cursor-default ${
                                   idx === safeIndex
-                                    ? 'bg-white w-6 h-3 md:w-4 md:h-2'
-                                    : 'bg-white/50 hover:bg-white/75 w-3 h-3 md:w-2 md:h-2'
+                                    ? 'bg-white w-2 h-2 md:w-4 md:h-2'
+                                    : 'bg-white/50 md:hover:bg-white/75 w-2 h-2 md:w-2 md:h-2'
                                 }`}
                                 title={img.isPrimary ? 'Primary image' : `Image ${idx + 1}`}
                               />
