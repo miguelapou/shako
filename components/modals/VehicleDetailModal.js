@@ -804,7 +804,7 @@ const VehicleDetailModal = ({
                           <p className={`text-base ${
                             darkMode ? 'text-gray-100' : 'text-slate-800'
                           }`}>
-                            {new Date(viewingVehicle.purchase_date).toLocaleDateString(undefined, { year: 'numeric', month: 'long', day: 'numeric' })}
+                            {new Date(viewingVehicle.purchase_date + 'T00:00:00').toLocaleDateString(undefined, { year: 'numeric', month: 'long', day: 'numeric' })}
                           </p>
                         </div>
                       )}
