@@ -582,6 +582,7 @@ const ProjectsTab = ({
           getStatusTextColor={getStatusTextColor}
           getVendorColor={getVendorColor}
           calculateProjectTotal={calculateProjectTotal}
+          calculateProjectStatus={calculateProjectStatus}
           setConfirmDialog={setConfirmDialog}
           onClose={() => {
             setShowProjectDetailModal(false);

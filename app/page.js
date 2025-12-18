@@ -1,6 +1,7 @@
 'use client';
 
 import AuthProvider, { useAuthContext } from '../components/AuthProvider';
+import DemoProvider, { useDemoContext } from '../components/DemoProvider';
 import LoginPage from '../components/LoginPage';
 import Shako from '../components/Shako';
 import { Loader2, Monitor } from 'lucide-react';
@@ -86,6 +87,7 @@ const MigrationInProgressScreen = () => {
  */
 const AuthGate = () => {
   const { user, loading } = useAuthContext();
+  const { isDemoMode, isInitialized } = useDemoContext();
   const [hasMigrationToken, setHasMigrationToken] = useState(false);
   const [migrationInOtherTab, setMigrationInOtherTab] = useState(false);
 
@@ -125,6 +127,16 @@ const AuthGate = () => {
     return <MigrationInProgressScreen />;
   }
 
+  // Wait for demo mode to initialize
+  if (!isInitialized) {
+    return <LoadingScreen />;
+  }
+
+  // If in demo mode, show the app with demo data
+  if (isDemoMode) {
+    return <Shako isDemo={true} />;
+  }
+
   // Show loading during initial load or if migration redirect is in progress
   if (loading || hasMigrationToken) {
     return <LoadingScreen />;
@@ -138,12 +150,14 @@ const AuthGate = () => {
 };
 
 /**
- * Home page wrapped with auth provider
+ * Home page wrapped with auth and demo providers
  */
 export default function Home() {
   return (
-    <AuthProvider>
-      <AuthGate />
-    </AuthProvider>
+    <DemoProvider>
+      <AuthProvider>
+        <AuthGate />
+      </AuthProvider>
+    </DemoProvider>
   );
 }

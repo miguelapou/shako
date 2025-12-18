@@ -37,6 +37,7 @@ const ProjectDetailModal = ({
   getStatusTextColor,
   getVendorColor,
   calculateProjectTotal,
+  calculateProjectStatus,
   setConfirmDialog,
   onClose
 }) => {
@@ -262,8 +263,13 @@ const ProjectDetailModal = ({
                 parts={parts}
                 darkMode={darkMode}
                 updateProject={(projectId, updates) => {
+                  // Auto-calculate status based on todos (same logic as in useProjects hook)
+                  let finalUpdates = { ...updates };
+                  if (updates.todos && updates.status !== 'on_hold') {
+                    finalUpdates.status = calculateProjectStatus(updates.todos, viewingProject?.status);
+                  }
                   // Optimistic update: update viewingProject immediately for snappy UI
-                  setViewingProject(prev => ({ ...prev, ...updates }));
+                  setViewingProject(prev => ({ ...prev, ...finalUpdates }));
                   // Persist to database in background (hook handles optimistic update on projects array)
                   updateProject(projectId, updates);
                 }}

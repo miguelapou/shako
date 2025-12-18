@@ -109,6 +109,7 @@ const VehicleDetailModal = ({
   getStatusTextColor,
   getVendorColor,
   calculateProjectTotal,
+  calculateProjectStatus,
   toast
 }) => {
   // State for image gallery navigation
@@ -1616,6 +1617,7 @@ const VehicleDetailModal = ({
                           const completedTodos = project.todos ? project.todos.filter(t => t.completed).length : 0;
                           const uncompletedTodos = project.todos ? project.todos.filter(t => !t.completed).length : 0;
 
+                          const statusColors = getStatusColors(darkMode);
                           return (
                             <button
                               key={project.id}
@@ -1623,12 +1625,27 @@ const VehicleDetailModal = ({
                                 e.stopPropagation();
                                 setVehicleModalProjectView(project);
                               }}
-                              className={`flex flex-col rounded-lg p-4 border-l-4 text-left transition-all duration-200 cursor-pointer can-hover:hover:shadow-2xl can-hover:hover:scale-[1.03] ${
+                              className={`relative flex flex-col rounded-lg p-4 border-l-4 text-left transition-all duration-200 cursor-pointer can-hover:hover:shadow-2xl can-hover:hover:scale-[1.03] ${
                                 darkMode ? 'bg-gray-700' : 'bg-gray-50'
                               }`}
                               style={{ borderLeftColor: getPriorityBorderColor(project.priority) }}
                             >
-                              <h4 className={`font-semibold mb-2 ${
+                              {/* Status Badge with optional Archive icon */}
+                              <div className="absolute top-2 right-2 flex items-center gap-1.5">
+                                {project.archived && (
+                                  <span data-tooltip="Archived" className="instant-tooltip flex items-center">
+                                    <Archive className={`w-4 h-4 ${darkMode ? 'text-gray-500' : 'text-gray-400'}`} />
+                                  </span>
+                                )}
+                                <span className={`px-2 py-0.5 rounded-full text-xs font-medium ${
+                                  statusColors[project.status]
+                                } ${!darkMode ? 'ring-1 ring-inset ring-current' : ''}`}>
+                                  {project.status === 'in_progress' ? 'IN PROGRESS' :
+                                   project.status === 'on_hold' ? 'ON HOLD' :
+                                   project.status?.toUpperCase() || 'PLANNING'}
+                                </span>
+                              </div>
+                              <h4 className={`font-semibold mb-2 pr-20 ${
                                 darkMode ? 'text-gray-200' : 'text-gray-800'
                               }`}>
                                 {project.name}
@@ -1718,8 +1735,13 @@ const VehicleDetailModal = ({
                   parts={parts}
                   darkMode={darkMode}
                   updateProject={(projectId, updates) => {
+                    // Auto-calculate status based on todos (same logic as in useProjects hook)
+                    let finalUpdates = { ...updates };
+                    if (updates.todos && updates.status !== 'on_hold') {
+                      finalUpdates.status = calculateProjectStatus(updates.todos, vehicleModalProjectView?.status);
+                    }
                     // Optimistic update: update vehicleModalProjectView immediately for snappy UI
-                    setVehicleModalProjectView(prev => ({ ...prev, ...updates }));
+                    setVehicleModalProjectView(prev => ({ ...prev, ...finalUpdates }));
                     // Persist to database in background (hook handles optimistic update on projects array)
                     updateProject(projectId, updates);
                   }}

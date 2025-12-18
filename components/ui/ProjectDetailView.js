@@ -1,5 +1,5 @@
 import React, { useState, useMemo, useEffect, useLayoutEffect, useRef } from 'react';
-import { Package, CheckCircle, CheckSquare, ChevronDown, X } from 'lucide-react';
+import { Package, CheckCircle, CheckSquare, ChevronDown, X, Archive } from 'lucide-react';
 import { getVendorDisplayColor } from '../../utils/colorUtils';
 import ConfirmDialog from './ConfirmDialog';
 
@@ -517,11 +517,18 @@ const ProjectDetailView = ({
     <>
       {/* Status Badge (left) and Priority (right) on same row */}
       <div className="flex items-center justify-between mb-6 gap-3">
-        <span className={`inline-block px-4 py-2 rounded-full text-sm font-medium ${
-          statusColors[project.status]
-        } ${!darkMode ? 'ring-1 ring-inset ring-current' : ''}`}>
-          {project.status.replace('_', ' ').toUpperCase()}
-        </span>
+        <div className="flex items-center gap-2">
+          <span className={`inline-block px-4 py-2 rounded-full text-sm font-medium ${
+            statusColors[project.status]
+          } ${!darkMode ? 'ring-1 ring-inset ring-current' : ''}`}>
+            {project.status.replace('_', ' ').toUpperCase()}
+          </span>
+          {project.archived && (
+            <span data-tooltip="Archived" className="instant-tooltip flex items-center">
+              <Archive className={`w-5 h-5 ${darkMode ? 'text-gray-500' : 'text-gray-400'}`} />
+            </span>
+          )}
+        </div>
         {/* Priority */}
         <div className="text-right">
           <p className={`text-xs mb-1 ${darkMode ? 'text-gray-400' : 'text-slate-600'}`}>
