@@ -33,6 +33,8 @@ const useVehicles = (userId, toast) => {
     vin: '',
     odometer_range: '',
     odometer_unit: 'km',
+    purchase_price: '',
+    purchase_date: '',
     fuel_filter: '',
     air_filter: '',
     oil_filter: '',
