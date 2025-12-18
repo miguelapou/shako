@@ -750,6 +750,16 @@ const VehicleDetailModal = ({
                           }`}>{viewingVehicle.name}</p>
                         </div>
                       )}
+                      {viewingVehicle.purchase_price && (
+                        <div>
+                          <p className={`text-sm font-medium mb-1 ${
+                            darkMode ? 'text-gray-400' : 'text-slate-600'
+                          }`}>Purchase Price</p>
+                          <p className={`text-base font-medium ${
+                            darkMode ? 'text-green-400' : 'text-green-600'
+                          }`}>${parseFloat(viewingVehicle.purchase_price).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</p>
+                        </div>
+                      )}
                     </div>
                     <div className="space-y-4">
                       {viewingVehicle.license_plate && (
@@ -785,6 +795,18 @@ const VehicleDetailModal = ({
                             darkMode ? 'text-gray-100' : 'text-slate-800'
                           }`}>
                             ~{parseInt(viewingVehicle.odometer_range).toLocaleString()} {viewingVehicle.odometer_unit === 'mi' ? 'miles' : 'km'}
+                          </p>
+                        </div>
+                      )}
+                      {viewingVehicle.purchase_date && (
+                        <div>
+                          <p className={`text-sm font-medium mb-1 ${
+                            darkMode ? 'text-gray-400' : 'text-slate-600'
+                          }`}>Purchase Date</p>
+                          <p className={`text-base ${
+                            darkMode ? 'text-gray-100' : 'text-slate-800'
+                          }`}>
+                            {new Date(viewingVehicle.purchase_date).toLocaleDateString(undefined, { year: 'numeric', month: 'long', day: 'numeric' })}
                           </p>
                         </div>
                       )}
@@ -1951,6 +1973,47 @@ const VehicleDetailModal = ({
                           <option value="km">Kilometers</option>
                           <option value="mi">Miles</option>
                         </select>
+                      </div>
+                    </div>
+
+                    <div className="grid grid-cols-2 gap-4">
+                      <div>
+                        <label className={`block text-sm font-medium mb-2 ${
+                          darkMode ? 'text-gray-300' : 'text-slate-700'
+                        }`}>
+                          Purchase Price
+                        </label>
+                        <input
+                          type="number"
+                          inputMode="decimal"
+                          step="0.01"
+                          value={viewingVehicle.purchase_price || ''}
+                          onChange={(e) => setViewingVehicle({ ...viewingVehicle, purchase_price: e.target.value })}
+                          className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
+                            darkMode
+                              ? 'bg-gray-700 border-gray-600 text-gray-100 placeholder-gray-400'
+                              : 'bg-slate-50 border-slate-300 text-slate-800 placeholder-slate-400'
+                          }`}
+                          placeholder="e.g. 15000"
+                          min="0"
+                        />
+                      </div>
+                      <div>
+                        <label className={`block text-sm font-medium mb-2 ${
+                          darkMode ? 'text-gray-300' : 'text-slate-700'
+                        }`}>
+                          Purchase Date
+                        </label>
+                        <input
+                          type="date"
+                          value={viewingVehicle.purchase_date || ''}
+                          onChange={(e) => setViewingVehicle({ ...viewingVehicle, purchase_date: e.target.value })}
+                          className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
+                            darkMode
+                              ? 'bg-gray-700 border-gray-600 text-gray-100'
+                              : 'bg-slate-50 border-slate-300 text-slate-800'
+                          }`}
+                        />
                       </div>
                     </div>
                   </div>
