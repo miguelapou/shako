@@ -2,12 +2,10 @@
    CUSTOM STYLES FOR SHAKO
    ======================================== */
 
-/* Foundation One Font */
+/* Foundation One Font - Self-hosted */
 @font-face {
   font-family: 'FoundationOne';
-  src: url('https://db.onlinewebfonts.com/t/f58c10cd63660152b6858a49e05fe609.woff2') format('woff2'),
-       url('https://db.onlinewebfonts.com/t/f58c10cd63660152b6858a49e05fe609.woff') format('woff'),
-       url('https://db.onlinewebfonts.com/t/f58c10cd63660152b6858a49e05fe609.ttf') format('truetype');
+  src: url('/fonts/FoundationOne.ttf') format('truetype');
   font-weight: normal;
   font-style: normal;
   font-display: swap;
