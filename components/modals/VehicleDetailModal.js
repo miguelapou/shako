@@ -980,8 +980,8 @@ const VehicleDetailModal = ({
                                 }}
                                 className={`rounded-full transition-all ${
                                   idx === safeIndex
-                                    ? 'bg-white w-2 h-2 md:w-4 md:h-2'
-                                    : 'bg-white/50 hover:bg-white/75 w-2 h-2 md:w-2 md:h-2'
+                                    ? 'bg-white w-6 h-3 md:w-4 md:h-2'
+                                    : 'bg-white/50 hover:bg-white/75 w-3 h-3 md:w-2 md:h-2'
                                 }`}
                                 title={img.isPrimary ? 'Primary image' : `Image ${idx + 1}`}
                               />
