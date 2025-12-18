@@ -2036,16 +2036,14 @@ const VehicleDetailModal = ({
 
                       {/* Combined Images Grid - existing and new images together */}
                       {((viewingVehicle.images_resolved?.length || 0) + vehicleImageFiles.length > 0) && (
-                        <div className="grid grid-cols-2 gap-3 mb-3">
+                        <div className="grid grid-cols-2 md:grid-cols-3 gap-3 mb-3">
                           {/* Existing Images */}
                           {viewingVehicle.images_resolved?.map((img, index) => (
                             <div
                               key={`existing-${index}`}
-                              className="relative group"
+                              className="relative"
                               onClick={() => {
-                                if (window.innerWidth < 768) {
-                                  setSelectedImageId(selectedImageId === `existing-${index}` ? null : `existing-${index}`);
-                                }
+                                setSelectedImageId(selectedImageId === `existing-${index}` ? null : `existing-${index}`);
                               }}
                             >
                               <div className="aspect-square">
@@ -2063,9 +2061,9 @@ const VehicleDetailModal = ({
                                   Primary
                                 </div>
                               )}
-                              {/* Mobile: tap-to-show overlay */}
+                              {/* Click-to-show overlay */}
                               <div
-                                className={`md:hidden absolute inset-0 rounded-lg flex items-center justify-center gap-3 transition-opacity duration-150 ${
+                                className={`absolute inset-0 rounded-lg flex items-center justify-center gap-3 transition-opacity duration-150 ${
                                   selectedImageId === `existing-${index}` ? 'opacity-100' : 'opacity-0 pointer-events-none'
                                 } ${darkMode ? 'bg-gray-800/95' : 'bg-gray-100/95'}`}
                                 onClick={(e) => {
@@ -2134,68 +2132,15 @@ const VehicleDetailModal = ({
                                   <span className="text-[10px] font-medium">Remove</span>
                                 </button>
                               </div>
-                              {/* Desktop: hover overlay */}
-                              <div className="hidden md:flex absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity rounded-lg items-center justify-center gap-2">
-                                {!img.isPrimary && (
-                                  <button
-                                    onClick={() => {
-                                      const updatedImages = viewingVehicle.images_resolved.map((i, idx) => ({
-                                        ...i,
-                                        isPrimary: idx === index
-                                      }));
-                                      setViewingVehicle({
-                                        ...viewingVehicle,
-                                        images_resolved: updatedImages,
-                                        images: viewingVehicle.images?.map((i, idx) => ({
-                                          ...i,
-                                          isPrimary: idx === index
-                                        }))
-                                      });
-                                      // Clear primary from new images
-                                      setVehicleImageFiles(prev => prev.map(img => ({ ...img, isPrimary: false })));
-                                    }}
-                                    className="p-2 rounded-full bg-blue-600 hover:bg-blue-700 text-white transition-colors"
-                                    title="Set as primary"
-                                  >
-                                    <CheckCircle className="w-5 h-5" />
-                                  </button>
-                                )}
-                                <button
-                                  onClick={() => {
-                                    const wasPrimary = img.isPrimary;
-                                    const updatedImages = viewingVehicle.images_resolved.filter((_, idx) => idx !== index);
-                                    const updatedDbImages = viewingVehicle.images?.filter((_, idx) => idx !== index);
-                                    if (wasPrimary && updatedImages.length > 0) {
-                                      updatedImages[0].isPrimary = true;
-                                      if (updatedDbImages && updatedDbImages.length > 0) {
-                                        updatedDbImages[0].isPrimary = true;
-                                      }
-                                    }
-                                    setViewingVehicle({
-                                      ...viewingVehicle,
-                                      images_resolved: updatedImages,
-                                      images: updatedDbImages,
-                                      image_url: updatedImages.length > 0 ? viewingVehicle.image_url : '',
-                                      image_url_resolved: updatedImages.length > 0 ? viewingVehicle.image_url_resolved : ''
-                                    });
-                                  }}
-                                  className="p-2 rounded-full bg-red-600 hover:bg-red-700 text-white transition-colors"
-                                  title="Remove image"
-                                >
-                                  <X className="w-5 h-5" />
-                                </button>
-                              </div>
                             </div>
                           ))}
                           {/* New Images to Upload */}
                           {vehicleImageFiles.map((imgFile, index) => (
                             <div
                               key={`new-${index}`}
-                              className="relative group"
+                              className="relative"
                               onClick={() => {
-                                if (window.innerWidth < 768) {
-                                  setSelectedImageId(selectedImageId === `new-${index}` ? null : `new-${index}`);
-                                }
+                                setSelectedImageId(selectedImageId === `new-${index}` ? null : `new-${index}`);
                               }}
                             >
                               <div className="aspect-square">
@@ -2217,9 +2162,9 @@ const VehicleDetailModal = ({
                                   Primary
                                 </div>
                               )}
-                              {/* Mobile: tap-to-show overlay */}
+                              {/* Click-to-show overlay */}
                               <div
-                                className={`md:hidden absolute inset-0 rounded-lg flex items-center justify-center gap-3 transition-opacity duration-150 ${
+                                className={`absolute inset-0 rounded-lg flex items-center justify-center gap-3 transition-opacity duration-150 ${
                                   selectedImageId === `new-${index}` ? 'opacity-100' : 'opacity-0 pointer-events-none'
                                 } ${darkMode ? 'bg-gray-800/95' : 'bg-gray-100/95'}`}
                                 onClick={(e) => {
@@ -2266,35 +2211,6 @@ const VehicleDetailModal = ({
                                 >
                                   <Trash2 className="w-5 h-5 mb-0.5" />
                                   <span className="text-[10px] font-medium">Remove</span>
-                                </button>
-                              </div>
-                              {/* Desktop: hover overlay */}
-                              <div className="hidden md:flex absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity rounded-lg items-center justify-center gap-2">
-                                {!imgFile.isPrimary && (
-                                  <button
-                                    onClick={() => {
-                                      // Unset primary from existing images
-                                      if (viewingVehicle.images_resolved?.length > 0) {
-                                        setViewingVehicle({
-                                          ...viewingVehicle,
-                                          images_resolved: viewingVehicle.images_resolved.map(img => ({ ...img, isPrimary: false })),
-                                          images: viewingVehicle.images?.map(img => ({ ...img, isPrimary: false }))
-                                        });
-                                      }
-                                      setPrimaryImageFile(index);
-                                    }}
-                                    className="p-2 rounded-full bg-blue-600 hover:bg-blue-700 text-white transition-colors"
-                                    title="Set as primary"
-                                  >
-                                    <CheckCircle className="w-5 h-5" />
-                                  </button>
-                                )}
-                                <button
-                                  onClick={() => removeImageFile(index)}
-                                  className="p-2 rounded-full bg-red-600 hover:bg-red-700 text-white transition-colors"
-                                  title="Remove image"
-                                >
-                                  <X className="w-5 h-5" />
                                 </button>
                               </div>
                             </div>
