@@ -19,6 +19,8 @@ const VALID_VEHICLE_COLUMNS = [
   'vin',
   'odometer_range',
   'odometer_unit',
+  'purchase_price',
+  'purchase_date',
   'color',
   'image_url',
   'images', // JSONB array for multiple images: [{ url: string, isPrimary: boolean }]
@@ -36,7 +38,7 @@ const VALID_VEHICLE_COLUMNS = [
 ];
 
 // Numeric columns that should skip empty strings (to avoid type mismatch)
-const NUMERIC_COLUMNS = ['year', 'odometer_range', 'display_order'];
+const NUMERIC_COLUMNS = ['year', 'odometer_range', 'display_order', 'purchase_price'];
 
 /**
  * Filter object to only include valid database columns
