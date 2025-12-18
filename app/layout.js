@@ -25,9 +25,9 @@ export default function RootLayout({ children }) {
         {/* Preload custom font to reduce FOUT */}
         <link
           rel="preload"
-          href="https://db.onlinewebfonts.com/t/f58c10cd63660152b6858a49e05fe609.woff2"
+          href="/fonts/FoundationOne.ttf"
           as="font"
-          type="font/woff2"
+          type="font/ttf"
           crossOrigin="anonymous"
         />
       </head>

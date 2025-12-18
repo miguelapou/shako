@@ -1,8 +1,9 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Loader2 } from 'lucide-react';
+import { Loader2, Play } from 'lucide-react';
 import { useAuthContext } from './AuthProvider';
+import { useDemoContext } from './DemoProvider';
 
 /**
  * Google icon SVG component
@@ -33,6 +34,7 @@ const GoogleIcon = () => (
  */
 const LoginPage = () => {
   const { signInWithGoogle, loading, error, migrationResult, clearMigrationResult } = useAuthContext();
+  const { enterDemoMode } = useDemoContext();
   const [darkMode, setDarkMode] = useState(false);
   const [mounted, setMounted] = useState(false);
   const [fontLoaded, setFontLoaded] = useState(false);
@@ -169,6 +171,27 @@ const LoginPage = () => {
             <GoogleIcon />
           )}
           <span>{loading ? 'Signing in...' : 'Continue with Google'}</span>
+        </button>
+
+        {/* Divider */}
+        <div className="flex items-center gap-3 my-4">
+          <div className={`flex-1 h-px ${darkMode ? 'bg-gray-700' : 'bg-gray-200'}`} />
+          <span className={`text-xs ${darkMode ? 'text-gray-500' : 'text-gray-400'}`}>or</span>
+          <div className={`flex-1 h-px ${darkMode ? 'bg-gray-700' : 'bg-gray-200'}`} />
+        </div>
+
+        {/* Demo mode button */}
+        <button
+          onClick={enterDemoMode}
+          disabled={loading}
+          className={`w-full flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg text-sm transition-colors ${
+            darkMode
+              ? 'text-gray-400 hover:text-gray-300 hover:bg-gray-700/50'
+              : 'text-gray-500 hover:text-gray-700 hover:bg-gray-100'
+          } ${loading ? 'opacity-50 cursor-not-allowed' : ''}`}
+        >
+          <Play className="w-4 h-4" />
+          <span>Try Demo</span>
         </button>
 
         {/* Footer text */}

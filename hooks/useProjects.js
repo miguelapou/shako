@@ -1,12 +1,13 @@
 import { useState } from 'react';
 import * as projectsService from '../services/projectsService';
 import { validateBudget } from '../utils/validationUtils';
+import { getDemoProjects, saveDemoProjects } from '../data/demoData';
 
 /**
  * Custom hook for managing projects data and CRUD operations
  *
  * Features:
- * - Load projects from Supabase
+ * - Load projects from Supabase (or localStorage in demo mode)
  * - Add, update, and delete projects
  * - Auto-calculate project status based on todos
  * - Update project display order (for drag and drop)
@@ -14,9 +15,10 @@ import { validateBudget } from '../utils/validationUtils';
  *
  * @param {string} userId - Current user's ID for data isolation
  * @param {Object} toast - Toast notification functions { error, success, warning, info }
+ * @param {boolean} isDemo - Whether in demo mode (uses localStorage instead of Supabase)
  * @returns {Object} Projects state and operations
  */
-const useProjects = (userId, toast) => {
+const useProjects = (userId, toast, isDemo = false) => {
   const [projects, setProjects] = useState([]);
   const [loading, setLoading] = useState(true);
   const [newProject, setNewProject] = useState({
@@ -29,10 +31,19 @@ const useProjects = (userId, toast) => {
   });
 
   /**
-   * Load projects from Supabase
+   * Load projects from Supabase (or localStorage in demo mode)
    */
   const loadProjects = async () => {
     if (!userId) return;
+
+    // Demo mode: load from localStorage
+    if (isDemo) {
+      const demoProjects = getDemoProjects();
+      setProjects(demoProjects);
+      setLoading(false);
+      return;
+    }
+
     try {
       setLoading(true);
       const data = await projectsService.getAllProjects(userId);
@@ -80,6 +91,28 @@ const useProjects = (userId, toast) => {
       return; // Toast already shown by validateBudget
     }
 
+    // Demo mode: save to localStorage
+    if (isDemo) {
+      const demoProjects = getDemoProjects();
+      const newProject = {
+        id: `demo-project-${Date.now()}`,
+        name: projectData.name,
+        description: projectData.description,
+        status: projectData.status || 'planning',
+        budget: budgetValidation.value,
+        spent: 0,
+        priority: projectData.priority || 'medium',
+        vehicle_id: projectData.vehicle_id || null,
+        todos: [],
+        user_id: userId,
+        created_at: new Date().toISOString(),
+        display_order: demoProjects.length
+      };
+      saveDemoProjects([...demoProjects, newProject]);
+      setProjects([...demoProjects, newProject]);
+      return;
+    }
+
     try {
       await projectsService.createProject({
         name: projectData.name,
@@ -108,13 +141,18 @@ const useProjects = (userId, toast) => {
     }
 
     // Optimistic update: update local state immediately
-    setProjects(prevProjects =>
-      prevProjects.map(project =>
-        project.id === projectId
-          ? { ...project, ...updates }
-          : project
-      )
+    const updatedProjects = projects.map(project =>
+      project.id === projectId
+        ? { ...project, ...updates }
+        : project
     );
+    setProjects(updatedProjects);
+
+    // Demo mode: save to localStorage
+    if (isDemo) {
+      saveDemoProjects(updatedProjects);
+      return;
+    }
 
     // Persist to database in background
     try {
@@ -130,6 +168,15 @@ const useProjects = (userId, toast) => {
    * Delete a project
    */
   const deleteProject = async (projectId) => {
+    // Demo mode: delete from localStorage
+    if (isDemo) {
+      const demoProjects = getDemoProjects();
+      const updatedProjects = demoProjects.filter(p => p.id !== projectId);
+      saveDemoProjects(updatedProjects);
+      setProjects(updatedProjects);
+      return;
+    }
+
     try {
       await projectsService.deleteProject(projectId);
       await loadProjects();
@@ -142,6 +189,17 @@ const useProjects = (userId, toast) => {
    * Update projects display order
    */
   const updateProjectsOrder = async (orderedProjects) => {
+    // Demo mode: save to localStorage
+    if (isDemo) {
+      const updatedProjects = orderedProjects.map((project, index) => ({
+        ...project,
+        display_order: index
+      }));
+      saveDemoProjects(updatedProjects);
+      setProjects(updatedProjects);
+      return;
+    }
+
     try {
       // Update each project with its new display order
       for (let i = 0; i < orderedProjects.length; i++) {

@@ -4,12 +4,18 @@ import * as vendorsService from '../services/vendorsService';
 import { validatePartCosts } from '../utils/validationUtils';
 import { shouldSkipShip24, getTrackingPurgeFields } from '../utils/trackingUtils';
 import { fetchWithAuth } from '../utils/fetchWithAuth';
+import {
+  getDemoParts,
+  saveDemoParts,
+  getDemoVendors,
+  saveDemoVendors
+} from '../data/demoData';
 
 /**
  * Custom hook for managing parts data and CRUD operations
  *
  * Features:
- * - Load parts from Supabase
+ * - Load parts from Supabase (or localStorage in demo mode)
  * - Add, update, and delete parts
  * - Update part status (pending/purchased/shipped/delivered)
  * - Manage tracking information
@@ -18,9 +24,10 @@ import { fetchWithAuth } from '../utils/fetchWithAuth';
  *
  * @param {string} userId - Current user's ID for data isolation
  * @param {Object} toast - Toast notification functions { error, success, warning, info }
+ * @param {boolean} isDemo - Whether in demo mode (uses localStorage instead of Supabase)
  * @returns {Object} Parts state and operations
  */
-const useParts = (userId, toast) => {
+const useParts = (userId, toast, isDemo = false) => {
   const [parts, setParts] = useState([]);
   const [vendors, setVendors] = useState([]);
   const [vendorColors, setVendorColors] = useState({});
@@ -39,12 +46,21 @@ const useParts = (userId, toast) => {
   });
 
   /**
-   * Load parts from Supabase
+   * Load parts from Supabase or localStorage (demo mode)
    */
   const loadParts = async () => {
     if (!userId) return;
     try {
       setLoading(true);
+
+      // In demo mode, load from localStorage
+      if (isDemo) {
+        const demoParts = getDemoParts();
+        setParts(demoParts);
+        setLoading(false);
+        return;
+      }
+
       const data = await partsService.getAllParts(userId);
 
       if (data && data.length > 0) {
@@ -86,11 +102,23 @@ const useParts = (userId, toast) => {
   };
 
   /**
-   * Load vendors from Supabase
+   * Load vendors from Supabase or localStorage (demo mode)
    */
   const loadVendors = async () => {
     if (!userId) return;
     try {
+      // In demo mode, load from localStorage
+      if (isDemo) {
+        const demoVendors = getDemoVendors();
+        setVendors(demoVendors);
+        const colorsMap = {};
+        demoVendors.forEach(vendor => {
+          colorsMap[vendor.name] = vendor.color;
+        });
+        setVendorColors(colorsMap);
+        return;
+      }
+
       const data = await vendorsService.getAllVendors(userId);
 
       if (data && data.length > 0) {
@@ -108,11 +136,26 @@ const useParts = (userId, toast) => {
   };
 
   /**
-   * Update vendor color in database
+   * Update vendor color in database or localStorage (demo mode)
    */
   const updateVendorColor = async (vendorName, color) => {
     if (!userId) return;
     try {
+      // In demo mode, save to localStorage
+      if (isDemo) {
+        const demoVendors = getDemoVendors();
+        const existingIndex = demoVendors.findIndex(v => v.name === vendorName);
+        if (existingIndex >= 0) {
+          demoVendors[existingIndex].color = color;
+        } else {
+          demoVendors.push({ id: Date.now(), name: vendorName, color });
+        }
+        saveDemoVendors(demoVendors);
+        setVendorColors(prev => ({ ...prev, [vendorName]: color }));
+        setVendors(demoVendors);
+        return;
+      }
+
       await vendorsService.upsertVendor(vendorName, color, userId);
 
       // Update local state
@@ -152,6 +195,44 @@ const useParts = (userId, toast) => {
     };
     try {
       const createdAt = new Date().toISOString();
+      const newId = isDemo ? Date.now() : null;
+
+      // In demo mode, save to localStorage
+      if (isDemo) {
+        const partToAdd = {
+          id: newId,
+          ...statusMap[newPart.status],
+          part: newPart.part,
+          partNumber: newPart.partNumber,
+          vendor: newPart.vendor,
+          price,
+          shipping,
+          duties,
+          total,
+          tracking: newPart.tracking,
+          projectId: newPart.projectId || null,
+          vehicleId: newPart.vehicleId || null,
+          createdAt: createdAt
+        };
+        const updatedParts = [...parts, partToAdd];
+        setParts(updatedParts);
+        saveDemoParts(updatedParts);
+        if (setShowAddModal) setShowAddModal(false);
+        setNewPart({
+          part: '',
+          partNumber: '',
+          vendor: '',
+          price: '',
+          shipping: '',
+          duties: '',
+          tracking: '',
+          status: 'pending',
+          projectId: null,
+          vehicleId: null
+        });
+        return;
+      }
+
       // Insert into database
       const data = await partsService.createPart({
         ...statusMap[newPart.status],
@@ -221,6 +302,18 @@ const useParts = (userId, toast) => {
         pending: { delivered: false, shipped: false, purchased: false }
       };
       const updates = statusMap[newStatus];
+
+      // In demo mode, update localStorage
+      if (isDemo) {
+        const updatedParts = parts.map(part =>
+          part.id === partId ? { ...part, ...updates } : part
+        );
+        setParts(updatedParts);
+        saveDemoParts(updatedParts);
+        if (setOpenDropdown) setOpenDropdown(null);
+        return;
+      }
+
       // Update in database
       await partsService.updatePart(partId, updates);
       // Update local state
@@ -453,6 +546,14 @@ const useParts = (userId, toast) => {
    */
   const deletePart = async (partId) => {
     try {
+      // In demo mode, delete from localStorage
+      if (isDemo) {
+        const updatedParts = parts.filter(part => part.id !== partId);
+        setParts(updatedParts);
+        saveDemoParts(updatedParts);
+        return;
+      }
+
       // Delete from database
       await partsService.deletePart(partId);
       // Update local state

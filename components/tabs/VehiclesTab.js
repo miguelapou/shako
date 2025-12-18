@@ -96,6 +96,7 @@ const VehiclesTab = ({
   getStatusTextColor,
   getVendorColor,
   calculateProjectTotal,
+  calculateProjectStatus,
   toast
   // Document and service event props removed - now handled via context in VehicleDetailModal
 }) => {
@@ -770,6 +771,7 @@ const VehiclesTab = ({
           getStatusTextColor={getStatusTextColor}
           getVendorColor={getVendorColor}
           calculateProjectTotal={calculateProjectTotal}
+          calculateProjectStatus={calculateProjectStatus}
           toast={toast}
         />
       </>

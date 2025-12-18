@@ -1,6 +1,7 @@
 import { useState, useCallback } from 'react';
 import * as vehiclesService from '../services/vehiclesService';
 import { compressImage } from '../utils/imageUtils';
+import { getDemoVehicles, saveDemoVehicles } from '../data/demoData';
 
 // Maximum number of images per vehicle
 const MAX_VEHICLE_IMAGES = 6;
@@ -18,9 +19,10 @@ const MAX_VEHICLE_IMAGES = 6;
  *
  * @param {string} userId - Current user's ID for data isolation
  * @param {Object} toast - Toast notification functions { error, success, warning, info }
+ * @param {boolean} isDemo - Whether in demo mode (uses localStorage instead of Supabase)
  * @returns {Object} Vehicles state and operations
  */
-const useVehicles = (userId, toast) => {
+const useVehicles = (userId, toast, isDemo = false) => {
   const [vehicles, setVehicles] = useState([]);
   const [loading, setLoading] = useState(true);
   const [imagesLoaded, setImagesLoaded] = useState(false);
@@ -110,10 +112,36 @@ const useVehicles = (userId, toast) => {
   };
 
   /**
-   * Load vehicles from Supabase and resolve image URLs
+   * Load vehicles from Supabase (or localStorage in demo mode) and resolve image URLs
    */
   const loadVehicles = async () => {
     if (!userId) return;
+
+    // Demo mode: load from localStorage
+    if (isDemo) {
+      setLoading(true);
+      setImagesLoaded(false);
+      const demoVehicles = getDemoVehicles();
+      // Sort so archived vehicles are always at the end
+      const sorted = demoVehicles.sort((a, b) => {
+        if (a.archived === b.archived) {
+          return (a.display_order || 0) - (b.display_order || 0);
+        }
+        return a.archived ? 1 : -1;
+      });
+      // Demo vehicles already have resolved URLs (data URLs or pre-signed)
+      const finalVehicles = sorted.map(vehicle => ({
+        ...vehicle,
+        image_url_resolved: vehicle.image_url,
+        images_resolved: vehicle.images || (vehicle.image_url ? [{ url: vehicle.image_url, isPrimary: true }] : [])
+      }));
+      setVehicles(finalVehicles);
+      await preloadImages(finalVehicles);
+      setImagesLoaded(true);
+      setLoading(false);
+      return;
+    }
+
     try {
       setLoading(true);
       setImagesLoaded(false);
@@ -226,6 +254,23 @@ const useVehicles = (userId, toast) => {
    */
   const addVehicle = async (vehicleData) => {
     if (!userId) return;
+
+    // Demo mode: save to localStorage
+    if (isDemo) {
+      const demoVehicles = getDemoVehicles();
+      const newVehicle = {
+        id: `demo-vehicle-${Date.now()}`,
+        ...vehicleData,
+        user_id: userId,
+        created_at: new Date().toISOString(),
+        display_order: demoVehicles.length,
+        archived: false
+      };
+      saveDemoVehicles([...demoVehicles, newVehicle]);
+      await loadVehicles();
+      return;
+    }
+
     try {
       await vehiclesService.createVehicle(vehicleData, userId);
       await loadVehicles();
@@ -238,6 +283,33 @@ const useVehicles = (userId, toast) => {
    * Update a vehicle
    */
   const updateVehicle = async (vehicleId, updates) => {
+    // Demo mode: save to localStorage
+    if (isDemo) {
+      const demoVehicles = getDemoVehicles();
+      const updatedVehicles = demoVehicles.map(vehicle =>
+        vehicle.id === vehicleId
+          ? { ...vehicle, ...updates }
+          : vehicle
+      );
+      saveDemoVehicles(updatedVehicles);
+
+      // Update local state
+      setVehicles(prevVehicles => prevVehicles.map(vehicle => {
+        if (vehicle.id === vehicleId) {
+          const updatedVehicle = { ...vehicle, ...updates };
+          if (updates.image_url) {
+            updatedVehicle.image_url_resolved = updates.image_url;
+          }
+          if (updates.images !== undefined) {
+            updatedVehicle.images_resolved = updates.images || [];
+          }
+          return updatedVehicle;
+        }
+        return vehicle;
+      }));
+      return;
+    }
+
     try {
       await vehiclesService.updateVehicle(vehicleId, updates);
 
@@ -307,6 +379,15 @@ const useVehicles = (userId, toast) => {
    * Delete a vehicle
    */
   const deleteVehicle = async (vehicleId) => {
+    // Demo mode: delete from localStorage
+    if (isDemo) {
+      const demoVehicles = getDemoVehicles();
+      const updatedVehicles = demoVehicles.filter(v => v.id !== vehicleId);
+      saveDemoVehicles(updatedVehicles);
+      setVehicles(vehicles.filter(v => v.id !== vehicleId));
+      return;
+    }
+
     try {
       await vehiclesService.deleteVehicle(vehicleId);
       await loadVehicles();
@@ -319,6 +400,17 @@ const useVehicles = (userId, toast) => {
    * Update vehicles display order
    */
   const updateVehiclesOrder = async (orderedVehicles) => {
+    // Demo mode: save to localStorage
+    if (isDemo) {
+      const updatedVehicles = orderedVehicles.map((vehicle, index) => ({
+        ...vehicle,
+        display_order: index
+      }));
+      saveDemoVehicles(updatedVehicles);
+      setVehicles(updatedVehicles);
+      return;
+    }
+
     try {
       // Update each vehicle with its new display order
       for (let i = 0; i < orderedVehicles.length; i++) {
@@ -330,10 +422,22 @@ const useVehicles = (userId, toast) => {
   };
 
   /**
-   * Upload vehicle image to Supabase storage
+   * Upload vehicle image to Supabase storage (or return data URL in demo mode)
    */
   const uploadVehicleImage = async (file) => {
     if (!userId) return null;
+
+    // Demo mode: return a data URL instead of uploading
+    if (isDemo) {
+      return new Promise((resolve) => {
+        const reader = new FileReader();
+        reader.onloadend = () => {
+          resolve(reader.result);
+        };
+        reader.readAsDataURL(file);
+      });
+    }
+
     try {
       setUploadingImage(true);
       const publicUrl = await vehiclesService.uploadVehicleImage(file, userId);
@@ -459,12 +563,27 @@ const useVehicles = (userId, toast) => {
   };
 
   /**
-   * Upload multiple vehicle images to Supabase storage
+   * Upload multiple vehicle images to Supabase storage (or return data URLs in demo mode)
    * @param {Array} files - Array of { file: File, isPrimary: boolean }
    * @returns {Promise<Array>} Array of { url: string, isPrimary: boolean }
    */
   const uploadMultipleVehicleImages = async (files) => {
     if (!userId || files.length === 0) return [];
+
+    // Demo mode: return data URLs instead of uploading
+    if (isDemo) {
+      const uploadedImages = [];
+      for (const { file, isPrimary } of files) {
+        const url = await new Promise((resolve) => {
+          const reader = new FileReader();
+          reader.onloadend = () => resolve(reader.result);
+          reader.readAsDataURL(file);
+        });
+        uploadedImages.push({ url, isPrimary });
+      }
+      return uploadedImages;
+    }
+
     try {
       setUploadingImage(true);
       const uploadedImages = [];
@@ -490,6 +609,9 @@ const useVehicles = (userId, toast) => {
    * @param {string} imagePath - Storage path of the image
    */
   const deleteVehicleImageFromStorage = async (imagePath) => {
+    // Demo mode: no-op (data URLs don't need cleanup)
+    if (isDemo) return;
+
     try {
       await vehiclesService.deleteVehicleImage(imagePath);
     } catch (error) {
