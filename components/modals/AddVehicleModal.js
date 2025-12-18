@@ -145,14 +145,14 @@ const AddVehicleModal = ({
                   <label className={`block text-sm font-medium mb-2 ${
                     darkMode ? 'text-gray-300' : 'text-slate-700'
                   }`}>
-                    Vehicle Color
+                    Highlight Color
                   </label>
                   <div className="flex items-center gap-3">
                     <input
                       type="color"
                       value={newVehicle.color || '#3B82F6'}
                       onChange={(e) => setNewVehicle({ ...newVehicle, color: e.target.value })}
-                      className="h-10 w-20 rounded cursor-pointer border-2 border-gray-300"
+                      className="h-10 w-20 sm:w-40 rounded cursor-pointer border-2 border-gray-300"
                     />
                     <span className={`text-sm font-mono ${
                       darkMode ? 'text-gray-400' : 'text-slate-600'
@@ -344,7 +344,7 @@ const AddVehicleModal = ({
                     type="date"
                     value={newVehicle.purchase_date}
                     onChange={(e) => setNewVehicle({ ...newVehicle, purchase_date: e.target.value })}
-                    className={`w-36 md:w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
+                    className={`w-36 md:w-full px-4 py-2 md:py-1.5 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
                       darkMode
                         ? 'bg-gray-700 border-gray-600 text-gray-100'
                         : 'bg-slate-50 border-slate-300 text-slate-800'
