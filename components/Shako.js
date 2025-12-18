@@ -2064,6 +2064,7 @@ const Shako = ({ isDemo = false }) => {
             getStatusTextColor={getStatusTextColor}
             getVendorColor={getVendorColor}
             calculateProjectTotal={calculateProjectTotal}
+            calculateProjectStatus={calculateProjectStatus}
             hasUnsavedVehicleChanges={hasUnsavedVehicleChanges}
             setConfirmDialog={setConfirmDialog}
             editingTodoId={editingTodoId}
