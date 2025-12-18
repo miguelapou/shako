@@ -676,12 +676,12 @@ const VehicleDetailModal = ({
               className="p-6 pb-12 space-y-6 max-h-[calc(90vh-164px)] overflow-y-auto animate-fade-in"
             >
               {/* Top Section: Image (3/5) and Basic Info (2/5) side by side */}
-              <div className="grid grid-cols-1 md:grid-cols-[3fr_2fr] gap-6 md:items-start">
+              <div className="grid grid-cols-1 md:grid-cols-[3fr_2fr] gap-4 md:items-start">
                 {/* Basic Info Card - 2/5 width on desktop, aspect ratio calculated to match image height */}
                 <div className={`order-last rounded-lg p-6 md:aspect-[8/9] ${
                   darkMode ? 'bg-gray-700' : 'bg-gray-50'
                 }`}>
-                  <div className="flex items-center justify-between mb-4">
+                  <div className="flex items-center justify-between mb-3">
                     <h3 className={`text-lg font-semibold ${
                       darkMode ? 'text-gray-200' : 'text-gray-800'
                     }`}>
@@ -816,7 +816,7 @@ const VehicleDetailModal = ({
                       const totalBudget = vehicleProjects.reduce((sum, project) => sum + (project.budget || 0), 0);
                       const progress = totalBudget > 0 ? (totalSpent / totalBudget) * 100 : 0;
                       return (
-                        <div className={`col-span-2 pt-4 mt-4 border-t ${
+                        <div className={`col-span-2 pt-4 border-t ${
                           darkMode ? 'border-gray-600' : 'border-gray-300'
                         }`}>
                           <p className={`text-sm font-semibold mb-2 ${
