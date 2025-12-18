@@ -2011,7 +2011,7 @@ const VehicleDetailModal = ({
                           type="date"
                           value={viewingVehicle.purchase_date || ''}
                           onChange={(e) => setViewingVehicle({ ...viewingVehicle, purchase_date: e.target.value })}
-                          className={`w-36 md:w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
+                          className={`w-36 md:w-full px-4 py-2 md:py-1.5 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
                             darkMode
                               ? 'bg-gray-700 border-gray-600 text-gray-100'
                               : 'bg-slate-50 border-slate-300 text-slate-800'
