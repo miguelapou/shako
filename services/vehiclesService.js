@@ -37,12 +37,12 @@ const VALID_VEHICLE_COLUMNS = [
   'insurance_policy'
 ];
 
-// Numeric columns that should skip empty strings (to avoid type mismatch)
-const NUMERIC_COLUMNS = ['year', 'odometer_range', 'display_order', 'purchase_price'];
+// Columns that should skip empty strings (to avoid type mismatch with numeric/date types)
+const SKIP_EMPTY_COLUMNS = ['year', 'odometer_range', 'display_order', 'purchase_price', 'purchase_date'];
 
 /**
  * Filter object to only include valid database columns
- * Removes empty string values only for numeric columns to avoid type mismatches
+ * Removes empty string values for numeric/date columns to avoid type mismatches
  * @param {Object} data - Data object to filter
  * @returns {Object} Filtered object with only valid columns
  */
@@ -51,8 +51,8 @@ const filterValidColumns = (data) => {
   for (const key of Object.keys(data)) {
     if (VALID_VEHICLE_COLUMNS.includes(key)) {
       const value = data[key];
-      // Skip empty strings only for numeric columns
-      if (NUMERIC_COLUMNS.includes(key)) {
+      // Skip empty strings for numeric/date columns
+      if (SKIP_EMPTY_COLUMNS.includes(key)) {
         if (value !== '' && value !== null && value !== undefined) {
           filtered[key] = value;
         }
