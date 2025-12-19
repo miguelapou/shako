@@ -91,6 +91,8 @@ const VehiclesTab = ({
   loadProjects,
   addProject,
   createPartDirectly,
+  deleteProject,
+  deletePart,
   setConfirmDialog,
   getStatusColors,
   getPriorityColors,
@@ -863,6 +865,8 @@ const VehiclesTab = ({
           getVehicleProjects={getVehicleProjects}
           unlinkPartFromProject={unlinkPartFromProject}
           loadProjects={loadProjects}
+          deleteProject={deleteProject}
+          deletePart={deletePart}
           setConfirmDialog={setConfirmDialog}
           getStatusColors={getStatusColors}
           getPriorityColors={getPriorityColors}

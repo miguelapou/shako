@@ -10,7 +10,11 @@ const ConfirmDialog = ({
   confirmText = 'Delete',
   cancelText = 'Cancel',
   darkMode,
-  isDangerous = true
+  isDangerous = true,
+  // Optional secondary action (e.g., "Delete All")
+  secondaryAction,
+  secondaryText,
+  secondaryDangerous = true
 }) => {
   const [isClosing, setIsClosing] = useState(false);
 
@@ -30,6 +34,16 @@ const ConfirmDialog = ({
       onClose();
     }, 150);
   }, [onConfirm, onClose]);
+
+  const handleSecondary = useCallback(() => {
+    if (!secondaryAction) return;
+    setIsClosing(true);
+    setTimeout(() => {
+      setIsClosing(false);
+      secondaryAction();
+      onClose();
+    }, 150);
+  }, [secondaryAction, onClose]);
 
   // Handle Enter key to confirm
   useEffect(() => {
@@ -96,6 +110,18 @@ const ConfirmDialog = ({
           >
             {confirmText}
           </button>
+          {secondaryAction && secondaryText && (
+            <button
+              onClick={handleSecondary}
+              className={`px-4 py-2 rounded-lg font-medium transition-colors ${
+                secondaryDangerous
+                  ? 'bg-red-800 hover:bg-red-900 text-white'
+                  : 'bg-blue-800 hover:bg-blue-900 text-white'
+              }`}
+            >
+              {secondaryText}
+            </button>
+          )}
         </div>
       </div>
     </div>

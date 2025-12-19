@@ -114,6 +114,8 @@ const VehicleDetailModal = ({
   getVehicleProjects,
   unlinkPartFromProject,
   loadProjects,
+  deleteProject,
+  deletePart,
   setConfirmDialog,
   getStatusColors,
   getPriorityColors,
@@ -3121,7 +3123,26 @@ const VehicleDetailModal = ({
                             setViewingVehicle(null);
                             setOriginalVehicleData(null);
                             setVehicleModalEditMode(null);
-                          }
+                          },
+                          // Only show "Delete All" if there are linked projects or parts
+                          ...(hasProjects || hasParts ? {
+                            secondaryText: 'Delete All',
+                            secondaryAction: async () => {
+                              // Delete all parts linked to this vehicle's projects
+                              for (const part of partsForVehicle) {
+                                await deletePart(part.id);
+                              }
+                              // Delete all projects linked to this vehicle
+                              for (const project of projectsForVehicle) {
+                                await deleteProject(project.id);
+                              }
+                              // Delete the vehicle
+                              await deleteVehicle(viewingVehicle.id);
+                              setViewingVehicle(null);
+                              setOriginalVehicleData(null);
+                              setVehicleModalEditMode(null);
+                            }
+                          } : {})
                         });
                       }}
                       className={`h-10 px-4 py-2 rounded-lg font-medium transition-colors flex items-center gap-2 text-sm ${

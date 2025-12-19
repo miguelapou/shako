@@ -2104,6 +2104,8 @@ const Shako = ({ isDemo = false }) => {
             updateProject={updateProject}
             addProject={addProject}
             createPartDirectly={createPartDirectly}
+            deleteProject={deleteProject}
+            deletePart={deletePart}
             toast={toast}
             setActiveTab={setActiveTab}
           />
