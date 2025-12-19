@@ -287,6 +287,12 @@ const ProjectDetailModal = ({
                 setEditingTodoText={setEditingTodoText}
                 newTodoText={newTodoText}
                 setNewTodoText={setNewTodoText}
+                onNavigateToTab={(tab) => {
+                  handleCloseModal(() => {
+                    onClose();
+                  });
+                  setActiveTab(tab);
+                }}
               />
             </div>
           </div>

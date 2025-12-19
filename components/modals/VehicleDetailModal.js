@@ -1782,6 +1782,13 @@ const VehicleDetailModal = ({
                   setEditingTodoText={setEditingTodoText}
                   newTodoText={newTodoText}
                   setNewTodoText={setNewTodoText}
+                  onNavigateToTab={(tab) => {
+                    handleCloseModal(() => {
+                      setShowVehicleDetailModal(false);
+                      setViewingVehicle(null);
+                    });
+                    setActiveTab(tab);
+                  }}
                 />
               </div>
             )}

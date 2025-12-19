@@ -21,7 +21,8 @@ const ProjectDetailView = ({
   editingTodoText,
   setEditingTodoText,
   newTodoText,
-  setNewTodoText
+  setNewTodoText,
+  onNavigateToTab
 }) => {
   const linkedParts = parts.filter(part => part.projectId === project.id);
   const linkedPartsTotal = calculateProjectTotal(project.id, parts);
@@ -42,6 +43,7 @@ const ProjectDetailView = ({
   const [isDescriptionExpanded, setIsDescriptionExpanded] = useState(false);
   const [isDescriptionClamped, setIsDescriptionClamped] = useState(false);
   const [showTodoProgress, setShowTodoProgress] = useState(false);
+  const [isPartsHovered, setIsPartsHovered] = useState(false);
   const descriptionRef = useRef(null);
 
   // Refs and state for animated progress bar height
@@ -1082,14 +1084,20 @@ const ProjectDetailView = ({
               <span>Linked Parts</span>
             </div>
           </h3>
-          <div className={`text-center py-8 rounded-lg border ${
-            darkMode ? 'bg-gray-700/30 border-gray-600 text-gray-400' : 'bg-gray-50 border-gray-200 text-gray-500'
-          }`}>
+          <button
+            onClick={() => onNavigateToTab && onNavigateToTab('parts')}
+            onMouseEnter={() => setIsPartsHovered(true)}
+            onMouseLeave={() => setIsPartsHovered(false)}
+            className={`text-center py-8 rounded-lg border w-full cursor-pointer transition-colors ${
+              darkMode ? 'bg-gray-700/30 border-gray-600' : 'bg-gray-50 border-gray-200'
+            }`}
+            style={{ color: isPartsHovered ? (darkMode ? '#60a5fa' : '#2563eb') : (darkMode ? '#9ca3af' : '#6b7280') }}
+          >
             <Package className="w-12 h-12 mx-auto mb-2 opacity-40" />
             <p className="text-sm">
               No parts linked
             </p>
-          </div>
+          </button>
         </div>
       )}
 
