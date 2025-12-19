@@ -2125,6 +2125,9 @@ const Shako = ({ isDemo = false }) => {
         cancelText={confirmDialog.cancelText}
         isDangerous={confirmDialog.isDangerous !== false}
         darkMode={darkMode}
+        secondaryAction={confirmDialog.secondaryAction}
+        secondaryText={confirmDialog.secondaryText}
+        secondaryDangerous={confirmDialog.secondaryDangerous}
       />
       {/* Delete Account Modal */}
       <DeleteAccountModal
