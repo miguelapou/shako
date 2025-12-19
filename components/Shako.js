@@ -605,6 +605,7 @@ const Shako = ({ isDemo = false }) => {
 
   // Track previous userId to detect user changes
   const prevUserIdRef = useRef(null);
+  const vehiclesLoadedRef = useRef(false);
 
   // Load parts, projects, and vendors from Supabase when user is authenticated
   // Also reset state when user changes (logout + login as different user)
@@ -617,6 +618,7 @@ const Shako = ({ isDemo = false }) => {
         setParts([]);
         setProjects([]);
         setVehicles([]);
+        vehiclesLoadedRef.current = false;
       }
 
       loadParts();
@@ -635,7 +637,8 @@ const Shako = ({ isDemo = false }) => {
 
   // Load vehicles when the vehicles tab is accessed and user is authenticated
   useEffect(() => {
-    if (userId && activeTab === 'vehicles' && vehicles.length === 0) {
+    if (userId && activeTab === 'vehicles' && !vehiclesLoadedRef.current) {
+      vehiclesLoadedRef.current = true;
       loadVehicles();
     }
   }, [activeTab, userId]);
