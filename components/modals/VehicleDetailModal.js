@@ -883,26 +883,21 @@ const VehicleDetailModal = ({
 
                   if (!hasImages) {
                     return (
-                      <div className={`order-first rounded-lg border md:aspect-[8/9] flex flex-col items-center justify-center ${
-                        darkMode ? 'bg-gray-700/30 border-gray-600' : 'bg-gray-50 border-gray-200'
-                      }`}>
+                      <button
+                        onClick={() => setVehicleModalEditMode('vehicle')}
+                        className={`order-first rounded-lg border md:max-h-[379px] w-full flex flex-col items-center justify-center group ${
+                          darkMode ? 'bg-gray-700/30 border-gray-600 text-gray-400' : 'bg-gray-50 border-gray-200 text-gray-500'
+                        }`}
+                      >
                         <Camera className={`w-12 h-12 mx-auto mb-2 opacity-40 ${
-                          darkMode ? 'text-gray-400' : 'text-gray-500'
-                        }`} />
-                        <p className={`text-sm mb-3 ${
-                          darkMode ? 'text-gray-400' : 'text-gray-500'
-                        }`}>
+                          darkMode ? 'group-hover:text-blue-400' : 'group-hover:text-blue-600'
+                        } transition-colors`} />
+                        <p className={`text-sm ${
+                          darkMode ? 'group-hover:text-blue-400' : 'group-hover:text-blue-600'
+                        } transition-colors`}>
                           No images
                         </p>
-                        <button
-                          onClick={() => setVehicleModalEditMode('vehicle')}
-                          className={`text-sm font-medium ${
-                            darkMode ? 'text-blue-400 hover:text-blue-300' : 'text-blue-600 hover:text-blue-700'
-                          } transition-colors`}
-                        >
-                          Add images
-                        </button>
-                      </div>
+                      </button>
                     );
                   }
 
@@ -1441,14 +1436,21 @@ const VehicleDetailModal = ({
                     )}
                   </div>
                 ) : (
-                  <div className={`text-center py-8 rounded-lg border ${
-                    darkMode ? 'bg-gray-700/30 border-gray-600 text-gray-400' : 'bg-gray-50 border-gray-200 text-gray-500'
-                  }`}>
-                    <Gauge className="w-12 h-12 mx-auto mb-2 opacity-40" />
-                    <p className="text-sm">
+                  <button
+                    onClick={() => setVehicleModalEditMode('vehicle')}
+                    className={`text-center py-8 rounded-lg border w-full group ${
+                      darkMode ? 'bg-gray-700/30 border-gray-600 text-gray-400' : 'bg-gray-50 border-gray-200 text-gray-500'
+                    }`}
+                  >
+                    <Gauge className={`w-12 h-12 mx-auto mb-2 opacity-40 ${
+                      darkMode ? 'group-hover:text-blue-400' : 'group-hover:text-blue-600'
+                    } transition-colors`} />
+                    <p className={`text-sm ${
+                      darkMode ? 'group-hover:text-blue-400' : 'group-hover:text-blue-600'
+                    } transition-colors`}>
                       No maintenance information added yet
                     </p>
-                  </div>
+                  </button>
                 )}
                 </div>
               </div>
