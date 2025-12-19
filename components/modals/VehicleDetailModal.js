@@ -885,7 +885,7 @@ const VehicleDetailModal = ({
                     return (
                       <button
                         onClick={() => setVehicleModalEditMode('vehicle')}
-                        className={`order-first rounded-lg border md:max-h-[379px] w-full flex flex-col items-center justify-center group ${
+                        className={`order-first rounded-lg border md:h-[427px] w-full flex flex-col items-center justify-center group ${
                           darkMode ? 'bg-gray-700/30 border-gray-600 text-gray-400' : 'bg-gray-50 border-gray-200 text-gray-500'
                         }`}
                       >
