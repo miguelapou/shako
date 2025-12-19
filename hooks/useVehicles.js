@@ -252,9 +252,10 @@ const useVehicles = (userId, toast, isDemo = false) => {
 
   /**
    * Add a new vehicle
+   * @returns {Object|null} The created vehicle, or null on error
    */
   const addVehicle = async (vehicleData) => {
-    if (!userId) return;
+    if (!userId) return null;
 
     // Demo mode: save to localStorage
     if (isDemo) {
@@ -269,14 +270,16 @@ const useVehicles = (userId, toast, isDemo = false) => {
       };
       saveDemoVehicles([...demoVehicles, newVehicle]);
       await loadVehicles();
-      return;
+      return newVehicle;
     }
 
     try {
-      await vehiclesService.createVehicle(vehicleData, userId);
+      const data = await vehiclesService.createVehicle(vehicleData, userId);
       await loadVehicles();
+      return data?.[0] || null;
     } catch (error) {
       toast?.error('Error adding vehicle');
+      return null;
     }
   };
 

@@ -284,6 +284,95 @@ const useParts = (userId, toast, isDemo = false) => {
   };
 
   /**
+   * Create a part directly from data (for programmatic adding)
+   * @param {Object} partData - Part data to create
+   * @returns {Object|null} The created part, or null on error
+   */
+  const createPartDirectly = async (partData) => {
+    if (!userId) return null;
+
+    const statusMap = {
+      delivered: { delivered: true, shipped: true, purchased: true },
+      shipped: { delivered: false, shipped: true, purchased: true },
+      purchased: { delivered: false, shipped: false, purchased: true },
+      pending: { delivered: false, shipped: false, purchased: false }
+    };
+
+    // Determine status from booleans
+    let status = 'pending';
+    if (partData.delivered) status = 'delivered';
+    else if (partData.shipped) status = 'shipped';
+    else if (partData.purchased) status = 'purchased';
+
+    const price = parseFloat(partData.price) || 0;
+    const shipping = parseFloat(partData.shipping) || 0;
+    const duties = parseFloat(partData.duties) || 0;
+    const total = price + shipping + duties;
+
+    try {
+      const createdAt = new Date().toISOString();
+
+      if (isDemo) {
+        const partToAdd = {
+          id: Date.now(),
+          ...statusMap[status],
+          part: partData.part,
+          partNumber: partData.partNumber || '',
+          vendor: partData.vendor || '',
+          price,
+          shipping,
+          duties,
+          total,
+          tracking: partData.tracking || '',
+          projectId: partData.projectId || null,
+          vehicleId: partData.vehicleId || null,
+          createdAt
+        };
+        const updatedParts = [...parts, partToAdd];
+        setParts(updatedParts);
+        saveDemoParts(updatedParts);
+        return partToAdd;
+      }
+
+      const data = await partsService.createPart({
+        ...statusMap[status],
+        part: partData.part,
+        part_number: partData.partNumber || '',
+        vendor: partData.vendor || '',
+        price,
+        shipping,
+        duties,
+        total,
+        tracking: partData.tracking || '',
+        project_id: partData.projectId || null,
+        vehicle_id: partData.vehicleId || null,
+        created_at: createdAt
+      }, userId);
+
+      const partToAdd = {
+        id: data.id,
+        ...statusMap[status],
+        part: partData.part,
+        partNumber: partData.partNumber || '',
+        vendor: partData.vendor || '',
+        price,
+        shipping,
+        duties,
+        total,
+        tracking: partData.tracking || '',
+        projectId: partData.projectId || null,
+        vehicleId: partData.vehicleId || null,
+        createdAt
+      };
+      setParts([...parts, partToAdd]);
+      return partToAdd;
+    } catch (error) {
+      console.error('Error creating part:', error);
+      return null;
+    }
+  };
+
+  /**
    * Update part status
    */
   const updatePartStatus = async (partId, newStatus, setTrackingModalPartId, setShowTrackingModal, setOpenDropdown) => {
@@ -760,6 +849,7 @@ const useParts = (userId, toast, isDemo = false) => {
     loadVendors,
     updateVendorColor,
     addNewPart,
+    createPartDirectly,
     updatePartStatus,
     saveTrackingInfo,
     skipTrackingInfo,

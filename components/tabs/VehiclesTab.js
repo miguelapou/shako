@@ -90,7 +90,7 @@ const VehiclesTab = ({
   unlinkPartFromProject,
   loadProjects,
   addProject,
-  addNewPart,
+  createPartDirectly,
   setConfirmDialog,
   getStatusColors,
   getPriorityColors,
@@ -187,7 +187,7 @@ const VehiclesTab = ({
 
       // Add all parts
       for (const part of demoParts) {
-        await addNewPart(part);
+        await createPartDirectly(part);
       }
 
       // Reload vehicles and projects to refresh the UI

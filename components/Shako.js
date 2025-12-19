@@ -155,6 +155,7 @@ const Shako = ({ isDemo = false }) => {
     loadVendors,
     updateVendorColor,
     addNewPart,
+    createPartDirectly,
     updatePartStatus,
     saveTrackingInfo,
     skipTrackingInfo,
@@ -2102,7 +2103,7 @@ const Shako = ({ isDemo = false }) => {
             loadProjects={loadProjects}
             updateProject={updateProject}
             addProject={addProject}
-            addNewPart={addNewPart}
+            createPartDirectly={createPartDirectly}
             toast={toast}
             setActiveTab={setActiveTab}
           />

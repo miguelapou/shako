@@ -81,14 +81,15 @@ const useProjects = (userId, toast, isDemo = false) => {
 
   /**
    * Add a new project
+   * @returns {Object|null} The created project, or null on error
    */
   const addProject = async (projectData) => {
-    if (!userId) return;
+    if (!userId) return null;
 
     // Validate budget
     const budgetValidation = validateBudget(projectData.budget, toast);
     if (!budgetValidation.isValid) {
-      return; // Toast already shown by validateBudget
+      return null; // Toast already shown by validateBudget
     }
 
     // Demo mode: save to localStorage
@@ -110,11 +111,11 @@ const useProjects = (userId, toast, isDemo = false) => {
       };
       saveDemoProjects([...demoProjects, newProject]);
       setProjects([...demoProjects, newProject]);
-      return;
+      return newProject;
     }
 
     try {
-      await projectsService.createProject({
+      const data = await projectsService.createProject({
         name: projectData.name,
         description: projectData.description,
         status: projectData.status || 'planning',
@@ -125,8 +126,10 @@ const useProjects = (userId, toast, isDemo = false) => {
         todos: []
       }, userId);
       await loadProjects();
+      return data?.[0] || null;
     } catch (error) {
       toast?.error('Error adding project');
+      return null;
     }
   };
 
