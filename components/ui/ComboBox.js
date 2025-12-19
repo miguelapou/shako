@@ -28,7 +28,9 @@ const ComboBox = ({
   const [isOpen, setIsOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
   const [isClosing, setIsClosing] = useState(false);
+  const [openUpward, setOpenUpward] = useState(false);
   const dropdownRef = useRef(null);
+  const triggerRef = useRef(null);
   const inputRef = useRef(null);
   const isOpenRef = useRef(isOpen);
 
@@ -39,6 +41,9 @@ const ComboBox = ({
 
   // Auto-hide search for small option lists (5 or fewer)
   const shouldShowSearch = showSearch !== undefined ? showSearch : options.length > 5;
+
+  // Estimate dropdown height (each option ~36px, search ~52px, max 192px for options)
+  const estimatedDropdownHeight = Math.min(options.length * 36, 192) + (shouldShowSearch ? 52 : 0) + 8;
 
   // Filter options based on search term
   const filteredOptions = options.filter(option =>
@@ -85,6 +90,14 @@ const ComboBox = ({
     if (isOpen) {
       closeDropdown();
     } else {
+      // Check if dropdown should open upward
+      if (triggerRef.current) {
+        const rect = triggerRef.current.getBoundingClientRect();
+        const spaceBelow = window.innerHeight - rect.bottom;
+        const spaceAbove = rect.top;
+        // Open upward if not enough space below but enough above
+        setOpenUpward(spaceBelow < estimatedDropdownHeight && spaceAbove > spaceBelow);
+      }
       setIsOpen(true);
       // Focus search input after opening (only if search is shown)
       if (shouldShowSearch) {
@@ -101,6 +114,7 @@ const ComboBox = ({
     <div ref={dropdownRef} className="relative">
       {/* Trigger button */}
       <button
+        ref={triggerRef}
         type="button"
         onClick={toggleDropdown}
         className={`w-full px-4 py-2 border rounded-lg flex items-center justify-between transition-colors text-left ${
@@ -133,9 +147,11 @@ const ComboBox = ({
       {/* Dropdown menu */}
       {isOpen && (
         <div
-          className={`absolute z-50 mt-1 w-full max-h-64 overflow-hidden rounded-lg border shadow-lg transition-all duration-150 ${
+          className={`absolute z-50 w-full max-h-64 overflow-hidden rounded-lg border shadow-lg transition-all duration-150 ${
+            openUpward ? 'bottom-full mb-1' : 'top-full mt-1'
+          } ${
             isClosing
-              ? 'opacity-0 translate-y-[-4px]'
+              ? `opacity-0 ${openUpward ? 'translate-y-[4px]' : 'translate-y-[-4px]'}`
               : 'opacity-100 translate-y-0'
           } ${
             darkMode ? 'bg-gray-700 border-gray-600' : 'bg-white border-slate-300'
