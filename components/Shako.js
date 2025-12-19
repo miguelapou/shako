@@ -1094,7 +1094,7 @@ const Shako = ({ isDemo = false }) => {
   }
 
   return (
-    <AppProviders darkMode={darkMode} setDarkMode={setDarkMode} userId={userId} toast={toast}>
+    <AppProviders darkMode={darkMode} setDarkMode={setDarkMode} userId={userId} toast={toast} isDemo={isDemo}>
     <div className={`min-h-screen p-3 sm:p-6 transition-colors duration-200 ${
       darkMode
         ? 'bg-gray-900 dark-scrollbar'

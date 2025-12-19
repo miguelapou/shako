@@ -337,12 +337,27 @@ export const DEMO_VENDORS = [
   { id: 11, name: "Testing", color: "#6b7280" }
 ];
 
+export const DEMO_DOCUMENTS = [
+  {
+    id: 1,
+    vehicle_id: 1,
+    title: "Electrical Diagram",
+    file_url: "https://www.w3.org/WAI/WCAG21/Techniques/pdf/img/table-word.pdf",
+    file_url_resolved: "https://www.w3.org/WAI/WCAG21/Techniques/pdf/img/table-word.pdf",
+    file_name: "electrical-diagram.pdf",
+    file_type: "application/pdf",
+    file_size: 245000,
+    created_at: "2025-01-15T10:30:00.000Z"
+  }
+];
+
 // Storage keys for demo mode localStorage
 export const DEMO_STORAGE_KEYS = {
   VEHICLES: 'shako-demo-vehicles',
   PROJECTS: 'shako-demo-projects',
   PARTS: 'shako-demo-parts',
   VENDORS: 'shako-demo-vendors',
+  DOCUMENTS: 'shako-demo-documents',
   IS_DEMO_MODE: 'shako-demo-mode',
 };
 
@@ -362,6 +377,9 @@ export const initializeDemoData = () => {
   if (!localStorage.getItem(DEMO_STORAGE_KEYS.VENDORS)) {
     localStorage.setItem(DEMO_STORAGE_KEYS.VENDORS, JSON.stringify(DEMO_VENDORS));
   }
+  if (!localStorage.getItem(DEMO_STORAGE_KEYS.DOCUMENTS)) {
+    localStorage.setItem(DEMO_STORAGE_KEYS.DOCUMENTS, JSON.stringify(DEMO_DOCUMENTS));
+  }
 };
 
 /**
@@ -372,6 +390,7 @@ export const resetDemoData = () => {
   localStorage.setItem(DEMO_STORAGE_KEYS.PROJECTS, JSON.stringify(DEMO_PROJECTS));
   localStorage.setItem(DEMO_STORAGE_KEYS.PARTS, JSON.stringify(DEMO_PARTS));
   localStorage.setItem(DEMO_STORAGE_KEYS.VENDORS, JSON.stringify(DEMO_VENDORS));
+  localStorage.setItem(DEMO_STORAGE_KEYS.DOCUMENTS, JSON.stringify(DEMO_DOCUMENTS));
 };
 
 /**
@@ -382,6 +401,7 @@ export const clearDemoData = () => {
   localStorage.removeItem(DEMO_STORAGE_KEYS.PROJECTS);
   localStorage.removeItem(DEMO_STORAGE_KEYS.PARTS);
   localStorage.removeItem(DEMO_STORAGE_KEYS.VENDORS);
+  localStorage.removeItem(DEMO_STORAGE_KEYS.DOCUMENTS);
   localStorage.removeItem(DEMO_STORAGE_KEYS.IS_DEMO_MODE);
 };
 
@@ -443,4 +463,19 @@ export const saveDemoParts = (parts) => {
  */
 export const saveDemoVendors = (vendors) => {
   localStorage.setItem(DEMO_STORAGE_KEYS.VENDORS, JSON.stringify(vendors));
+};
+
+/**
+ * Get demo documents from localStorage
+ */
+export const getDemoDocuments = () => {
+  const data = localStorage.getItem(DEMO_STORAGE_KEYS.DOCUMENTS);
+  return data ? JSON.parse(data) : DEMO_DOCUMENTS;
+};
+
+/**
+ * Save demo documents to localStorage
+ */
+export const saveDemoDocuments = (documents) => {
+  localStorage.setItem(DEMO_STORAGE_KEYS.DOCUMENTS, JSON.stringify(documents));
 };

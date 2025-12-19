@@ -1,9 +1,10 @@
 import React, { createContext, useContext, useState, useCallback } from 'react';
 import * as documentsService from '../services/documentsService';
+import { getDemoDocuments, saveDemoDocuments, DEMO_DOCUMENTS } from '../data/demoData';
 
 const DocumentContext = createContext(null);
 
-export const DocumentProvider = ({ children, userId, toast }) => {
+export const DocumentProvider = ({ children, userId, toast, isDemo = false }) => {
   const [documents, setDocuments] = useState([]);
   const [loadingDocuments, setLoadingDocuments] = useState(false);
   const [uploadingDocument, setUploadingDocument] = useState(false);
@@ -18,6 +19,17 @@ export const DocumentProvider = ({ children, userId, toast }) => {
       setDocuments([]);
       return;
     }
+
+    // Demo mode: load from localStorage
+    if (isDemo) {
+      setLoadingDocuments(true);
+      const demoDocuments = getDemoDocuments();
+      const vehicleDocs = demoDocuments.filter(doc => doc.vehicle_id === vehicleId);
+      setDocuments(vehicleDocs);
+      setLoadingDocuments(false);
+      return;
+    }
+
     try {
       setLoadingDocuments(true);
       const data = await documentsService.getVehicleDocuments(vehicleId);
@@ -63,11 +75,32 @@ export const DocumentProvider = ({ children, userId, toast }) => {
     } finally {
       setLoadingDocuments(false);
     }
-  }, []);
+  }, [isDemo]);
 
   // Add a new document - matches original hook signature
   const addDocument = useCallback(async (vehicleId, title, file) => {
     if (!vehicleId || !title || !file || !userId) return null;
+
+    // Demo mode: add to localStorage
+    if (isDemo) {
+      setUploadingDocument(true);
+      const demoDocuments = getDemoDocuments();
+      const newDocument = {
+        id: `demo-doc-${Date.now()}`,
+        vehicle_id: vehicleId,
+        title: title,
+        file_url: URL.createObjectURL(file),
+        file_url_resolved: URL.createObjectURL(file),
+        file_name: file.name,
+        file_type: file.type,
+        file_size: file.size,
+        created_at: new Date().toISOString()
+      };
+      saveDemoDocuments([newDocument, ...demoDocuments]);
+      setDocuments(prev => [newDocument, ...prev]);
+      setUploadingDocument(false);
+      return newDocument;
+    }
 
     try {
       setUploadingDocument(true);
@@ -100,17 +133,25 @@ export const DocumentProvider = ({ children, userId, toast }) => {
     } finally {
       setUploadingDocument(false);
     }
-  }, [userId, toast]);
+  }, [userId, toast, isDemo]);
 
   // Delete a document
   const deleteDocument = useCallback(async (documentId, fileUrl) => {
+    // Demo mode: delete from localStorage
+    if (isDemo) {
+      const demoDocuments = getDemoDocuments();
+      saveDemoDocuments(demoDocuments.filter(doc => doc.id !== documentId));
+      setDocuments(prev => prev.filter(doc => doc.id !== documentId));
+      return;
+    }
+
     try {
       await documentsService.deleteDocument(documentId, fileUrl);
       setDocuments(prev => prev.filter(doc => doc.id !== documentId));
     } catch (error) {
       toast?.error('Error deleting document');
     }
-  }, [toast]);
+  }, [toast, isDemo]);
 
   // Allowed MIME types for document uploads
   const allowedMimeTypes = [

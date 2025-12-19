@@ -4,7 +4,7 @@ import { validateOdometer } from '../utils/validationUtils';
 
 const ServiceEventContext = createContext(null);
 
-export const ServiceEventProvider = ({ children, userId, toast }) => {
+export const ServiceEventProvider = ({ children, userId, toast, isDemo = false }) => {
   // Service events list state
   const [serviceEvents, setServiceEvents] = useState([]);
   const [loadingServiceEvents, setLoadingServiceEvents] = useState(false);
