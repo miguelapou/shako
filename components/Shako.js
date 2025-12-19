@@ -606,6 +606,24 @@ const Shako = ({ isDemo = false }) => {
   // Track previous userId to detect user changes
   const prevUserIdRef = useRef(null);
   const vehiclesLoadedRef = useRef(false);
+  const vehiclesLoadedAtRef = useRef(null);
+
+  // Refresh vehicle images when tab becomes visible after being away
+  // Supabase signed URLs expire after 1 hour, so refresh if >45 minutes have passed
+  useEffect(() => {
+    const handleVisibilityChange = () => {
+      if (document.visibilityState === 'visible' && vehiclesLoadedRef.current && vehiclesLoadedAtRef.current) {
+        const minutesSinceLoad = (Date.now() - vehiclesLoadedAtRef.current) / 1000 / 60;
+        if (minutesSinceLoad > 45) {
+          vehiclesLoadedAtRef.current = Date.now();
+          loadVehicles();
+        }
+      }
+    };
+
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+    return () => document.removeEventListener('visibilitychange', handleVisibilityChange);
+  }, [loadVehicles]);
 
   // Load parts, projects, and vendors from Supabase when user is authenticated
   // Also reset state when user changes (logout + login as different user)
@@ -627,6 +645,7 @@ const Shako = ({ isDemo = false }) => {
 
       // Also load vehicles if user changed (to clear stale data)
       if (userChanged && activeTab === 'vehicles') {
+        vehiclesLoadedAtRef.current = Date.now();
         loadVehicles();
       }
     }
@@ -639,6 +658,7 @@ const Shako = ({ isDemo = false }) => {
   useEffect(() => {
     if (userId && activeTab === 'vehicles' && !vehiclesLoadedRef.current) {
       vehiclesLoadedRef.current = true;
+      vehiclesLoadedAtRef.current = Date.now();
       loadVehicles();
     }
   }, [activeTab, userId]);
