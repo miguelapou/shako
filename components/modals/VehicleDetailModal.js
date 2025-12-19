@@ -58,7 +58,8 @@ import {
   OIL_CAPACITIES,
   ODOMETER_RANGES,
   FUEL_TYPES,
-  formatOdometer
+  formatOdometer,
+  formatOilCapacity
 } from '../../utils/vehicleOptions';
 
 const VehicleDetailModal = ({
@@ -2442,7 +2443,7 @@ const VehicleDetailModal = ({
                         </label>
                         <ComboBox
                           value={viewingVehicle.oil_capacity || ''}
-                          onChange={(value) => setViewingVehicle({ ...viewingVehicle, oil_capacity: value })}
+                          onChange={(value) => setViewingVehicle({ ...viewingVehicle, oil_capacity: formatOilCapacity(value) })}
                           options={OIL_CAPACITIES}
                           placeholder="Select capacity..."
                           darkMode={darkMode}

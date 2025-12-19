@@ -131,26 +131,34 @@ export const formatOdometer = (value) => {
 
 // Oil capacity options (1L to 10L in 0.5L increments)
 export const OIL_CAPACITIES = [
-  '1.0L',
-  '1.5L',
-  '2.0L',
-  '2.5L',
-  '3.0L',
-  '3.5L',
-  '4.0L',
-  '4.5L',
-  '5.0L',
-  '5.5L',
-  '6.0L',
-  '6.5L',
-  '7.0L',
-  '7.5L',
-  '8.0L',
-  '8.5L',
-  '9.0L',
-  '9.5L',
-  '10.0L'
+  '1.0 liters',
+  '1.5 liters',
+  '2.0 liters',
+  '2.5 liters',
+  '3.0 liters',
+  '3.5 liters',
+  '4.0 liters',
+  '4.5 liters',
+  '5.0 liters',
+  '5.5 liters',
+  '6.0 liters',
+  '6.5 liters',
+  '7.0 liters',
+  '7.5 liters',
+  '8.0 liters',
+  '8.5 liters',
+  '9.0 liters',
+  '9.5 liters',
+  '10.0 liters'
 ];
+
+// Format oil capacity - ensures "liters" is appended to custom entries
+export const formatOilCapacity = (value) => {
+  if (!value) return '';
+  const trimmed = value.toString().trim();
+  if (trimmed.toLowerCase().includes('liter')) return trimmed;
+  return `${trimmed} liters`;
+};
 
 // Fuel types
 export const FUEL_TYPES = [
