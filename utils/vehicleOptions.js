@@ -129,6 +129,23 @@ export const formatOdometer = (value) => {
   return parseInt(value).toLocaleString();
 };
 
+// Oil capacity options (1L to 7L in 0.5L increments)
+export const OIL_CAPACITIES = [
+  '1.0L',
+  '1.5L',
+  '2.0L',
+  '2.5L',
+  '3.0L',
+  '3.5L',
+  '4.0L',
+  '4.5L',
+  '5.0L',
+  '5.5L',
+  '6.0L',
+  '6.5L',
+  '7.0L'
+];
+
 // Fuel types
 export const FUEL_TYPES = [
   'Gasoline',

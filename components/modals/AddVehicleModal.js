@@ -9,6 +9,7 @@ import {
   VEHICLE_YEARS,
   OIL_BRANDS,
   OIL_TYPES,
+  OIL_CAPACITIES,
   ODOMETER_RANGES,
   FUEL_TYPES,
   formatOdometer
@@ -572,12 +573,13 @@ const AddVehicleModal = ({
                   }`}>
                     Oil Capacity
                   </label>
-                  <input
-                    type="text"
+                  <ComboBox
                     value={newVehicle.oil_capacity}
-                    onChange={(e) => setNewVehicle({ ...newVehicle, oil_capacity: e.target.value })}
-                    className={inputClasses(darkMode)}
-                    placeholder="e.g. 5.7L"
+                    onChange={(value) => setNewVehicle({ ...newVehicle, oil_capacity: value })}
+                    options={OIL_CAPACITIES}
+                    placeholder="Select capacity..."
+                    darkMode={darkMode}
+                    customInputPlaceholder="Search or enter capacity..."
                   />
                 </div>
 

@@ -55,6 +55,7 @@ import {
   VEHICLE_YEARS,
   OIL_BRANDS,
   OIL_TYPES,
+  OIL_CAPACITIES,
   ODOMETER_RANGES,
   FUEL_TYPES,
   formatOdometer
@@ -2439,16 +2440,13 @@ const VehicleDetailModal = ({
                         }`}>
                           Oil Capacity
                         </label>
-                        <input
-                          type="text"
+                        <ComboBox
                           value={viewingVehicle.oil_capacity || ''}
-                          onChange={(e) => setViewingVehicle({ ...viewingVehicle, oil_capacity: e.target.value })}
-                          className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
-                            darkMode
-                              ? 'bg-gray-700 border-gray-600 text-gray-100 placeholder-gray-400'
-                              : 'bg-slate-50 border-slate-300 text-slate-800 placeholder-slate-400'
-                          }`}
-                          placeholder="e.g. 5.7L"
+                          onChange={(value) => setViewingVehicle({ ...viewingVehicle, oil_capacity: value })}
+                          options={OIL_CAPACITIES}
+                          placeholder="Select capacity..."
+                          darkMode={darkMode}
+                          customInputPlaceholder="Search or enter capacity..."
                         />
                       </div>
 
