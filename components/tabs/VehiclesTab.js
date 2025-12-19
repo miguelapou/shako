@@ -97,7 +97,8 @@ const VehiclesTab = ({
   getVendorColor,
   calculateProjectTotal,
   calculateProjectStatus,
-  toast
+  toast,
+  setActiveTab
   // Document and service event props removed - now handled via context in VehicleDetailModal
 }) => {
   // Track layout transitions for animation
@@ -257,16 +258,22 @@ const VehiclesTab = ({
                                 )}
                               </div>
                             ) : (
-                              <div className="flex items-center gap-2 py-1">
+                              <button
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  setActiveTab('projects');
+                                }}
+                                className="flex items-center gap-2 py-1 group"
+                              >
                                 <ListChecks className={`w-4 h-4 opacity-40 ${
                                   darkMode ? 'text-gray-400' : 'text-gray-500'
                                 }`} />
                                 <span className={`text-xs ${
-                                  darkMode ? 'text-gray-400' : 'text-gray-500'
-                                }`}>
+                                  darkMode ? 'text-gray-400 group-hover:text-blue-400' : 'text-gray-500 group-hover:text-blue-600'
+                                } transition-colors`}>
                                   No projects linked
                                 </span>
-                              </div>
+                              </button>
                             )}
                           </>
                         );
@@ -397,16 +404,22 @@ const VehiclesTab = ({
                                   )}
                                 </div>
                               ) : (
-                                <div className="text-center py-2">
+                                <button
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    setActiveTab('projects');
+                                  }}
+                                  className="text-center py-2 w-full group"
+                                >
                                   <ListChecks className={`w-6 h-6 mx-auto mb-1 opacity-40 ${
                                     darkMode ? 'text-gray-400' : 'text-gray-500'
                                   }`} />
                                   <p className={`text-xs ${
-                                    darkMode ? 'text-gray-400' : 'text-gray-500'
-                                  }`}>
+                                    darkMode ? 'text-gray-400 group-hover:text-blue-400' : 'text-gray-500 group-hover:text-blue-600'
+                                  } transition-colors`}>
                                     No projects linked
                                   </p>
-                                </div>
+                                </button>
                               )}
                             </div>
                           );
@@ -773,6 +786,7 @@ const VehiclesTab = ({
           calculateProjectTotal={calculateProjectTotal}
           calculateProjectStatus={calculateProjectStatus}
           toast={toast}
+          setActiveTab={setActiveTab}
         />
       </>
     </div>

@@ -1986,6 +1986,7 @@ const Shako = ({ isDemo = false }) => {
             vendorColors={vendorColors}
             showAddProjectVehicleDropdown={showAddProjectVehicleDropdown}
             setShowAddProjectVehicleDropdown={setShowAddProjectVehicleDropdown}
+            setActiveTab={setActiveTab}
           />
         )}
 
@@ -2078,6 +2079,7 @@ const Shako = ({ isDemo = false }) => {
             loadProjects={loadProjects}
             updateProject={updateProject}
             toast={toast}
+            setActiveTab={setActiveTab}
           />
         )}
 

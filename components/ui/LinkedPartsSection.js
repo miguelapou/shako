@@ -10,7 +10,9 @@ const LinkedPartsSection = ({
   getVendorColor,
   vendorColors,
   darkMode,
-  setConfirmDialog
+  setConfirmDialog,
+  setActiveTab,
+  onNavigateToTab
 }) => {
   const linkedParts = parts.filter(part => part.projectId === projectId);
 
@@ -27,12 +29,23 @@ const LinkedPartsSection = ({
         </div>
       </h3>
       {linkedParts.length === 0 ? (
-        <div className={`text-center py-8 rounded-lg border ${
-          darkMode ? 'bg-gray-700/30 border-gray-600 text-gray-400' : 'bg-gray-50 border-gray-200 text-gray-500'
-        }`}>
+        <button
+          onClick={() => {
+            if (onNavigateToTab) {
+              onNavigateToTab('parts');
+            } else if (setActiveTab) {
+              setActiveTab('parts');
+            }
+          }}
+          className={`text-center py-8 rounded-lg border w-full group ${
+            darkMode ? 'bg-gray-700/30 border-gray-600 text-gray-400' : 'bg-gray-50 border-gray-200 text-gray-500'
+          }`}
+        >
           <Package className="w-12 h-12 mx-auto mb-2 opacity-40" />
-          <p className="text-sm">No parts linked</p>
-        </div>
+          <p className={`text-sm ${
+            darkMode ? 'group-hover:text-blue-400' : 'group-hover:text-blue-600'
+          } transition-colors`}>No parts linked</p>
+        </button>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 md:max-h-[540px] overflow-y-auto pr-2">
           {linkedParts.map((part) => (
