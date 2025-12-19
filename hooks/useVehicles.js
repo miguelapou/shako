@@ -24,8 +24,8 @@ const MAX_VEHICLE_IMAGES = 6;
  */
 const useVehicles = (userId, toast, isDemo = false) => {
   const [vehicles, setVehicles] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [imagesLoaded, setImagesLoaded] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [imagesLoaded, setImagesLoaded] = useState(true);
   const [newVehicle, setNewVehicle] = useState({
     nickname: '',
     name: '',
