@@ -3155,14 +3155,44 @@ const VehicleDetailModal = ({
                     </button>
                     <button
                       onClick={async () => {
+                        const linkedProjectsToArchive = projects.filter(p => p.vehicle_id === viewingVehicle.id && !p.archived);
+                        const linkedProjectsToRestore = projects.filter(p => p.vehicle_id === viewingVehicle.id && p.archived);
+                        const archiveCount = linkedProjectsToArchive.length;
+                        const restoreCount = linkedProjectsToRestore.length;
+
+                        let archiveMessage = archiveCount > 0
+                          ? `Are you sure you want to archive this vehicle? It will remain visible with limited information, and ${archiveCount} linked project${archiveCount > 1 ? 's' : ''} will also be archived.`
+                          : 'Are you sure you want to archive this vehicle? It will remain visible with limited information.';
+
+                        let unarchiveMessage = restoreCount > 0
+                          ? `Are you sure you want to unarchive this vehicle? It has ${restoreCount} archived project${restoreCount > 1 ? 's' : ''} that can be restored.`
+                          : 'Are you sure you want to unarchive this vehicle?';
+
                         setConfirmDialog({
                           isOpen: true,
                           title: viewingVehicle.archived ? 'Unarchive Vehicle' : 'Archive Vehicle',
-                          message: viewingVehicle.archived
-                            ? 'Are you sure you want to unarchive this vehicle?'
-                            : 'Are you sure you want to archive this vehicle? It will still be visible but with limited information.',
+                          message: viewingVehicle.archived ? unarchiveMessage : archiveMessage,
                           confirmText: viewingVehicle.archived ? 'Unarchive' : 'Archive',
                           isDangerous: false,
+                          // Show Restore button when unarchiving and there are archived projects
+                          ...(viewingVehicle.archived && restoreCount > 0 ? {
+                            secondaryText: 'Restore All',
+                            secondaryDangerous: false,
+                            secondaryAction: async () => {
+                              // Unarchive vehicle and all linked projects
+                              const updatedVehicle = {
+                                ...viewingVehicle,
+                                archived: false
+                              };
+                              await updateVehicle(viewingVehicle.id, { archived: false });
+                              // Restore all archived linked projects sequentially to avoid state conflicts
+                              for (const project of linkedProjectsToRestore) {
+                                await updateProject(project.id, { archived: false });
+                              }
+                              setViewingVehicle(updatedVehicle);
+                              setOriginalVehicleData({ ...updatedVehicle });
+                            }
+                          } : {}),
                           onConfirm: async () => {
                             // When archiving, set display_order to a high number to move to end
                             // When unarchiving, keep current display_order
@@ -3173,6 +3203,10 @@ const VehicleDetailModal = ({
                               // Archiving: set display_order to max + 1
                               const maxOrder = Math.max(...vehicles.map(v => v.display_order || 0), 0);
                               updates.display_order = maxOrder + 1;
+                              // Archive all linked projects sequentially to avoid state conflicts
+                              for (const project of linkedProjectsToArchive) {
+                                await updateProject(project.id, { archived: true });
+                              }
                             }
                             const updatedVehicle = {
                               ...viewingVehicle,

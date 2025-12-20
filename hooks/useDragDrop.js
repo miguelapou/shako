@@ -227,21 +227,52 @@ const useDragDrop = ({
       return;
     }
 
+    // Find linked projects based on archive action
+    const linkedProjectsToArchive = projects.filter(p => p.vehicle_id === draggedVehicle.id && !p.archived);
+    const linkedProjectsToRestore = projects.filter(p => p.vehicle_id === draggedVehicle.id && p.archived);
+    const archiveCount = linkedProjectsToArchive.length;
+    const restoreCount = linkedProjectsToRestore.length;
+    const vehicleName = draggedVehicle.nickname || draggedVehicle.name;
+
+    let archiveMessage = archiveCount > 0
+      ? `Are you sure you want to archive "${vehicleName}"? It will remain visible with limited information, and ${archiveCount} linked project${archiveCount > 1 ? 's' : ''} will also be archived.`
+      : `Are you sure you want to archive "${vehicleName}"? It will remain visible with limited information.`;
+
+    let unarchiveMessage = restoreCount > 0
+      ? `Are you sure you want to unarchive "${vehicleName}"? It has ${restoreCount} archived project${restoreCount > 1 ? 's' : ''} that can be restored.`
+      : `Are you sure you want to unarchive "${vehicleName}"?`;
+
     // Show confirmation dialog
     setConfirmDialog({
       isOpen: true,
       title: shouldArchive ? 'Archive Vehicle' : 'Unarchive Vehicle',
-      message: shouldArchive
-        ? `Are you sure you want to archive "${draggedVehicle.nickname || draggedVehicle.name}"? It will still be visible but with limited information.`
-        : `Are you sure you want to unarchive "${draggedVehicle.nickname || draggedVehicle.name}"?`,
+      message: shouldArchive ? archiveMessage : unarchiveMessage,
       confirmText: shouldArchive ? 'Archive' : 'Unarchive',
       isDangerous: false,
+      // Show Restore button when unarchiving and there are archived projects
+      ...(!shouldArchive && restoreCount > 0 ? {
+        secondaryText: 'Restore All',
+        secondaryDangerous: false,
+        secondaryAction: async () => {
+          // Unarchive vehicle and all linked projects
+          await updateVehicle(draggedVehicle.id, { archived: false });
+          // Restore all archived linked projects sequentially to avoid state conflicts
+          for (const project of linkedProjectsToRestore) {
+            await updateProject(project.id, { archived: false });
+          }
+          await loadVehicles();
+        }
+      } : {}),
       onConfirm: async () => {
         const updates = { archived: shouldArchive };
         if (shouldArchive) {
           // Archiving: set display_order to max + 1
           const maxOrder = Math.max(...vehicles.map(v => v.display_order || 0), 0);
           updates.display_order = maxOrder + 1;
+          // Archive all linked projects sequentially to avoid state conflicts
+          for (const project of linkedProjectsToArchive) {
+            await updateProject(project.id, { archived: true });
+          }
         }
         await updateVehicle(draggedVehicle.id, updates);
         await loadVehicles();
