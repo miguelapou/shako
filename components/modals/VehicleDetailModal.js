@@ -50,6 +50,7 @@ import { inputClasses } from '../../utils/styleUtils';
 import { generateVehicleReportPDF, downloadBlob } from '../../utils/pdfUtils';
 import { useDocuments, useServiceEvents } from '../../contexts';
 import * as projectsService from '../../services/projectsService';
+import { supabase } from '../../lib/supabase';
 import ComboBox from '../ui/ComboBox';
 import {
   VEHICLE_MAKES,
@@ -3208,12 +3209,18 @@ const VehicleDetailModal = ({
                               // Archiving: set display_order to max + 1
                               const maxOrder = Math.max(...vehicles.map(v => v.display_order || 0), 0);
                               updates.display_order = maxOrder + 1;
-                              // Archive all linked projects in parallel using service directly
+                              // Archive all linked projects in parallel using direct supabase call
                               console.log('[Archive Debug] About to archive projects:', linkedProjectsToArchive.map(p => p.id));
-                              const results = await Promise.all(linkedProjectsToArchive.map(project =>
-                                projectsService.updateProject(project.id, { archived: true })
-                              ));
-                              console.log('[Archive Debug] Archive results:', results);
+                              const results = await Promise.all(linkedProjectsToArchive.map(async (project) => {
+                                const { data, error } = await supabase
+                                  .from('projects')
+                                  .update({ archived: true })
+                                  .eq('id', project.id)
+                                  .select();
+                                console.log(`[Archive Debug] Project ${project.id} update result:`, { data, error });
+                                return { data, error };
+                              }));
+                              console.log('[Archive Debug] All archive results:', results);
                               // Reload projects to update the UI
                               await loadProjects();
                             }
