@@ -855,7 +855,7 @@ const PartsTab = ({
                     setShowArchivedParts(!showArchivedParts);
                     setTimeout(() => setIsStatusFiltering(false), 600);
                   }}
-                  className={`flex items-center gap-1.5 px-3 py-2 rounded-lg border transition-all whitespace-nowrap ${
+                  className={`flex items-center justify-center p-2 rounded-lg border transition-all ${
                     showArchivedParts
                       ? (darkMode
                           ? 'bg-amber-900/30 text-amber-300 border-amber-700 hover:bg-amber-900/40'
@@ -866,11 +866,7 @@ const PartsTab = ({
                   }`}
                   title={showArchivedParts ? "Show active parts" : "Show archived parts"}
                 >
-                  <Archive className="w-4 h-4" />
-                  <span className="text-sm font-medium">
-                    {showArchivedParts ? 'Archived' : 'Archive'}
-                    {stats.archivedCount > 0 && ` (${stats.archivedCount})`}
-                  </span>
+                  <Archive className="w-5 h-5" />
                 </button>
               </div>
             </div>
@@ -1082,7 +1078,7 @@ const PartsTab = ({
                   setShowArchivedParts(!showArchivedParts);
                   setTimeout(() => setIsStatusFiltering(false), 600);
                 }}
-                className={`flex items-center gap-1.5 px-3 py-2 rounded-lg border transition-all whitespace-nowrap ${
+                className={`flex items-center justify-center p-2 rounded-lg border transition-all ${
                   showArchivedParts
                     ? (darkMode
                         ? 'bg-amber-900/30 text-amber-300 border-amber-700 hover:bg-amber-900/40'
@@ -1093,11 +1089,7 @@ const PartsTab = ({
                 }`}
                 title={showArchivedParts ? "Show active parts" : "Show archived parts"}
               >
-                <Archive className="w-4 h-4" />
-                <span className="text-sm font-medium">
-                  {showArchivedParts ? 'Archived' : 'Archive'}
-                  {stats.archivedCount > 0 && ` (${stats.archivedCount})`}
-                </span>
+                <Archive className="w-5 h-5" />
               </button>
             </div>
           </div>
