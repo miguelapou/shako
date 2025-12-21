@@ -49,6 +49,8 @@ import {
 import { inputClasses } from '../../utils/styleUtils';
 import { generateVehicleReportPDF, downloadBlob } from '../../utils/pdfUtils';
 import { useDocuments, useServiceEvents } from '../../contexts';
+import * as projectsService from '../../services/projectsService';
+import * as partsService from '../../services/partsService';
 import ComboBox from '../ui/ComboBox';
 import {
   VEHICLE_MAKES,
@@ -3197,20 +3199,21 @@ const VehicleDetailModal = ({
                             secondaryText: 'Restore All',
                             secondaryDangerous: false,
                             secondaryAction: async () => {
-                              // Unarchive vehicle and all linked projects and parts
+                              // Unarchive vehicle and all linked projects and parts using services directly
                               const updatedVehicle = {
                                 ...viewingVehicle,
                                 archived: false
                               };
                               await updateVehicle(viewingVehicle.id, { archived: false });
-                              // Restore all archived linked projects sequentially to avoid state conflicts
-                              for (const project of linkedProjectsToRestore) {
-                                await updateProject(project.id, { archived: false });
-                              }
-                              // Restore all archived linked parts sequentially
-                              for (const part of linkedPartsToRestore) {
-                                await archivePart(part.id, false);
-                              }
+                              // Restore all archived linked projects in parallel using service directly
+                              await Promise.all(linkedProjectsToRestore.map(project =>
+                                projectsService.updateProject(project.id, { archived: false })
+                              ));
+                              // Restore all archived linked parts in parallel using service directly
+                              await Promise.all(linkedPartsToRestore.map(part =>
+                                partsService.updatePart(part.id, { archived: false })
+                              ));
+                              await loadProjects();
                               setViewingVehicle(updatedVehicle);
                               setOriginalVehicleData({ ...updatedVehicle });
                             }
@@ -3225,14 +3228,15 @@ const VehicleDetailModal = ({
                               // Archiving: set display_order to max + 1
                               const maxOrder = Math.max(...vehicles.map(v => v.display_order || 0), 0);
                               updates.display_order = maxOrder + 1;
-                              // Archive all linked projects sequentially to avoid state conflicts
-                              for (const project of linkedProjectsToArchive) {
-                                await updateProject(project.id, { archived: true });
-                              }
-                              // Archive all linked parts sequentially
-                              for (const part of linkedPartsToArchive) {
-                                await archivePart(part.id, true);
-                              }
+                              // Archive all linked projects in parallel using service directly
+                              await Promise.all(linkedProjectsToArchive.map(project =>
+                                projectsService.updateProject(project.id, { archived: true })
+                              ));
+                              // Archive all linked parts in parallel using service directly
+                              await Promise.all(linkedPartsToArchive.map(part =>
+                                partsService.updatePart(part.id, { archived: true })
+                              ));
+                              await loadProjects();
                             }
                             const updatedVehicle = {
                               ...viewingVehicle,

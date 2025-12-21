@@ -4,6 +4,7 @@ import ProjectDetailView from '../ui/ProjectDetailView';
 import ProjectEditForm from '../ui/ProjectEditForm';
 import LinkedPartsSection from '../ui/LinkedPartsSection';
 import PrimaryButton from '../ui/PrimaryButton';
+import * as partsService from '../../services/partsService';
 
 const ProjectDetailModal = ({
   isOpen,
@@ -429,16 +430,16 @@ const ProjectDetailModal = ({
                         secondaryText: 'Restore All',
                         secondaryDangerous: false,
                         secondaryAction: async () => {
-                          // Unarchive project and all linked parts
+                          // Unarchive project and all linked parts using service directly
                           const updatedProject = {
                             ...viewingProject,
                             archived: false
                           };
                           await updateProject(viewingProject.id, { archived: false });
-                          // Restore all archived linked parts sequentially to avoid state conflicts
-                          for (const part of linkedPartsToRestore) {
-                            await archivePart(part.id, false);
-                          }
+                          // Restore all archived linked parts in parallel using service directly
+                          await Promise.all(linkedPartsToRestore.map(part =>
+                            partsService.updatePart(part.id, { archived: false })
+                          ));
                           setViewingProject(updatedProject);
                           setOriginalProjectData({ ...updatedProject });
                         }
@@ -449,11 +450,11 @@ const ProjectDetailModal = ({
                           archived: !viewingProject.archived
                         };
                         await updateProject(viewingProject.id, { archived: !viewingProject.archived });
-                        // When archiving, also archive all linked parts
+                        // When archiving, also archive all linked parts in parallel using service directly
                         if (!viewingProject.archived) {
-                          for (const part of linkedPartsToArchive) {
-                            await archivePart(part.id, true);
-                          }
+                          await Promise.all(linkedPartsToArchive.map(part =>
+                            partsService.updatePart(part.id, { archived: true })
+                          ));
                         }
                         setViewingProject(updatedProject);
                         setOriginalProjectData({ ...updatedProject });
