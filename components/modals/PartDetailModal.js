@@ -1639,6 +1639,8 @@ const PartDetailModal = ({
                 <Trash2 className="w-4 h-4" />
                 <span className="hidden sm:inline">Delete</span>
               </button>
+            </div>
+            <div className="flex items-center gap-2">
               {/* Archive/Unarchive button */}
               <button
                 onClick={() => {
@@ -1684,8 +1686,6 @@ const PartDetailModal = ({
                   </>
                 )}
               </button>
-            </div>
-            <div className="flex items-center gap-2">
               <button
                 onClick={async () => {
                   const trackingChanged = editingPart.tracking &&

@@ -2140,6 +2140,7 @@ const Shako = ({ isDemo = false }) => {
         confirmText={confirmDialog.confirmText}
         cancelText={confirmDialog.cancelText}
         isDangerous={confirmDialog.isDangerous !== false}
+        isWarning={confirmDialog.isWarning}
         darkMode={darkMode}
         secondaryAction={confirmDialog.secondaryAction}
         secondaryText={confirmDialog.secondaryText}
