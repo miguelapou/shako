@@ -864,7 +864,7 @@ const PartsTab = ({
                     setShowArchivedParts(!showArchivedParts);
                     setTimeout(() => setIsStatusFiltering(false), 600);
                   }}
-                  className={`flex items-center justify-center p-2 rounded-lg border transition-all ${
+                  className={`flex items-center justify-center h-[38px] w-[38px] rounded-lg border transition-all ${
                     showArchivedParts
                       ? (darkMode
                           ? 'text-amber-300 border-amber-600 hover:text-amber-200 hover:border-amber-500'
@@ -1096,7 +1096,7 @@ const PartsTab = ({
                   setShowArchivedParts(!showArchivedParts);
                   setTimeout(() => setIsStatusFiltering(false), 600);
                 }}
-                className={`flex items-center justify-center p-2 rounded-lg border transition-all ${
+                className={`flex items-center justify-center h-[38px] w-[38px] rounded-lg border transition-all ${
                   showArchivedParts
                     ? (darkMode
                         ? 'text-amber-300 border-amber-600 hover:text-amber-200 hover:border-amber-500'
