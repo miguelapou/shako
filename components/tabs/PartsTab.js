@@ -690,10 +690,10 @@ const PartsTab = ({
                     <ShoppingCart className={`w-6 h-6 text-yellow-500 transition-opacity ${statusFilter === 'purchased' ? 'opacity-70' : 'opacity-20'}`} />
                   )}
                 </span>
-                <div key={`${statusFilter === 'pending' ? 'pending' : statusFilter === 'purchased' ? 'purchased' : 'all-ordered'}-${showArchivedParts}`} className={hasClickedStatusCard ? 'status-card-content' : ''}>
+                <div key={statusFilter === 'pending' ? 'pending' : statusFilter === 'purchased' ? 'purchased' : 'all-ordered'} className={hasClickedStatusCard ? 'status-card-content' : ''}>
                   <p className={`text-xs mb-1 ${
                     darkMode ? 'text-gray-400' : 'text-slate-600'
-                  }`}>{showArchivedParts ? (statusFilter === 'pending' ? 'Archived Unordered' : 'Archived Ordered') : (statusFilter === 'pending' ? 'Unordered' : 'Ordered')}</p>
+                  }`}>{statusFilter === 'pending' ? 'Unordered' : 'Ordered'}</p>
                   <p className={`text-xl font-bold truncate ${
                     darkMode ? 'text-gray-100' : 'text-gray-800'
                   }`}>{statusFilter === 'pending' ? stats.pending : stats.purchased}</p>
@@ -734,10 +734,10 @@ const PartsTab = ({
                 style={{ touchAction: 'manipulation' }}
               >
                 <Truck className={`w-6 h-6 text-blue-500 absolute top-2 right-2 transition-opacity ${statusFilter === 'shipped' ? 'opacity-70' : 'opacity-20'}`} />
-                <div key={`shipped-${showArchivedParts}`}>
+                <div>
                   <p className={`text-xs mb-1 ${
                     darkMode ? 'text-gray-400' : 'text-slate-600'
-                  }`}>{showArchivedParts ? 'Archived Shipped' : 'Shipped'}</p>
+                  }`}>Shipped</p>
                   <p className={`text-xl font-bold truncate ${
                     darkMode ? 'text-gray-100' : 'text-gray-800'
                   }`}>{stats.shipped}</p>
@@ -792,10 +792,10 @@ const PartsTab = ({
                     <CheckCircle className={`w-6 h-6 text-green-500 transition-opacity ${deliveredFilter !== 'all' ? 'opacity-70' : 'opacity-20'}`} />
                   )}
                 </span>
-                <div key={`${deliveredFilter}-${showArchivedParts}`} className={hasClickedStatusCard ? 'status-card-content' : ''}>
+                <div key={deliveredFilter} className={hasClickedStatusCard ? 'status-card-content' : ''}>
                   <p className={`text-xs mb-1 ${
                     darkMode ? 'text-gray-400' : 'text-slate-600'
-                  }`}>{showArchivedParts ? (deliveredFilter === 'hide' ? 'Archived Undelivered' : 'Archived Delivered') : (deliveredFilter === 'hide' ? 'Undelivered' : 'Delivered')}</p>
+                  }`}>{deliveredFilter === 'hide' ? 'Undelivered' : 'Delivered'}</p>
                   <p className={`text-xl font-bold truncate ${
                     darkMode ? 'text-gray-100' : 'text-gray-800'
                   }`}>{deliveredFilter === 'hide' ? stats.undelivered : stats.delivered}</p>
@@ -864,14 +864,14 @@ const PartsTab = ({
                     setShowArchivedParts(!showArchivedParts);
                     setTimeout(() => setIsStatusFiltering(false), 600);
                   }}
-                  className={`flex items-center justify-center p-2 rounded-lg transition-all ${
+                  className={`flex items-center justify-center p-2 rounded-lg border transition-all ${
                     showArchivedParts
                       ? (darkMode
-                          ? 'text-amber-300 hover:text-amber-200'
-                          : 'text-amber-600 hover:text-amber-700')
+                          ? 'text-amber-300 border-amber-600 hover:text-amber-200 hover:border-amber-500'
+                          : 'text-amber-600 border-amber-400 hover:text-amber-700 hover:border-amber-500')
                       : (darkMode
-                          ? 'text-gray-400 hover:text-gray-300'
-                          : 'text-slate-400 hover:text-slate-600')
+                          ? 'text-gray-400 border-gray-600 hover:text-gray-300 hover:border-gray-500'
+                          : 'text-slate-400 border-slate-300 hover:text-slate-600 hover:border-slate-400')
                   }`}
                   title={showArchivedParts ? "Show active parts" : "Show archived parts"}
                 >
@@ -1096,14 +1096,14 @@ const PartsTab = ({
                   setShowArchivedParts(!showArchivedParts);
                   setTimeout(() => setIsStatusFiltering(false), 600);
                 }}
-                className={`flex items-center justify-center p-2 rounded-lg transition-all ${
+                className={`flex items-center justify-center p-2 rounded-lg border transition-all ${
                   showArchivedParts
                     ? (darkMode
-                        ? 'text-amber-300 hover:text-amber-200'
-                        : 'text-amber-600 hover:text-amber-700')
+                        ? 'text-amber-300 border-amber-600 hover:text-amber-200 hover:border-amber-500'
+                        : 'text-amber-600 border-amber-400 hover:text-amber-700 hover:border-amber-500')
                     : (darkMode
-                        ? 'text-gray-400 hover:text-gray-300'
-                        : 'text-slate-400 hover:text-slate-600')
+                        ? 'text-gray-400 border-gray-600 hover:text-gray-300 hover:border-gray-500'
+                        : 'text-slate-400 border-slate-300 hover:text-slate-600 hover:border-slate-400')
                 }`}
                 title={showArchivedParts ? "Show active parts" : "Show archived parts"}
               >
