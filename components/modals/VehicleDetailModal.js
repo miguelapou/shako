@@ -3156,13 +3156,13 @@ const VehicleDetailModal = ({
                     </button>
                     <button
                       onClick={async () => {
-                        const linkedProjectsToArchive = projects.filter(p => p.vehicle_id === viewingVehicle.id && !p.archived);
-                        const linkedProjectsToRestore = projects.filter(p => p.vehicle_id === viewingVehicle.id && p.archived);
+                        const linkedProjectsToArchive = projects.filter(p => String(p.vehicle_id) === String(viewingVehicle.id) && !p.archived);
+                        const linkedProjectsToRestore = projects.filter(p => String(p.vehicle_id) === String(viewingVehicle.id) && p.archived);
                         const projectArchiveCount = linkedProjectsToArchive.length;
                         const projectRestoreCount = linkedProjectsToRestore.length;
 
                         // Find all linked parts through projects
-                        const linkedProjectIds = projects.filter(p => p.vehicle_id === viewingVehicle.id).map(p => p.id);
+                        const linkedProjectIds = projects.filter(p => String(p.vehicle_id) === String(viewingVehicle.id)).map(p => p.id);
                         const linkedPartsToArchive = parts.filter(p => linkedProjectIds.includes(p.projectId) && !p.archived);
                         const linkedPartsToRestore = parts.filter(p => linkedProjectIds.includes(p.projectId) && p.archived);
                         const partArchiveCount = linkedPartsToArchive.length;
