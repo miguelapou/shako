@@ -1668,8 +1668,8 @@ const PartDetailModal = ({
                         ? 'bg-green-900/30 hover:bg-green-900/50 text-green-400 border border-green-700'
                         : 'bg-green-50 hover:bg-green-100 text-green-600 border border-green-300')
                     : (darkMode
-                        ? 'bg-amber-900/30 hover:bg-amber-900/50 text-amber-400 border border-amber-700'
-                        : 'bg-amber-50 hover:bg-amber-100 text-amber-600 border border-amber-300')
+                        ? 'bg-gray-700 hover:bg-gray-600 text-gray-100 border border-gray-600'
+                        : 'bg-gray-200 hover:bg-gray-300 text-gray-800 border border-gray-300')
                 }`}
               >
                 {viewingPart.archived ? (
