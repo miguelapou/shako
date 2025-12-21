@@ -806,67 +806,71 @@ const PartsTab = ({
             <div className={`hidden search-box-800 rounded-lg shadow-md p-3 ${
               darkMode ? 'bg-gray-800' : 'bg-slate-100'
             }`}>
-              <div className="flex items-center gap-2">
-                <div className="relative flex-1">
-                  <Search className={`absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 ${
-                    darkMode ? 'text-gray-500' : 'text-gray-400'
-                  }`} />
-                  <input
-                    type="text"
-                    placeholder={stats.total === 0 && stats.archivedCount === 0 ? "Add parts to use search" : (showArchivedParts ? "Search archived parts..." : "Search parts...")}
-                    className={`w-full pl-10 pr-10 py-2 border rounded-lg outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
-                      darkMode
-                        ? 'bg-gray-700 border-gray-600 text-gray-100 placeholder-gray-400'
-                        : 'bg-slate-50 border-slate-300 text-slate-800 placeholder-slate-400'
-                    }`}
-                    value={searchTerm}
-                    onChange={(e) => {
-                      setIsSearching(true);
-                      setSearchTerm(e.target.value);
-                      setTimeout(() => setIsSearching(false), 600);
-                    }}
-                    disabled={stats.total === 0 && stats.archivedCount === 0}
-                  />
-                  {searchTerm && (
-                    <button
-                      onClick={() => {
-                        setIsSearching(true);
-                        setSearchTerm('');
-                        setTimeout(() => setIsSearching(false), 600);
-                      }}
-                      className={`absolute right-3 top-1/2 transform -translate-y-1/2 transition-colors ${
-                        darkMode ? 'text-gray-500 hover:text-gray-300' : 'text-gray-400 hover:text-gray-600'
-                      }`}
-                      title="Clear search"
-                    >
-                      <X className="w-4 h-4" />
-                    </button>
-                  )}
-                </div>
-                {/* Archive Toggle Button */}
-                {stats.archivedCount > 0 && (
+              <div className="relative">
+                <Search className={`absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 ${
+                  darkMode ? 'text-gray-500' : 'text-gray-400'
+                }`} />
+                <input
+                  type="text"
+                  placeholder={stats.total === 0 && stats.archivedCount === 0 ? "Add parts to use search" : (showArchivedParts ? "Search archived parts..." : "Search parts...")}
+                  className={`w-full pl-10 pr-10 py-2 border rounded-lg outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
+                    darkMode
+                      ? 'bg-gray-700 border-gray-600 text-gray-100 placeholder-gray-400'
+                      : 'bg-slate-50 border-slate-300 text-slate-800 placeholder-slate-400'
+                  }`}
+                  value={searchTerm}
+                  onChange={(e) => {
+                    setIsSearching(true);
+                    setSearchTerm(e.target.value);
+                    setTimeout(() => setIsSearching(false), 600);
+                  }}
+                  disabled={stats.total === 0 && stats.archivedCount === 0}
+                />
+                {searchTerm && (
                   <button
                     onClick={() => {
-                      setIsStatusFiltering(true);
-                      setShowArchivedParts(!showArchivedParts);
-                      setTimeout(() => setIsStatusFiltering(false), 600);
+                      setIsSearching(true);
+                      setSearchTerm('');
+                      setTimeout(() => setIsSearching(false), 600);
                     }}
-                    className={`flex items-center gap-1.5 px-3 py-2 rounded-lg border transition-all ${
-                      showArchivedParts
-                        ? (darkMode
-                            ? 'bg-amber-900/30 text-amber-300 border-amber-700 hover:bg-amber-900/40'
-                            : 'bg-amber-100 text-amber-700 border-amber-300 hover:bg-amber-200')
-                        : (darkMode
-                            ? 'bg-gray-700 text-gray-400 border-gray-600 hover:bg-gray-600 hover:text-gray-300'
-                            : 'bg-slate-50 text-slate-500 border-slate-300 hover:bg-slate-200 hover:text-slate-700')
+                    className={`absolute right-3 top-1/2 transform -translate-y-1/2 transition-colors ${
+                      darkMode ? 'text-gray-500 hover:text-gray-300' : 'text-gray-400 hover:text-gray-600'
                     }`}
-                    title={showArchivedParts ? "Show active parts" : "Show archived parts"}
+                    title="Clear search"
                   >
-                    <Archive className="w-4 h-4" />
-                    <span className="text-sm font-medium">{stats.archivedCount}</span>
+                    <X className="w-4 h-4" />
                   </button>
                 )}
               </div>
+            </div>
+
+            {/* Archive Toggle Button - Standalone */}
+            <div className={`hidden search-box-800 rounded-lg shadow-md p-3 ${
+              darkMode ? 'bg-gray-800' : 'bg-slate-100'
+            }`}>
+              <button
+                onClick={() => {
+                  setIsStatusFiltering(true);
+                  setShowArchivedParts(!showArchivedParts);
+                  setTimeout(() => setIsStatusFiltering(false), 600);
+                }}
+                className={`w-full flex items-center justify-center gap-2 px-3 py-2 rounded-lg border transition-all ${
+                  showArchivedParts
+                    ? (darkMode
+                        ? 'bg-amber-900/30 text-amber-300 border-amber-700 hover:bg-amber-900/40'
+                        : 'bg-amber-100 text-amber-700 border-amber-300 hover:bg-amber-200')
+                    : (darkMode
+                        ? 'bg-gray-700 text-gray-400 border-gray-600 hover:bg-gray-600 hover:text-gray-300'
+                        : 'bg-slate-50 text-slate-500 border-slate-300 hover:bg-slate-200 hover:text-slate-700')
+                }`}
+                title={showArchivedParts ? "Show active parts" : "Show archived parts"}
+              >
+                <Archive className="w-4 h-4" />
+                <span className="text-sm font-medium">
+                  {showArchivedParts ? 'Archived' : 'Archive'}
+                  {stats.archivedCount > 0 && ` (${stats.archivedCount})`}
+                </span>
+              </button>
             </div>
 
           </div>
@@ -1027,67 +1031,71 @@ const PartsTab = ({
           <div className={`search-box-mobile-800 rounded-lg shadow-md p-3 ${
             darkMode ? 'bg-gray-800' : 'bg-slate-100'
           }`}>
-            <div className="flex items-center gap-2">
-              <div className="relative flex-1">
-                <Search className={`absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 ${
-                  darkMode ? 'text-gray-500' : 'text-gray-400'
-                }`} />
-                <input
-                  type="text"
-                  placeholder={stats.total === 0 && stats.archivedCount === 0 ? "Add parts to use search" : (showArchivedParts ? "Search archived..." : "Search parts...")}
-                  className={`w-full pl-10 pr-10 py-2 border rounded-lg outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
-                    darkMode
-                      ? 'bg-gray-700 border-gray-600 text-gray-100 placeholder-gray-400'
-                      : 'bg-slate-50 border-slate-300 text-slate-800 placeholder-slate-400'
-                  }`}
-                  value={searchTerm}
-                  onChange={(e) => {
-                    setIsSearching(true);
-                    setSearchTerm(e.target.value);
-                    setTimeout(() => setIsSearching(false), 600);
-                  }}
-                  disabled={stats.total === 0 && stats.archivedCount === 0}
-                />
-                {searchTerm && (
-                  <button
-                    onClick={() => {
-                      setIsSearching(true);
-                      setSearchTerm('');
-                      setTimeout(() => setIsSearching(false), 600);
-                    }}
-                    className={`absolute right-3 top-1/2 transform -translate-y-1/2 transition-colors ${
-                      darkMode ? 'text-gray-500 hover:text-gray-300' : 'text-gray-400 hover:text-gray-600'
-                    }`}
-                    title="Clear search"
-                  >
-                    <X className="w-4 h-4" />
-                  </button>
-                )}
-              </div>
-              {/* Archive Toggle Button - Mobile */}
-              {stats.archivedCount > 0 && (
+            <div className="relative">
+              <Search className={`absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 ${
+                darkMode ? 'text-gray-500' : 'text-gray-400'
+              }`} />
+              <input
+                type="text"
+                placeholder={stats.total === 0 && stats.archivedCount === 0 ? "Add parts to use search" : (showArchivedParts ? "Search archived..." : "Search parts...")}
+                className={`w-full pl-10 pr-10 py-2 border rounded-lg outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
+                  darkMode
+                    ? 'bg-gray-700 border-gray-600 text-gray-100 placeholder-gray-400'
+                    : 'bg-slate-50 border-slate-300 text-slate-800 placeholder-slate-400'
+                }`}
+                value={searchTerm}
+                onChange={(e) => {
+                  setIsSearching(true);
+                  setSearchTerm(e.target.value);
+                  setTimeout(() => setIsSearching(false), 600);
+                }}
+                disabled={stats.total === 0 && stats.archivedCount === 0}
+              />
+              {searchTerm && (
                 <button
                   onClick={() => {
-                    setIsStatusFiltering(true);
-                    setShowArchivedParts(!showArchivedParts);
-                    setTimeout(() => setIsStatusFiltering(false), 600);
+                    setIsSearching(true);
+                    setSearchTerm('');
+                    setTimeout(() => setIsSearching(false), 600);
                   }}
-                  className={`flex items-center gap-1.5 px-3 py-2 rounded-lg border transition-all ${
-                    showArchivedParts
-                      ? (darkMode
-                          ? 'bg-amber-900/30 text-amber-300 border-amber-700 hover:bg-amber-900/40'
-                          : 'bg-amber-100 text-amber-700 border-amber-300 hover:bg-amber-200')
-                      : (darkMode
-                          ? 'bg-gray-700 text-gray-400 border-gray-600 hover:bg-gray-600 hover:text-gray-300'
-                          : 'bg-slate-50 text-slate-500 border-slate-300 hover:bg-slate-200 hover:text-slate-700')
+                  className={`absolute right-3 top-1/2 transform -translate-y-1/2 transition-colors ${
+                    darkMode ? 'text-gray-500 hover:text-gray-300' : 'text-gray-400 hover:text-gray-600'
                   }`}
-                  title={showArchivedParts ? "Show active parts" : "Show archived parts"}
+                  title="Clear search"
                 >
-                  <Archive className="w-4 h-4" />
-                  <span className="text-sm font-medium">{stats.archivedCount}</span>
+                  <X className="w-4 h-4" />
                 </button>
               )}
             </div>
+          </div>
+
+          {/* Archive Toggle Button - Mobile Standalone */}
+          <div className={`search-box-mobile-800 rounded-lg shadow-md p-3 ${
+            darkMode ? 'bg-gray-800' : 'bg-slate-100'
+          }`}>
+            <button
+              onClick={() => {
+                setIsStatusFiltering(true);
+                setShowArchivedParts(!showArchivedParts);
+                setTimeout(() => setIsStatusFiltering(false), 600);
+              }}
+              className={`w-full flex items-center justify-center gap-2 px-3 py-2 rounded-lg border transition-all ${
+                showArchivedParts
+                  ? (darkMode
+                      ? 'bg-amber-900/30 text-amber-300 border-amber-700 hover:bg-amber-900/40'
+                      : 'bg-amber-100 text-amber-700 border-amber-300 hover:bg-amber-200')
+                  : (darkMode
+                      ? 'bg-gray-700 text-gray-400 border-gray-600 hover:bg-gray-600 hover:text-gray-300'
+                      : 'bg-slate-50 text-slate-500 border-slate-300 hover:bg-slate-200 hover:text-slate-700')
+              }`}
+              title={showArchivedParts ? "Show active parts" : "Show archived parts"}
+            >
+              <Archive className="w-4 h-4" />
+              <span className="text-sm font-medium">
+                {showArchivedParts ? 'Archived' : 'Archive'}
+                {stats.archivedCount > 0 && ` (${stats.archivedCount})`}
+              </span>
+            </button>
           </div>
         </div>
 
