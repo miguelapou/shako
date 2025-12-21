@@ -813,7 +813,21 @@ const PartsTab = ({
                   }`} />
                   <input
                     type="text"
-                    placeholder={stats.total === 0 && stats.archivedCount === 0 ? "Add parts to use search" : (showArchivedParts ? "Search archived parts..." : "Search parts...")}
+                    placeholder={stats.total === 0 && stats.archivedCount === 0 ? "Add parts to use search" :
+                      showArchivedParts
+                        ? (statusFilter === 'shipped' ? "Search archived shipped..." :
+                           statusFilter === 'purchased' ? "Search archived ordered..." :
+                           statusFilter === 'pending' ? "Search archived unordered..." :
+                           deliveredFilter === 'only' ? "Search archived delivered..." :
+                           deliveredFilter === 'hide' ? "Search archived undelivered..." :
+                           "Search archived...")
+                        : (statusFilter === 'shipped' ? "Search shipped..." :
+                           statusFilter === 'purchased' ? "Search ordered..." :
+                           statusFilter === 'pending' ? "Search unordered..." :
+                           deliveredFilter === 'only' ? "Search delivered..." :
+                           deliveredFilter === 'hide' ? "Search undelivered..." :
+                           "Search parts...")
+                    }
                     className={`w-full pl-10 pr-10 py-2 border rounded-lg outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
                       darkMode
                         ? 'bg-gray-700 border-gray-600 text-gray-100 placeholder-gray-400'
@@ -1031,7 +1045,21 @@ const PartsTab = ({
                 }`} />
                 <input
                   type="text"
-                  placeholder={stats.total === 0 && stats.archivedCount === 0 ? "Add parts to use search" : (showArchivedParts ? "Search archived..." : "Search parts...")}
+                  placeholder={stats.total === 0 && stats.archivedCount === 0 ? "Add parts to use search" :
+                    showArchivedParts
+                      ? (statusFilter === 'shipped' ? "Search archived shipped..." :
+                         statusFilter === 'purchased' ? "Search archived ordered..." :
+                         statusFilter === 'pending' ? "Search archived unordered..." :
+                         deliveredFilter === 'only' ? "Search archived delivered..." :
+                         deliveredFilter === 'hide' ? "Search archived undelivered..." :
+                         "Search archived...")
+                      : (statusFilter === 'shipped' ? "Search shipped..." :
+                         statusFilter === 'purchased' ? "Search ordered..." :
+                         statusFilter === 'pending' ? "Search unordered..." :
+                         deliveredFilter === 'only' ? "Search delivered..." :
+                         deliveredFilter === 'hide' ? "Search undelivered..." :
+                         "Search parts...")
+                  }
                   className={`w-full pl-10 pr-10 py-2 border rounded-lg outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
                     darkMode
                       ? 'bg-gray-700 border-gray-600 text-gray-100 placeholder-gray-400'
