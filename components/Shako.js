@@ -909,7 +909,11 @@ const Shako = ({ isDemo = false }) => {
       .filter(part => {
         // Get project and vehicle for this part
         const partProject = part.projectId ? projects.find(p => p.id === part.projectId) : null;
-        const partVehicle = partProject?.vehicle_id ? vehicles.find(v => v.id === partProject.vehicle_id) : null;
+        // Get vehicle from project or directly from part (for maintenance parts)
+        const vehicleId = partProject?.vehicle_id || part.vehicleId;
+        const partVehicle = vehicleId ? vehicles.find(v => v.id === vehicleId) : null;
+        // Check if this is a maintenance part (has vehicle but no project)
+        const isMaintenance = part.vehicleId && !part.projectId;
 
         const searchLower = searchTerm.toLowerCase();
         const matchesSearch = part.part.toLowerCase().includes(searchLower) ||
@@ -917,7 +921,8 @@ const Shako = ({ isDemo = false }) => {
                             part.vendor.toLowerCase().includes(searchLower) ||
                             (partProject?.name?.toLowerCase().includes(searchLower)) ||
                             (partVehicle?.name?.toLowerCase().includes(searchLower)) ||
-                            (partVehicle?.nickname?.toLowerCase().includes(searchLower));
+                            (partVehicle?.nickname?.toLowerCase().includes(searchLower)) ||
+                            (isMaintenance && 'maintenance'.includes(searchLower));
         const matchesStatus = statusFilter === 'all' ||
                              (statusFilter === 'delivered' && part.delivered) ||
                              (statusFilter === 'shipped' && part.shipped && !part.delivered) ||
