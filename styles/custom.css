@@ -339,9 +339,13 @@ html:not(.has-hover) .hover\:border-white:hover {
 }
 
 /* Light mode hover borders - reset to gray-200/gray-300 */
-html:not(.has-hover) .hover\:border-gray-400:hover,
+html:not(.has-hover) .hover\:border-gray-400:hover {
+  border-color: #d1d5db !important; /* gray-300 */
+}
+
+/* Dark mode hover borders - reset to gray-600 */
 html:not(.has-hover) .hover\:border-gray-500:hover {
-  border-color: #e5e7eb !important;
+  border-color: #4b5563 !important; /* gray-600 */
 }
 
 /* Slate border hovers */
@@ -382,6 +386,11 @@ html:not(.has-hover) [class*="hover:text"]:hover {
   color: inherit !important;
 }
 
+/* Hide drag handles on touch devices */
+html:not(.has-hover) .drag-handle {
+  display: none !important;
+}
+
 /* Parts Table Row Hover - Only on Non-Touch Devices */
 @media (hover: hover) and (pointer: fine) {
   .parts-table-row.light:hover {
@@ -390,6 +399,20 @@ html:not(.has-hover) [class*="hover:text"]:hover {
 
   .parts-table-row.dark:hover {
     background-color: #374151; /* gray-700 */
+  }
+}
+
+/* Projects Grid - 3 columns at lg breakpoint, 4 columns at xl (1280px+) */
+/* Using max-width ensures 3 columns at exactly 1024px (iPad Pro portrait) */
+@media (min-width: 1024px) and (max-width: 1279px) {
+  .projects-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+  }
+}
+
+@media (min-width: 1280px) {
+  .projects-grid {
+    grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
   }
 }
 

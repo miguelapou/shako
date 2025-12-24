@@ -276,7 +276,7 @@ const VehiclesTab = ({
               } ${cardBg(darkMode)}`}
               style={{ borderTopColor: borderColor }}
             >
-              {/* Drag Handle - Hidden on mobile */}
+              {/* Drag Handle - Hidden on touch devices */}
               <div
                 draggable
                 onClick={(e) => e.stopPropagation()}
@@ -291,7 +291,7 @@ const VehiclesTab = ({
                   }
                 }}
                 onDragEnd={handleVehicleDragEnd}
-                className={`absolute top-2 left-2 cursor-grab active:cursor-grabbing hidden md:block ${
+                className={`drag-handle absolute top-2 left-2 cursor-grab active:cursor-grabbing ${
                   darkMode ? 'text-gray-600 hover:text-gray-400' : 'text-gray-400 hover:text-gray-600'
                 }`}
               >
@@ -629,7 +629,7 @@ const VehiclesTab = ({
                   e.preventDefault();
                   handleArchiveZoneDrop(true);
                 }}
-                className={`hidden md:block mt-8 mb-6 p-6 rounded-lg border-2 border-dashed transition-all ${
+                className={`drag-handle mt-8 mb-6 p-6 rounded-lg border-2 border-dashed transition-all ${
                   dragOverArchiveZone
                     ? darkMode
                       ? 'border-blue-500 bg-blue-500/10'
@@ -696,7 +696,7 @@ const VehiclesTab = ({
                     e.preventDefault();
                     handleArchiveZoneDrop(false);
                   }}
-                  className={`hidden md:block mb-6 p-6 rounded-lg border-2 border-dashed transition-all ${
+                  className={`drag-handle mb-6 p-6 rounded-lg border-2 border-dashed transition-all ${
                     dragOverArchiveZone
                       ? darkMode
                         ? 'border-green-500 bg-green-500/10'
