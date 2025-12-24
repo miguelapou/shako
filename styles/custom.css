@@ -339,9 +339,13 @@ html:not(.has-hover) .hover\:border-white:hover {
 }
 
 /* Light mode hover borders - reset to gray-200/gray-300 */
-html:not(.has-hover) .hover\:border-gray-400:hover,
+html:not(.has-hover) .hover\:border-gray-400:hover {
+  border-color: #d1d5db !important; /* gray-300 */
+}
+
+/* Dark mode hover borders - reset to gray-600 */
 html:not(.has-hover) .hover\:border-gray-500:hover {
-  border-color: #e5e7eb !important;
+  border-color: #4b5563 !important; /* gray-600 */
 }
 
 /* Slate border hovers */
