@@ -332,14 +332,49 @@ html:not(.has-hover) [class*="hover:underline"]:hover {
   text-decoration: none !important;
 }
 
-/* Prevent border color changes on hover - use currentColor as fallback */
-html:not(.has-hover) [class*="hover:border"]:hover {
-  border-color: inherit !important;
+/* Prevent border color changes on hover - override with base border colors */
+/* Dark mode hover borders - reset to gray-600 */
+html:not(.has-hover) .hover\:border-white:hover {
+  border-color: #4b5563 !important;
 }
 
-/* Prevent background color changes on hover */
-html:not(.has-hover) [class*="hover:bg"]:hover {
-  background-color: inherit !important;
+/* Light mode hover borders - reset to gray-200/gray-300 */
+html:not(.has-hover) .hover\:border-gray-400:hover,
+html:not(.has-hover) .hover\:border-gray-500:hover {
+  border-color: #e5e7eb !important;
+}
+
+/* Slate border hovers */
+html:not(.has-hover) .hover\:border-slate-400:hover,
+html:not(.has-hover) .hover\:border-slate-500:hover,
+html:not(.has-hover) .hover\:border-slate-600:hover {
+  border-color: #cbd5e1 !important;
+}
+
+/* Amber border hovers */
+html:not(.has-hover) .hover\:border-amber-500:hover {
+  border-color: #d97706 !important;
+}
+
+/* Prevent background color changes on hover - keep current background */
+html:not(.has-hover) .hover\:bg-gray-100:hover,
+html:not(.has-hover) .hover\:bg-gray-200:hover,
+html:not(.has-hover) .hover\:bg-slate-100:hover,
+html:not(.has-hover) .hover\:bg-slate-200:hover {
+  background-color: transparent !important;
+}
+
+html:not(.has-hover) .hover\:bg-gray-600:hover,
+html:not(.has-hover) .hover\:bg-gray-700:hover {
+  background-color: transparent !important;
+}
+
+html:not(.has-hover) .hover\:bg-blue-700:hover {
+  background-color: #2563eb !important; /* Keep blue-600 */
+}
+
+html:not(.has-hover) .hover\:bg-red-700:hover {
+  background-color: #dc2626 !important; /* Keep red-600 */
 }
 
 /* Prevent text color changes on hover */
