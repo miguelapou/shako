@@ -402,10 +402,16 @@ html:not(.has-hover) .drag-handle {
   }
 }
 
-/* Projects Grid - 4 columns when screen width > 1024px */
+/* Projects Grid - 3 columns at 1024px, 4 columns when > 1024px */
+@media (min-width: 1024px) and (max-width: 1024px) {
+  .projects-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+  }
+}
+
 @media (min-width: 1025px) {
   .projects-grid {
-    grid-template-columns: repeat(4, minmax(0, 1fr));
+    grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
   }
 }
 
