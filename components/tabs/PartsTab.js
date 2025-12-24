@@ -1531,16 +1531,20 @@ const PartsTab = ({
             <h3 className={`text-xl font-semibold mb-2 ${
               darkMode ? 'text-gray-300' : 'text-slate-700'
             }`}>
-              No Parts Found
+              {showArchivedParts && !(searchTerm || statusFilter !== 'all' || vendorFilter !== 'all')
+                ? 'Your Archive is Empty'
+                : 'No Parts Found'}
             </h3>
             <p className={`${
               darkMode ? 'text-gray-400' : 'text-slate-600'
-            } ${!(searchTerm || statusFilter !== 'all' || vendorFilter !== 'all') ? 'mb-4' : ''}`}>
+            } ${!(searchTerm || statusFilter !== 'all' || vendorFilter !== 'all') && !showArchivedParts ? 'mb-4' : ''}`}>
               {searchTerm || statusFilter !== 'all' || vendorFilter !== 'all'
                 ? 'Try adjusting your filters or search term'
-                : 'Start tracking your parts by adding your first one'}
+                : showArchivedParts
+                  ? 'Archived parts will appear here'
+                  : 'Start tracking your parts by adding your first one'}
             </p>
-            {!(searchTerm || statusFilter !== 'all' || vendorFilter !== 'all') && (
+            {!(searchTerm || statusFilter !== 'all' || vendorFilter !== 'all') && !showArchivedParts && (
               <button
                 onClick={() => setShowAddModal(true)}
                 className="inline-flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg shadow-md transition-colors font-medium"
@@ -1841,16 +1845,20 @@ const PartsTab = ({
             <h3 className={`text-xl font-semibold mb-2 ${
               darkMode ? 'text-gray-300' : 'text-slate-700'
             }`}>
-              No Parts Found
+              {showArchivedParts && !(searchTerm || statusFilter !== 'all' || vendorFilter !== 'all')
+                ? 'Your Archive is Empty'
+                : 'No Parts Found'}
             </h3>
             <p className={`${
               darkMode ? 'text-gray-400' : 'text-slate-600'
-            } ${!(searchTerm || statusFilter !== 'all' || vendorFilter !== 'all') ? 'mb-4' : ''}`}>
+            } ${!(searchTerm || statusFilter !== 'all' || vendorFilter !== 'all') && !showArchivedParts ? 'mb-4' : ''}`}>
               {searchTerm || statusFilter !== 'all' || vendorFilter !== 'all'
                 ? 'Try adjusting your filters or search term'
-                : 'Start tracking your parts by adding your first one'}
+                : showArchivedParts
+                  ? 'Archived parts will appear here'
+                  : 'Start tracking your parts by adding your first one'}
             </p>
-            {!(searchTerm || statusFilter !== 'all' || vendorFilter !== 'all') && (
+            {!(searchTerm || statusFilter !== 'all' || vendorFilter !== 'all') && !showArchivedParts && (
               <button
                 onClick={() => setShowAddModal(true)}
                 className="inline-flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg shadow-md transition-colors font-medium"
