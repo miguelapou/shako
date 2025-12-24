@@ -386,6 +386,11 @@ html:not(.has-hover) [class*="hover:text"]:hover {
   color: inherit !important;
 }
 
+/* Hide drag handles on touch devices */
+html:not(.has-hover) .drag-handle {
+  display: none !important;
+}
+
 /* Parts Table Row Hover - Only on Non-Touch Devices */
 @media (hover: hover) and (pointer: fine) {
   .parts-table-row.light:hover {
