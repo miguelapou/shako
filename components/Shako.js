@@ -438,6 +438,7 @@ const Shako = ({ isDemo = false }) => {
 
   // Refs for swipe detection on tab content
   const tabContentRef = useRef(null);
+  const swipeContainerRef = useRef(null); // Main container ref for swipe gestures to work on entire page
   const modalOpenRef = useRef(false);
 
   // Keep modalOpenRef in sync with modal states
@@ -710,7 +711,8 @@ const Shako = ({ isDemo = false }) => {
 
     // Small delay to ensure DOM is ready
     const timeoutId = setTimeout(() => {
-      const element = tabContentRef.current;
+      // Use swipeContainerRef (main container) so swipes work on entire page, including empty areas
+      const element = swipeContainerRef.current;
       if (!element || loading) return;
 
       let touchStartPos = null;
@@ -1111,7 +1113,9 @@ const Shako = ({ isDemo = false }) => {
 
   return (
     <AppProviders darkMode={darkMode} setDarkMode={setDarkMode} userId={userId} toast={toast} isDemo={isDemo}>
-    <div className={`min-h-screen p-3 sm:p-6 transition-colors duration-200 ${
+    <div
+      ref={swipeContainerRef}
+      className={`min-h-screen p-3 sm:p-6 transition-colors duration-200 ${
       darkMode
         ? 'bg-gray-900 dark-scrollbar'
         : 'bg-slate-200'
