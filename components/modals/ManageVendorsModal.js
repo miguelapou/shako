@@ -5,6 +5,7 @@ import {
   getVendorColor,
   getVendorDisplayColor
 } from '../../utils/colorUtils';
+import { toSentenceCase } from '../../utils/styleUtils';
 
 const ManageVendorsModal = ({
   isOpen,
@@ -271,8 +272,9 @@ const ManageVendorsModal = ({
                         }
                         onKeyDown={(e) => {
                           if (e.key === 'Enter' && editingVendor?.newName?.trim()) {
-                            if (editingVendor.newName !== vendor) {
-                              renameVendor(vendor, editingVendor.newName);
+                            const formattedName = toSentenceCase(editingVendor.newName.trim());
+                            if (formattedName !== vendor) {
+                              renameVendor(vendor, formattedName);
                             }
                             setEditingVendor(null);
                           } else if (e.key === 'Escape') {
@@ -290,8 +292,11 @@ const ManageVendorsModal = ({
                       <button
                         onClick={(e) => {
                           e.stopPropagation();
-                          if (editingVendor?.newName?.trim() && editingVendor.newName !== vendor) {
-                            renameVendor(vendor, editingVendor.newName);
+                          if (editingVendor?.newName?.trim()) {
+                            const formattedName = toSentenceCase(editingVendor.newName.trim());
+                            if (formattedName !== vendor) {
+                              renameVendor(vendor, formattedName);
+                            }
                           }
                           setEditingVendor(null);
                         }}
