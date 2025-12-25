@@ -1,6 +1,6 @@
 import React, { useRef, useState, useCallback, useEffect } from 'react';
 import { X, Car, ChevronDown } from 'lucide-react';
-import { selectDropdownStyle, inputClasses } from '../../utils/styleUtils';
+import { selectDropdownStyle, inputClasses, toTitleCase, toSentenceCase, toAllCaps } from '../../utils/styleUtils';
 
 const AddPartModal = ({
   isOpen,
@@ -128,6 +128,7 @@ const AddPartModal = ({
                   type="text"
                   value={newPart.part}
                   onChange={(e) => setNewPart({ ...newPart, part: e.target.value })}
+                  onBlur={(e) => setNewPart({ ...newPart, part: toTitleCase(e.target.value) })}
                   className={inputClasses(darkMode)}
                   placeholder="e.g., Front Bumper"
                   required
@@ -351,6 +352,11 @@ const AddPartModal = ({
                   type="text"
                   value={uniqueVendors.includes(newPart.vendor) ? '' : newPart.vendor}
                   onChange={(e) => setNewPart({ ...newPart, vendor: e.target.value })}
+                  onBlur={(e) => {
+                    if (!uniqueVendors.includes(newPart.vendor) && e.target.value) {
+                      setNewPart({ ...newPart, vendor: toSentenceCase(e.target.value) });
+                    }
+                  }}
                   className={inputClasses(darkMode)}
                   placeholder="Enter new vendor name"
                 />
@@ -369,7 +375,7 @@ const AddPartModal = ({
                 <input
                   type="text"
                   value={newPart.tracking}
-                  onChange={(e) => setNewPart({ ...newPart, tracking: e.target.value })}
+                  onChange={(e) => setNewPart({ ...newPart, tracking: toAllCaps(e.target.value) })}
                   className={inputClasses(darkMode)}
                   placeholder="e.g., 1Z999AA10123456784"
                 />
@@ -385,7 +391,7 @@ const AddPartModal = ({
                 <input
                   type="text"
                   value={newPart.partNumber}
-                  onChange={(e) => setNewPart({ ...newPart, partNumber: e.target.value })}
+                  onChange={(e) => setNewPart({ ...newPart, partNumber: toAllCaps(e.target.value) })}
                   className={inputClasses(darkMode)}
                   placeholder="e.g., 12345-67890"
                 />

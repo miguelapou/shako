@@ -19,6 +19,35 @@ export const inputClasses = (darkMode, additionalClasses = '') => {
   return `${base} ${theme}`;
 };
 
+// ========================================
+// TEXT CASE FORMATTING UTILITIES
+// ========================================
+
+// Title Case - capitalizes first letter of each word
+// e.g., "hello world" -> "Hello World"
+export const toTitleCase = (str) => {
+  if (!str) return str;
+  return str
+    .toLowerCase()
+    .split(' ')
+    .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+    .join(' ');
+};
+
+// Sentence Case - capitalizes only the first letter of the string
+// e.g., "hello world" -> "Hello world"
+export const toSentenceCase = (str) => {
+  if (!str) return str;
+  return str.charAt(0).toUpperCase() + str.slice(1).toLowerCase();
+};
+
+// All Caps - converts entire string to uppercase
+// e.g., "hello world" -> "HELLO WORLD"
+export const toAllCaps = (str) => {
+  if (!str) return str;
+  return str.toUpperCase();
+};
+
 // Common select dropdown custom arrow style (prevents React from recreating this object on every render)
 export const selectDropdownStyle = {
   width: '100%',

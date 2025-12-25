@@ -1,6 +1,7 @@
 import React, { useState, useMemo, useEffect, useLayoutEffect, useRef } from 'react';
 import { Package, CheckCircle, CheckSquare, ChevronDown, X, Archive, Car } from 'lucide-react';
 import { getVendorDisplayColor } from '../../utils/colorUtils';
+import { toSentenceCase } from '../../utils/styleUtils';
 import ConfirmDialog from './ConfirmDialog';
 
 // ProjectDetailView - Reusable component for displaying project details with todos and linked parts
@@ -406,8 +407,9 @@ const ProjectDetailView = ({
               e.preventDefault();
               if (editingTodoText.trim()) {
                 isSubmittingEditTodoRef.current = true;
+                const formattedText = toSentenceCase(editingTodoText.trim());
                 const updatedTodos = project.todos.map(t =>
-                  t.id === todo.id ? { ...t, text: editingTodoText.trim() } : t
+                  t.id === todo.id ? { ...t, text: formattedText } : t
                 );
                 updateProject(project.id, {
                   todos: updatedTodos
@@ -430,8 +432,9 @@ const ProjectDetailView = ({
               return;
             }
             if (editingTodoText.trim() && editingTodoText !== todo.text) {
+              const formattedText = toSentenceCase(editingTodoText.trim());
               const updatedTodos = project.todos.map(t =>
-                t.id === todo.id ? { ...t, text: editingTodoText.trim() } : t
+                t.id === todo.id ? { ...t, text: formattedText } : t
               );
               updateProject(project.id, {
                 todos: updatedTodos
@@ -909,7 +912,7 @@ const ProjectDetailView = ({
                       const timestamp = new Date().toISOString();
                       const newTodo = {
                         id: Date.now(),
-                        text: newTodoText.trim(),
+                        text: toSentenceCase(newTodoText.trim()),
                         completed: false,
                         created_at: timestamp,
                         original_created_at: timestamp
@@ -939,7 +942,7 @@ const ProjectDetailView = ({
                     const timestamp = new Date().toISOString();
                     const newTodo = {
                       id: Date.now(),
-                      text: newTodoText.trim(),
+                      text: toSentenceCase(newTodoText.trim()),
                       completed: false,
                       created_at: timestamp,
                       original_created_at: timestamp

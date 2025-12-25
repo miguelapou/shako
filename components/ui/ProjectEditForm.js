@@ -1,5 +1,6 @@
 import React, { useState, useCallback } from 'react';
 import { Car, ChevronDown } from 'lucide-react';
+import { toTitleCase, toSentenceCase } from '../../utils/styleUtils';
 
 // ProjectEditForm - Form component for editing project details
 const ProjectEditForm = ({
@@ -37,6 +38,7 @@ const ProjectEditForm = ({
             type="text"
             value={project.name}
             onChange={(e) => onProjectChange({ ...project, name: e.target.value })}
+            onBlur={(e) => onProjectChange({ ...project, name: toTitleCase(e.target.value) })}
             className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
               darkMode
                 ? 'bg-gray-700 border-gray-600 text-gray-100'
@@ -209,6 +211,7 @@ const ProjectEditForm = ({
         <textarea
           value={project.description}
           onChange={(e) => onProjectChange({ ...project, description: e.target.value })}
+          onBlur={(e) => onProjectChange({ ...project, description: toSentenceCase(e.target.value) })}
           className={`w-full h-[calc(100%-2rem)] px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none ${
             darkMode
               ? 'bg-gray-700 border-gray-600 text-gray-100'

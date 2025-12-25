@@ -46,7 +46,7 @@ import {
   getVendorColor,
   getVendorDisplayColor
 } from '../../utils/colorUtils';
-import { inputClasses } from '../../utils/styleUtils';
+import { inputClasses, toTitleCase, toSentenceCase, toAllCaps } from '../../utils/styleUtils';
 import { generateVehicleReportPDF, downloadBlob } from '../../utils/pdfUtils';
 import { useDocuments, useServiceEvents } from '../../contexts';
 import * as projectsService from '../../services/projectsService';
@@ -1886,6 +1886,7 @@ const VehicleDetailModal = ({
                         type="text"
                         value={viewingVehicle.nickname || ''}
                         onChange={(e) => setViewingVehicle({ ...viewingVehicle, nickname: e.target.value })}
+                        onBlur={(e) => setViewingVehicle({ ...viewingVehicle, nickname: toTitleCase(e.target.value) })}
                         className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
                           darkMode
                             ? 'bg-gray-700 border-gray-600 text-gray-100 placeholder-gray-400'
@@ -1959,6 +1960,7 @@ const VehicleDetailModal = ({
                           type="text"
                           value={viewingVehicle.name}
                           onChange={(e) => setViewingVehicle({ ...viewingVehicle, name: e.target.value })}
+                          onBlur={(e) => setViewingVehicle({ ...viewingVehicle, name: toTitleCase(e.target.value) })}
                           className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
                             darkMode
                               ? 'bg-gray-700 border-gray-600 text-gray-100 placeholder-gray-400'
@@ -1979,7 +1981,7 @@ const VehicleDetailModal = ({
                         <input
                           type="text"
                           value={viewingVehicle.license_plate || ''}
-                          onChange={(e) => setViewingVehicle({ ...viewingVehicle, license_plate: e.target.value })}
+                          onChange={(e) => setViewingVehicle({ ...viewingVehicle, license_plate: toAllCaps(e.target.value) })}
                           className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
                             darkMode
                               ? 'bg-gray-700 border-gray-600 text-gray-100 placeholder-gray-400'
@@ -1998,7 +2000,7 @@ const VehicleDetailModal = ({
                         <input
                           type="text"
                           value={viewingVehicle.vin || ''}
-                          onChange={(e) => setViewingVehicle({ ...viewingVehicle, vin: e.target.value })}
+                          onChange={(e) => setViewingVehicle({ ...viewingVehicle, vin: toAllCaps(e.target.value) })}
                           className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
                             darkMode
                               ? 'bg-gray-700 border-gray-600 text-gray-100 placeholder-gray-400'
@@ -2378,6 +2380,7 @@ const VehicleDetailModal = ({
                           type="text"
                           value={viewingVehicle.fuel_filter || ''}
                           onChange={(e) => setViewingVehicle({ ...viewingVehicle, fuel_filter: e.target.value })}
+                          onBlur={(e) => setViewingVehicle({ ...viewingVehicle, fuel_filter: toSentenceCase(e.target.value) })}
                           className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
                             darkMode
                               ? 'bg-gray-700 border-gray-600 text-gray-100 placeholder-gray-400'
@@ -2397,6 +2400,7 @@ const VehicleDetailModal = ({
                           type="text"
                           value={viewingVehicle.air_filter || ''}
                           onChange={(e) => setViewingVehicle({ ...viewingVehicle, air_filter: e.target.value })}
+                          onBlur={(e) => setViewingVehicle({ ...viewingVehicle, air_filter: toSentenceCase(e.target.value) })}
                           className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
                             darkMode
                               ? 'bg-gray-700 border-gray-600 text-gray-100 placeholder-gray-400'
@@ -2416,6 +2420,7 @@ const VehicleDetailModal = ({
                           type="text"
                           value={viewingVehicle.oil_filter || ''}
                           onChange={(e) => setViewingVehicle({ ...viewingVehicle, oil_filter: e.target.value })}
+                          onBlur={(e) => setViewingVehicle({ ...viewingVehicle, oil_filter: toSentenceCase(e.target.value) })}
                           className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
                             darkMode
                               ? 'bg-gray-700 border-gray-600 text-gray-100 placeholder-gray-400'
@@ -2483,6 +2488,7 @@ const VehicleDetailModal = ({
                           type="text"
                           value={viewingVehicle.drain_plug || ''}
                           onChange={(e) => setViewingVehicle({ ...viewingVehicle, drain_plug: e.target.value })}
+                          onBlur={(e) => setViewingVehicle({ ...viewingVehicle, drain_plug: toSentenceCase(e.target.value) })}
                           className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
                             darkMode
                               ? 'bg-gray-700 border-gray-600 text-gray-100 placeholder-gray-400'
@@ -2502,6 +2508,7 @@ const VehicleDetailModal = ({
                           type="text"
                           value={viewingVehicle.battery || ''}
                           onChange={(e) => setViewingVehicle({ ...viewingVehicle, battery: e.target.value })}
+                          onBlur={(e) => setViewingVehicle({ ...viewingVehicle, battery: toSentenceCase(e.target.value) })}
                           className={inputClasses(darkMode)}
                           placeholder="e.g. Group 35, 650 CCA"
                         />

@@ -23,7 +23,7 @@ import {
   getVendorColor,
   getVendorDisplayColor
 } from '../../utils/colorUtils';
-import { selectDropdownStyle } from '../../utils/styleUtils';
+import { selectDropdownStyle, toTitleCase, toSentenceCase, toAllCaps } from '../../utils/styleUtils';
 import { getTrackingUrl, shouldSkipShip24, getCarrierName } from '../../utils/trackingUtils';
 import { fetchWithAuth } from '../../utils/fetchWithAuth';
 
@@ -1158,6 +1158,9 @@ const PartDetailModal = ({
                     onChange={(e) =>
                       setEditingPart({ ...editingPart, part: e.target.value })
                     }
+                    onBlur={(e) =>
+                      setEditingPart({ ...editingPart, part: toTitleCase(e.target.value) })
+                    }
                     className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
                       darkMode
                         ? 'bg-gray-700 border-gray-600 text-gray-100 placeholder-gray-400'
@@ -1426,6 +1429,14 @@ const PartDetailModal = ({
                         vendor: newValue
                       });
                     }}
+                    onBlur={(e) => {
+                      if (!uniqueVendors.includes(editingPart.vendor) && e.target.value) {
+                        setEditingPart({
+                          ...editingPart,
+                          vendor: toSentenceCase(e.target.value)
+                        });
+                      }
+                    }}
                     className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
                       darkMode
                         ? 'bg-gray-700 border-gray-600 text-gray-100 placeholder-gray-400'
@@ -1452,7 +1463,7 @@ const PartDetailModal = ({
                     value={editingPart.tracking || ''}
                     onChange={(e) => setEditingPart({
                       ...editingPart,
-                      tracking: e.target.value
+                      tracking: toAllCaps(e.target.value)
                     })}
                     className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
                       darkMode
@@ -1478,7 +1489,7 @@ const PartDetailModal = ({
                     onChange={(e) =>
                       setEditingPart({
                         ...editingPart,
-                        partNumber: e.target.value
+                        partNumber: toAllCaps(e.target.value)
                       })
                     }
                     className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
