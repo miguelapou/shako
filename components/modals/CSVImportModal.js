@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useMemo, useRef } from 'react';
 import { X, ChevronDown, AlertCircle, Check } from 'lucide-react';
-import { selectDropdownStyle } from '../../utils/styleUtils';
+import { selectDropdownStyle, toTitleCase, toSentenceCase, toAllCaps } from '../../utils/styleUtils';
 
 const PART_FIELDS = [
   { key: 'skip', label: 'Skip this column', required: false },
@@ -223,6 +223,15 @@ const CSVImportModal = ({
             // Parse numeric values, removing currency symbols
             const numValue = value.replace(/[$,]/g, '');
             part[fieldKey] = numValue;
+          } else if (fieldKey === 'part') {
+            // Apply title case to part name
+            part[fieldKey] = toTitleCase(value);
+          } else if (fieldKey === 'vendor') {
+            // Apply sentence case to vendor name
+            part[fieldKey] = toSentenceCase(value);
+          } else if (fieldKey === 'partNumber' || fieldKey === 'tracking') {
+            // Apply all caps to part number and tracking
+            part[fieldKey] = toAllCaps(value);
           } else {
             part[fieldKey] = value;
           }

@@ -1,7 +1,7 @@
 import React, { useRef, useState, useCallback } from 'react';
 import { X, Car, ChevronDown } from 'lucide-react';
 import { useUI } from '../../contexts';
-import { inputClasses } from '../../utils/styleUtils';
+import { inputClasses, toTitleCase, toSentenceCase } from '../../utils/styleUtils';
 
 const AddProjectModal = ({
   isOpen,
@@ -147,6 +147,7 @@ const AddProjectModal = ({
                   type="text"
                   value={newProject.name}
                   onChange={(e) => setNewProject({ ...newProject, name: e.target.value })}
+                  onBlur={(e) => setNewProject({ ...newProject, name: toTitleCase(e.target.value) })}
                   className={inputClasses(darkMode)}
                   placeholder="e.g., Interior Restoration"
                   required
@@ -309,6 +310,7 @@ const AddProjectModal = ({
               <textarea
                 value={newProject.description}
                 onChange={(e) => setNewProject({ ...newProject, description: e.target.value })}
+                onBlur={(e) => setNewProject({ ...newProject, description: toSentenceCase(e.target.value) })}
                 className={inputClasses(darkMode, 'h-48 resize-none')}
                 placeholder="Brief description of the project"
               />

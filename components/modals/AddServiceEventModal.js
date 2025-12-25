@@ -2,6 +2,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import { X, Trash2, Package, ChevronDown, Check } from 'lucide-react';
 import { useUI } from '../../contexts';
 import { getVendorDisplayColor } from '../../utils/colorUtils';
+import { toSentenceCase } from '../../utils/styleUtils';
 
 /**
  * Modal for adding/editing a service event for a vehicle
@@ -182,6 +183,7 @@ const AddServiceEventModal = ({
               type="text"
               value={description}
               onChange={(e) => setDescription(e.target.value)}
+              onBlur={(e) => setDescription(toSentenceCase(e.target.value))}
               className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
                 darkMode
                   ? 'bg-gray-700 border-gray-600 text-gray-100 placeholder-gray-400'

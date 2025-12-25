@@ -1,6 +1,6 @@
 import React, { useRef } from 'react';
 import { X, Upload, CheckCircle } from 'lucide-react';
-import { inputClasses } from '../../utils/styleUtils';
+import { inputClasses, toTitleCase, toSentenceCase, toAllCaps } from '../../utils/styleUtils';
 import { useUI } from '../../contexts';
 import FadeInImage from '../ui/FadeInImage';
 import ComboBox from '../ui/ComboBox';
@@ -148,6 +148,7 @@ const AddVehicleModal = ({
                   type="text"
                   value={newVehicle.nickname}
                   onChange={(e) => setNewVehicle({ ...newVehicle, nickname: e.target.value })}
+                  onBlur={(e) => setNewVehicle({ ...newVehicle, nickname: toTitleCase(e.target.value) })}
                   className={inputClasses(darkMode)}
                   placeholder="e.g. Blue Beast"
                 />
@@ -217,6 +218,7 @@ const AddVehicleModal = ({
                     type="text"
                     value={newVehicle.name}
                     onChange={(e) => setNewVehicle({ ...newVehicle, name: e.target.value })}
+                    onBlur={(e) => setNewVehicle({ ...newVehicle, name: toTitleCase(e.target.value) })}
                     className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
                       darkMode
                         ? 'bg-gray-700 border-gray-600 text-gray-100 placeholder-gray-400'
@@ -237,7 +239,7 @@ const AddVehicleModal = ({
                   <input
                     type="text"
                     value={newVehicle.license_plate}
-                    onChange={(e) => setNewVehicle({ ...newVehicle, license_plate: e.target.value })}
+                    onChange={(e) => setNewVehicle({ ...newVehicle, license_plate: toAllCaps(e.target.value) })}
                     className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
                       darkMode
                         ? 'bg-gray-700 border-gray-600 text-gray-100 placeholder-gray-400'
@@ -256,7 +258,7 @@ const AddVehicleModal = ({
                   <input
                     type="text"
                     value={newVehicle.vin}
-                    onChange={(e) => setNewVehicle({ ...newVehicle, vin: e.target.value })}
+                    onChange={(e) => setNewVehicle({ ...newVehicle, vin: toAllCaps(e.target.value) })}
                     className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
                       darkMode
                         ? 'bg-gray-700 border-gray-600 text-gray-100 placeholder-gray-400'
@@ -518,6 +520,7 @@ const AddVehicleModal = ({
                     type="text"
                     value={newVehicle.fuel_filter}
                     onChange={(e) => setNewVehicle({ ...newVehicle, fuel_filter: e.target.value })}
+                    onBlur={(e) => setNewVehicle({ ...newVehicle, fuel_filter: toSentenceCase(e.target.value) })}
                     className={inputClasses(darkMode)}
                     placeholder="e.g. Bosch 0450905316"
                   />
@@ -533,6 +536,7 @@ const AddVehicleModal = ({
                     type="text"
                     value={newVehicle.air_filter}
                     onChange={(e) => setNewVehicle({ ...newVehicle, air_filter: e.target.value })}
+                    onBlur={(e) => setNewVehicle({ ...newVehicle, air_filter: toSentenceCase(e.target.value) })}
                     className={inputClasses(darkMode)}
                     placeholder="e.g. K&N 33-2050"
                   />
@@ -548,6 +552,7 @@ const AddVehicleModal = ({
                     type="text"
                     value={newVehicle.battery}
                     onChange={(e) => setNewVehicle({ ...newVehicle, battery: e.target.value })}
+                    onBlur={(e) => setNewVehicle({ ...newVehicle, battery: toSentenceCase(e.target.value) })}
                     className={inputClasses(darkMode)}
                     placeholder="e.g. Group 35, 650 CCA"
                   />
@@ -563,6 +568,7 @@ const AddVehicleModal = ({
                     type="text"
                     value={newVehicle.oil_filter}
                     onChange={(e) => setNewVehicle({ ...newVehicle, oil_filter: e.target.value })}
+                    onBlur={(e) => setNewVehicle({ ...newVehicle, oil_filter: toSentenceCase(e.target.value) })}
                     className={inputClasses(darkMode)}
                     placeholder="e.g. Mobil 1 M1-110A"
                   />
@@ -626,6 +632,7 @@ const AddVehicleModal = ({
                     type="text"
                     value={newVehicle.drain_plug}
                     onChange={(e) => setNewVehicle({ ...newVehicle, drain_plug: e.target.value })}
+                    onBlur={(e) => setNewVehicle({ ...newVehicle, drain_plug: toSentenceCase(e.target.value) })}
                     className={inputClasses(darkMode)}
                     placeholder="e.g. M14x1.5"
                   />
