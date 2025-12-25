@@ -156,6 +156,33 @@ const useModals = () => {
   }, [showAddPartOptionsModal, showAddModal, showCSVImportModal, showTrackingModal, showAddProjectModal,
       showProjectDetailModal, showAddVehicleModal, showVehicleDetailModal, showPartDetailModal, showManageVendorsModal]);
 
+  // Close all modals (used when switching tabs)
+  const closeAllModals = () => {
+    // Part modals
+    setShowAddPartOptionsModal(false);
+    setShowAddModal(false);
+    setShowCSVImportModal(false);
+    setShowTrackingModal(false);
+    setShowPartDetailModal(false);
+    setViewingPart(null);
+
+    // Project modals
+    setShowAddProjectModal(false);
+    setShowProjectDetailModal(false);
+    setViewingProject(null);
+
+    // Vehicle modals
+    setShowAddVehicleModal(false);
+    setShowVehicleDetailModal(false);
+    setViewingVehicle(null);
+
+    // Vendor modals
+    setShowManageVendorsModal(false);
+
+    // Reset modal closing state
+    setIsModalClosing(false);
+  };
+
   return {
     // Part modals
     showAddPartOptionsModal,
@@ -229,6 +256,7 @@ const useModals = () => {
     isModalClosing,
     setIsModalClosing,
     handleCloseModal,
+    closeAllModals,
     isTransitioningModals,
     savedScrollPosition,
 

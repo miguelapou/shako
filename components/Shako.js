@@ -344,6 +344,7 @@ const Shako = ({ isDemo = false }) => {
     isModalClosing,
     setIsModalClosing,
     handleCloseModal,
+    closeAllModals,
     isTransitioningModals,
     savedScrollPosition,
     confirmDialog,
@@ -600,6 +601,7 @@ const Shako = ({ isDemo = false }) => {
 
   // Tab change handler to track animation direction
   const handleTabChange = (newTab) => {
+    closeAllModals(); // Close any open modals when switching tabs
     setPreviousTab(activeTab);
     setActiveTab(newTab);
   };
