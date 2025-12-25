@@ -1115,7 +1115,7 @@ const Shako = ({ isDemo = false }) => {
     <AppProviders darkMode={darkMode} setDarkMode={setDarkMode} userId={userId} toast={toast} isDemo={isDemo}>
     <div
       ref={swipeContainerRef}
-      className={`min-h-screen p-3 sm:p-6 transition-colors duration-200 ${
+      className={`min-h-screen p-3 sm:p-6 pb-20 sm:pb-6 transition-colors duration-200 ${
       darkMode
         ? 'bg-gray-900 dark-scrollbar'
         : 'bg-slate-200'
@@ -1692,8 +1692,8 @@ const Shako = ({ isDemo = false }) => {
           </div>
         )}
 
-        {/* Tab Navigation */}
-        <div className={`mb-6 border-b ${
+        {/* Tab Navigation - Hidden on mobile, shown on sm and up */}
+        <div className={`hidden sm:block mb-6 border-b ${
           darkMode ? 'border-gray-700' : 'border-slate-300'
         }`}>
           <div className="flex relative">
@@ -2196,6 +2196,54 @@ const Shako = ({ isDemo = false }) => {
         darkMode={darkMode}
         isLoading={authLoading}
       />
+
+      {/* Mobile Bottom Tab Navigation - Glassmorphism style */}
+      <div
+        className={`fixed bottom-0 left-0 right-0 z-50 sm:hidden border-t backdrop-blur-xl ${
+          darkMode
+            ? 'bg-gray-900/50 border-white/10'
+            : 'bg-white/50 border-black/5 shadow-[0_-4px_20px_rgba(0,0,0,0.08)]'
+        }`}
+      >
+        <div
+          className="flex justify-around items-center pt-3 pb-2"
+          style={{ paddingBottom: 'calc(0.5rem + env(safe-area-inset-bottom))' }}
+        >
+          <button
+            onClick={() => handleTabChange('vehicles')}
+            className={`flex flex-col items-center justify-center flex-1 h-full transition-colors ${
+              activeTab === 'vehicles'
+                ? darkMode ? 'text-blue-400' : 'text-blue-600'
+                : darkMode ? 'text-gray-400' : 'text-slate-500'
+            }`}
+          >
+            <Car className="w-5 h-5" />
+            <span className="text-xs mt-1">Vehicles</span>
+          </button>
+          <button
+            onClick={() => handleTabChange('projects')}
+            className={`flex flex-col items-center justify-center flex-1 h-full transition-colors ${
+              activeTab === 'projects'
+                ? darkMode ? 'text-blue-400' : 'text-blue-600'
+                : darkMode ? 'text-gray-400' : 'text-slate-500'
+            }`}
+          >
+            <ListChecks className="w-5 h-5" />
+            <span className="text-xs mt-1">Projects</span>
+          </button>
+          <button
+            onClick={() => handleTabChange('parts')}
+            className={`flex flex-col items-center justify-center flex-1 h-full transition-colors ${
+              activeTab === 'parts'
+                ? darkMode ? 'text-blue-400' : 'text-blue-600'
+                : darkMode ? 'text-gray-400' : 'text-slate-500'
+            }`}
+          >
+            {activeTab === 'parts' ? <PackageOpen className="w-5 h-5" /> : <Package className="w-5 h-5" />}
+            <span className="text-xs mt-1">Parts</span>
+          </button>
+        </div>
+      </div>
     </div>
     <ToastContainer toasts={toasts} onDismiss={dismissToast} darkMode={darkMode} />
     </AppProviders>
