@@ -17,6 +17,13 @@
   transition: opacity 0.2s ease-out;
 }
 
+/* On mobile, prevent modals from going behind bottom navigation */
+@media (max-width: 639px) {
+  .modal-backdrop {
+    bottom: calc(3.5rem + env(safe-area-inset-bottom));
+  }
+}
+
 .modal-content {
   -webkit-overflow-scrolling: touch;
   transition: transform 0.2s cubic-bezier(0.4, 0, 1, 1), opacity 0.2s ease-out;
