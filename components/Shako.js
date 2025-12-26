@@ -452,6 +452,18 @@ const Shako = ({ isDemo = false }) => {
     setIsTouchDevice('ontouchstart' in window || navigator.maxTouchPoints > 0);
   }, []);
 
+  // Detect PWA standalone mode and add class to html element
+  useEffect(() => {
+    const isStandalone = window.matchMedia('(display-mode: standalone)').matches ||
+                         window.navigator.standalone === true;
+    if (isStandalone) {
+      document.documentElement.classList.add('pwa-standalone');
+    }
+    return () => {
+      document.documentElement.classList.remove('pwa-standalone');
+    };
+  }, []);
+
   // Close user menu when clicking outside
   useEffect(() => {
     const handleClickOutside = (event) => {
