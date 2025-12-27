@@ -248,7 +248,7 @@ const ProjectDetailModal = ({
         </div>
 
         {/* Content - with slide animation */}
-        <div className="relative min-h-[calc(90vh-180px)]">
+        <div className="relative min-h-0 sm:min-h-[calc(90vh-180px)] overflow-y-auto sm:overflow-visible modal-content-wrapper">
           {/* Project Details View */}
           <div
             className={`w-full transition-all duration-500 ease-in-out ${
@@ -259,7 +259,7 @@ const ProjectDetailModal = ({
           >
             <div
               key={viewingProject.id}
-              className="p-6 space-y-6 max-h-[calc(90vh-180px)] overflow-y-auto animate-fade-in"
+              className="p-6 space-y-6 sm:max-h-[calc(90vh-180px)] sm:overflow-y-auto animate-fade-in"
             >
               <ProjectDetailView
                 project={viewingProject}
@@ -308,7 +308,7 @@ const ProjectDetailModal = ({
                 : 'absolute opacity-0 pointer-events-none'
             }`}
           >
-            <div className="p-6 space-y-6 max-h-[calc(90vh-180px)] overflow-y-auto">
+            <div className="p-6 space-y-6 sm:max-h-[calc(90vh-180px)] sm:overflow-y-auto">
               <ProjectEditForm
                 project={viewingProject}
                 onProjectChange={setViewingProject}

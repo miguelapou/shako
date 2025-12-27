@@ -685,7 +685,7 @@ const VehicleDetailModal = ({
         </div>
 
         {/* Content - with slide animation */}
-        <div className="relative min-h-[calc(90vh-180px)]">
+        <div className="relative min-h-0 sm:min-h-[calc(90vh-180px)] overflow-y-auto sm:overflow-visible modal-content-wrapper">
           {/* Vehicle Details View */}
           <div
             className={`w-full transition-all duration-500 ease-in-out ${
@@ -696,7 +696,7 @@ const VehicleDetailModal = ({
           >
             <div
               key={viewingVehicle.id}
-              className="p-6 pb-12 space-y-6 max-h-[calc(90vh-164px)] overflow-y-auto animate-fade-in"
+              className="p-6 pb-12 space-y-6 sm:max-h-[calc(90vh-164px)] sm:overflow-y-auto animate-fade-in"
             >
               {/* Top Section: Image (3/5) and Basic Info (2/5) side by side */}
               <div className="grid grid-cols-1 md:grid-cols-[3fr_2fr] gap-4 md:items-start">
@@ -1781,7 +1781,7 @@ const VehicleDetailModal = ({
             }`}
           >
             {vehicleModalProjectView && !vehicleModalEditMode && (
-              <div className="p-6 space-y-6 max-h-[calc(90vh-164px)] overflow-y-auto">
+              <div className="p-6 space-y-6 sm:max-h-[calc(90vh-164px)] sm:overflow-y-auto">
                 <ProjectDetailView
                   project={vehicleModalProjectView}
                   parts={parts}
@@ -1831,7 +1831,7 @@ const VehicleDetailModal = ({
             }`}
           >
             {vehicleModalProjectView && (
-              <div className="p-6 space-y-6 max-h-[calc(90vh-164px)] overflow-y-auto">
+              <div className="p-6 space-y-6 sm:max-h-[calc(90vh-164px)] sm:overflow-y-auto">
                 <ProjectEditForm
                   project={vehicleModalProjectView}
                   onProjectChange={setVehicleModalProjectView}
@@ -1872,7 +1872,7 @@ const VehicleDetailModal = ({
             }`}
           >
             {viewingVehicle && (
-              <div className="p-6 space-y-6 max-h-[calc(90vh-164px)] overflow-y-auto">
+              <div className="p-6 space-y-6 sm:max-h-[calc(90vh-164px)] sm:overflow-y-auto">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   {/* Basic Information - Right column on desktop */}
                   <div className="space-y-4 md:order-2">
@@ -2545,7 +2545,7 @@ const VehicleDetailModal = ({
             }`}
           >
             {showAddServiceEventModal && isMobile && (
-              <div className="p-6 pb-24 space-y-4 max-h-[calc(90vh-164px)] overflow-y-auto">
+              <div className="p-6 pb-24 space-y-4 sm:max-h-[calc(90vh-164px)] sm:overflow-y-auto">
                 {/* Date field */}
                 <div>
                   <label className={`block text-sm font-medium mb-2 ${
@@ -2816,7 +2816,7 @@ const VehicleDetailModal = ({
             }`}
           >
             {showAddDocumentModal && isMobile && (
-              <div className="p-6 pb-24 space-y-4 max-h-[calc(90vh-164px)] overflow-y-auto">
+              <div className="p-6 pb-24 space-y-4 sm:max-h-[calc(90vh-164px)] sm:overflow-y-auto">
                 {/* Document Title field */}
                 <div>
                   <label className={`block text-sm font-medium mb-2 ${
@@ -2923,7 +2923,7 @@ const VehicleDetailModal = ({
             }`}
           >
             {viewingInfoEvent && isMobile && (
-              <div className="p-6 pb-24 space-y-5 max-h-[calc(90vh-164px)] overflow-y-auto">
+              <div className="p-6 pb-24 space-y-5 sm:max-h-[calc(90vh-164px)] sm:overflow-y-auto">
                 {/* Notes Section */}
                 {viewingInfoEvent.notes && (
                   <div>
