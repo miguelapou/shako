@@ -864,7 +864,7 @@ const PartsTab = ({
                     setShowArchivedParts(!showArchivedParts);
                     setTimeout(() => setIsStatusFiltering(false), 600);
                   }}
-                  className={`flex items-center justify-center h-[38px] w-[38px] rounded-lg border transition-all ${
+                  className={`flex items-center justify-center gap-2 h-[38px] px-3 rounded-lg border transition-all ${
                     showArchivedParts
                       ? (darkMode
                           ? 'text-amber-300 border-amber-600 hover:text-amber-200 hover:border-amber-500'
@@ -876,6 +876,7 @@ const PartsTab = ({
                   title={showArchivedParts ? "Show active parts" : "Show archived parts"}
                 >
                   <Archive className="w-5 h-5" />
+                  <span className="text-sm font-medium">Archive</span>
                 </button>
               </div>
             </div>
