@@ -136,12 +136,15 @@ const VehicleDetailModal = ({
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   // Slide direction for animation: 'left' or 'right' or null (initial)
   const [slideDirection, setSlideDirection] = useState(null);
+  // State for basic info card pagination (0 = basic info, 1 = maintenance)
+  const [basicInfoPage, setBasicInfoPage] = useState(0);
 
-  // Reset image index when vehicle changes or modal opens
+  // Reset image index and basic info page when vehicle changes or modal opens
   useEffect(() => {
     if (isOpen && viewingVehicle?.id) {
       setCurrentImageIndex(0);
       setSlideDirection(null);
+      setBasicInfoPage(0);
     }
   }, [isOpen, viewingVehicle?.id]);
 
@@ -702,16 +705,17 @@ const VehicleDetailModal = ({
               {/* Top Section: Image (3/5) and Basic Info (2/5) side by side */}
               <div className="grid grid-cols-1 md:grid-cols-[3fr_2fr] gap-4 md:items-start">
                 {/* Basic Info Card - 2/5 width on desktop, aspect ratio calculated to match image height */}
-                <div className={`order-last rounded-lg px-6 pt-6 pb-4 md:aspect-[8/9] ${
+                <div className={`order-last rounded-lg px-6 pt-6 pb-4 md:aspect-[8/9] flex flex-col ${
                   darkMode ? 'bg-gray-700' : 'bg-gray-50'
                 }`}>
+                  {/* Header with page title and project/parts counts */}
                   <div className="flex items-center justify-between mb-3">
                     <h3 className={`text-lg font-semibold ${
                       darkMode ? 'text-gray-200' : 'text-gray-800'
                     }`}>
-                      Basic Info
+                      {basicInfoPage === 0 ? 'Details' : 'Maintenance'}
                     </h3>
-                    {(() => {
+                    {basicInfoPage === 0 && (() => {
                       const vehicleProjects = projects.filter(p => p.vehicle_id === viewingVehicle.id);
                       // Count parts linked through projects
                       const projectLinkedPartsCount = vehicleProjects.reduce((count, project) => {
@@ -742,148 +746,289 @@ const VehicleDetailModal = ({
                       );
                     })()}
                   </div>
-                  <div className="grid grid-cols-2 gap-4">
-                    <div className="space-y-4">
-                      {viewingVehicle.year && (
-                        <div>
-                          <p className={`text-sm font-medium mb-1 ${
-                            darkMode ? 'text-gray-400' : 'text-slate-600'
-                          }`}>Year</p>
-                          <p className={`text-base ${
-                            darkMode ? 'text-gray-100' : 'text-slate-800'
-                          }`}>{viewingVehicle.year}</p>
+
+                  {/* Page Content */}
+                  <div className="flex-1 overflow-hidden">
+                    {basicInfoPage === 0 ? (
+                      /* Page 1: Basic Info */
+                      <div className="grid grid-cols-2 gap-4">
+                        <div className="space-y-4">
+                          {viewingVehicle.year && (
+                            <div>
+                              <p className={`text-sm font-medium mb-1 ${
+                                darkMode ? 'text-gray-400' : 'text-slate-600'
+                              }`}>Year</p>
+                              <p className={`text-base ${
+                                darkMode ? 'text-gray-100' : 'text-slate-800'
+                              }`}>{viewingVehicle.year}</p>
+                            </div>
+                          )}
+                          {viewingVehicle.make && (
+                            <div>
+                              <p className={`text-sm font-medium mb-1 ${
+                                darkMode ? 'text-gray-400' : 'text-slate-600'
+                              }`}>Make</p>
+                              <p className={`text-base ${
+                                darkMode ? 'text-gray-100' : 'text-slate-800'
+                              }`}>{viewingVehicle.make}</p>
+                            </div>
+                          )}
+                          {viewingVehicle.name && (
+                            <div>
+                              <p className={`text-sm font-medium mb-1 ${
+                                darkMode ? 'text-gray-400' : 'text-slate-600'
+                              }`}>Model</p>
+                              <p className={`text-base ${
+                                darkMode ? 'text-gray-100' : 'text-slate-800'
+                              }`}>{viewingVehicle.name}</p>
+                            </div>
+                          )}
+                          {viewingVehicle.purchase_price && (
+                            <div>
+                              <p className={`text-sm font-medium mb-1 ${
+                                darkMode ? 'text-gray-400' : 'text-slate-600'
+                              }`}>Purchase Price</p>
+                              <p className={`text-base font-medium ${
+                                darkMode ? 'text-green-400' : 'text-green-600'
+                              }`}>${parseFloat(viewingVehicle.purchase_price).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</p>
+                            </div>
+                          )}
                         </div>
-                      )}
-                      {viewingVehicle.make && (
-                        <div>
-                          <p className={`text-sm font-medium mb-1 ${
-                            darkMode ? 'text-gray-400' : 'text-slate-600'
-                          }`}>Make</p>
-                          <p className={`text-base ${
-                            darkMode ? 'text-gray-100' : 'text-slate-800'
-                          }`}>{viewingVehicle.make}</p>
-                        </div>
-                      )}
-                      {viewingVehicle.name && (
-                        <div>
-                          <p className={`text-sm font-medium mb-1 ${
-                            darkMode ? 'text-gray-400' : 'text-slate-600'
-                          }`}>Model</p>
-                          <p className={`text-base ${
-                            darkMode ? 'text-gray-100' : 'text-slate-800'
-                          }`}>{viewingVehicle.name}</p>
-                        </div>
-                      )}
-                      {viewingVehicle.purchase_price && (
-                        <div>
-                          <p className={`text-sm font-medium mb-1 ${
-                            darkMode ? 'text-gray-400' : 'text-slate-600'
-                          }`}>Purchase Price</p>
-                          <p className={`text-base font-medium ${
-                            darkMode ? 'text-green-400' : 'text-green-600'
-                          }`}>${parseFloat(viewingVehicle.purchase_price).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</p>
-                        </div>
-                      )}
-                    </div>
-                    <div className="space-y-4">
-                      {viewingVehicle.license_plate && (
-                        <div>
-                          <p className={`text-sm font-medium mb-1 ${
-                            darkMode ? 'text-gray-400' : 'text-slate-600'
-                          }`}>License Plate</p>
-                          <p className={`text-base ${
-                            darkMode ? 'text-gray-100' : 'text-slate-800'
-                          }`}>{viewingVehicle.license_plate}</p>
-                        </div>
-                      )}
-                      {viewingVehicle.vin && (
-                        <div>
-                          <p className={`text-sm font-medium ${
-                            darkMode ? 'text-gray-400' : 'text-slate-600'
-                          }`}>VIN</p>
-                          <span className={`inline-block px-3 py-1 rounded-full text-xs font-mono ${
-                            darkMode ? 'bg-gray-800 text-gray-300' : 'bg-gray-200 text-gray-900'
-                          }`}>
-                            {viewingVehicle.vin}
-                          </span>
-                        </div>
-                      )}
-                      {viewingVehicle.odometer_range && (
-                        <div>
-                          <p className={`text-sm font-medium mb-1 ${
-                            darkMode ? 'text-gray-400' : 'text-slate-600'
-                          }`}>Odometer Range</p>
-                          <p className={`text-base ${
-                            darkMode ? 'text-gray-100' : 'text-slate-800'
-                          }`}>
-                            ~{parseInt(viewingVehicle.odometer_range).toLocaleString()} {viewingVehicle.odometer_unit === 'mi' ? 'miles' : 'km'}
-                          </p>
-                        </div>
-                      )}
-                      {viewingVehicle.purchase_date && (
-                        <div>
-                          <p className={`text-sm font-medium mb-1 ${
-                            darkMode ? 'text-gray-400' : 'text-slate-600'
-                          }`}>Purchase Date</p>
-                          <p className={`text-base ${
-                            darkMode ? 'text-gray-100' : 'text-slate-800'
-                          }`}>
-                            {new Date(viewingVehicle.purchase_date + 'T00:00:00').toLocaleDateString(undefined, { year: 'numeric', month: 'long', day: 'numeric' })}
-                          </p>
-                        </div>
-                      )}
-                    </div>
-                    {/* Budget Progress for Linked Projects */}
-                    {(() => {
-                      const vehicleProjects = projects.filter(p => p.vehicle_id === viewingVehicle.id);
-                      const totalSpent = calculateVehicleTotalSpent(viewingVehicle.id, projects, parts, serviceEvents);
-                      const totalBudget = vehicleProjects.reduce((sum, project) => sum + (project.budget || 0), 0);
-                      const progress = totalBudget > 0 ? (totalSpent / totalBudget) * 100 : 0;
-                      return (
-                        <div className={`col-span-2 pt-4 border-t ${
-                          darkMode ? 'border-gray-600' : 'border-gray-300'
-                        }`}>
-                          <p className={`text-sm font-semibold mb-2 ${
-                            darkMode ? 'text-gray-300' : 'text-slate-700'
-                          }`}>Projects Budget</p>
-                          <div className="flex justify-between items-center mb-2">
-                            <span className="text-sm font-medium">
-                              <span className={
-                                progress > 90
-                                  ? (darkMode ? 'text-red-400' : 'text-red-600')
-                                  : progress > 70
-                                  ? (darkMode ? 'text-yellow-400' : 'text-yellow-600')
-                                  : (darkMode ? 'text-green-400' : 'text-green-600')
-                              }>
-                                ${totalSpent.toFixed(2)}
+                        <div className="space-y-4">
+                          {viewingVehicle.license_plate && (
+                            <div>
+                              <p className={`text-sm font-medium mb-1 ${
+                                darkMode ? 'text-gray-400' : 'text-slate-600'
+                              }`}>License Plate</p>
+                              <p className={`text-base ${
+                                darkMode ? 'text-gray-100' : 'text-slate-800'
+                              }`}>{viewingVehicle.license_plate}</p>
+                            </div>
+                          )}
+                          {viewingVehicle.vin && (
+                            <div>
+                              <p className={`text-sm font-medium ${
+                                darkMode ? 'text-gray-400' : 'text-slate-600'
+                              }`}>VIN</p>
+                              <span className={`inline-block px-3 py-1 rounded-full text-xs font-mono ${
+                                darkMode ? 'bg-gray-800 text-gray-300' : 'bg-gray-200 text-gray-900'
+                              }`}>
+                                {viewingVehicle.vin}
                               </span>
-                              <span className={darkMode ? 'text-gray-300' : 'text-slate-700'}>
-                                {' '}/ ${Math.round(totalBudget)}
-                              </span>
-                            </span>
-                            <span className={`text-sm font-bold ${
-                              darkMode ? 'text-gray-200' : 'text-gray-900'
+                            </div>
+                          )}
+                          {viewingVehicle.odometer_range && (
+                            <div>
+                              <p className={`text-sm font-medium mb-1 ${
+                                darkMode ? 'text-gray-400' : 'text-slate-600'
+                              }`}>Odometer Range</p>
+                              <p className={`text-base ${
+                                darkMode ? 'text-gray-100' : 'text-slate-800'
+                              }`}>
+                                ~{parseInt(viewingVehicle.odometer_range).toLocaleString()} {viewingVehicle.odometer_unit === 'mi' ? 'miles' : 'km'}
+                              </p>
+                            </div>
+                          )}
+                          {viewingVehicle.purchase_date && (
+                            <div>
+                              <p className={`text-sm font-medium mb-1 ${
+                                darkMode ? 'text-gray-400' : 'text-slate-600'
+                              }`}>Purchase Date</p>
+                              <p className={`text-base ${
+                                darkMode ? 'text-gray-100' : 'text-slate-800'
+                              }`}>
+                                {new Date(viewingVehicle.purchase_date + 'T00:00:00').toLocaleDateString(undefined, { year: 'numeric', month: 'long', day: 'numeric' })}
+                              </p>
+                            </div>
+                          )}
+                        </div>
+                        {/* Budget Progress for Linked Projects */}
+                        {(() => {
+                          const vehicleProjects = projects.filter(p => p.vehicle_id === viewingVehicle.id);
+                          const totalSpent = calculateVehicleTotalSpent(viewingVehicle.id, projects, parts, serviceEvents);
+                          const totalBudget = vehicleProjects.reduce((sum, project) => sum + (project.budget || 0), 0);
+                          const progress = totalBudget > 0 ? (totalSpent / totalBudget) * 100 : 0;
+                          return (
+                            <div className={`col-span-2 pt-4 border-t ${
+                              darkMode ? 'border-gray-600' : 'border-gray-300'
                             }`}>
-                              {progress.toFixed(0)}%
-                            </span>
-                          </div>
-                          <div className={`w-full rounded-full h-4 ${
-                            darkMode ? 'bg-gray-600' : 'bg-gray-200'
-                          }`}>
-                            <div
-                              className={`h-4 rounded-full transition-all ${
-                                progress > 90
-                                  ? 'bg-red-500'
-                                  : progress > 70
-                                  ? 'bg-yellow-500'
-                                  : 'bg-green-500'
-                              }`}
-                              style={{ width: `${Math.min(progress, 100)}%` }}
-                            />
-                          </div>
+                              <p className={`text-sm font-semibold mb-2 ${
+                                darkMode ? 'text-gray-300' : 'text-slate-700'
+                              }`}>Projects Budget</p>
+                              <div className="flex justify-between items-center mb-2">
+                                <span className="text-sm font-medium">
+                                  <span className={
+                                    progress > 90
+                                      ? (darkMode ? 'text-red-400' : 'text-red-600')
+                                      : progress > 70
+                                      ? (darkMode ? 'text-yellow-400' : 'text-yellow-600')
+                                      : (darkMode ? 'text-green-400' : 'text-green-600')
+                                  }>
+                                    ${totalSpent.toFixed(2)}
+                                  </span>
+                                  <span className={darkMode ? 'text-gray-300' : 'text-slate-700'}>
+                                    {' '}/ ${Math.round(totalBudget)}
+                                  </span>
+                                </span>
+                                <span className={`text-sm font-bold ${
+                                  darkMode ? 'text-gray-200' : 'text-gray-900'
+                                }`}>
+                                  {progress.toFixed(0)}%
+                                </span>
+                              </div>
+                              <div className={`w-full rounded-full h-4 ${
+                                darkMode ? 'bg-gray-600' : 'bg-gray-200'
+                              }`}>
+                                <div
+                                  className={`h-4 rounded-full transition-all ${
+                                    progress > 90
+                                      ? 'bg-red-500'
+                                      : progress > 70
+                                      ? 'bg-yellow-500'
+                                      : 'bg-green-500'
+                                  }`}
+                                  style={{ width: `${Math.min(progress, 100)}%` }}
+                                />
+                              </div>
+                            </div>
+                          );
+                        })()}
+                      </div>
+                    ) : (
+                      /* Page 2: Maintenance */
+                      (viewingVehicle.fuel_filter || viewingVehicle.air_filter || viewingVehicle.oil_filter || viewingVehicle.oil_type || viewingVehicle.oil_capacity || viewingVehicle.oil_brand || viewingVehicle.drain_plug || viewingVehicle.battery || viewingVehicle.fuel_type) ? (
+                        <div className="grid grid-cols-2 gap-4">
+                          {viewingVehicle.fuel_type && (
+                            <div>
+                              <p className={`text-sm font-medium mb-1 ${
+                                darkMode ? 'text-gray-400' : 'text-slate-600'
+                              }`}>Fuel Type</p>
+                              <p className={`text-base ${
+                                darkMode ? 'text-gray-100' : 'text-slate-800'
+                              }`}>{viewingVehicle.fuel_type}</p>
+                            </div>
+                          )}
+                          {viewingVehicle.fuel_filter && (
+                            <div>
+                              <p className={`text-sm font-medium mb-1 ${
+                                darkMode ? 'text-gray-400' : 'text-slate-600'
+                              }`}>Fuel Filter</p>
+                              <p className={`text-base ${
+                                darkMode ? 'text-gray-100' : 'text-slate-800'
+                              }`}>{viewingVehicle.fuel_filter}</p>
+                            </div>
+                          )}
+                          {viewingVehicle.oil_filter && (
+                            <div>
+                              <p className={`text-sm font-medium mb-1 ${
+                                darkMode ? 'text-gray-400' : 'text-slate-600'
+                              }`}>Oil Filter</p>
+                              <p className={`text-base ${
+                                darkMode ? 'text-gray-100' : 'text-slate-800'
+                              }`}>{viewingVehicle.oil_filter}</p>
+                            </div>
+                          )}
+                          {viewingVehicle.air_filter && (
+                            <div>
+                              <p className={`text-sm font-medium mb-1 ${
+                                darkMode ? 'text-gray-400' : 'text-slate-600'
+                              }`}>Air Filter</p>
+                              <p className={`text-base ${
+                                darkMode ? 'text-gray-100' : 'text-slate-800'
+                              }`}>{viewingVehicle.air_filter}</p>
+                            </div>
+                          )}
+                          {viewingVehicle.oil_capacity && (
+                            <div>
+                              <p className={`text-sm font-medium mb-1 ${
+                                darkMode ? 'text-gray-400' : 'text-slate-600'
+                              }`}>Oil Capacity</p>
+                              <p className={`text-base ${
+                                darkMode ? 'text-gray-100' : 'text-slate-800'
+                              }`}>{viewingVehicle.oil_capacity}</p>
+                            </div>
+                          )}
+                          {viewingVehicle.battery && (
+                            <div>
+                              <p className={`text-sm font-medium mb-1 ${
+                                darkMode ? 'text-gray-400' : 'text-slate-600'
+                              }`}>Battery</p>
+                              <p className={`text-base ${
+                                darkMode ? 'text-gray-100' : 'text-slate-800'
+                              }`}>{viewingVehicle.battery}</p>
+                            </div>
+                          )}
+                          {viewingVehicle.oil_type && (
+                            <div>
+                              <p className={`text-sm font-medium mb-1 ${
+                                darkMode ? 'text-gray-400' : 'text-slate-600'
+                              }`}>Oil Type</p>
+                              <p className={`text-base ${
+                                darkMode ? 'text-gray-100' : 'text-slate-800'
+                              }`}>{viewingVehicle.oil_type}</p>
+                            </div>
+                          )}
+                          {viewingVehicle.drain_plug && (
+                            <div>
+                              <p className={`text-sm font-medium mb-1 ${
+                                darkMode ? 'text-gray-400' : 'text-slate-600'
+                              }`}>Oil Drain Plug</p>
+                              <p className={`text-base ${
+                                darkMode ? 'text-gray-100' : 'text-slate-800'
+                              }`}>{viewingVehicle.drain_plug}</p>
+                            </div>
+                          )}
+                          {viewingVehicle.oil_brand && (
+                            <div>
+                              <p className={`text-sm font-medium mb-1 ${
+                                darkMode ? 'text-gray-400' : 'text-slate-600'
+                              }`}>Oil Brand</p>
+                              <p className={`text-base ${
+                                darkMode ? 'text-gray-100' : 'text-slate-800'
+                              }`}>{viewingVehicle.oil_brand}</p>
+                            </div>
+                          )}
                         </div>
-                      );
-                    })()}
+                      ) : (
+                        <button
+                          onClick={() => setVehicleModalEditMode('vehicle')}
+                          className={`text-center py-8 rounded-lg border w-full group ${
+                            darkMode ? 'bg-gray-700/30 border-gray-600 text-gray-400' : 'bg-gray-50 border-gray-200 text-gray-500'
+                          }`}
+                        >
+                          <Gauge className={`w-12 h-12 mx-auto mb-2 opacity-40 ${
+                            darkMode ? 'group-hover:text-blue-400' : 'group-hover:text-blue-600'
+                          } transition-colors`} />
+                          <p className={`text-sm ${
+                            darkMode ? 'group-hover:text-blue-400' : 'group-hover:text-blue-600'
+                          } transition-colors`}>
+                            No maintenance information added yet
+                          </p>
+                        </button>
+                      )
+                    )}
+                  </div>
+
+                  {/* Pagination dots */}
+                  <div className="flex justify-center gap-2 mt-4 pt-3 border-t border-gray-600/30">
+                    <button
+                      onClick={() => setBasicInfoPage(0)}
+                      className={`rounded-full transition-all ${
+                        basicInfoPage === 0
+                          ? (darkMode ? 'bg-blue-500 w-6 h-2' : 'bg-blue-600 w-6 h-2')
+                          : (darkMode ? 'bg-gray-500 hover:bg-gray-400 w-2 h-2' : 'bg-gray-300 hover:bg-gray-400 w-2 h-2')
+                      }`}
+                      title="Details"
+                    />
+                    <button
+                      onClick={() => setBasicInfoPage(1)}
+                      className={`rounded-full transition-all ${
+                        basicInfoPage === 1
+                          ? (darkMode ? 'bg-blue-500 w-6 h-2' : 'bg-blue-600 w-6 h-2')
+                          : (darkMode ? 'bg-gray-500 hover:bg-gray-400 w-2 h-2' : 'bg-gray-300 hover:bg-gray-400 w-2 h-2')
+                      }`}
+                      title="Maintenance"
+                    />
                   </div>
                 </div>
                 {/* Vehicle Image Gallery - Half width on desktop - appears first */}
@@ -1023,7 +1168,7 @@ const VehicleDetailModal = ({
                 })()}
               </div>
 
-              {/* Service History and Maintenance - Side by side on desktop */}
+              {/* Service History and Documents - Side by side on desktop */}
               <div className={`pt-6 border-t grid grid-cols-1 md:grid-cols-[2fr_minmax(250px,3fr)] gap-6 ${
                 darkMode ? 'border-gray-700' : 'border-slate-200'
               }`}>
@@ -1363,139 +1508,16 @@ const VehicleDetailModal = ({
                 />
                 </div>
 
-                {/* Maintenance Section (includes filters, oil, battery) */}
+                {/* Documents Section */}
                 <div className="order-1 md:order-1">
-                  <h3 className={`text-lg font-semibold mb-3 ${
-                  darkMode ? 'text-gray-200' : 'text-gray-800'
-                }`}>
-                  Maintenance
-                </h3>
-                {(viewingVehicle.fuel_filter || viewingVehicle.air_filter || viewingVehicle.oil_filter || viewingVehicle.oil_type || viewingVehicle.oil_capacity || viewingVehicle.oil_brand || viewingVehicle.drain_plug || viewingVehicle.battery || viewingVehicle.fuel_type) ? (
-                  <div className="grid grid-cols-2 gap-4 px-4">
-                    {/* Mobile two-column layout: Left (fuel filter, air filter, battery, drain plug) | Right (oil filter, oil capacity, oil type, oil brand) */}
-                    {viewingVehicle.fuel_type && (
-                      <div>
-                        <p className={`text-sm font-medium mb-1 ${
-                          darkMode ? 'text-gray-400' : 'text-slate-600'
-                        }`}>Fuel Type</p>
-                        <p className={`text-base ${
-                          darkMode ? 'text-gray-100' : 'text-slate-800'
-                        }`}>{viewingVehicle.fuel_type}</p>
-                      </div>
-                    )}
-                    {viewingVehicle.fuel_filter && (
-                      <div>
-                        <p className={`text-sm font-medium mb-1 ${
-                          darkMode ? 'text-gray-400' : 'text-slate-600'
-                        }`}>Fuel Filter</p>
-                        <p className={`text-base ${
-                          darkMode ? 'text-gray-100' : 'text-slate-800'
-                        }`}>{viewingVehicle.fuel_filter}</p>
-                      </div>
-                    )}
-                    {viewingVehicle.oil_filter && (
-                      <div>
-                        <p className={`text-sm font-medium mb-1 ${
-                          darkMode ? 'text-gray-400' : 'text-slate-600'
-                        }`}>Oil Filter</p>
-                        <p className={`text-base ${
-                          darkMode ? 'text-gray-100' : 'text-slate-800'
-                        }`}>{viewingVehicle.oil_filter}</p>
-                      </div>
-                    )}
-                    {viewingVehicle.air_filter && (
-                      <div>
-                        <p className={`text-sm font-medium mb-1 ${
-                          darkMode ? 'text-gray-400' : 'text-slate-600'
-                        }`}>Air Filter</p>
-                        <p className={`text-base ${
-                          darkMode ? 'text-gray-100' : 'text-slate-800'
-                        }`}>{viewingVehicle.air_filter}</p>
-                      </div>
-                    )}
-                    {viewingVehicle.oil_capacity && (
-                      <div>
-                        <p className={`text-sm font-medium mb-1 ${
-                          darkMode ? 'text-gray-400' : 'text-slate-600'
-                        }`}>Oil Capacity</p>
-                        <p className={`text-base ${
-                          darkMode ? 'text-gray-100' : 'text-slate-800'
-                        }`}>{viewingVehicle.oil_capacity}</p>
-                      </div>
-                    )}
-                    {viewingVehicle.battery && (
-                      <div>
-                        <p className={`text-sm font-medium mb-1 ${
-                          darkMode ? 'text-gray-400' : 'text-slate-600'
-                        }`}>Battery</p>
-                        <p className={`text-base ${
-                          darkMode ? 'text-gray-100' : 'text-slate-800'
-                        }`}>{viewingVehicle.battery}</p>
-                      </div>
-                    )}
-                    {viewingVehicle.oil_type && (
-                      <div>
-                        <p className={`text-sm font-medium mb-1 ${
-                          darkMode ? 'text-gray-400' : 'text-slate-600'
-                        }`}>Oil Type</p>
-                        <p className={`text-base ${
-                          darkMode ? 'text-gray-100' : 'text-slate-800'
-                        }`}>{viewingVehicle.oil_type}</p>
-                      </div>
-                    )}
-                    {viewingVehicle.drain_plug && (
-                      <div>
-                        <p className={`text-sm font-medium mb-1 ${
-                          darkMode ? 'text-gray-400' : 'text-slate-600'
-                        }`}>Oil Drain Plug</p>
-                        <p className={`text-base ${
-                          darkMode ? 'text-gray-100' : 'text-slate-800'
-                        }`}>{viewingVehicle.drain_plug}</p>
-                      </div>
-                    )}
-                    {viewingVehicle.oil_brand && (
-                      <div>
-                        <p className={`text-sm font-medium mb-1 ${
-                          darkMode ? 'text-gray-400' : 'text-slate-600'
-                        }`}>Oil Brand</p>
-                        <p className={`text-base ${
-                          darkMode ? 'text-gray-100' : 'text-slate-800'
-                        }`}>{viewingVehicle.oil_brand}</p>
-                      </div>
-                    )}
+                  <div className="flex items-center justify-between mb-3">
+                    <h3 className={`text-lg font-semibold ${
+                      darkMode ? 'text-gray-200' : 'text-gray-800'
+                    }`}>
+                      Documents
+                    </h3>
                   </div>
-                ) : (
-                  <button
-                    onClick={() => setVehicleModalEditMode('vehicle')}
-                    className={`text-center py-8 rounded-lg border w-full group ${
-                      darkMode ? 'bg-gray-700/30 border-gray-600 text-gray-400' : 'bg-gray-50 border-gray-200 text-gray-500'
-                    }`}
-                  >
-                    <Gauge className={`w-12 h-12 mx-auto mb-2 opacity-40 ${
-                      darkMode ? 'group-hover:text-blue-400' : 'group-hover:text-blue-600'
-                    } transition-colors`} />
-                    <p className={`text-sm ${
-                      darkMode ? 'group-hover:text-blue-400' : 'group-hover:text-blue-600'
-                    } transition-colors`}>
-                      No maintenance information added yet
-                    </p>
-                  </button>
-                )}
-                </div>
-              </div>
-
-              {/* Documents Section */}
-              <div className={`pt-6 border-t ${
-                darkMode ? 'border-gray-700' : 'border-slate-200'
-              }`}>
-                <div className="flex items-center justify-between mb-3">
-                  <h3 className={`text-lg font-semibold ${
-                    darkMode ? 'text-gray-200' : 'text-gray-800'
-                  }`}>
-                    Documents
-                  </h3>
-                </div>
-                <div
+                  <div
                     className={`grid grid-cols-[repeat(auto-fill,minmax(200px,1fr))] gap-3 ${!loadingDocuments ? 'animate-fade-in' : ''}`}
                     onClick={() => setSelectedDocId(null)}
                   >
@@ -1607,31 +1629,32 @@ const VehicleDetailModal = ({
                     </div>
                   </div>
 
-                {/* Add Document Modal - Desktop only (mobile uses inline form) */}
-                <AddDocumentModal
-                  isOpen={showAddDocumentModal && !isMobile}
-                  onClose={() => setShowAddDocumentModal(false)}
-                  darkMode={darkMode}
-                  newDocumentTitle={newDocumentTitle}
-                  setNewDocumentTitle={setNewDocumentTitle}
-                  newDocumentFile={newDocumentFile}
-                  setNewDocumentFile={setNewDocumentFile}
-                  onUpload={async () => {
-                    const result = await addDocument(
-                      viewingVehicle.id,
-                      newDocumentTitle.trim(),
-                      newDocumentFile
-                    );
-                    return result;
-                  }}
-                  uploading={uploadingDocument}
-                  handleDocumentFileChange={handleDocumentFileChange}
-                  isDraggingDocument={isDraggingDocument}
-                  handleDocumentDragEnter={handleDocumentDragEnter}
-                  handleDocumentDragLeave={handleDocumentDragLeave}
-                  handleDocumentDragOver={handleDocumentDragOver}
-                  handleDocumentDrop={handleDocumentDrop}
-                />
+                  {/* Add Document Modal - Desktop only (mobile uses inline form) */}
+                  <AddDocumentModal
+                    isOpen={showAddDocumentModal && !isMobile}
+                    onClose={() => setShowAddDocumentModal(false)}
+                    darkMode={darkMode}
+                    newDocumentTitle={newDocumentTitle}
+                    setNewDocumentTitle={setNewDocumentTitle}
+                    newDocumentFile={newDocumentFile}
+                    setNewDocumentFile={setNewDocumentFile}
+                    onUpload={async () => {
+                      const result = await addDocument(
+                        viewingVehicle.id,
+                        newDocumentTitle.trim(),
+                        newDocumentFile
+                      );
+                      return result;
+                    }}
+                    uploading={uploadingDocument}
+                    handleDocumentFileChange={handleDocumentFileChange}
+                    isDraggingDocument={isDraggingDocument}
+                    handleDocumentDragEnter={handleDocumentDragEnter}
+                    handleDocumentDragLeave={handleDocumentDragLeave}
+                    handleDocumentDragOver={handleDocumentDragOver}
+                    handleDocumentDrop={handleDocumentDrop}
+                  />
+                </div>
               </div>
 
               {/* Projects Section */}
