@@ -756,7 +756,7 @@ const VehicleDetailModal = ({
                       ).length;
                       const linkedPartsCount = projectLinkedPartsCount + directlyLinkedPartsCount;
                       return (vehicleProjects.length > 0 || linkedPartsCount > 0) && (
-                        <div className={`flex items-center gap-3 text-xs pb-2 ${
+                        <div className={`flex items-center gap-3 text-xs pb-2 pr-2 ${
                           darkMode ? 'text-gray-400' : 'text-gray-500'
                         }`}>
                           {vehicleProjects.length > 0 && (
