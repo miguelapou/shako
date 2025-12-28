@@ -1636,7 +1636,8 @@ const VehicleDetailModal = ({
 
               {/* Projects Section */}
               {(() => {
-                const vehicleProjects = getVehicleProjects(viewingVehicle.id);
+                const vehicleProjects = getVehicleProjects(viewingVehicle.id)
+                  .sort((a, b) => (a.archived === b.archived ? 0 : a.archived ? 1 : -1));
                 return (
                   <div className={`pt-6 border-t ${
                     darkMode ? 'border-gray-700' : 'border-slate-200'
