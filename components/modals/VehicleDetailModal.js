@@ -708,44 +708,47 @@ const VehicleDetailModal = ({
               {/* Top Section: Image (3/5) and Basic Info (2/5) side by side */}
               <div className="grid grid-cols-1 md:grid-cols-[3fr_2fr] gap-4 md:items-start">
                 {/* Basic Info Card - 2/5 width on desktop, aspect ratio calculated to match image height */}
-                <div className={`order-last rounded-lg px-6 pt-4 pb-4 md:aspect-[8/9] flex flex-col ${
-                  darkMode ? 'bg-gray-700' : 'bg-gray-50'
-                }`}>
-                  {/* Tabs Header */}
-                  <div className="flex items-center justify-between mb-3">
-                    <div className={`flex rounded-lg p-1 ${darkMode ? 'bg-gray-800' : 'bg-gray-200'}`}>
-                      <button
-                        onClick={() => {
-                          if (basicInfoPage !== 0) {
-                            setCardSlideDirection('right');
-                            setBasicInfoPage(0);
-                          }
-                        }}
-                        className={`px-4 py-1.5 text-sm font-medium rounded-md transition-all ${
-                          basicInfoPage === 0
-                            ? (darkMode ? 'bg-gray-600 text-white shadow' : 'bg-white text-gray-900 shadow')
-                            : (darkMode ? 'text-gray-400 hover:text-gray-200' : 'text-gray-600 hover:text-gray-900')
-                        }`}
-                      >
-                        Details
-                      </button>
-                      <button
-                        onClick={() => {
-                          if (basicInfoPage !== 1) {
-                            setCardSlideDirection('left');
-                            setBasicInfoPage(1);
-                          }
-                        }}
-                        className={`px-4 py-1.5 text-sm font-medium rounded-md transition-all ${
-                          basicInfoPage === 1
-                            ? (darkMode ? 'bg-gray-600 text-white shadow' : 'bg-white text-gray-900 shadow')
-                            : (darkMode ? 'text-gray-400 hover:text-gray-200' : 'text-gray-600 hover:text-gray-900')
-                        }`}
-                      >
-                        Maintenance
-                      </button>
-                    </div>
-                    {basicInfoPage === 0 && (() => {
+                <div className="order-last md:aspect-[8/9] flex flex-col">
+                  {/* File Tabs */}
+                  <div className="flex items-end gap-0.5">
+                    <button
+                      onClick={() => {
+                        if (basicInfoPage !== 0) {
+                          setCardSlideDirection('right');
+                          setBasicInfoPage(0);
+                        }
+                      }}
+                      className={`px-4 py-2 text-sm font-medium rounded-t-lg transition-all ${
+                        basicInfoPage === 0
+                          ? (darkMode ? 'bg-gray-700 text-white' : 'bg-gray-50 text-gray-900')
+                          : (darkMode ? 'bg-gray-800 text-gray-400 hover:text-gray-200' : 'bg-gray-200 text-gray-600 hover:text-gray-900')
+                      }`}
+                    >
+                      Details
+                    </button>
+                    <button
+                      onClick={() => {
+                        if (basicInfoPage !== 1) {
+                          setCardSlideDirection('left');
+                          setBasicInfoPage(1);
+                        }
+                      }}
+                      className={`px-4 py-2 text-sm font-medium rounded-t-lg transition-all ${
+                        basicInfoPage === 1
+                          ? (darkMode ? 'bg-gray-700 text-white' : 'bg-gray-50 text-gray-900')
+                          : (darkMode ? 'bg-gray-800 text-gray-400 hover:text-gray-200' : 'bg-gray-200 text-gray-600 hover:text-gray-900')
+                      }`}
+                    >
+                      Maintenance
+                    </button>
+                  </div>
+                  {/* Card Content */}
+                  <div className={`flex-1 rounded-lg rounded-tl-none px-6 pt-4 pb-4 flex flex-col ${
+                    darkMode ? 'bg-gray-700' : 'bg-gray-50'
+                  }`}>
+                    {/* Header with project/parts counts */}
+                    <div className="flex items-center justify-end mb-3">
+                      {basicInfoPage === 0 && (() => {
                       const vehicleProjects = projects.filter(p => p.vehicle_id === viewingVehicle.id);
                       // Count parts linked through projects
                       const projectLinkedPartsCount = vehicleProjects.reduce((count, project) => {
@@ -1050,6 +1053,7 @@ const VehicleDetailModal = ({
                         </button>
                       )
                     )}
+                  </div>
                   </div>
                 </div>
                 {/* Vehicle Image Gallery - Half width on desktop - appears first */}
