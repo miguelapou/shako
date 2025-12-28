@@ -1173,7 +1173,7 @@ const VehicleDetailModal = ({
                 darkMode ? 'border-gray-700' : 'border-slate-200'
               }`}>
                 {/* Service Events Timeline Section */}
-                <div className="order-2 md:order-2">
+                <div className="order-2 md:order-1">
                 <div className="flex items-center justify-between mb-3">
                   <h3 className={`text-lg font-semibold ${
                     darkMode ? 'text-gray-200' : 'text-gray-800'
@@ -1509,7 +1509,7 @@ const VehicleDetailModal = ({
                 </div>
 
                 {/* Documents Section */}
-                <div className="order-1 md:order-1">
+                <div className="order-1 md:order-2">
                   <div className="flex items-center justify-between mb-3">
                     <h3 className={`text-lg font-semibold ${
                       darkMode ? 'text-gray-200' : 'text-gray-800'
