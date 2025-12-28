@@ -10,6 +10,8 @@ This file provides guidance for Claude Code when working with this codebase.
 
 3. **Debug Logging for Persistent Issues**: If a problem persists after initial attempts, automatically add `console.log` statements to help troubleshoot. Remove all debug logging once the fix is confirmed working.
 
+4. **Check for Custom CSS**: When modifying or matching styles between components, always search for class names in `styles/custom.css` to check for custom rules that may override or extend Tailwind classes. Don't assume inline Tailwind classes are the complete picture.
+
 ## Project Overview
 
 **Shako** is a vehicle restoration parts tracking web application. It allows users to:

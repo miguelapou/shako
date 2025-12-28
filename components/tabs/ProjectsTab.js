@@ -430,7 +430,7 @@ const ProjectsTab = ({
           >
             {projects.filter(p => p.archived).length > 0 ? (
               <>
-                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                <div className="projects-grid grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {projects.filter(p => p.archived).map((project) => {
                   const vehicle = project.vehicle_id ? vehicles.find(v => v.id === project.vehicle_id) : null;
                   return (

@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import {
-  Plus, ChevronDown, ChevronRight, Edit2, GripVertical,
+  Plus, ChevronDown, ChevronRight, GripVertical,
   Car, Archive, Package, ListChecks, FolderLock, FolderOpen, Camera
 } from 'lucide-react';
 import { getMutedColor, getPriorityBorderColor } from '../../utils/colorUtils';
@@ -296,25 +296,6 @@ const VehiclesTab = ({
                 }`}
               >
                 <GripVertical className="w-5 h-5" />
-              </div>
-
-              {/* Edit Button - Desktop only, top right */}
-              <div className="absolute top-2 right-2 hidden md:block">
-                <button
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    setViewingVehicle(vehicle);
-                    setOriginalVehicleData({ ...vehicle }); // Save original data for unsaved changes check
-                    setVehicleModalEditMode('vehicle');
-                    setShowVehicleDetailModal(true);
-                  }}
-                  className={`p-2 rounded-md transition-colors ${
-                    darkMode ? 'hover:bg-gray-700 text-gray-500 hover:text-blue-400' : 'hover:bg-gray-100 text-gray-500 hover:text-blue-600'
-                  }`}
-                  title="Edit vehicle"
-                >
-                  <Edit2 className="w-5 h-5" />
-                </button>
               </div>
 
               {layoutMode === 'compact' ? (
