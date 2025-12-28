@@ -709,60 +709,54 @@ const VehicleDetailModal = ({
               <div className="grid grid-cols-1 md:grid-cols-[3fr_2fr] gap-4 md:items-start">
                 {/* Basic Info Card - 2/5 width on desktop, aspect ratio calculated to match image height */}
                 <div className="order-last md:aspect-[8/9] flex flex-col">
-                  {/* File Tabs */}
-                  <div className="flex items-end">
-                    <button
-                      onClick={() => {
-                        if (basicInfoPage !== 0) {
-                          setCardSlideDirection('right');
-                          setBasicInfoPage(0);
-                        }
-                      }}
-                      style={basicInfoPage === 0 ? { '--tab-bg': darkMode ? '#374151' : '#f9fafb' } : {}}
-                      className={`px-4 py-2 text-sm font-medium rounded-t-lg transition-all ${
-                        basicInfoPage === 0
-                          ? `file-tab-active ${darkMode ? 'bg-gray-700 text-white' : 'bg-gray-50 text-gray-900'}`
-                          : (darkMode ? 'bg-transparent text-gray-400 hover:text-gray-200 border border-b-0 border-gray-600' : 'bg-transparent text-gray-500 hover:text-gray-700 border border-b-0 border-gray-300')
-                      }`}
-                    >
-                      Details
-                    </button>
-                    <button
-                      onClick={() => {
-                        if (basicInfoPage !== 1) {
-                          setCardSlideDirection('left');
-                          setBasicInfoPage(1);
-                        }
-                      }}
-                      style={basicInfoPage === 1 ? { '--tab-bg': darkMode ? '#374151' : '#f9fafb' } : {}}
-                      className={`px-4 py-2 text-sm font-medium rounded-t-lg transition-all ${
-                        basicInfoPage === 1
-                          ? `file-tab-active ${darkMode ? 'bg-gray-700 text-white' : 'bg-gray-50 text-gray-900'}`
-                          : (darkMode ? 'bg-transparent text-gray-400 hover:text-gray-200 border border-b-0 border-gray-600' : 'bg-transparent text-gray-500 hover:text-gray-700 border border-b-0 border-gray-300')
-                      }`}
-                    >
-                      Maintenance
-                    </button>
-                  </div>
-                  {/* Card Content */}
-                  <div className={`flex-1 rounded-lg px-6 pt-4 pb-4 flex flex-col ${
-                    basicInfoPage === 0 ? 'rounded-tl-none' : ''
-                  } ${darkMode ? 'bg-gray-700' : 'bg-gray-50'}`}>
-                    {/* Header with project/parts counts */}
-                    <div className="flex items-center justify-end mb-3">
-                      {basicInfoPage === 0 && (() => {
+                  {/* File Tabs Row */}
+                  <div className="flex items-end justify-between">
+                    <div className="flex items-end">
+                      <button
+                        onClick={() => {
+                          if (basicInfoPage !== 0) {
+                            setCardSlideDirection('right');
+                            setBasicInfoPage(0);
+                          }
+                        }}
+                        style={basicInfoPage === 0 ? { '--tab-bg': darkMode ? '#374151' : '#f9fafb' } : {}}
+                        className={`px-4 py-2 text-sm font-medium rounded-t-lg transition-all ${
+                          basicInfoPage === 0
+                            ? `file-tab-active ${darkMode ? 'bg-gray-700 text-white' : 'bg-gray-50 text-gray-900'}`
+                            : (darkMode ? 'bg-gray-800 text-gray-400 hover:text-gray-200' : 'bg-gray-200 text-gray-600 hover:text-gray-900')
+                        }`}
+                      >
+                        Details
+                      </button>
+                      <button
+                        onClick={() => {
+                          if (basicInfoPage !== 1) {
+                            setCardSlideDirection('left');
+                            setBasicInfoPage(1);
+                          }
+                        }}
+                        style={basicInfoPage === 1 ? { '--tab-bg': darkMode ? '#374151' : '#f9fafb' } : {}}
+                        className={`px-4 py-2 text-sm font-medium rounded-t-lg transition-all ${
+                          basicInfoPage === 1
+                            ? `file-tab-active ${darkMode ? 'bg-gray-700 text-white' : 'bg-gray-50 text-gray-900'}`
+                            : (darkMode ? 'bg-gray-800 text-gray-400 hover:text-gray-200' : 'bg-gray-200 text-gray-600 hover:text-gray-900')
+                        }`}
+                      >
+                        Maintenance
+                      </button>
+                    </div>
+                    {/* Project/Parts counts */}
+                    {(() => {
                       const vehicleProjects = projects.filter(p => p.vehicle_id === viewingVehicle.id);
-                      // Count parts linked through projects
                       const projectLinkedPartsCount = vehicleProjects.reduce((count, project) => {
                         return count + parts.filter(part => part.projectId === project.id).length;
                       }, 0);
-                      // Count parts directly linked to vehicle (not through a project)
                       const directlyLinkedPartsCount = parts.filter(part =>
                         part.vehicleId === viewingVehicle.id && !part.projectId
                       ).length;
                       const linkedPartsCount = projectLinkedPartsCount + directlyLinkedPartsCount;
                       return (vehicleProjects.length > 0 || linkedPartsCount > 0) && (
-                        <div className={`flex items-center gap-3 text-xs ${
+                        <div className={`flex items-center gap-3 text-xs pb-2 ${
                           darkMode ? 'text-gray-400' : 'text-gray-500'
                         }`}>
                           {vehicleProjects.length > 0 && (
@@ -781,12 +775,15 @@ const VehicleDetailModal = ({
                       );
                     })()}
                   </div>
-
-                  {/* Page Content */}
-                  <div className="flex-1 overflow-hidden">
-                    {basicInfoPage === 0 ? (
-                      /* Page 1: Basic Info */
-                      <div
+                  {/* Card Content */}
+                  <div className={`flex-1 rounded-lg px-6 pt-4 pb-4 flex flex-col ${
+                    basicInfoPage === 0 ? 'rounded-tl-none' : ''
+                  } ${darkMode ? 'bg-gray-700' : 'bg-gray-50'}`}>
+                    {/* Page Content */}
+                    <div className="flex-1 overflow-hidden">
+                      {basicInfoPage === 0 ? (
+                        /* Page 1: Basic Info */
+                        <div
                         key="details-page"
                         className={`grid grid-cols-2 gap-4 ${
                           cardSlideDirection === 'right' ? 'slide-in-left' : ''
