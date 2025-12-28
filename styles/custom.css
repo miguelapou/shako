@@ -907,6 +907,32 @@ body.dark-scrollbar *::-webkit-scrollbar-thumb:hover {
   }
 }
 
+/* File Tab Styles - Curved notch corners */
+.file-tab-active {
+  position: relative;
+}
+
+.file-tab-active::before,
+.file-tab-active::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  width: 8px;
+  height: 8px;
+}
+
+/* Left notch - only show when this is NOT the first tab */
+.file-tab-active:not(:first-child)::before {
+  left: -8px;
+  background: radial-gradient(circle at 0 0, transparent 8px, var(--tab-bg) 8px);
+}
+
+/* Right notch */
+.file-tab-active::after {
+  right: -8px;
+  background: radial-gradient(circle at 100% 0, transparent 8px, var(--tab-bg) 8px);
+}
+
 /* Instant Tooltip - No delay on hover */
 .instant-tooltip {
   position: relative;

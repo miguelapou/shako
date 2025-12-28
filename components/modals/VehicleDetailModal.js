@@ -710,7 +710,7 @@ const VehicleDetailModal = ({
                 {/* Basic Info Card - 2/5 width on desktop, aspect ratio calculated to match image height */}
                 <div className="order-last md:aspect-[8/9] flex flex-col">
                   {/* File Tabs */}
-                  <div className="flex items-end gap-0.5">
+                  <div className="flex items-end">
                     <button
                       onClick={() => {
                         if (basicInfoPage !== 0) {
@@ -718,9 +718,10 @@ const VehicleDetailModal = ({
                           setBasicInfoPage(0);
                         }
                       }}
+                      style={basicInfoPage === 0 ? { '--tab-bg': darkMode ? '#374151' : '#f9fafb' } : {}}
                       className={`px-4 py-2 text-sm font-medium rounded-t-lg transition-all ${
                         basicInfoPage === 0
-                          ? (darkMode ? 'bg-gray-700 text-white' : 'bg-gray-50 text-gray-900')
+                          ? `file-tab-active ${darkMode ? 'bg-gray-700 text-white' : 'bg-gray-50 text-gray-900'}`
                           : (darkMode ? 'bg-gray-800 text-gray-400 hover:text-gray-200' : 'bg-gray-200 text-gray-600 hover:text-gray-900')
                       }`}
                     >
@@ -733,9 +734,10 @@ const VehicleDetailModal = ({
                           setBasicInfoPage(1);
                         }
                       }}
+                      style={basicInfoPage === 1 ? { '--tab-bg': darkMode ? '#374151' : '#f9fafb' } : {}}
                       className={`px-4 py-2 text-sm font-medium rounded-t-lg transition-all ${
                         basicInfoPage === 1
-                          ? (darkMode ? 'bg-gray-700 text-white' : 'bg-gray-50 text-gray-900')
+                          ? `file-tab-active ${darkMode ? 'bg-gray-700 text-white' : 'bg-gray-50 text-gray-900'}`
                           : (darkMode ? 'bg-gray-800 text-gray-400 hover:text-gray-200' : 'bg-gray-200 text-gray-600 hover:text-gray-900')
                       }`}
                     >
@@ -743,9 +745,9 @@ const VehicleDetailModal = ({
                     </button>
                   </div>
                   {/* Card Content */}
-                  <div className={`flex-1 rounded-lg rounded-tl-none px-6 pt-4 pb-4 flex flex-col ${
-                    darkMode ? 'bg-gray-700' : 'bg-gray-50'
-                  }`}>
+                  <div className={`flex-1 rounded-lg px-6 pt-4 pb-4 flex flex-col ${
+                    basicInfoPage === 0 ? 'rounded-tl-none' : ''
+                  } ${darkMode ? 'bg-gray-700' : 'bg-gray-50'}`}>
                     {/* Header with project/parts counts */}
                     <div className="flex items-center justify-end mb-3">
                       {basicInfoPage === 0 && (() => {
