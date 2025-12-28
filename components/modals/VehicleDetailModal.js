@@ -1169,7 +1169,7 @@ const VehicleDetailModal = ({
               </div>
 
               {/* Service History and Documents - Side by side on desktop */}
-              <div className={`pt-6 border-t grid grid-cols-1 md:grid-cols-[2fr_minmax(250px,3fr)] gap-6 ${
+              <div className={`pt-6 border-t grid grid-cols-1 md:grid-cols-2 gap-6 ${
                 darkMode ? 'border-gray-700' : 'border-slate-200'
               }`}>
                 {/* Service Events Timeline Section */}
@@ -1518,7 +1518,7 @@ const VehicleDetailModal = ({
                     </h3>
                   </div>
                   <div
-                    className={`grid grid-cols-[repeat(auto-fill,minmax(200px,1fr))] gap-3 ${!loadingDocuments ? 'animate-fade-in' : ''}`}
+                    className={`grid grid-cols-2 gap-3 ${!loadingDocuments ? 'animate-fade-in' : ''}`}
                     onClick={() => setSelectedDocId(null)}
                   >
                     {documents.map((doc) => (
