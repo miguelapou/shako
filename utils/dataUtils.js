@@ -39,15 +39,23 @@ export const calculateVehicleTotalSpent = (vehicleId, projects, parts, serviceEv
   return projectPartsTotal + directPartsTotal;
 };
 
-// Calculate total of parts linked to service events for a vehicle
+// Calculate total of parts linked to service events for a vehicle, plus direct event costs
 export const calculateServicePartsTotal = (vehicleId, parts, serviceEvents) => {
   if (!serviceEvents) return 0;
 
   const serviceLinkedPartIds = getServiceLinkedPartIds(vehicleId, serviceEvents);
 
-  return parts
+  // Sum of linked parts
+  const partsTotal = parts
     .filter(part => serviceLinkedPartIds.has(part.id))
     .reduce((sum, part) => sum + (part.total || 0), 0);
+
+  // Sum of direct event costs
+  const directCostsTotal = serviceEvents
+    .filter(event => event.vehicle_id === vehicleId)
+    .reduce((sum, event) => sum + (event.cost || 0), 0);
+
+  return partsTotal + directCostsTotal;
 };
 
 // Calculate project totals

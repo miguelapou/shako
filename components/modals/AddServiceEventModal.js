@@ -23,6 +23,8 @@ const AddServiceEventModal = ({
   setNotes,
   linkedPartIds,
   setLinkedPartIds,
+  cost,
+  setCost,
   // Parts data
   parts = [],
   vendorColors = {},
@@ -213,6 +215,36 @@ const AddServiceEventModal = ({
               }`}
               placeholder="e.g., 125000"
             />
+          </div>
+
+          {/* Cost field */}
+          <div>
+            <label className={`block text-sm font-medium mb-2 ${
+              darkMode ? 'text-gray-300' : 'text-gray-700'
+            }`}>
+              Cost
+            </label>
+            <div className="relative">
+              <span className={`absolute left-4 top-1/2 -translate-y-1/2 ${
+                darkMode ? 'text-gray-400' : 'text-gray-500'
+              }`}>
+                $
+              </span>
+              <input
+                type="number"
+                inputMode="decimal"
+                step="0.01"
+                min="0"
+                value={cost}
+                onChange={(e) => setCost(e.target.value)}
+                className={`w-full pl-8 pr-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
+                  darkMode
+                    ? 'bg-gray-700 border-gray-600 text-gray-100 placeholder-gray-400'
+                    : 'bg-white border-gray-300 text-gray-800 placeholder-gray-400'
+                }`}
+                placeholder="0.00"
+              />
+            </div>
           </div>
 
           {/* Notes field */}

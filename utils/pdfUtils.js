@@ -298,16 +298,23 @@ export const generateVehicleReportPDF = async (vehicle, projects, parts, service
       new Date(a.event_date + 'T00:00:00') - new Date(b.event_date + 'T00:00:00')
     );
 
-    // Calculate cost for each event from linked parts
+    // Calculate cost for each event from linked parts and direct cost
     const getEventCost = (event) => {
-      if (!event.linked_part_ids || event.linked_part_ids.length === 0) return 0;
-      return event.linked_part_ids.reduce((sum, partId) => {
-        const part = parts.find(p => p.id === partId);
-        if (part) {
-          return sum + (part.price || 0) + (part.shipping || 0) + (part.duties || 0);
-        }
-        return sum;
-      }, 0);
+      // Start with direct event cost if available
+      let total = event.cost || 0;
+
+      // Add linked parts costs
+      if (event.linked_part_ids && event.linked_part_ids.length > 0) {
+        total += event.linked_part_ids.reduce((sum, partId) => {
+          const part = parts.find(p => p.id === partId);
+          if (part) {
+            return sum + (part.price || 0) + (part.shipping || 0) + (part.duties || 0);
+          }
+          return sum;
+        }, 0);
+      }
+
+      return total;
     };
 
     // Table header

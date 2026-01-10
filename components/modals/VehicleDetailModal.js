@@ -406,6 +406,8 @@ const VehicleDetailModal = ({
     setNewEventNotes,
     newEventLinkedParts,
     setNewEventLinkedParts,
+    newEventCost,
+    setNewEventCost,
     editingServiceEvent,
     loadServiceEvents,
     addServiceEvent,
@@ -1494,6 +1496,8 @@ const VehicleDetailModal = ({
                   setNotes={setNewEventNotes}
                   linkedPartIds={newEventLinkedParts}
                   setLinkedPartIds={setNewEventLinkedParts}
+                  cost={newEventCost}
+                  setCost={setNewEventCost}
                   parts={parts}
                   vendorColors={vendorColors}
                   editingEvent={editingServiceEvent}
@@ -1504,7 +1508,8 @@ const VehicleDetailModal = ({
                         description: newEventDescription.trim(),
                         odometer: newEventOdometer ? parseInt(newEventOdometer, 10) : null,
                         notes: newEventNotes.trim() || null,
-                        linked_part_ids: newEventLinkedParts.length > 0 ? newEventLinkedParts : null
+                        linked_part_ids: newEventLinkedParts.length > 0 ? newEventLinkedParts : null,
+                        cost: newEventCost ? parseFloat(newEventCost) : null
                       });
                       return result;
                     } else {
@@ -1514,7 +1519,8 @@ const VehicleDetailModal = ({
                         newEventDescription,
                         newEventOdometer,
                         newEventNotes,
-                        newEventLinkedParts
+                        newEventLinkedParts,
+                        newEventCost
                       );
                       return result;
                     }
@@ -2657,6 +2663,36 @@ const VehicleDetailModal = ({
                   />
                 </div>
 
+                {/* Cost field */}
+                <div>
+                  <label className={`block text-sm font-medium mb-2 ${
+                    darkMode ? 'text-gray-300' : 'text-gray-700'
+                  }`}>
+                    Cost
+                  </label>
+                  <div className="relative">
+                    <span className={`absolute left-4 top-1/2 -translate-y-1/2 ${
+                      darkMode ? 'text-gray-400' : 'text-gray-500'
+                    }`}>
+                      $
+                    </span>
+                    <input
+                      type="number"
+                      inputMode="decimal"
+                      step="0.01"
+                      min="0"
+                      value={newEventCost}
+                      onChange={(e) => setNewEventCost(e.target.value)}
+                      className={`w-full pl-8 pr-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
+                        darkMode
+                          ? 'bg-gray-700 border-gray-600 text-gray-100 placeholder-gray-400'
+                          : 'bg-white border-gray-300 text-gray-800 placeholder-gray-400'
+                      }`}
+                      placeholder="0.00"
+                    />
+                  </div>
+                </div>
+
                 {/* Notes field */}
                 <div>
                   <label className={`block text-sm font-medium mb-2 ${
@@ -3526,7 +3562,8 @@ const VehicleDetailModal = ({
                         description: newEventDescription.trim(),
                         odometer: newEventOdometer ? parseInt(newEventOdometer, 10) : null,
                         notes: newEventNotes.trim() || null,
-                        linked_part_ids: newEventLinkedParts.length > 0 ? newEventLinkedParts : null
+                        linked_part_ids: newEventLinkedParts.length > 0 ? newEventLinkedParts : null,
+                        cost: newEventCost ? parseFloat(newEventCost) : null
                       });
                     } else {
                       result = await addServiceEvent(
@@ -3535,7 +3572,8 @@ const VehicleDetailModal = ({
                         newEventDescription,
                         newEventOdometer,
                         newEventNotes,
-                        newEventLinkedParts
+                        newEventLinkedParts,
+                        newEventCost
                       );
                     }
                     if (result) {
