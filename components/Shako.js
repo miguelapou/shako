@@ -613,8 +613,9 @@ const Shako = ({ isDemo = false }) => {
 
   // Tab change handler to track animation direction
   const handleTabChange = (newTab) => {
-    // If tapping the current tab, scroll to top instead of changing tabs
+    // If tapping the current tab, close modals and scroll to top
     if (newTab === activeTab) {
+      closeAllModals();
       window.scrollTo({ top: 0, behavior: 'smooth' });
       return;
     }
