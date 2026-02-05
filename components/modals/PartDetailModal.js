@@ -75,11 +75,24 @@ const PartDetailModal = ({
   const [showVehicleDropdown, setShowVehicleDropdown] = useState(false);
   const [isVehicleDropdownClosing, setIsVehicleDropdownClosing] = useState(false);
 
+  // Quantity dropdown state for edit view
+  const [showQuantityDropdown, setShowQuantityDropdown] = useState(false);
+  const [isQuantityDropdownClosing, setIsQuantityDropdownClosing] = useState(false);
+  const quantityInputRef = useRef(null);
+
   const closeVehicleDropdownWithAnimation = useCallback(() => {
     setIsVehicleDropdownClosing(true);
     setTimeout(() => {
       setIsVehicleDropdownClosing(false);
       setShowVehicleDropdown(false);
+    }, 150);
+  }, []);
+
+  const closeQuantityDropdownWithAnimation = useCallback(() => {
+    setIsQuantityDropdownClosing(true);
+    setTimeout(() => {
+      setIsQuantityDropdownClosing(false);
+      setShowQuantityDropdown(false);
     }, 150);
   }, []);
 
@@ -1622,25 +1635,81 @@ const PartDetailModal = ({
                   >
                     Quantity
                   </label>
-                  <input
-                    type="number"
-                    step="1"
-                    min="1"
-                    inputMode="numeric"
-                    value={editingPart.quantity || 1}
-                    onChange={(e) =>
-                      setEditingPart({
-                        ...editingPart,
-                        quantity: parseInt(e.target.value) || 1
-                      })
-                    }
-                    className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none ${
-                      darkMode
-                        ? 'bg-gray-700 border-gray-600 text-gray-100 placeholder-gray-400'
-                        : 'bg-slate-50 border-slate-300 text-slate-800 placeholder-slate-400'
-                    }`}
-                    placeholder="1"
-                  />
+                  <div className="relative">
+                    <div className="flex">
+                      <input
+                        ref={quantityInputRef}
+                        type="number"
+                        pattern="[0-9]*"
+                        inputMode="numeric"
+                        min="1"
+                        value={editingPart.quantity || 1}
+                        onChange={(e) =>
+                          setEditingPart({
+                            ...editingPart,
+                            quantity: parseInt(e.target.value) || 1
+                          })
+                        }
+                        onFocus={() => setShowQuantityDropdown(false)}
+                        className={`flex-1 px-4 py-2 border rounded-l-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none ${
+                          darkMode
+                            ? 'bg-gray-700 border-gray-600 text-gray-100 placeholder-gray-400'
+                            : 'bg-slate-50 border-slate-300 text-slate-800 placeholder-slate-400'
+                        }`}
+                        placeholder="1"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => {
+                          if (showQuantityDropdown) {
+                            closeQuantityDropdownWithAnimation();
+                          } else {
+                            setShowQuantityDropdown(true);
+                          }
+                        }}
+                        className={`px-3 border-y border-r rounded-r-lg transition-colors ${
+                          darkMode
+                            ? 'bg-gray-600 border-gray-600 text-gray-300 hover:bg-gray-500'
+                            : 'bg-slate-100 border-slate-300 text-slate-600 hover:bg-slate-200'
+                        }`}
+                      >
+                        <ChevronDown className={`w-4 h-4 transition-transform ${showQuantityDropdown ? 'rotate-180' : ''}`} />
+                      </button>
+                    </div>
+                    {showQuantityDropdown && (
+                      <>
+                        <div
+                          className="fixed inset-0 z-10"
+                          onClick={closeQuantityDropdownWithAnimation}
+                        />
+                        <div
+                          className={`absolute right-0 z-20 mt-1 rounded-lg border shadow-lg py-1 max-h-48 overflow-y-auto w-full ${
+                            isQuantityDropdownClosing ? 'dropdown-fade-out' : 'dropdown-fade-in'
+                          } ${darkMode ? 'bg-gray-700 border-gray-600' : 'bg-slate-50 border-slate-300'}`}
+                        >
+                          {[1, 2, 3, 4, 5, 6, 8, 10, 12, 20].map(qty => (
+                            <button
+                              key={qty}
+                              type="button"
+                              onClick={() => {
+                                setEditingPart({ ...editingPart, quantity: qty });
+                                closeQuantityDropdownWithAnimation();
+                              }}
+                              className={`w-full px-4 py-2 text-left text-sm ${
+                                (editingPart.quantity || 1) === qty
+                                  ? 'bg-blue-600 text-white'
+                                  : darkMode
+                                    ? 'hover:bg-gray-600 text-gray-100'
+                                    : 'hover:bg-gray-100 text-gray-900'
+                              }`}
+                            >
+                              {qty}
+                            </button>
+                          ))}
+                        </div>
+                      </>
+                    )}
+                  </div>
                 </div>
 
                 {/* Price Breakdown Box - aligned to bottom */}
