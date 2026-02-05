@@ -474,7 +474,7 @@ const AddPartModal = ({
                   }`}>
                     Quantity
                   </label>
-                  <div className="relative">
+                  <div className="relative w-24">
                     <div className="flex">
                       <input
                         ref={quantityInputRef}
