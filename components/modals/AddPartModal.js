@@ -474,7 +474,7 @@ const AddPartModal = ({
                   }`}>
                     Quantity
                   </label>
-                  <div className="relative w-24">
+                  <div className="relative inline-flex">
                     <div className="flex">
                       <input
                         ref={quantityInputRef}
@@ -485,7 +485,7 @@ const AddPartModal = ({
                         value={newPart.quantity}
                         onChange={(e) => setNewPart({ ...newPart, quantity: parseInt(e.target.value) || 1 })}
                         onFocus={() => setShowQuantityDropdown(false)}
-                        className={`flex-1 px-4 py-2 border rounded-l-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none ${
+                        className={`w-16 px-3 py-2 border rounded-l-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none ${
                           darkMode
                             ? 'bg-gray-700 border-gray-600 text-gray-100 placeholder-gray-400'
                             : 'bg-slate-50 border-slate-300 text-slate-800 placeholder-slate-400'
