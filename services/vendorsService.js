@@ -40,13 +40,15 @@ export const getAllVendors = async (userId) => {
  */
 export const upsertVendor = async (vendorName, color, userId) => {
   try {
-    // First check if vendor exists for this user
-    const { data: existing } = await supabase
+    // Use maybeSingle() so 0 rows returns null (no error) instead of HTTP 406
+    const { data: existing, error: selectError } = await supabase
       .from('vendors')
       .select('id')
       .eq('name', vendorName)
       .eq('user_id', userId)
-      .single();
+      .maybeSingle();
+
+    if (selectError) throw selectError;
 
     if (existing) {
       // Update existing vendor
@@ -62,22 +64,22 @@ export const upsertVendor = async (vendorName, color, userId) => {
         .from('vendors')
         .insert({ name: vendorName, color, user_id: userId });
 
-      if (error) throw error;
+      if (error) {
+        // 23505 = unique_violation: a concurrent request already inserted this vendor
+        if (error.code === '23505') {
+          const { error: updateError } = await supabase
+            .from('vendors')
+            .update({ color })
+            .eq('name', vendorName)
+            .eq('user_id', userId);
+
+          if (updateError) throw updateError;
+        } else {
+          throw error;
+        }
+      }
     }
   } catch (error) {
-    // Ignore "no rows" error from .single() when vendor doesn't exist
-    if (error.code === 'PGRST116') {
-      // Vendor doesn't exist, insert it
-      const { error: insertError } = await supabase
-        .from('vendors')
-        .insert({ name: vendorName, color, user_id: userId });
-
-      if (insertError) {
-        insertError.message = `Failed to save vendor color: ${insertError.message}`;
-        throw insertError;
-      }
-      return;
-    }
     error.message = `Failed to save vendor color: ${error.message}`;
     throw error;
   }
