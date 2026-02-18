@@ -143,31 +143,30 @@ const useParts = (userId, toast, isDemo = false) => {
    */
   const updateVendorColor = async (vendorName, color) => {
     if (!userId) return;
-    try {
-      // In demo mode, save to localStorage
-      if (isDemo) {
-        const demoVendors = getDemoVendors();
-        const existingIndex = demoVendors.findIndex(v => v.name === vendorName);
-        if (existingIndex >= 0) {
-          demoVendors[existingIndex].color = color;
-        } else {
-          demoVendors.push({ id: Date.now(), name: vendorName, color });
-        }
-        saveDemoVendors(demoVendors);
-        setVendorColors(prev => ({ ...prev, [vendorName]: color }));
-        setVendors(demoVendors);
-        return;
+
+    // In demo mode, save to localStorage
+    if (isDemo) {
+      const demoVendors = getDemoVendors();
+      const existingIndex = demoVendors.findIndex(v => v.name === vendorName);
+      if (existingIndex >= 0) {
+        demoVendors[existingIndex].color = color;
+      } else {
+        demoVendors.push({ id: Date.now(), name: vendorName, color });
       }
+      saveDemoVendors(demoVendors);
+      setVendorColors(prev => ({ ...prev, [vendorName]: color }));
+      setVendors(demoVendors);
+      return;
+    }
 
+    // Optimistic update for immediate UI feedback
+    setVendorColors(prev => ({ ...prev, [vendorName]: color }));
+
+    try {
       await vendorsService.upsertVendor(vendorName, color, userId);
-
-      // Update local state
-      setVendorColors(prev => ({
-        ...prev,
-        [vendorName]: color
-      }));
-      await loadVendors();
     } catch (error) {
+      // Revert optimistic update on failure
+      await loadVendors();
       toast?.error('Error saving vendor color');
     }
   };

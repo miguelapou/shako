@@ -26,6 +26,9 @@ const ManageVendorsModal = ({
   // State for tracking which vendor card has overlay visible (mobile only)
   const [selectedVendor, setSelectedVendor] = useState(null);
 
+  // Debounce timer for color picker to prevent rapid-fire DB calls while dragging
+  const colorDebounceRef = useRef(null);
+
   // Track if this modal was open (for close animation)
   const wasOpen = useRef(false);
   if (isOpen) wasOpen.current = true;
@@ -222,7 +225,12 @@ const ManageVendorsModal = ({
                               type="color"
                               value={vendorColors[vendor] || '#6B7280'}
                               onChange={(e) => {
-                                updateVendorColor(vendor, e.target.value);
+                                const newColor = e.target.value;
+                                // Debounce DB call — local state updates immediately via optimistic update in hook
+                                if (colorDebounceRef.current) clearTimeout(colorDebounceRef.current);
+                                colorDebounceRef.current = setTimeout(() => {
+                                  updateVendorColor(vendor, newColor);
+                                }, 300);
                               }}
                               className="absolute inset-0 opacity-0 cursor-pointer"
                               style={{ width: '100%', height: '100%' }}
