@@ -1855,7 +1855,7 @@ const VehicleDetailModal = ({
             }`}
           >
             {vehicleModalProjectView && !vehicleModalEditMode && (
-              <div className="p-6 space-y-6 max-h-[calc(85vh-120px)] overflow-y-auto sm:max-h-[calc(90vh-164px)]">
+              <div className="p-6 space-y-6 max-h-[calc(85vh-120px)] overflow-y-auto sm:max-h-[calc(85vh-164px)]">
                 <ProjectDetailView
                   project={vehicleModalProjectView}
                   parts={parts}
