@@ -308,7 +308,7 @@ export const generateVehicleReportPDF = async (vehicle, projects, parts, service
         total += event.linked_part_ids.reduce((sum, partId) => {
           const part = parts.find(p => p.id === partId);
           if (part) {
-            return sum + (part.price || 0) + (part.shipping || 0) + (part.duties || 0);
+            return sum + (part.total || 0);
           }
           return sum;
         }, 0);
