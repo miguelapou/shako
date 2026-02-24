@@ -469,9 +469,9 @@ const useVehicles = (userId, toast, isDemo = false) => {
         toast?.warning('Please select an image file');
         return;
       }
-      // Validate file size (max 5MB)
-      if (file.size > 5 * 1024 * 1024) {
-        toast?.warning('Image size must be less than 5MB');
+      // Validate file size (max 10MB)
+      if (file.size > 10 * 1024 * 1024) {
+        toast?.warning('Image size must be less than 10MB');
         return;
       }
 
@@ -513,9 +513,9 @@ const useVehicles = (userId, toast, isDemo = false) => {
       toast?.warning('Please select an image file');
       return;
     }
-    // Validate file size (max 5MB)
-    if (file.size > 5 * 1024 * 1024) {
-      toast?.warning('Image size must be less than 5MB');
+    // Validate file size (max 10MB)
+    if (file.size > 10 * 1024 * 1024) {
+      toast?.warning('Image size must be less than 10MB');
       return;
     }
 
@@ -659,9 +659,9 @@ const useVehicles = (userId, toast, isDemo = false) => {
         toast?.warning('Please select an image file');
         return;
       }
-      // Validate file size (max 5MB)
-      if (file.size > 5 * 1024 * 1024) {
-        toast?.warning('Image size must be less than 5MB');
+      // Validate file size (max 10MB)
+      if (file.size > 10 * 1024 * 1024) {
+        toast?.warning('Image size must be less than 10MB');
         return;
       }
 
