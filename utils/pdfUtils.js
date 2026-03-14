@@ -396,6 +396,16 @@ export const generateVehicleReportPDF = async (vehicle, projects, parts, service
   // --- PROJECTS AND PARTS ---
   const vehicleProjects = projects.filter(p => p.vehicle_id === vehicle.id);
 
+  // Build set of part IDs linked to service events to avoid double-counting
+  const serviceLinkedPartIds = new Set();
+  if (serviceEvents) {
+    serviceEvents.forEach(event => {
+      if (event.linked_part_ids && Array.isArray(event.linked_part_ids)) {
+        event.linked_part_ids.forEach(id => serviceLinkedPartIds.add(id));
+      }
+    });
+  }
+
   if (vehicleProjects.length > 0) {
     addSectionHeader('Projects & Parts');
 
@@ -437,8 +447,8 @@ export const generateVehicleReportPDF = async (vehicle, projects, parts, service
         yPos += 5;
       }
 
-      // Project parts
-      const projectParts = parts.filter(p => p.projectId === project.id);
+      // Project parts (exclude parts already counted in service history)
+      const projectParts = parts.filter(p => p.projectId === project.id && !serviceLinkedPartIds.has(p.id));
 
       if (projectParts.length > 0) {
         // Parts table header
@@ -515,7 +525,7 @@ export const generateVehicleReportPDF = async (vehicle, projects, parts, service
 
   // --- TOTAL INVESTMENT ---
   const totalInvestment = (vehicleProjects.length > 0 ? vehicleProjects.reduce((sum, project) => {
-    const projectParts = parts.filter(p => p.projectId === project.id);
+    const projectParts = parts.filter(p => p.projectId === project.id && !serviceLinkedPartIds.has(p.id));
     return sum + projectParts.reduce((partSum, part) => {
       return partSum + (part.price || 0) + (part.shipping || 0) + (part.duties || 0);
     }, 0);
