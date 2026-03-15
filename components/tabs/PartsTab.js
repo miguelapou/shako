@@ -1302,7 +1302,7 @@ const PartsTab = ({
                     <td className="px-6 py-4">
                       <div className={`text-sm font-medium ${
                         darkMode ? 'text-gray-100' : 'text-slate-900'
-                      }`}>{part.part}</div>
+                      }`}>{part.part}{(part.quantity || 1) > 1 ? ` - x${part.quantity}` : ''}</div>
                     </td>
                     <td className="hidden px-6 py-4">
                       {part.partNumber && part.partNumber !== '-' ? (
@@ -1580,7 +1580,7 @@ const PartsTab = ({
                   <h3 className={`text-base font-bold flex-1 ${
                     darkMode ? 'text-gray-100' : 'text-slate-800'
                   }`}>
-                    {part.part}
+                    {part.part}{(part.quantity || 1) > 1 ? ` - x${part.quantity}` : ''}
                   </h3>
                   {/* Vehicle Badge - Top Right */}
                   {(() => {
