@@ -696,7 +696,7 @@ const PartsTab = ({
                   }`}>{statusFilter === 'pending' ? 'Unordered' : 'Ordered'}</p>
                   <p className={`text-xl font-bold truncate ${
                     darkMode ? 'text-gray-100' : 'text-gray-800'
-                  }`}>{statusFilter === 'pending' ? stats.pending : stats.purchased}</p>
+                  }`}>{statusFilter === 'pending' ? filteredStats.pending : filteredStats.purchased}</p>
                 </div>
               </div>
 
@@ -740,7 +740,7 @@ const PartsTab = ({
                   }`}>Shipped</p>
                   <p className={`text-xl font-bold truncate ${
                     darkMode ? 'text-gray-100' : 'text-gray-800'
-                  }`}>{stats.shipped}</p>
+                  }`}>{filteredStats.shipped}</p>
                 </div>
               </div>
 
@@ -798,7 +798,7 @@ const PartsTab = ({
                   }`}>{deliveredFilter === 'hide' ? 'Undelivered' : 'Delivered'}</p>
                   <p className={`text-xl font-bold truncate ${
                     darkMode ? 'text-gray-100' : 'text-gray-800'
-                  }`}>{deliveredFilter === 'hide' ? stats.undelivered : stats.delivered}</p>
+                  }`}>{deliveredFilter === 'hide' ? filteredStats.undelivered : filteredStats.delivered}</p>
                 </div>
               </div>
 
