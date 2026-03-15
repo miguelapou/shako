@@ -809,7 +809,7 @@ const useParts = (userId, toast, isDemo = false) => {
    * Get unique vendors from parts
    */
   const getUniqueVendors = () => {
-    return [...new Set(parts.filter(p => p.vendor).map(p => p.vendor))].sort();
+    return [...new Set(parts.filter(p => p.vendor).map(p => p.vendor))].sort((a, b) => a.localeCompare(b, undefined, { sensitivity: 'base' }));
   };
 
   /**
