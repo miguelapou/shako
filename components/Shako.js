@@ -948,7 +948,7 @@ const Shako = ({ isDemo = false }) => {
         const matchesStatus = statusFilter === 'all' ||
                              (statusFilter === 'delivered' && part.delivered) ||
                              (statusFilter === 'shipped' && part.shipped && !part.delivered) ||
-                             (statusFilter === 'purchased' && part.purchased && !part.shipped) ||
+                             (statusFilter === 'purchased' && part.purchased && !part.shipped && !part.delivered) ||
                              (statusFilter === 'pending' && !part.purchased);
         const matchesVendor = vendorFilter === 'all' || part.vendor === vendorFilter;
         const matchesDeliveredFilter =
