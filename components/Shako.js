@@ -1027,7 +1027,7 @@ const Shako = ({ isDemo = false }) => {
       .map(p => p.vendor)
       .filter(v => v && v.trim() !== '')
       .filter((v, i, arr) => arr.indexOf(v) === i) // unique values
-      .sort();
+      .sort((a, b) => a.localeCompare(b, undefined, { sensitivity: 'base' }));
     return vendors;
   }, [parts]);
 
