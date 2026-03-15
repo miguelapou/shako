@@ -472,10 +472,12 @@ const useParts = (userId, toast, isDemo = false) => {
           if (data.success && data.tracking) {
             setParts(prevParts => prevParts.map(part => {
               if (part.id === trackingModalPartId) {
+                const isDelivered = data.tracking.tracking_status === 'Delivered';
                 return {
                   ...part,
                   ...data.tracking,
-                  delivered: data.tracking.tracking_status === 'Delivered' ? true : part.delivered
+                  delivered: isDelivered ? true : part.delivered,
+                  shipped: isDelivered ? true : part.shipped,
                 };
               }
               return part;
@@ -632,10 +634,12 @@ const useParts = (userId, toast, isDemo = false) => {
           if (data.success && data.tracking) {
             setParts(prevParts => prevParts.map(part => {
               if (part.id === partId) {
+                const isDelivered = data.tracking.tracking_status === 'Delivered';
                 return {
                   ...part,
                   ...data.tracking,
-                  delivered: data.tracking.tracking_status === 'Delivered' ? true : part.delivered
+                  delivered: isDelivered ? true : part.delivered,
+                  shipped: isDelivered ? true : part.shipped,
                 };
               }
               return part;
