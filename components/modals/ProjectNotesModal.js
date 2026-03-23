@@ -29,7 +29,7 @@ const Divider = ({ darkMode }) => (
 
 const hasContent = (notes) => notes && notes.trim() !== '' && notes.trim() !== '<br>';
 
-const ProjectNotesModal = ({ isOpen, onClose, project, onSave, darkMode }) => {
+const ProjectNotesModal = ({ isOpen, onClose, project, onSave, darkMode, setConfirmDialog }) => {
   const editorRef = useRef(null);
   const linkInputRef = useRef(null);
   const savedRangeRef = useRef(null);
@@ -153,6 +153,28 @@ const ProjectNotesModal = ({ isOpen, onClose, project, onSave, darkMode }) => {
     }
   };
 
+  const hasUnsavedChanges = () => {
+    if (!isEditing) return false;
+    const current = editorRef.current?.innerHTML || '';
+    const original = project?.notes || '';
+    return current !== original;
+  };
+
+  const guardedClose = (onConfirm) => {
+    if (hasUnsavedChanges()) {
+      setConfirmDialog({
+        isOpen: true,
+        title: 'Unsaved Changes',
+        message: 'You have unsaved changes to your notes. Are you sure you want to discard them?',
+        confirmText: 'Discard',
+        cancelText: 'Keep Editing',
+        onConfirm,
+      });
+    } else {
+      onConfirm();
+    }
+  };
+
   const handleSave = async () => {
     setIsSaving(true);
     setSaveError(null);
@@ -168,11 +190,17 @@ const ProjectNotesModal = ({ isOpen, onClose, project, onSave, darkMode }) => {
   };
 
   const handleDiscard = () => {
-    if (hasContent(project?.notes)) {
-      setIsEditing(false);
-    } else {
-      onClose();
-    }
+    guardedClose(() => {
+      if (hasContent(project?.notes)) {
+        setIsEditing(false);
+      } else {
+        onClose();
+      }
+    });
+  };
+
+  const handleClose = () => {
+    guardedClose(onClose);
   };
 
   const handleEditorKeyDown = (e) => {
@@ -191,7 +219,7 @@ const ProjectNotesModal = ({ isOpen, onClose, project, onSave, darkMode }) => {
 
   return (
     <div className="fixed inset-0 z-[60] flex items-center justify-center p-4">
-      <div className="absolute inset-0 bg-black/60" onClick={onClose} />
+      <div className="absolute inset-0 bg-black/60" onClick={handleClose} />
       <div
         className={`relative w-full max-w-2xl rounded-xl shadow-2xl flex flex-col ${
           darkMode ? 'bg-gray-800' : 'bg-white'
@@ -207,7 +235,7 @@ const ProjectNotesModal = ({ isOpen, onClose, project, onSave, darkMode }) => {
             Notes — {project?.name}
           </h2>
           <button
-            onClick={onClose}
+            onClick={handleClose}
             className={`flex-shrink-0 p-1.5 rounded-lg transition-colors ${
               darkMode ? 'hover:bg-gray-700 text-gray-400' : 'hover:bg-gray-100 text-gray-500'
             }`}
