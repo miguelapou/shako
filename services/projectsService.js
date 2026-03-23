@@ -19,7 +19,8 @@ const VALID_PROJECT_COLUMNS = [
   'todos',
   'archived',
   'paused',
-  'display_order'
+  'display_order',
+  'notes'
 ];
 
 // Numeric columns that should skip empty strings (to avoid type mismatch)
