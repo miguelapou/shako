@@ -82,7 +82,7 @@ const ConfirmDialog = ({
 
   return (
     <div
-      className={`fixed inset-0 z-[60] flex items-center justify-center p-4 bg-black bg-opacity-50 backdrop-blur-sm modal-backdrop ${
+      className={`fixed inset-0 z-[70] flex items-center justify-center p-4 bg-black bg-opacity-50 backdrop-blur-sm modal-backdrop ${
         isClosing ? 'modal-backdrop-exit' : 'modal-backdrop-enter'
       }`}
       onClick={handleClose}

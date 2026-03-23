@@ -1,9 +1,10 @@
-import React, { useEffect, useCallback, useMemo, useRef } from 'react';
-import { X, Edit2, Trash2, Archive, ArchiveRestore, Pause, Play, ChevronDown, ChevronLeft, ChevronRight } from 'lucide-react';
+import React, { useEffect, useCallback, useMemo, useRef, useState } from 'react';
+import { X, Edit2, Trash2, Archive, ArchiveRestore, Pause, Play, ChevronDown, ChevronLeft, ChevronRight, SquareGantt } from 'lucide-react';
 import ProjectDetailView from '../ui/ProjectDetailView';
 import ProjectEditForm from '../ui/ProjectEditForm';
 import LinkedPartsSection from '../ui/LinkedPartsSection';
 import PrimaryButton from '../ui/PrimaryButton';
+import ProjectNotesModal from './ProjectNotesModal';
 import * as partsService from '../../services/partsService';
 
 const ProjectDetailModal = ({
@@ -44,6 +45,8 @@ const ProjectDetailModal = ({
   archivePart,
   onClose
 }) => {
+  const [showNotesModal, setShowNotesModal] = useState(false);
+
   // Touch refs for swipe gestures
   const touchStartRef = useRef(null);
   const touchEndRef = useRef(null);
@@ -82,8 +85,8 @@ const ProjectDetailModal = ({
     if (!isOpen || projectModalEditMode) return;
 
     const handleKeyDown = (e) => {
-      // Don't navigate if user is typing in an input
-      if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA' || e.target.tagName === 'SELECT') {
+      // Don't navigate if user is typing in an input or contentEditable element
+      if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA' || e.target.tagName === 'SELECT' || e.target.isContentEditable) {
         return;
       }
 
@@ -562,8 +565,20 @@ const ProjectDetailModal = ({
                   </button>
                 </div>
               )}
-              {/* Edit button on the right */}
-              <div className="ml-auto">
+              {/* Notes and Edit buttons on the right */}
+              <div className="ml-auto flex items-center gap-2">
+                <button
+                  onClick={() => setShowNotesModal(true)}
+                  title="Project Notes"
+                  className={`h-10 px-3 py-2 rounded-lg font-medium transition-colors flex items-center gap-2 text-sm ${
+                    darkMode
+                      ? 'bg-gray-700 hover:bg-gray-600 text-gray-100 border border-gray-600'
+                      : 'bg-gray-200 hover:bg-gray-300 text-gray-800 border border-gray-300'
+                  }`}
+                >
+                  <SquareGantt className="w-4 h-4" />
+                  <span className="hidden sm:inline">Notes</span>
+                </button>
                 <PrimaryButton
                   onClick={() => {
                     setProjectModalEditMode(true);
@@ -577,6 +592,19 @@ const ProjectDetailModal = ({
           )}
         </div>
       </div>
+
+      <ProjectNotesModal
+        isOpen={showNotesModal}
+        onClose={() => setShowNotesModal(false)}
+        project={viewingProject}
+        onSave={async (notes) => {
+          await updateProject(viewingProject.id, { notes });
+          setViewingProject({ ...viewingProject, notes });
+        }}
+        darkMode={darkMode}
+        handleCloseModal={handleCloseModal}
+        setConfirmDialog={setConfirmDialog}
+      />
     </div>
   );
 };
