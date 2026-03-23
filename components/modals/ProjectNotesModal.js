@@ -221,7 +221,7 @@ const ProjectNotesModal = ({ isOpen, onClose, project, onSave, darkMode, handleC
     <div className="fixed inset-0 z-[60] flex items-center justify-center p-4" onClick={(e) => e.stopPropagation()}>
       <div className="absolute inset-0 bg-black/60" onClick={() => handleCloseModal(handleClose)} />
       <div
-        className={`relative w-full max-w-2xl rounded-xl shadow-2xl flex flex-col ${
+        className={`relative w-full max-w-2xl rounded-xl shadow-2xl flex flex-col overflow-hidden ${
           darkMode ? 'bg-gray-800' : 'bg-white'
         }`}
         style={{ maxHeight: '85vh' }}
@@ -388,29 +388,17 @@ const ProjectNotesModal = ({ isOpen, onClose, project, onSave, darkMode, handleC
           ) : (
             <>
               <span className={`text-xs ${darkMode ? 'text-gray-500' : 'text-gray-400'}`} />
-              <div className="flex items-center gap-3">
-                <button
-                  onClick={onClose}
-                  className={`px-4 py-2 rounded-lg font-medium text-sm transition-colors border ${
-                    darkMode
-                      ? 'bg-gray-700 hover:bg-gray-600 text-gray-100 border-gray-600'
-                      : 'bg-gray-200 hover:bg-gray-300 text-gray-800 border-gray-300'
-                  }`}
-                >
-                  Close
-                </button>
-                <button
-                  onClick={() => setIsEditing(true)}
-                  className={`px-4 py-2 rounded-lg font-medium text-sm transition-colors flex items-center gap-2 border ${
-                    darkMode
-                      ? 'bg-gray-700 hover:bg-gray-600 text-gray-100 border-gray-600'
-                      : 'bg-gray-200 hover:bg-gray-300 text-gray-800 border-gray-300'
-                  }`}
-                >
-                  <Edit2 className="w-3.5 h-3.5" />
-                  Edit
-                </button>
-              </div>
+              <button
+                onClick={() => setIsEditing(true)}
+                className={`px-4 py-2 rounded-lg font-medium text-sm transition-colors flex items-center gap-2 border ${
+                  darkMode
+                    ? 'bg-gray-700 hover:bg-gray-600 text-gray-100 border-gray-600'
+                    : 'bg-gray-200 hover:bg-gray-300 text-gray-800 border-gray-300'
+                }`}
+              >
+                <Edit2 className="w-3.5 h-3.5" />
+                Edit
+              </button>
             </>
           )}
         </div>
