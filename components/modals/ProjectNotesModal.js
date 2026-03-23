@@ -29,7 +29,7 @@ const Divider = ({ darkMode }) => (
 
 const hasContent = (notes) => notes && notes.trim() !== '' && notes.trim() !== '<br>';
 
-const ProjectNotesModal = ({ isOpen, onClose, project, onSave, darkMode, setConfirmDialog }) => {
+const ProjectNotesModal = ({ isOpen, onClose, project, onSave, darkMode }) => {
   const editorRef = useRef(null);
   const linkInputRef = useRef(null);
   const savedRangeRef = useRef(null);
@@ -39,6 +39,7 @@ const ProjectNotesModal = ({ isOpen, onClose, project, onSave, darkMode, setConf
   const [activeFormats, setActiveFormats] = useState({});
   const [showLinkInput, setShowLinkInput] = useState(false);
   const [linkUrl, setLinkUrl] = useState('');
+  const [showDiscardWarning, setShowDiscardWarning] = useState(false);
 
   // Determine initial mode when opening
   useEffect(() => {
@@ -48,6 +49,7 @@ const ProjectNotesModal = ({ isOpen, onClose, project, onSave, darkMode, setConf
       setSaveError(null);
       setShowLinkInput(false);
       setLinkUrl('');
+      setShowDiscardWarning(false);
     }
   }, [isOpen, project?.id]);
 
@@ -162,14 +164,7 @@ const ProjectNotesModal = ({ isOpen, onClose, project, onSave, darkMode, setConf
 
   const guardedClose = (onConfirm) => {
     if (hasUnsavedChanges()) {
-      setConfirmDialog({
-        isOpen: true,
-        title: 'Unsaved Changes',
-        message: 'You have unsaved changes to your notes. Are you sure you want to discard them?',
-        confirmText: 'Discard',
-        cancelText: 'Keep Editing',
-        onConfirm,
-      });
+      setShowDiscardWarning(true);
     } else {
       onConfirm();
     }
@@ -189,18 +184,36 @@ const ProjectNotesModal = ({ isOpen, onClose, project, onSave, darkMode, setConf
     }
   };
 
+  // What to do after user confirms discard — stored so the warning banner knows
+  const discardActionRef = useRef(null);
+
   const handleDiscard = () => {
-    guardedClose(() => {
+    if (hasUnsavedChanges()) {
+      discardActionRef.current = () => {
+        setShowDiscardWarning(false);
+        if (hasContent(project?.notes)) {
+          setIsEditing(false);
+        } else {
+          onClose();
+        }
+      };
+      setShowDiscardWarning(true);
+    } else {
       if (hasContent(project?.notes)) {
         setIsEditing(false);
       } else {
         onClose();
       }
-    });
+    }
   };
 
   const handleClose = () => {
-    guardedClose(onClose);
+    if (hasUnsavedChanges()) {
+      discardActionRef.current = onClose;
+      setShowDiscardWarning(true);
+    } else {
+      onClose();
+    }
   };
 
   const handleEditorKeyDown = (e) => {
@@ -354,6 +367,35 @@ const ProjectNotesModal = ({ isOpen, onClose, project, onSave, darkMode, setConf
             style={{ minHeight: '280px' }}
             dangerouslySetInnerHTML={{ __html: project?.notes || '' }}
           />
+        )}
+
+        {/* Discard warning banner */}
+        {showDiscardWarning && (
+          <div className={`flex items-center justify-between gap-3 px-5 py-3 border-t flex-shrink-0 ${
+            darkMode ? 'border-amber-700 bg-amber-900/30' : 'border-amber-300 bg-amber-50'
+          }`}>
+            <span className={`text-sm font-medium ${darkMode ? 'text-amber-300' : 'text-amber-700'}`}>
+              Discard unsaved changes?
+            </span>
+            <div className="flex items-center gap-2">
+              <button
+                onClick={() => setShowDiscardWarning(false)}
+                className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors border ${
+                  darkMode
+                    ? 'bg-gray-700 hover:bg-gray-600 text-gray-100 border-gray-600'
+                    : 'bg-white hover:bg-gray-100 text-gray-800 border-gray-300'
+                }`}
+              >
+                Keep Editing
+              </button>
+              <button
+                onClick={() => discardActionRef.current?.()}
+                className="px-3 py-1.5 rounded-lg text-sm font-medium bg-red-600 hover:bg-red-700 text-white transition-colors"
+              >
+                Discard
+              </button>
+            </div>
+          </div>
         )}
 
         {/* Footer */}

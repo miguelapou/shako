@@ -602,7 +602,6 @@ const ProjectDetailModal = ({
           setViewingProject({ ...viewingProject, notes });
         }}
         darkMode={darkMode}
-        setConfirmDialog={setConfirmDialog}
       />
     </div>
   );

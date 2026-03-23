@@ -3803,7 +3803,6 @@ const VehicleDetailModal = ({
           setVehicleModalProjectView(prev => ({ ...prev, notes }));
         }}
         darkMode={darkMode}
-        setConfirmDialog={setConfirmDialog}
       />
 
       {/* Export Report Modal */}
