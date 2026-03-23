@@ -113,6 +113,7 @@ const ProjectNotesModal = ({ isOpen, onClose, project, onSave, darkMode }) => {
           darkMode ? 'bg-gray-800' : 'bg-white'
         }`}
         style={{ maxHeight: '85vh' }}
+        onClick={(e) => e.stopPropagation()}
       >
         {/* Header */}
         <div className={`flex items-center justify-between px-5 py-4 border-b flex-shrink-0 ${
