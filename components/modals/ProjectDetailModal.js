@@ -85,8 +85,8 @@ const ProjectDetailModal = ({
     if (!isOpen || projectModalEditMode) return;
 
     const handleKeyDown = (e) => {
-      // Don't navigate if user is typing in an input
-      if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA' || e.target.tagName === 'SELECT') {
+      // Don't navigate if user is typing in an input or contentEditable element
+      if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA' || e.target.tagName === 'SELECT' || e.target.isContentEditable) {
         return;
       }
 
