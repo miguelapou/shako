@@ -1049,3 +1049,13 @@ body.dark-scrollbar *::-webkit-scrollbar-thumb:hover {
   border-top: 1px solid #d1d5db;
   margin: 0.75rem 0;
 }
+
+.notes-editor a {
+  color: #3b82f6;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.notes-editor a:hover {
+  color: #2563eb;
+}
