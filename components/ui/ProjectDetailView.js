@@ -1001,7 +1001,7 @@ const ProjectDetailView = ({
                     <h4 className={`font-medium ${
                       darkMode ? 'text-gray-100' : 'text-slate-800'
                     }`}>
-                      {part.part}
+                      {part.part}{(part.quantity || 1) > 1 ? ` - x${part.quantity}` : ''}
                     </h4>
                     {part.vendor && (
                       vendorColors[part.vendor] ? (
