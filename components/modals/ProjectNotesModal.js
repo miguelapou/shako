@@ -1,6 +1,6 @@
 'use client';
 import React, { useState, useRef, useEffect } from 'react';
-import { X, Bold, Italic, Underline, Strikethrough, List, ListOrdered, Heading1, Heading2, Minus, Link, Link2Off } from 'lucide-react';
+import { X, Bold, Italic, Underline, Strikethrough, List, ListOrdered, Heading1, Heading2, Minus, Link, Edit2 } from 'lucide-react';
 
 const ToolbarButton = ({ onClick, title, active, darkMode, children }) => (
   <button
@@ -27,26 +27,37 @@ const Divider = ({ darkMode }) => (
   <div className={`w-px h-5 mx-1 ${darkMode ? 'bg-gray-600' : 'bg-gray-300'}`} />
 );
 
+const hasContent = (notes) => notes && notes.trim() !== '' && notes.trim() !== '<br>';
+
 const ProjectNotesModal = ({ isOpen, onClose, project, onSave, darkMode }) => {
   const editorRef = useRef(null);
   const linkInputRef = useRef(null);
   const savedRangeRef = useRef(null);
+  const [isEditing, setIsEditing] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [saveError, setSaveError] = useState(null);
   const [activeFormats, setActiveFormats] = useState({});
   const [showLinkInput, setShowLinkInput] = useState(false);
   const [linkUrl, setLinkUrl] = useState('');
 
-  // Load notes content when modal opens or project changes
+  // Determine initial mode when opening
   useEffect(() => {
-    if (isOpen && editorRef.current) {
-      editorRef.current.innerHTML = project?.notes || '';
-      editorRef.current.focus();
+    if (isOpen) {
+      const startInEdit = !hasContent(project?.notes);
+      setIsEditing(startInEdit);
       setSaveError(null);
       setShowLinkInput(false);
       setLinkUrl('');
     }
   }, [isOpen, project?.id]);
+
+  // Sync editor content when switching to edit mode
+  useEffect(() => {
+    if (isEditing && editorRef.current) {
+      editorRef.current.innerHTML = project?.notes || '';
+      editorRef.current.focus();
+    }
+  }, [isEditing]);
 
   // Focus link input when it appears
   useEffect(() => {
@@ -63,7 +74,6 @@ const ProjectNotesModal = ({ isOpen, onClose, project, onSave, darkMode }) => {
       strikeThrough: document.queryCommandState('strikeThrough'),
       insertUnorderedList: document.queryCommandState('insertUnorderedList'),
       insertOrderedList: document.queryCommandState('insertOrderedList'),
-      link: document.queryCommandState('createLink'),
     });
   };
 
@@ -83,7 +93,6 @@ const ProjectNotesModal = ({ isOpen, onClose, project, onSave, darkMode }) => {
     editorRef.current?.focus();
   };
 
-  // Save the current selection before showing link input
   const saveSelection = () => {
     const sel = window.getSelection();
     if (sel && sel.rangeCount > 0) {
@@ -91,7 +100,6 @@ const ProjectNotesModal = ({ isOpen, onClose, project, onSave, darkMode }) => {
     }
   };
 
-  // Restore the saved selection
   const restoreSelection = () => {
     if (savedRangeRef.current) {
       const sel = window.getSelection();
@@ -102,7 +110,6 @@ const ProjectNotesModal = ({ isOpen, onClose, project, onSave, darkMode }) => {
 
   const handleLinkButtonClick = () => {
     saveSelection();
-    // Check if cursor is on a link — if so, offer to remove
     const sel = window.getSelection();
     const anchor = sel?.anchorNode?.parentElement?.closest('a');
     if (anchor) {
@@ -124,7 +131,6 @@ const ProjectNotesModal = ({ isOpen, onClose, project, onSave, darkMode }) => {
     const url = linkUrl.startsWith('http') ? linkUrl : `https://${linkUrl}`;
     restoreSelection();
     document.execCommand('createLink', false, url);
-    // Make link open in new tab
     const sel = window.getSelection();
     const anchor = sel?.anchorNode?.parentElement?.closest('a');
     if (anchor) {
@@ -161,29 +167,22 @@ const ProjectNotesModal = ({ isOpen, onClose, project, onSave, darkMode }) => {
     }
   };
 
-  const handleKeyDown = (e) => {
+  const handleDiscard = () => {
+    if (hasContent(project?.notes)) {
+      setIsEditing(false);
+    } else {
+      onClose();
+    }
+  };
+
+  const handleEditorKeyDown = (e) => {
     if (e.ctrlKey || e.metaKey) {
       switch (e.key.toLowerCase()) {
-        case 'b':
-          e.preventDefault();
-          execCmd('bold');
-          break;
-        case 'i':
-          e.preventDefault();
-          execCmd('italic');
-          break;
-        case 'u':
-          e.preventDefault();
-          execCmd('underline');
-          break;
-        case 'k':
-          e.preventDefault();
-          handleLinkButtonClick();
-          break;
-        case 's':
-          e.preventDefault();
-          handleSave();
-          break;
+        case 'b': e.preventDefault(); execCmd('bold'); break;
+        case 'i': e.preventDefault(); execCmd('italic'); break;
+        case 'u': e.preventDefault(); execCmd('underline'); break;
+        case 'k': e.preventDefault(); handleLinkButtonClick(); break;
+        case 's': e.preventDefault(); handleSave(); break;
       }
     }
   };
@@ -217,130 +216,175 @@ const ProjectNotesModal = ({ isOpen, onClose, project, onSave, darkMode }) => {
           </button>
         </div>
 
-        {/* Toolbar */}
-        <div className={`flex items-center flex-wrap gap-0.5 px-3 py-2 border-b flex-shrink-0 ${
-          darkMode ? 'border-gray-700 bg-gray-800/50' : 'border-slate-200 bg-slate-50'
-        }`}>
-          <ToolbarButton onClick={() => execCmd('bold')} title="Bold (Ctrl+B)" active={activeFormats.bold} darkMode={darkMode}>
-            <Bold className="w-3.5 h-3.5" />
-          </ToolbarButton>
-          <ToolbarButton onClick={() => execCmd('italic')} title="Italic (Ctrl+I)" active={activeFormats.italic} darkMode={darkMode}>
-            <Italic className="w-3.5 h-3.5" />
-          </ToolbarButton>
-          <ToolbarButton onClick={() => execCmd('underline')} title="Underline (Ctrl+U)" active={activeFormats.underline} darkMode={darkMode}>
-            <Underline className="w-3.5 h-3.5" />
-          </ToolbarButton>
-          <ToolbarButton onClick={() => execCmd('strikeThrough')} title="Strikethrough" active={activeFormats.strikeThrough} darkMode={darkMode}>
-            <Strikethrough className="w-3.5 h-3.5" />
-          </ToolbarButton>
+        {/* Toolbar — only in edit mode */}
+        {isEditing && (
+          <>
+            <div className={`flex items-center flex-wrap gap-0.5 px-3 py-2 border-b flex-shrink-0 ${
+              darkMode ? 'border-gray-700 bg-gray-800/50' : 'border-slate-200 bg-slate-50'
+            }`}>
+              <ToolbarButton onClick={() => execCmd('bold')} title="Bold (Ctrl+B)" active={activeFormats.bold} darkMode={darkMode}>
+                <Bold className="w-3.5 h-3.5" />
+              </ToolbarButton>
+              <ToolbarButton onClick={() => execCmd('italic')} title="Italic (Ctrl+I)" active={activeFormats.italic} darkMode={darkMode}>
+                <Italic className="w-3.5 h-3.5" />
+              </ToolbarButton>
+              <ToolbarButton onClick={() => execCmd('underline')} title="Underline (Ctrl+U)" active={activeFormats.underline} darkMode={darkMode}>
+                <Underline className="w-3.5 h-3.5" />
+              </ToolbarButton>
+              <ToolbarButton onClick={() => execCmd('strikeThrough')} title="Strikethrough" active={activeFormats.strikeThrough} darkMode={darkMode}>
+                <Strikethrough className="w-3.5 h-3.5" />
+              </ToolbarButton>
 
-          <Divider darkMode={darkMode} />
+              <Divider darkMode={darkMode} />
 
-          <ToolbarButton onClick={() => handleHeading('h1')} title="Heading 1" darkMode={darkMode}>
-            <Heading1 className="w-3.5 h-3.5" />
-          </ToolbarButton>
-          <ToolbarButton onClick={() => handleHeading('h2')} title="Heading 2" darkMode={darkMode}>
-            <Heading2 className="w-3.5 h-3.5" />
-          </ToolbarButton>
+              <ToolbarButton onClick={() => handleHeading('h1')} title="Heading 1" darkMode={darkMode}>
+                <Heading1 className="w-3.5 h-3.5" />
+              </ToolbarButton>
+              <ToolbarButton onClick={() => handleHeading('h2')} title="Heading 2" darkMode={darkMode}>
+                <Heading2 className="w-3.5 h-3.5" />
+              </ToolbarButton>
 
-          <Divider darkMode={darkMode} />
+              <Divider darkMode={darkMode} />
 
-          <ToolbarButton onClick={() => execCmd('insertUnorderedList')} title="Bullet List" active={activeFormats.insertUnorderedList} darkMode={darkMode}>
-            <List className="w-3.5 h-3.5" />
-          </ToolbarButton>
-          <ToolbarButton onClick={() => execCmd('insertOrderedList')} title="Numbered List" active={activeFormats.insertOrderedList} darkMode={darkMode}>
-            <ListOrdered className="w-3.5 h-3.5" />
-          </ToolbarButton>
+              <ToolbarButton onClick={() => execCmd('insertUnorderedList')} title="Bullet List" active={activeFormats.insertUnorderedList} darkMode={darkMode}>
+                <List className="w-3.5 h-3.5" />
+              </ToolbarButton>
+              <ToolbarButton onClick={() => execCmd('insertOrderedList')} title="Numbered List" active={activeFormats.insertOrderedList} darkMode={darkMode}>
+                <ListOrdered className="w-3.5 h-3.5" />
+              </ToolbarButton>
 
-          <Divider darkMode={darkMode} />
+              <Divider darkMode={darkMode} />
 
-          <ToolbarButton onClick={handleLinkButtonClick} title="Insert / Remove Link (Ctrl+K)" active={showLinkInput} darkMode={darkMode}>
-            <Link className="w-3.5 h-3.5" />
-          </ToolbarButton>
+              <ToolbarButton onClick={handleLinkButtonClick} title="Insert / Remove Link (Ctrl+K)" active={showLinkInput} darkMode={darkMode}>
+                <Link className="w-3.5 h-3.5" />
+              </ToolbarButton>
 
-          <Divider darkMode={darkMode} />
+              <Divider darkMode={darkMode} />
 
-          <ToolbarButton onClick={handleHorizontalRule} title="Horizontal Rule" darkMode={darkMode}>
-            <Minus className="w-3.5 h-3.5" />
-          </ToolbarButton>
-        </div>
+              <ToolbarButton onClick={handleHorizontalRule} title="Horizontal Rule" darkMode={darkMode}>
+                <Minus className="w-3.5 h-3.5" />
+              </ToolbarButton>
+            </div>
 
-        {/* Link input bar */}
-        {showLinkInput && (
-          <div className={`flex items-center gap-2 px-3 py-2 border-b flex-shrink-0 ${
-            darkMode ? 'border-gray-700 bg-gray-750' : 'border-slate-200 bg-blue-50'
-          }`}>
-            <Link className={`w-4 h-4 flex-shrink-0 ${darkMode ? 'text-gray-400' : 'text-blue-500'}`} />
-            <input
-              ref={linkInputRef}
-              type="url"
-              value={linkUrl}
-              onChange={(e) => setLinkUrl(e.target.value)}
-              onKeyDown={handleLinkKeyDown}
-              placeholder="https://example.com"
-              className={`flex-1 text-sm px-2 py-1 rounded border outline-none focus:ring-1 focus:ring-blue-500 ${
-                darkMode
-                  ? 'bg-gray-700 border-gray-600 text-gray-100 placeholder-gray-400'
-                  : 'bg-white border-slate-300 text-gray-900 placeholder-gray-400'
-              }`}
-            />
-            <button
-              onMouseDown={(e) => { e.preventDefault(); handleInsertLink(); }}
-              className="px-3 py-1 bg-blue-600 hover:bg-blue-700 text-white rounded text-sm font-medium transition-colors"
-            >
-              Insert
-            </button>
-            <button
-              onMouseDown={(e) => { e.preventDefault(); setShowLinkInput(false); editorRef.current?.focus(); }}
-              className={`p-1 rounded transition-colors ${darkMode ? 'hover:bg-gray-700 text-gray-400' : 'hover:bg-gray-200 text-gray-500'}`}
-            >
-              <X className="w-4 h-4" />
-            </button>
-          </div>
+            {/* Link input bar */}
+            {showLinkInput && (
+              <div className={`flex items-center gap-2 px-3 py-2 border-b flex-shrink-0 ${
+                darkMode ? 'border-gray-700' : 'border-slate-200 bg-blue-50'
+              }`}>
+                <Link className={`w-4 h-4 flex-shrink-0 ${darkMode ? 'text-gray-400' : 'text-blue-500'}`} />
+                <input
+                  ref={linkInputRef}
+                  type="url"
+                  value={linkUrl}
+                  onChange={(e) => setLinkUrl(e.target.value)}
+                  onKeyDown={handleLinkKeyDown}
+                  placeholder="https://example.com"
+                  className={`flex-1 text-sm px-2 py-1 rounded border outline-none focus:ring-1 focus:ring-blue-500 ${
+                    darkMode
+                      ? 'bg-gray-700 border-gray-600 text-gray-100 placeholder-gray-400'
+                      : 'bg-white border-slate-300 text-gray-900 placeholder-gray-400'
+                  }`}
+                />
+                <button
+                  onMouseDown={(e) => { e.preventDefault(); handleInsertLink(); }}
+                  className="px-3 py-1 bg-blue-600 hover:bg-blue-700 text-white rounded text-sm font-medium transition-colors"
+                >
+                  Insert
+                </button>
+                <button
+                  onMouseDown={(e) => { e.preventDefault(); setShowLinkInput(false); editorRef.current?.focus(); }}
+                  className={`p-1 rounded transition-colors ${darkMode ? 'hover:bg-gray-700 text-gray-400' : 'hover:bg-gray-200 text-gray-500'}`}
+                >
+                  <X className="w-4 h-4" />
+                </button>
+              </div>
+            )}
+          </>
         )}
 
-        {/* Editor */}
-        <div
-          ref={editorRef}
-          contentEditable
-          suppressContentEditableWarning
-          onKeyDown={handleKeyDown}
-          onKeyUp={updateActiveFormats}
-          onMouseUp={updateActiveFormats}
-          onSelect={updateActiveFormats}
-          className={`flex-1 p-5 overflow-y-auto outline-none notes-editor ${
-            darkMode ? 'text-gray-100' : 'text-gray-900'
-          }`}
-          style={{ minHeight: '280px' }}
-          data-placeholder="Start writing your notes..."
-        />
+        {/* Content area */}
+        {isEditing ? (
+          <div
+            ref={editorRef}
+            contentEditable
+            suppressContentEditableWarning
+            onKeyDown={handleEditorKeyDown}
+            onKeyUp={updateActiveFormats}
+            onMouseUp={updateActiveFormats}
+            onSelect={updateActiveFormats}
+            className={`flex-1 p-5 overflow-y-auto outline-none notes-editor ${
+              darkMode ? 'text-gray-100' : 'text-gray-900'
+            }`}
+            style={{ minHeight: '280px' }}
+            data-placeholder="Start writing your notes..."
+          />
+        ) : (
+          <div
+            className={`flex-1 p-5 overflow-y-auto notes-editor ${
+              darkMode ? 'text-gray-100' : 'text-gray-900'
+            }`}
+            style={{ minHeight: '280px' }}
+            dangerouslySetInnerHTML={{ __html: project?.notes || '' }}
+          />
+        )}
 
         {/* Footer */}
         <div className={`flex items-center justify-between px-5 py-4 border-t flex-shrink-0 ${
           darkMode ? 'border-gray-700 bg-gray-800' : 'border-slate-200 bg-slate-100'
         }`}>
-          <span className={`text-xs ${saveError ? 'text-red-500' : darkMode ? 'text-gray-500' : 'text-gray-400'}`}>
-            {saveError || 'Ctrl+S to save · Ctrl+K for link'}
-          </span>
-          <div className="flex items-center gap-3">
-            <button
-              onClick={onClose}
-              className={`px-4 py-2 rounded-lg font-medium text-sm transition-colors border ${
-                darkMode
-                  ? 'bg-gray-700 hover:bg-gray-600 text-gray-100 border-gray-600'
-                  : 'bg-gray-200 hover:bg-gray-300 text-gray-800 border-gray-300'
-              }`}
-            >
-              Cancel
-            </button>
-            <button
-              onClick={handleSave}
-              disabled={isSaving}
-              className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium text-sm transition-colors disabled:opacity-60"
-            >
-              {isSaving ? 'Saving...' : 'Save Notes'}
-            </button>
-          </div>
+          {isEditing ? (
+            <>
+              <span className={`text-xs ${saveError ? 'text-red-500' : darkMode ? 'text-gray-500' : 'text-gray-400'}`}>
+                {saveError || 'Ctrl+S to save · Ctrl+K for link'}
+              </span>
+              <div className="flex items-center gap-3">
+                <button
+                  onClick={handleDiscard}
+                  className={`px-4 py-2 rounded-lg font-medium text-sm transition-colors border ${
+                    darkMode
+                      ? 'bg-gray-700 hover:bg-gray-600 text-gray-100 border-gray-600'
+                      : 'bg-gray-200 hover:bg-gray-300 text-gray-800 border-gray-300'
+                  }`}
+                >
+                  {hasContent(project?.notes) ? 'Discard' : 'Cancel'}
+                </button>
+                <button
+                  onClick={handleSave}
+                  disabled={isSaving}
+                  className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium text-sm transition-colors disabled:opacity-60"
+                >
+                  {isSaving ? 'Saving...' : 'Save Notes'}
+                </button>
+              </div>
+            </>
+          ) : (
+            <>
+              <span className={`text-xs ${darkMode ? 'text-gray-500' : 'text-gray-400'}`} />
+              <div className="flex items-center gap-3">
+                <button
+                  onClick={onClose}
+                  className={`px-4 py-2 rounded-lg font-medium text-sm transition-colors border ${
+                    darkMode
+                      ? 'bg-gray-700 hover:bg-gray-600 text-gray-100 border-gray-600'
+                      : 'bg-gray-200 hover:bg-gray-300 text-gray-800 border-gray-300'
+                  }`}
+                >
+                  Close
+                </button>
+                <button
+                  onClick={() => setIsEditing(true)}
+                  className={`px-4 py-2 rounded-lg font-medium text-sm transition-colors flex items-center gap-2 border ${
+                    darkMode
+                      ? 'bg-gray-700 hover:bg-gray-600 text-gray-100 border-gray-600'
+                      : 'bg-gray-200 hover:bg-gray-300 text-gray-800 border-gray-300'
+                  }`}
+                >
+                  <Edit2 className="w-3.5 h-3.5" />
+                  Edit
+                </button>
+              </div>
+            </>
+          )}
         </div>
       </div>
     </div>
