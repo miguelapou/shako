@@ -1,8 +1,30 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { X, Trash2, Package, ChevronDown, Check } from 'lucide-react';
+import { X, Trash2, Package, ChevronDown, Check, Bold, Italic, Underline, Strikethrough, List, ListOrdered, Heading1, Heading2, Minus, Link } from 'lucide-react';
 import { useUI } from '../../contexts';
 import { getVendorDisplayColor } from '../../utils/colorUtils';
 import { toSentenceCase } from '../../utils/styleUtils';
+
+const ToolbarButton = ({ onClick, title, active, darkMode, children }) => (
+  <button
+    type="button"
+    onMouseDown={(e) => {
+      e.preventDefault();
+      onClick();
+    }}
+    title={title}
+    className={`w-7 h-7 flex items-center justify-center rounded transition-colors text-sm font-medium ${
+      active
+        ? darkMode ? 'bg-gray-600 text-gray-100' : 'bg-gray-300 text-gray-900'
+        : darkMode ? 'text-gray-300 hover:bg-gray-700 hover:text-gray-100' : 'text-gray-600 hover:bg-gray-200 hover:text-gray-900'
+    }`}
+  >
+    {children}
+  </button>
+);
+
+const ToolbarDivider = ({ darkMode }) => (
+  <div className={`w-px h-4 mx-0.5 ${darkMode ? 'bg-gray-600' : 'bg-gray-300'}`} />
+);
 
 /**
  * Modal for adding/editing a service event for a vehicle
@@ -41,6 +63,114 @@ const AddServiceEventModal = ({
   const [partsSearchTerm, setPartsSearchTerm] = useState('');
   const partsDropdownRef = useRef(null);
   const { toast } = useUI();
+
+  // Rich text editor state
+  const notesEditorRef = useRef(null);
+  const linkInputRef = useRef(null);
+  const savedRangeRef = useRef(null);
+  const [activeFormats, setActiveFormats] = useState({});
+  const [showLinkInput, setShowLinkInput] = useState(false);
+  const [linkUrl, setLinkUrl] = useState('');
+
+  // Sync notes editor content when modal opens
+  useEffect(() => {
+    if (isOpen && notesEditorRef.current) {
+      notesEditorRef.current.innerHTML = notes || '';
+    }
+  }, [isOpen]);
+
+  // Focus link input when it appears
+  useEffect(() => {
+    if (showLinkInput && linkInputRef.current) {
+      linkInputRef.current.focus();
+    }
+  }, [showLinkInput]);
+
+  const updateActiveFormats = () => {
+    setActiveFormats({
+      bold: document.queryCommandState('bold'),
+      italic: document.queryCommandState('italic'),
+      underline: document.queryCommandState('underline'),
+      strikeThrough: document.queryCommandState('strikeThrough'),
+      insertUnorderedList: document.queryCommandState('insertUnorderedList'),
+      insertOrderedList: document.queryCommandState('insertOrderedList'),
+    });
+  };
+
+  const execCmd = (command, value = null) => {
+    document.execCommand(command, false, value);
+    notesEditorRef.current?.focus();
+    updateActiveFormats();
+  };
+
+  const handleHeading = (tag) => {
+    document.execCommand('formatBlock', false, tag);
+    notesEditorRef.current?.focus();
+  };
+
+  const handleHorizontalRule = () => {
+    document.execCommand('insertHorizontalRule', false, null);
+    notesEditorRef.current?.focus();
+  };
+
+  const saveSelection = () => {
+    const sel = window.getSelection();
+    if (sel && sel.rangeCount > 0) {
+      savedRangeRef.current = sel.getRangeAt(0);
+    }
+  };
+
+  const restoreSelection = () => {
+    if (savedRangeRef.current) {
+      const sel = window.getSelection();
+      sel.removeAllRanges();
+      sel.addRange(savedRangeRef.current);
+    }
+  };
+
+  const handleLinkButtonClick = () => {
+    saveSelection();
+    const sel = window.getSelection();
+    const anchor = sel?.anchorNode?.parentElement?.closest('a');
+    if (anchor) {
+      restoreSelection();
+      document.execCommand('unlink', false, null);
+      notesEditorRef.current?.focus();
+      updateActiveFormats();
+      return;
+    }
+    setLinkUrl('');
+    setShowLinkInput(true);
+  };
+
+  const handleInsertLink = () => {
+    if (!linkUrl.trim()) { setShowLinkInput(false); return; }
+    const url = linkUrl.startsWith('http') ? linkUrl : `https://${linkUrl}`;
+    restoreSelection();
+    document.execCommand('createLink', false, url);
+    const sel = window.getSelection();
+    const anchor = sel?.anchorNode?.parentElement?.closest('a');
+    if (anchor) { anchor.target = '_blank'; anchor.rel = 'noopener noreferrer'; }
+    notesEditorRef.current?.focus();
+    updateActiveFormats();
+    setShowLinkInput(false);
+    setLinkUrl('');
+  };
+
+  const handleLinkKeyDown = (e) => {
+    if (e.key === 'Enter') { e.preventDefault(); handleInsertLink(); }
+    else if (e.key === 'Escape') { setShowLinkInput(false); notesEditorRef.current?.focus(); }
+  };
+
+  const handleEditorKeyDown = (e) => {
+    if (e.ctrlKey || e.metaKey) {
+      switch (e.key.toLowerCase()) {
+        case 'b': e.preventDefault(); execCmd('bold'); break;
+        case 'i': e.preventDefault(); execCmd('italic'); break;
+        case 'u': e.preventDefault(); execCmd('underline'); break;
+      }
+    }
+  };
 
   // Handle dropdown close with animation
   const closeDropdown = () => {
@@ -195,55 +325,55 @@ const AddServiceEventModal = ({
             />
           </div>
 
-          {/* Odometer field */}
-          <div>
-            <label className={`block text-sm font-medium mb-2 ${
-              darkMode ? 'text-gray-300' : 'text-gray-700'
-            }`}>
-              Odometer
-            </label>
-            <input
-              type="number"
-              inputMode="numeric"
-              pattern="[0-9]*"
-              value={odometer}
-              onChange={(e) => setOdometer(e.target.value)}
-              className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
-                darkMode
-                  ? 'bg-gray-700 border-gray-600 text-gray-100 placeholder-gray-400'
-                  : 'bg-white border-gray-300 text-gray-800 placeholder-gray-400'
-              }`}
-              placeholder="e.g., 125000"
-            />
-          </div>
-
-          {/* Cost field */}
-          <div>
-            <label className={`block text-sm font-medium mb-2 ${
-              darkMode ? 'text-gray-300' : 'text-gray-700'
-            }`}>
-              Cost
-            </label>
-            <div className="relative">
-              <span className={`absolute left-4 top-1/2 -translate-y-1/2 ${
-                darkMode ? 'text-gray-400' : 'text-gray-500'
+          {/* Odometer + Cost fields */}
+          <div className="flex gap-4">
+            <div className="flex-1">
+              <label className={`block text-sm font-medium mb-2 ${
+                darkMode ? 'text-gray-300' : 'text-gray-700'
               }`}>
-                $
-              </span>
+                Odometer
+              </label>
               <input
                 type="number"
-                inputMode="decimal"
-                step="0.01"
-                min="0"
-                value={cost}
-                onChange={(e) => setCost(e.target.value)}
-                className={`w-full pl-8 pr-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
+                inputMode="numeric"
+                pattern="[0-9]*"
+                value={odometer}
+                onChange={(e) => setOdometer(e.target.value)}
+                className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
                   darkMode
                     ? 'bg-gray-700 border-gray-600 text-gray-100 placeholder-gray-400'
                     : 'bg-white border-gray-300 text-gray-800 placeholder-gray-400'
                 }`}
-                placeholder="0.00"
+                placeholder="e.g., 125000"
               />
+            </div>
+            <div className="flex-1">
+              <label className={`block text-sm font-medium mb-2 ${
+                darkMode ? 'text-gray-300' : 'text-gray-700'
+              }`}>
+                Cost
+              </label>
+              <div className="relative">
+                <span className={`absolute left-4 top-1/2 -translate-y-1/2 ${
+                  darkMode ? 'text-gray-400' : 'text-gray-500'
+                }`}>
+                  $
+                </span>
+                <input
+                  type="number"
+                  inputMode="decimal"
+                  step="0.01"
+                  min="0"
+                  value={cost}
+                  onChange={(e) => setCost(e.target.value)}
+                  className={`w-full pl-8 pr-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
+                    darkMode
+                      ? 'bg-gray-700 border-gray-600 text-gray-100 placeholder-gray-400'
+                      : 'bg-white border-gray-300 text-gray-800 placeholder-gray-400'
+                  }`}
+                  placeholder="0.00"
+                />
+              </div>
             </div>
           </div>
 
@@ -254,17 +384,102 @@ const AddServiceEventModal = ({
             }`}>
               Notes
             </label>
-            <textarea
-              value={notes}
-              onChange={(e) => setNotes(e.target.value)}
-              rows={3}
-              className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none ${
-                darkMode
-                  ? 'bg-gray-700 border-gray-600 text-gray-100 placeholder-gray-400'
-                  : 'bg-white border-gray-300 text-gray-800 placeholder-gray-400'
-              }`}
-              placeholder="Additional details, parts used, costs, etc."
-            />
+            <div className={`border rounded-lg overflow-hidden focus-within:ring-2 focus-within:ring-blue-500 focus-within:border-transparent ${
+              darkMode ? 'border-gray-600' : 'border-gray-300'
+            }`}>
+              {/* Toolbar */}
+              <div className={`flex items-center flex-wrap gap-0.5 px-2 py-1.5 border-b ${
+                darkMode ? 'border-gray-600 bg-gray-700/50' : 'border-gray-200 bg-slate-50'
+              }`}>
+                <ToolbarButton onClick={() => execCmd('bold')} title="Bold (Ctrl+B)" active={activeFormats.bold} darkMode={darkMode}>
+                  <Bold className="w-3.5 h-3.5" />
+                </ToolbarButton>
+                <ToolbarButton onClick={() => execCmd('italic')} title="Italic (Ctrl+I)" active={activeFormats.italic} darkMode={darkMode}>
+                  <Italic className="w-3.5 h-3.5" />
+                </ToolbarButton>
+                <ToolbarButton onClick={() => execCmd('underline')} title="Underline (Ctrl+U)" active={activeFormats.underline} darkMode={darkMode}>
+                  <Underline className="w-3.5 h-3.5" />
+                </ToolbarButton>
+                <ToolbarButton onClick={() => execCmd('strikeThrough')} title="Strikethrough" active={activeFormats.strikeThrough} darkMode={darkMode}>
+                  <Strikethrough className="w-3.5 h-3.5" />
+                </ToolbarButton>
+                <ToolbarDivider darkMode={darkMode} />
+                <ToolbarButton onClick={() => handleHeading('h1')} title="Heading 1" darkMode={darkMode}>
+                  <Heading1 className="w-3.5 h-3.5" />
+                </ToolbarButton>
+                <ToolbarButton onClick={() => handleHeading('h2')} title="Heading 2" darkMode={darkMode}>
+                  <Heading2 className="w-3.5 h-3.5" />
+                </ToolbarButton>
+                <ToolbarDivider darkMode={darkMode} />
+                <ToolbarButton onClick={() => execCmd('insertUnorderedList')} title="Bullet List" active={activeFormats.insertUnorderedList} darkMode={darkMode}>
+                  <List className="w-3.5 h-3.5" />
+                </ToolbarButton>
+                <ToolbarButton onClick={() => execCmd('insertOrderedList')} title="Numbered List" active={activeFormats.insertOrderedList} darkMode={darkMode}>
+                  <ListOrdered className="w-3.5 h-3.5" />
+                </ToolbarButton>
+                <ToolbarDivider darkMode={darkMode} />
+                <ToolbarButton onClick={handleLinkButtonClick} title="Insert / Remove Link" active={showLinkInput} darkMode={darkMode}>
+                  <Link className="w-3.5 h-3.5" />
+                </ToolbarButton>
+                <ToolbarDivider darkMode={darkMode} />
+                <ToolbarButton onClick={handleHorizontalRule} title="Horizontal Rule" darkMode={darkMode}>
+                  <Minus className="w-3.5 h-3.5" />
+                </ToolbarButton>
+              </div>
+
+              {/* Link input bar */}
+              {showLinkInput && (
+                <div className={`flex items-center gap-2 px-3 py-1.5 border-b ${
+                  darkMode ? 'border-gray-600 bg-gray-700/50' : 'border-gray-200 bg-blue-50'
+                }`}>
+                  <Link className={`w-4 h-4 flex-shrink-0 ${darkMode ? 'text-gray-400' : 'text-blue-500'}`} />
+                  <input
+                    ref={linkInputRef}
+                    type="url"
+                    value={linkUrl}
+                    onChange={(e) => setLinkUrl(e.target.value)}
+                    onKeyDown={handleLinkKeyDown}
+                    placeholder="https://example.com"
+                    className={`flex-1 text-sm px-2 py-1 rounded border outline-none focus:ring-1 focus:ring-blue-500 ${
+                      darkMode
+                        ? 'bg-gray-700 border-gray-600 text-gray-100 placeholder-gray-400'
+                        : 'bg-white border-slate-300 text-gray-900 placeholder-gray-400'
+                    }`}
+                  />
+                  <button
+                    type="button"
+                    onMouseDown={(e) => { e.preventDefault(); handleInsertLink(); }}
+                    className="px-3 py-1 bg-blue-600 hover:bg-blue-700 text-white rounded text-sm font-medium transition-colors"
+                  >
+                    Insert
+                  </button>
+                  <button
+                    type="button"
+                    onMouseDown={(e) => { e.preventDefault(); setShowLinkInput(false); notesEditorRef.current?.focus(); }}
+                    className={`p-1 rounded transition-colors ${darkMode ? 'hover:bg-gray-600 text-gray-400' : 'hover:bg-gray-200 text-gray-500'}`}
+                  >
+                    <X className="w-4 h-4" />
+                  </button>
+                </div>
+              )}
+
+              {/* Editor */}
+              <div
+                ref={notesEditorRef}
+                contentEditable
+                suppressContentEditableWarning
+                onKeyDown={handleEditorKeyDown}
+                onKeyUp={updateActiveFormats}
+                onMouseUp={updateActiveFormats}
+                onSelect={updateActiveFormats}
+                onInput={() => setNotes(notesEditorRef.current?.innerHTML || '')}
+                className={`px-4 py-2 outline-none notes-editor ${
+                  darkMode ? 'bg-gray-700 text-gray-100' : 'bg-white text-gray-800'
+                }`}
+                style={{ minHeight: '140px' }}
+                data-placeholder="Additional details, parts used, costs, etc."
+              />
+            </div>
           </div>
 
           {/* Linked Parts field */}
