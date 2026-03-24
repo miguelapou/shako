@@ -3072,11 +3072,10 @@ const VehicleDetailModal = ({
                     }`}>
                       Notes
                     </h4>
-                    <p className={`text-sm whitespace-pre-wrap ${
-                      darkMode ? 'text-gray-400' : 'text-gray-600'
-                    }`}>
-                      {viewingInfoEvent.notes}
-                    </p>
+                    <div
+                      className={`text-sm notes-editor ${darkMode ? 'text-gray-400' : 'text-gray-600'}`}
+                      dangerouslySetInnerHTML={{ __html: viewingInfoEvent.notes }}
+                    />
                   </div>
                 )}
 
@@ -3905,11 +3904,10 @@ const VehicleDetailModal = ({
                   }`}>
                     Notes
                   </h4>
-                  <p className={`text-sm whitespace-pre-wrap ${
-                    darkMode ? 'text-gray-400' : 'text-gray-600'
-                  }`}>
-                    {viewingInfoEvent.notes}
-                  </p>
+                  <div
+                    className={`text-sm notes-editor ${darkMode ? 'text-gray-400' : 'text-gray-600'}`}
+                    dangerouslySetInnerHTML={{ __html: viewingInfoEvent.notes }}
+                  />
                 </div>
               )}
 
