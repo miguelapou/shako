@@ -363,7 +363,7 @@ const ProjectNotesModal = ({ isOpen, onClose, project, onSave, darkMode, handleC
           {isEditing ? (
             <>
               <span className={`text-xs ${saveError ? 'text-red-500' : darkMode ? 'text-gray-500' : 'text-gray-400'}`}>
-                {saveError || 'Ctrl+S to save'}
+                {saveError || <span className="hidden sm:inline">Ctrl+S to save</span>}
               </span>
               <div className="flex items-center gap-3">
                 <button
