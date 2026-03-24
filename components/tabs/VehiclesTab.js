@@ -267,7 +267,7 @@ const VehiclesTab = ({
                 setOriginalVehicleData({ ...vehicle }); // Save original data for unsaved changes check
                 setShowVehicleDetailModal(true);
               }}
-              className={`relative rounded-lg shadow-lg pt-3 ${vehicle.archived ? 'pb-3' : 'pb-4'} px-6 transition-[transform,box-shadow] duration-200 hover:shadow-2xl hover:scale-[1.03] cursor-pointer border-t-4 ${
+              className={`relative flex flex-col rounded-lg shadow-lg pt-3 ${vehicle.archived ? 'pb-3' : 'pb-4'} px-6 transition-[transform,box-shadow] duration-200 hover:shadow-2xl hover:scale-[1.03] cursor-pointer border-t-4 ${
                 draggedVehicle?.id === vehicle.id
                   ? 'ring-2 ring-blue-500 ring-offset-2'
                   : dragOverVehicle?.id === vehicle.id
@@ -300,9 +300,9 @@ const VehiclesTab = ({
 
               {layoutMode === 'compact' ? (
                 /* ========== COMPACT LAYOUT ========== */
-                <>
-                  {/* Top row: Thumbnail + Projects side by side (50/50 split) */}
-                  <div className="flex gap-4 mt-2 md:mt-8">
+                <div className="flex flex-col flex-1">
+                  {/* Top row: Thumbnail + Projects side by side (50/50 split) — grows to fill */}
+                  <div className="flex gap-4 mt-2 md:mt-8 flex-1">
                     {/* Thumbnail Column - 50% */}
                     <div className="w-1/2 flex-shrink-0">
                       {(vehicle.image_url_resolved || vehicle.image_url) ? (
@@ -400,7 +400,7 @@ const VehiclesTab = ({
                       )}
                     </div>
                   </div>
-                </>
+                </div>
               ) : (
                 /* ========== DEFAULT LAYOUT ========== */
                 <>
