@@ -195,55 +195,55 @@ const AddServiceEventModal = ({
             />
           </div>
 
-          {/* Odometer field */}
-          <div>
-            <label className={`block text-sm font-medium mb-2 ${
-              darkMode ? 'text-gray-300' : 'text-gray-700'
-            }`}>
-              Odometer
-            </label>
-            <input
-              type="number"
-              inputMode="numeric"
-              pattern="[0-9]*"
-              value={odometer}
-              onChange={(e) => setOdometer(e.target.value)}
-              className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
-                darkMode
-                  ? 'bg-gray-700 border-gray-600 text-gray-100 placeholder-gray-400'
-                  : 'bg-white border-gray-300 text-gray-800 placeholder-gray-400'
-              }`}
-              placeholder="e.g., 125000"
-            />
-          </div>
-
-          {/* Cost field */}
-          <div>
-            <label className={`block text-sm font-medium mb-2 ${
-              darkMode ? 'text-gray-300' : 'text-gray-700'
-            }`}>
-              Cost
-            </label>
-            <div className="relative">
-              <span className={`absolute left-4 top-1/2 -translate-y-1/2 ${
-                darkMode ? 'text-gray-400' : 'text-gray-500'
+          {/* Odometer + Cost fields */}
+          <div className="flex gap-4">
+            <div className="flex-1">
+              <label className={`block text-sm font-medium mb-2 ${
+                darkMode ? 'text-gray-300' : 'text-gray-700'
               }`}>
-                $
-              </span>
+                Odometer
+              </label>
               <input
                 type="number"
-                inputMode="decimal"
-                step="0.01"
-                min="0"
-                value={cost}
-                onChange={(e) => setCost(e.target.value)}
-                className={`w-full pl-8 pr-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
+                inputMode="numeric"
+                pattern="[0-9]*"
+                value={odometer}
+                onChange={(e) => setOdometer(e.target.value)}
+                className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
                   darkMode
                     ? 'bg-gray-700 border-gray-600 text-gray-100 placeholder-gray-400'
                     : 'bg-white border-gray-300 text-gray-800 placeholder-gray-400'
                 }`}
-                placeholder="0.00"
+                placeholder="e.g., 125000"
               />
+            </div>
+            <div className="flex-1">
+              <label className={`block text-sm font-medium mb-2 ${
+                darkMode ? 'text-gray-300' : 'text-gray-700'
+              }`}>
+                Cost
+              </label>
+              <div className="relative">
+                <span className={`absolute left-4 top-1/2 -translate-y-1/2 ${
+                  darkMode ? 'text-gray-400' : 'text-gray-500'
+                }`}>
+                  $
+                </span>
+                <input
+                  type="number"
+                  inputMode="decimal"
+                  step="0.01"
+                  min="0"
+                  value={cost}
+                  onChange={(e) => setCost(e.target.value)}
+                  className={`w-full pl-8 pr-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
+                    darkMode
+                      ? 'bg-gray-700 border-gray-600 text-gray-100 placeholder-gray-400'
+                      : 'bg-white border-gray-300 text-gray-800 placeholder-gray-400'
+                  }`}
+                  placeholder="0.00"
+                />
+              </div>
             </div>
           </div>
 
@@ -257,7 +257,7 @@ const AddServiceEventModal = ({
             <textarea
               value={notes}
               onChange={(e) => setNotes(e.target.value)}
-              rows={3}
+              rows={6}
               className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none ${
                 darkMode
                   ? 'bg-gray-700 border-gray-600 text-gray-100 placeholder-gray-400'
