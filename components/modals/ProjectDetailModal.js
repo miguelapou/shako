@@ -577,7 +577,7 @@ const ProjectDetailModal = ({
                   }`}
                 >
                   <SquareGantt className="w-4 h-4" />
-                  <span>Notes</span>
+                  <span>{viewingProject?.notes && viewingProject.notes.trim() !== '' && viewingProject.notes.trim() !== '<br>' ? 'Notes' : '+ Notes'}</span>
                 </button>
                 <PrimaryButton
                   onClick={() => {
