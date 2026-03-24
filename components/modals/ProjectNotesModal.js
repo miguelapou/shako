@@ -217,10 +217,10 @@ const ProjectNotesModal = ({ isOpen, onClose, project, onSave, darkMode, handleC
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-[60] flex items-center justify-center p-4" onClick={(e) => e.stopPropagation()}>
-      <div className="absolute inset-0 bg-black/60" onClick={() => handleCloseModal(handleClose)} />
+    <div className="fixed inset-0 z-[60] flex items-center justify-center p-4 modal-backdrop" onClick={() => handleCloseModal(handleClose)}>
+      <div className="absolute inset-0 bg-black/60" />
       <div
-        className={`relative w-full max-w-2xl rounded-xl shadow-2xl flex flex-col overflow-hidden ${
+        className={`relative w-full max-w-2xl rounded-xl shadow-2xl flex flex-col overflow-hidden modal-content ${
           darkMode ? 'bg-gray-800' : 'bg-white'
         }`}
         style={{ maxHeight: '85vh' }}
