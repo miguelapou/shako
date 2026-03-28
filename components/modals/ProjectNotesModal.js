@@ -1,6 +1,6 @@
 'use client';
 import React, { useState, useRef, useEffect } from 'react';
-import { X, Bold, Italic, Underline, Strikethrough, List, ListOrdered, Heading1, Heading2, Minus, Link, Edit2 } from 'lucide-react';
+import { X, Bold, Italic, Underline, Strikethrough, List, ListOrdered, Heading1, Heading2, Minus, Link, Edit2, Trash2 } from 'lucide-react';
 
 const ToolbarButton = ({ onClick, title, active, darkMode, children }) => (
   <button
@@ -199,6 +199,19 @@ const ProjectNotesModal = ({ isOpen, onClose, project, onSave, darkMode, handleC
     });
   };
 
+  const handleDelete = () => {
+    setConfirmDialog({
+      isOpen: true,
+      title: 'Delete Notes',
+      message: 'Are you sure you want to delete the notes for this project? This action cannot be undone.',
+      confirmText: 'Delete',
+      onConfirm: async () => {
+        await onSave('');
+        onClose();
+      }
+    });
+  };
+
   const handleClose = () => {
     guardedClose(onClose);
   };
@@ -376,6 +389,19 @@ const ProjectNotesModal = ({ isOpen, onClose, project, onSave, darkMode, handleC
                 >
                   {hasContent(project?.notes) ? 'Discard' : 'Cancel'}
                 </button>
+                {hasContent(project?.notes) && (
+                  <button
+                    onClick={handleDelete}
+                    className={`px-4 py-2 rounded-lg font-medium text-sm transition-colors flex items-center gap-2 border ${
+                      darkMode
+                        ? 'bg-red-900/30 hover:bg-red-900/50 text-red-400 border-red-700'
+                        : 'bg-red-50 hover:bg-red-100 text-red-600 border-red-300'
+                    }`}
+                  >
+                    <Trash2 className="w-3.5 h-3.5" />
+                    <span className="hidden sm:inline">Delete</span>
+                  </button>
+                )}
                 <button
                   onClick={handleSave}
                   disabled={isSaving}
@@ -388,17 +414,32 @@ const ProjectNotesModal = ({ isOpen, onClose, project, onSave, darkMode, handleC
           ) : (
             <>
               <span className={`text-xs ${darkMode ? 'text-gray-500' : 'text-gray-400'}`} />
-              <button
-                onClick={() => setIsEditing(true)}
-                className={`px-4 py-2 rounded-lg font-medium text-sm transition-colors flex items-center gap-2 border ${
-                  darkMode
-                    ? 'bg-gray-700 hover:bg-gray-600 text-gray-100 border-gray-600'
-                    : 'bg-gray-200 hover:bg-gray-300 text-gray-800 border-gray-300'
-                }`}
-              >
-                <Edit2 className="w-3.5 h-3.5" />
-                Edit
-              </button>
+              <div className="flex items-center gap-2">
+                {hasContent(project?.notes) && (
+                  <button
+                    onClick={handleDelete}
+                    className={`px-4 py-2 rounded-lg font-medium text-sm transition-colors flex items-center gap-2 border ${
+                      darkMode
+                        ? 'bg-red-900/30 hover:bg-red-900/50 text-red-400 border-red-700'
+                        : 'bg-red-50 hover:bg-red-100 text-red-600 border-red-300'
+                    }`}
+                  >
+                    <Trash2 className="w-3.5 h-3.5" />
+                    <span className="hidden sm:inline">Delete</span>
+                  </button>
+                )}
+                <button
+                  onClick={() => setIsEditing(true)}
+                  className={`px-4 py-2 rounded-lg font-medium text-sm transition-colors flex items-center gap-2 border ${
+                    darkMode
+                      ? 'bg-gray-700 hover:bg-gray-600 text-gray-100 border-gray-600'
+                      : 'bg-gray-200 hover:bg-gray-300 text-gray-800 border-gray-300'
+                  }`}
+                >
+                  <Edit2 className="w-3.5 h-3.5" />
+                  Edit
+                </button>
+              </div>
             </>
           )}
         </div>
