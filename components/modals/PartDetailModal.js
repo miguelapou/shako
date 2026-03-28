@@ -1797,6 +1797,8 @@ const PartDetailModal = ({
               >
                 <ChevronDown className="w-4 h-4 rotate-90" />
               </button>
+            </div>
+            <div className="flex items-center gap-2">
               <button
                 onClick={() => {
                   setConfirmDialog({
@@ -1824,8 +1826,6 @@ const PartDetailModal = ({
                 <Trash2 className="w-4 h-4" />
                 <span className="hidden sm:inline">Delete</span>
               </button>
-            </div>
-            <div className="flex items-center gap-2">
               <button
                 onClick={async () => {
                   const trackingChanged = editingPart.tracking &&
