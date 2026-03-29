@@ -1083,7 +1083,7 @@ const PartDetailModal = ({
                   href={getTrackingUrl(viewingPart.tracking)}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="inline-flex items-center gap-1.5 px-3 py-2 sm:py-1.5 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-lg transition-colors"
+                  className="inline-flex items-center gap-1.5 px-3 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-lg transition-colors"
                   onClick={(e) => e.stopPropagation()}
                 >
                   <span className="hidden sm:inline">Track</span>
@@ -1824,7 +1824,7 @@ const PartDetailModal = ({
                 }`}
               >
                 <Trash2 className="w-4 h-4" />
-                <span className="hidden sm:inline">Delete</span>
+                <span>Delete</span>
               </button>
               <button
                 onClick={async () => {
