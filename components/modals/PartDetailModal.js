@@ -1824,7 +1824,7 @@ const PartDetailModal = ({
                 }`}
               >
                 <Trash2 className="w-4 h-4" />
-                <span className="hidden sm:inline">Delete</span>
+                <span>Delete</span>
               </button>
               <button
                 onClick={async () => {
