@@ -69,6 +69,32 @@ export async function GET(request, { params }) {
       isDelivered = true;
     }
 
+    // Sync all other parts sharing the same tracking number
+    if (trackingData && part.tracking) {
+      const { data: siblingParts } = await supabase
+        .from('parts')
+        .select('id, delivered')
+        .eq('tracking', part.tracking)
+        .neq('id', partId);
+
+      if (siblingParts?.length > 0) {
+        const { delivered: _delivered, ...trackingUpdate } = trackingData;
+        await supabase
+          .from('parts')
+          .update(trackingUpdate)
+          .eq('tracking', part.tracking)
+          .neq('id', partId);
+
+        if (trackingData.tracking_status === 'Delivered') {
+          await supabase
+            .from('parts')
+            .update({ delivered: true })
+            .eq('tracking', part.tracking)
+            .neq('id', partId);
+        }
+      }
+    }
+
     return NextResponse.json({
       success: true,
       tracking: {

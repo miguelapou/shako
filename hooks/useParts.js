@@ -804,9 +804,15 @@ const useParts = (userId, toast, isDemo = false) => {
    * Used after refreshing tracking from Ship24 API
    */
   const updatePartTrackingData = (partId, trackingData) => {
-    setParts(prevParts => prevParts.map(part =>
-      part.id === partId ? { ...part, ...trackingData } : part
-    ));
+    setParts(prevParts => {
+      const refreshedPart = prevParts.find(p => p.id === partId);
+      const trackingNumber = refreshedPart?.tracking;
+      return prevParts.map(part => {
+        if (part.id === partId) return { ...part, ...trackingData };
+        if (trackingNumber && part.tracking === trackingNumber) return { ...part, ...trackingData };
+        return part;
+      });
+    });
   };
 
   /**
