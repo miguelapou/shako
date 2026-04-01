@@ -146,8 +146,8 @@ const ManageVendorsModal = ({
                             darkMode ? 'text-gray-400' : 'text-slate-600'
                           }`}
                         >
-                          <span className="w-4 text-right">{partCount}</span>
                           <Package className="w-3.5 h-3.5" />
+                          <span className="w-4 text-right">{partCount}</span>
                         </span>
                         {/* Vendor badge - always visible */}
                         {vendorColors[vendor] ? (

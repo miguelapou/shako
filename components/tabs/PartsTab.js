@@ -3,7 +3,8 @@ import {
   Search, Package, Receipt, Truck, CheckCircle, Clock,
   ChevronDown, Plus, X, ExternalLink, ShoppingCart, Car,
   ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight,
-  PackageCheck, PackageSearch, PackageX, BadgeCheck, Archive
+  PackageCheck, PackageSearch, PackageX, BadgeCheck, Archive,
+  SlidersHorizontal
 } from 'lucide-react';
 import PriceDisplay from '../ui/PriceDisplay';
 import { getVendorDisplayColor } from '../../utils/colorUtils';
@@ -51,7 +52,8 @@ const PartsTab = ({
   getStatusIcon,
   getStatusText,
   getStatusColor,
-  getVendorColor
+  getVendorColor,
+  onVendorClick
 }) => {
   // Pagination state
   const [currentPage, setCurrentPage] = useState(1);
@@ -1326,20 +1328,28 @@ const PartsTab = ({
                             const colors = getVendorDisplayColor(vendorColors[part.vendor], darkMode);
                             return (
                               <span
-                                className="inline-block px-3 py-1 rounded-full text-sm font-medium text-center border"
+                                className="inline-flex items-center gap-1 px-3 py-1 rounded-full text-sm font-medium text-center border cursor-pointer transition-all duration-150 hover:scale-105 hover:shadow-md"
                                 style={{
                                   backgroundColor: colors.bg,
                                   color: colors.text,
                                   borderColor: colors.border
                                 }}
+                                title="Manage vendors"
+                                onClick={(e) => { e.stopPropagation(); onVendorClick(); }}
                               >
                                 {part.vendor}
+                                <SlidersHorizontal className="w-3 h-3 opacity-60" />
                               </span>
                             );
                           })()
                         ) : (
-                          <span className={`inline-block px-3 py-1 rounded-full text-sm font-medium text-center ${getVendorColor(part.vendor, vendorColors)}`}>
+                          <span
+                            className={`inline-flex items-center gap-1 px-3 py-1 rounded-full text-sm font-medium text-center cursor-pointer transition-all duration-150 hover:scale-105 hover:shadow-md ${getVendorColor(part.vendor, vendorColors)}`}
+                            title="Manage vendors"
+                            onClick={(e) => { e.stopPropagation(); onVendorClick(); }}
+                          >
                             {part.vendor}
+                            <SlidersHorizontal className="w-3 h-3 opacity-60" />
                           </span>
                         )
                       ) : (
@@ -1616,20 +1626,28 @@ const PartsTab = ({
                           const colors = getVendorDisplayColor(vendorColors[part.vendor], darkMode);
                           return (
                             <span
-                              className="inline-block px-2 py-0.5 rounded-full text-xs font-medium border"
+                              className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium border cursor-pointer"
                               style={{
                                 backgroundColor: colors.bg,
                                 color: colors.text,
                                 borderColor: colors.border
                               }}
+                              title="Manage vendors"
+                              onClick={(e) => { e.stopPropagation(); onVendorClick(); }}
                             >
                               {part.vendor}
+                              <SlidersHorizontal className="w-2.5 h-2.5 opacity-60" />
                             </span>
                           );
                         })()
                       ) : (
-                        <span className={`inline-block px-2 py-0.5 rounded-full text-xs font-medium ${getVendorColor(part.vendor, vendorColors)}`}>
+                        <span
+                          className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium cursor-pointer ${getVendorColor(part.vendor, vendorColors)}`}
+                          title="Manage vendors"
+                          onClick={(e) => { e.stopPropagation(); onVendorClick(); }}
+                        >
                           {part.vendor}
+                          <SlidersHorizontal className="w-2.5 h-2.5 opacity-60" />
                         </span>
                       )
                     ) : (
