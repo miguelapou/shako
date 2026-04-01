@@ -974,8 +974,10 @@ const PartDetailModal = ({
                           </div>
                           {viewingPart.tracking && (
                             <div className="ml-auto flex flex-col items-end gap-0.5">
-                              {viewingPart.tracking_eta && !viewingPart.delivered && (
-                                <span>ETA: {formatETA(viewingPart.tracking_eta)}</span>
+                              {viewingPart.tracking_eta && !viewingPart.delivered && viewingPart.tracking_status !== 'Delivered' && (
+                                <span className={`font-medium ${darkMode ? 'text-gray-200' : 'text-gray-700'}`}>
+                                  ETA: {formatETA(viewingPart.tracking_eta)}
+                                </span>
                               )}
                               <span>{getCarrierName(viewingPart.tracking)}</span>
                             </div>
