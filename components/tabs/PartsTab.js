@@ -51,7 +51,8 @@ const PartsTab = ({
   getStatusIcon,
   getStatusText,
   getStatusColor,
-  getVendorColor
+  getVendorColor,
+  onVendorClick
 }) => {
   // Pagination state
   const [currentPage, setCurrentPage] = useState(1);
@@ -1326,19 +1327,23 @@ const PartsTab = ({
                             const colors = getVendorDisplayColor(vendorColors[part.vendor], darkMode);
                             return (
                               <span
-                                className="inline-block px-3 py-1 rounded-full text-sm font-medium text-center border"
+                                className="inline-block px-3 py-1 rounded-full text-sm font-medium text-center border cursor-pointer"
                                 style={{
                                   backgroundColor: colors.bg,
                                   color: colors.text,
                                   borderColor: colors.border
                                 }}
+                                onClick={(e) => { e.stopPropagation(); onVendorClick(); }}
                               >
                                 {part.vendor}
                               </span>
                             );
                           })()
                         ) : (
-                          <span className={`inline-block px-3 py-1 rounded-full text-sm font-medium text-center ${getVendorColor(part.vendor, vendorColors)}`}>
+                          <span
+                            className={`inline-block px-3 py-1 rounded-full text-sm font-medium text-center cursor-pointer ${getVendorColor(part.vendor, vendorColors)}`}
+                            onClick={(e) => { e.stopPropagation(); onVendorClick(); }}
+                          >
                             {part.vendor}
                           </span>
                         )
@@ -1616,19 +1621,23 @@ const PartsTab = ({
                           const colors = getVendorDisplayColor(vendorColors[part.vendor], darkMode);
                           return (
                             <span
-                              className="inline-block px-2 py-0.5 rounded-full text-xs font-medium border"
+                              className="inline-block px-2 py-0.5 rounded-full text-xs font-medium border cursor-pointer"
                               style={{
                                 backgroundColor: colors.bg,
                                 color: colors.text,
                                 borderColor: colors.border
                               }}
+                              onClick={(e) => { e.stopPropagation(); onVendorClick(); }}
                             >
                               {part.vendor}
                             </span>
                           );
                         })()
                       ) : (
-                        <span className={`inline-block px-2 py-0.5 rounded-full text-xs font-medium ${getVendorColor(part.vendor, vendorColors)}`}>
+                        <span
+                          className={`inline-block px-2 py-0.5 rounded-full text-xs font-medium cursor-pointer ${getVendorColor(part.vendor, vendorColors)}`}
+                          onClick={(e) => { e.stopPropagation(); onVendorClick(); }}
+                        >
                           {part.vendor}
                         </span>
                       )

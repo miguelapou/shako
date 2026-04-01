@@ -1308,21 +1308,6 @@ const Shako = ({ isDemo = false }) => {
                         {darkMode ? <Sun className="w-5 h-5 text-yellow-300" /> : <Moon className="w-5 h-5 text-indigo-500" />}
                         <span>{darkMode ? 'Light Mode' : 'Dark Mode'}</span>
                       </button>
-                      {/* Manage Vendors */}
-                      <button
-                        onClick={() => {
-                          closeMenuWithAnimation();
-                          setShowManageVendorsModal(true);
-                        }}
-                        className={`w-full flex items-center gap-3 px-3 py-2 rounded-lg transition-colors ${
-                          darkMode
-                            ? 'hover:bg-gray-700 text-gray-100'
-                            : 'hover:bg-slate-100 text-slate-700'
-                        }`}
-                      >
-                        <Settings className="w-5 h-5" />
-                        <span>Manage Vendors</span>
-                      </button>
                       {/* Update Login Email - Hidden in demo mode */}
                       {!isDemo && (
                         <button
@@ -1982,6 +1967,7 @@ const Shako = ({ isDemo = false }) => {
             getStatusText={getStatusText}
             getStatusColor={getStatusColor}
             getVendorColor={getVendorColor}
+            onVendorClick={() => setShowManageVendorsModal(true)}
           />
         )}
 
