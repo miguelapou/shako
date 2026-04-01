@@ -220,6 +220,14 @@ const PartDetailModal = ({
     return date.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true }).toLowerCase();
   };
 
+  // Format ETA as "Mon, Jan 15"
+  const formatETA = (dateString) => {
+    if (!dateString) return null;
+    const date = new Date(dateString);
+    if (isNaN(date.getTime())) return null;
+    return date.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
+  };
+
   const handleRefreshTracking = async () => {
     if (!viewingPart?.id || !viewingPart?.tracking || isRefreshingTracking) return;
 
@@ -965,7 +973,14 @@ const PartDetailModal = ({
                             )}
                           </div>
                           {viewingPart.tracking && (
-                            <span className="ml-auto">{getCarrierName(viewingPart.tracking)}</span>
+                            <div className="ml-auto flex flex-col items-end gap-0.5">
+                              {viewingPart.tracking_eta && !viewingPart.delivered && viewingPart.tracking_status !== 'Delivered' && (
+                                <span className={`font-medium ${darkMode ? 'text-gray-200' : 'text-gray-700'}`}>
+                                  ETA: {formatETA(viewingPart.tracking_eta)}
+                                </span>
+                              )}
+                              <span>{getCarrierName(viewingPart.tracking)}</span>
+                            </div>
                           )}
                         </div>
                       </div>
