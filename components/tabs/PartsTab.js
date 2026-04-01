@@ -1327,12 +1327,13 @@ const PartsTab = ({
                             const colors = getVendorDisplayColor(vendorColors[part.vendor], darkMode);
                             return (
                               <span
-                                className="inline-block px-3 py-1 rounded-full text-sm font-medium text-center border cursor-pointer"
+                                className="inline-block px-3 py-1 rounded-full text-sm font-medium text-center border cursor-pointer transition-all duration-150 hover:scale-105 hover:shadow-md"
                                 style={{
                                   backgroundColor: colors.bg,
                                   color: colors.text,
                                   borderColor: colors.border
                                 }}
+                                title="Manage vendors"
                                 onClick={(e) => { e.stopPropagation(); onVendorClick(); }}
                               >
                                 {part.vendor}
@@ -1341,7 +1342,8 @@ const PartsTab = ({
                           })()
                         ) : (
                           <span
-                            className={`inline-block px-3 py-1 rounded-full text-sm font-medium text-center cursor-pointer ${getVendorColor(part.vendor, vendorColors)}`}
+                            className={`inline-block px-3 py-1 rounded-full text-sm font-medium text-center cursor-pointer transition-all duration-150 hover:scale-105 hover:shadow-md ${getVendorColor(part.vendor, vendorColors)}`}
+                            title="Manage vendors"
                             onClick={(e) => { e.stopPropagation(); onVendorClick(); }}
                           >
                             {part.vendor}
@@ -1621,12 +1623,13 @@ const PartsTab = ({
                           const colors = getVendorDisplayColor(vendorColors[part.vendor], darkMode);
                           return (
                             <span
-                              className="inline-block px-2 py-0.5 rounded-full text-xs font-medium border cursor-pointer"
+                              className="inline-block px-2 py-0.5 rounded-full text-xs font-medium border cursor-pointer transition-all duration-150 hover:scale-105 hover:shadow-md"
                               style={{
                                 backgroundColor: colors.bg,
                                 color: colors.text,
                                 borderColor: colors.border
                               }}
+                              title="Manage vendors"
                               onClick={(e) => { e.stopPropagation(); onVendorClick(); }}
                             >
                               {part.vendor}
@@ -1635,7 +1638,8 @@ const PartsTab = ({
                         })()
                       ) : (
                         <span
-                          className={`inline-block px-2 py-0.5 rounded-full text-xs font-medium cursor-pointer ${getVendorColor(part.vendor, vendorColors)}`}
+                          className={`inline-block px-2 py-0.5 rounded-full text-xs font-medium cursor-pointer transition-all duration-150 hover:scale-105 hover:shadow-md ${getVendorColor(part.vendor, vendorColors)}`}
+                          title="Manage vendors"
                           onClick={(e) => { e.stopPropagation(); onVendorClick(); }}
                         >
                           {part.vendor}
