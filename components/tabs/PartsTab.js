@@ -1626,7 +1626,7 @@ const PartsTab = ({
                           const colors = getVendorDisplayColor(vendorColors[part.vendor], darkMode);
                           return (
                             <span
-                              className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium border cursor-pointer transition-all duration-150 hover:scale-105 hover:shadow-md"
+                              className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium border cursor-pointer"
                               style={{
                                 backgroundColor: colors.bg,
                                 color: colors.text,
@@ -1642,7 +1642,7 @@ const PartsTab = ({
                         })()
                       ) : (
                         <span
-                          className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium cursor-pointer transition-all duration-150 hover:scale-105 hover:shadow-md ${getVendorColor(part.vendor, vendorColors)}`}
+                          className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium cursor-pointer ${getVendorColor(part.vendor, vendorColors)}`}
                           title="Manage vendors"
                           onClick={(e) => { e.stopPropagation(); onVendorClick(); }}
                         >
