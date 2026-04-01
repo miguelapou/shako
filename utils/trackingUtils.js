@@ -65,6 +65,14 @@ export const getTrackingUrl = (tracking) => {
   if (/^\d{10,11}$/.test(tracking)) {
     return `https://www.dhl.com/us-en/home/tracking/tracking-express.html?submit=1&tracking-id=${tracking}`;
   }
+  // Check if it's a Japan Post tracking number (e.g. RR123456789JP)
+  if (/^[A-Z]{2}\d{8,9}JP$/i.test(tracking)) {
+    return `https://trackings.post.japanpost.jp/services/srv/search/direct?reqCodeNo=${tracking}&searchKind=S002&locale=en`;
+  }
+  // Check if it's an Australia Post tracking number (e.g. RR123456789AU)
+  if (/^[A-Z]{2}\d{8,9}AU$/i.test(tracking)) {
+    return `https://auspost.com.au/mypost/track/#/details/${tracking}`;
+  }
   // For generic text like "Local", "USPS", "FedEx" without tracking number
   return null;
 };
@@ -111,5 +119,9 @@ export const getCarrierName = (tracking) => {
   if (upper.includes('DHL')) return 'DHL';
   if (upper.includes('ECMS')) return 'ECMS';
   if (upper.includes('LOCAL')) return 'Local';
+  // Check if it's a Japan Post tracking number (e.g. RR123456789JP)
+  if (/^[A-Z]{2}\d{8,9}JP$/i.test(tracking)) return 'Japan Post';
+  // Check if it's an Australia Post tracking number (e.g. RR123456789AU)
+  if (/^[A-Z]{2}\d{8,9}AU$/i.test(tracking)) return 'Australia Post';
   return tracking; // Return as-is if unknown
 };
