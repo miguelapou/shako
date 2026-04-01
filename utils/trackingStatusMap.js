@@ -22,11 +22,11 @@ export const TRACKING_STATUS_CONFIG = {
     label: 'Label Created',
     shortLabel: 'Label',
     description: 'Carrier received shipment information',
-    color: 'blue',
-    bgLight: 'bg-blue-100',
-    bgDark: 'bg-blue-900/30',
-    textLight: 'text-blue-700',
-    textDark: 'text-blue-300',
+    color: 'cyan',
+    bgLight: 'bg-cyan-100',
+    bgDark: 'bg-cyan-900/30',
+    textLight: 'text-cyan-700',
+    textDark: 'text-cyan-300',
     icon: 'tag'
   },
   InTransit: {
@@ -77,11 +77,11 @@ export const TRACKING_STATUS_CONFIG = {
     label: 'Ready for Pickup',
     shortLabel: 'Pickup',
     description: 'Package is available for pickup',
-    color: 'cyan',
-    bgLight: 'bg-cyan-100',
-    bgDark: 'bg-cyan-900/30',
-    textLight: 'text-cyan-700',
-    textDark: 'text-cyan-300',
+    color: 'blue',
+    bgLight: 'bg-blue-100',
+    bgDark: 'bg-blue-900/30',
+    textLight: 'text-blue-700',
+    textDark: 'text-blue-300',
     icon: 'map-pin'
   },
   Exception: {
