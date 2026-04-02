@@ -1086,22 +1086,22 @@ const Shako = ({ isDemo = false }) => {
   const getStatusColor = (part) => {
     if (part.delivered) {
       return darkMode
-        ? 'bg-green-900/20 text-green-400 border-green-700/50'
-        : 'bg-green-100 text-green-800 border-green-300';
+        ? 'bg-green-900/20 text-green-400 border-green-700/50 hover:bg-green-800/40'
+        : 'bg-green-100 text-green-800 border-green-300 hover:bg-green-200';
     }
     if (part.shipped) {
       return darkMode
-        ? 'bg-blue-900/20 text-blue-400 border-blue-700/50'
-        : 'bg-blue-100 text-blue-800 border-blue-300';
+        ? 'bg-blue-900/20 text-blue-400 border-blue-700/50 hover:bg-blue-800/40'
+        : 'bg-blue-100 text-blue-800 border-blue-300 hover:bg-blue-200';
     }
     if (part.purchased) {
       return darkMode
-        ? 'bg-yellow-900/20 text-yellow-400 border-yellow-700/50'
-        : 'bg-yellow-100 text-yellow-800 border-yellow-300';
+        ? 'bg-yellow-900/20 text-yellow-400 border-yellow-700/50 hover:bg-yellow-800/40'
+        : 'bg-yellow-100 text-yellow-800 border-yellow-300 hover:bg-yellow-200';
     }
     return darkMode
-      ? 'bg-gray-700 text-gray-400 border-gray-600'
-      : 'bg-gray-200 text-gray-800 border-gray-300';
+      ? 'bg-gray-700 text-gray-400 border-gray-600 hover:bg-gray-600'
+      : 'bg-gray-200 text-gray-800 border-gray-300 hover:bg-gray-300';
   };
 
   const getStatusTextColor = (part) => {
