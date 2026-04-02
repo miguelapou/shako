@@ -425,7 +425,6 @@ const PartsTab = ({
           right: isMobile ? `${window.innerWidth - rect.right}px` : 'auto',
           top: openUpward ? `${rect.top - actualHeight - 4}px` : `${rect.bottom + 4}px`,
           minWidth: '180px',
-          maxHeight: '240px',
           visibility: 'visible'
         });
       } else if (!isOpen) {
@@ -487,6 +486,7 @@ const PartsTab = ({
               } ${darkMode ? 'bg-gray-800 border-gray-600' : 'bg-slate-50 border-slate-200'}`}
               style={{
                 visibility: 'hidden',
+                maxHeight: '240px',
                 ...dropdownStyle,
                 scrollbarWidth: 'none',
                 msOverflowStyle: 'none'
