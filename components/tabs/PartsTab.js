@@ -337,7 +337,7 @@ const PartsTab = ({
                 }}
                 className={`w-full px-4 py-2 text-left text-sm flex items-center gap-2 ${
                   darkMode
-                    ? 'text-gray-300 hover:bg-green-700/50'
+                    ? 'text-gray-300 hover:bg-green-900/30'
                     : 'text-gray-700 hover:bg-green-50'
                 }`}
               >
@@ -351,7 +351,7 @@ const PartsTab = ({
                 }}
                 className={`w-full px-4 py-2 text-left text-sm flex items-center gap-2 ${
                   darkMode
-                    ? 'text-gray-300 hover:bg-blue-700/50'
+                    ? 'text-gray-300 hover:bg-blue-900/30'
                     : 'text-gray-700 hover:bg-blue-50'
                 }`}
               >
@@ -365,7 +365,7 @@ const PartsTab = ({
                 }}
                 className={`w-full px-4 py-2 text-left text-sm flex items-center gap-2 ${
                   darkMode
-                    ? 'text-gray-300 hover:bg-yellow-700/50'
+                    ? 'text-gray-300 hover:bg-yellow-900/30'
                     : 'text-gray-700 hover:bg-yellow-50'
                 }`}
               >
@@ -379,7 +379,7 @@ const PartsTab = ({
                 }}
                 className={`w-full px-4 py-2 text-left text-sm flex items-center gap-2 ${
                   darkMode
-                    ? 'text-gray-300 hover:bg-gray-600'
+                    ? 'text-gray-300 hover:bg-gray-700'
                     : 'text-gray-700 hover:bg-gray-50'
                 }`}
               >
@@ -500,7 +500,7 @@ const PartsTab = ({
                 }}
                 className={`w-full px-4 py-2 text-left text-sm flex items-center gap-2 ${
                   darkMode
-                    ? 'text-gray-300 hover:bg-gray-600'
+                    ? 'text-gray-300 hover:bg-gray-700'
                     : 'text-gray-700 hover:bg-gray-50'
                 }`}
               >
@@ -526,7 +526,7 @@ const PartsTab = ({
                     }}
                     className={`w-full px-4 py-2 text-left text-sm flex items-center gap-2 ${
                       darkMode
-                        ? 'text-gray-300 hover:bg-blue-700/50'
+                        ? 'text-gray-300 hover:bg-blue-900/20'
                         : 'text-gray-700 hover:bg-blue-50'
                     }`}
                   >
