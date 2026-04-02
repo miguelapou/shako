@@ -400,9 +400,8 @@ const PartsTab = ({
     const isClosing = closingDropdown === dropdownId;
     const selectedProject = part.projectId ? projects.find(p => p.id === part.projectId) : null;
     const buttonRef = useRef(null);
-    const [dropdownPosition, setDropdownPosition] = useState('bottom');
+    const dropdownRef = useRef(null);
     const [dropdownStyle, setDropdownStyle] = useState({});
-    const [isPositioned, setIsPositioned] = useState(false);
     // Get priority color for selected project
     const getPriorityButtonColor = (priority) => {
       const colors = {
@@ -414,32 +413,23 @@ const PartsTab = ({
       return colors[priority] || colors.not_set;
     };
     useEffect(() => {
-      if (isOpen && buttonRef.current) {
+      if (isOpen && buttonRef.current && dropdownRef.current) {
         const rect = buttonRef.current.getBoundingClientRect();
-        // Calculate dropdown height based on number of projects
-        const itemHeight = 40;
-        const maxVisibleItems = 6;
-        const actualItems = Math.min(projects.length + 1, maxVisibleItems);
-        const dropdownHeight = actualItems * itemHeight + 20; // Add padding
+        const actualHeight = dropdownRef.current.offsetHeight;
         const spaceBelow = window.innerHeight - rect.bottom;
+        const openUpward = spaceBelow < actualHeight + 4;
 
-        // Simple: open upward if not enough space below
-        const openUpward = spaceBelow < dropdownHeight;
-        setDropdownPosition(openUpward ? 'top' : 'bottom');
-
-        // Calculate fixed position - on mobile align right, on desktop align left
         const isMobile = window.innerWidth < 768;
         setDropdownStyle({
           left: isMobile ? 'auto' : `${rect.left}px`,
           right: isMobile ? `${window.innerWidth - rect.right}px` : 'auto',
-          top: openUpward ? `${rect.top - dropdownHeight - 4}px` : `${rect.bottom + 4}px`,
+          top: openUpward ? `${rect.top - actualHeight - 4}px` : `${rect.bottom + 4}px`,
           minWidth: '180px',
-          maxHeight: '240px'
+          maxHeight: '240px',
+          visibility: 'visible'
         });
-
-        setIsPositioned(true);
-      } else {
-        setIsPositioned(false);
+      } else if (!isOpen) {
+        setDropdownStyle({});
       }
     }, [isOpen, projects.length]);
     // If part has a vehicle but no project, show Maintenance badge
@@ -481,7 +471,7 @@ const PartsTab = ({
           <span className="flex-1 text-left truncate">{selectedProject ? selectedProject.name : 'None'}</span>
           <ChevronDown className={`w-3 h-3 transition-transform flex-shrink-0 ${isOpen ? 'rotate-180' : ''}`} />
         </button>
-        {isOpen && isPositioned && (
+        {isOpen && (
           <>
             <div
               className="fixed inset-0 z-10"
@@ -491,10 +481,12 @@ const PartsTab = ({
               }}
             />
             <div
+              ref={dropdownRef}
               className={`fixed rounded-lg shadow-lg border py-1 z-50 overflow-y-auto scrollbar-hide ${
                 isClosing ? 'dropdown-fade-out' : 'dropdown-fade-in'
               } ${darkMode ? 'bg-gray-800 border-gray-600' : 'bg-slate-50 border-slate-200'}`}
               style={{
+                visibility: 'hidden',
                 ...dropdownStyle,
                 scrollbarWidth: 'none',
                 msOverflowStyle: 'none'
