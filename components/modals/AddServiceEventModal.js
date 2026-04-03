@@ -484,14 +484,21 @@ const AddServiceEventModal = ({
 
           {/* Linked Parts field */}
           <div ref={partsDropdownRef} className="relative">
-            <label className={`block text-sm font-medium mb-2 ${
-              darkMode ? 'text-gray-300' : 'text-gray-700'
-            }`}>
-              <div className="flex items-center gap-2">
-                <Package className="w-4 h-4" />
-                <span>Linked Parts</span>
-              </div>
-            </label>
+            <div className={`flex items-center justify-between mb-2`}>
+              <label className={`block text-sm font-medium ${
+                darkMode ? 'text-gray-300' : 'text-gray-700'
+              }`}>
+                <div className="flex items-center gap-2">
+                  <Package className="w-4 h-4" />
+                  <span>Linked Parts</span>
+                </div>
+              </label>
+              {selectedParts.length > 0 && (
+                <span className={`text-sm font-semibold ${darkMode ? 'text-green-400' : 'text-green-600'}`}>
+                  ${selectedParts.reduce((sum, p) => sum + (p.total || 0), 0).toFixed(2)}
+                </span>
+              )}
+            </div>
 
             {/* Selected parts pills */}
             {selectedParts.length > 0 && (
@@ -503,23 +510,18 @@ const AddServiceEventModal = ({
                     <span
                       key={part.id}
                       className={`inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium border ${
-                        darkMode ? 'bg-gray-700 border-gray-600' : 'bg-gray-100 border-gray-300'
+                        darkMode ? 'bg-green-900/40 border-green-700' : 'bg-green-50 border-green-300'
                       }`}
                     >
-                      <span className={darkMode ? 'text-gray-200' : 'text-gray-800'}>{part.part}</span>
-                      {part.vendor && (
-                        <span
-                          className="opacity-70"
-                          style={colors ? { color: colors.text } : undefined}
-                        >
-                          ({part.vendor})
-                        </span>
-                      )}
+                      <span className={darkMode ? 'text-green-200' : 'text-green-800'}>{part.part}</span>
+                      <span className={`font-semibold ${darkMode ? 'text-green-400' : 'text-green-600'}`}>
+                        ${part.total?.toFixed(2) || '0.00'}
+                      </span>
                       <button
                         type="button"
                         onClick={() => togglePartSelection(part.id)}
                         className={`ml-1 hover:text-red-500 ${
-                          darkMode ? 'text-gray-400' : 'text-gray-500'
+                          darkMode ? 'text-green-600' : 'text-green-500'
                         }`}
                       >
                         <X className="w-3 h-3" />
