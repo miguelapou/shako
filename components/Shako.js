@@ -490,6 +490,27 @@ const Shako = ({ isDemo = false }) => {
   // Wrapper functions that provide state setters to hook functions
   const handleAddNewPart = () => addNewPart(setShowAddModal);
 
+  const handleAddPartFromProject = (project) => {
+    handleCloseModal(() => {
+      setShowProjectDetailModal(false);
+      setViewingProject(null);
+      setNewPart({
+        part: '',
+        partNumber: '',
+        vendor: '',
+        price: '',
+        shipping: '',
+        duties: '',
+        quantity: 1,
+        tracking: '',
+        status: 'pending',
+        projectId: project.id,
+        vehicleId: project.vehicle_id || null
+      });
+      setShowAddModal(true);
+    });
+  };
+
   const handleSaveTrackingInfo = () => saveTrackingInfo(
     trackingModalPartId,
     trackingInput,
@@ -2043,6 +2064,7 @@ const Shako = ({ isDemo = false }) => {
             setShowAddProjectVehicleDropdown={setShowAddProjectVehicleDropdown}
             setActiveTab={setActiveTab}
             archivePart={archivePart}
+            onAddPartFromProject={handleAddPartFromProject}
           />
         )}
 
