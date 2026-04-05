@@ -1093,23 +1093,3 @@ body.dark-scrollbar *::-webkit-scrollbar-thumb:hover {
   transform: rotateY(180deg);
 }
 
-/* Analytics chart visibility: pie on mobile, bar on desktop */
-.analytics-bar-chart {
-  display: none;
-}
-
-.analytics-pie-chart {
-  display: flex;
-  flex-direction: column;
-}
-
-@media (min-width: 948px) {
-  .analytics-bar-chart {
-    display: flex;
-    flex-direction: column;
-  }
-
-  .analytics-pie-chart {
-    display: none;
-  }
-}

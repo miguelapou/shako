@@ -1026,33 +1026,9 @@ const PartsTab = ({
                   {vendorSpending.length === 0 ? (
                     <p className={`text-xs ${darkMode ? 'text-gray-500' : 'text-gray-400'}`}>No spending data</p>
                   ) : (
-                    <>
-                      {/* Stacked Bar Chart - Desktop */}
-                      <div className="analytics-bar-chart flex-1 min-h-0 flex flex-col gap-2">
-                        <div className="flex w-full rounded-full overflow-hidden h-3 flex-shrink-0">
-                          {vendorSpending.map(({ vendor, percent }) => (
-                            <div
-                              key={vendor}
-                              className="h-full transition-all duration-500"
-                              style={{ width: `${percent}%`, backgroundColor: getVendorChartColor(vendor) }}
-                            />
-                          ))}
-                        </div>
-                        <div className="flex flex-col gap-0.5 overflow-y-auto flex-1 min-h-0">
-                          {vendorSpending.map(({ vendor, amount, percent }) => (
-                            <div key={vendor} className="flex items-center gap-2 min-w-0">
-                              <span className="w-2 h-2 rounded-full flex-shrink-0" style={{ backgroundColor: getVendorChartColor(vendor) }} />
-                              <span className={`text-xs truncate flex-1 ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>{vendor}</span>
-                              <span className={`text-xs font-semibold flex-shrink-0 ${darkMode ? 'text-gray-200' : 'text-gray-800'}`}>${amount.toFixed(2)}</span>
-                              <span className={`text-xs flex-shrink-0 ${darkMode ? 'text-gray-500' : 'text-gray-400'}`}>{percent.toFixed(0)}%</span>
-                            </div>
-                          ))}
-                        </div>
-                      </div>
-
-                      {/* Donut Chart - Mobile */}
-                      <div className="analytics-pie-chart flex-1 items-center min-h-0 gap-3">
-                        <svg viewBox="0 0 100 100" className="w-20 h-20 flex-shrink-0">
+                    <div className="flex flex-col gap-2 flex-1 min-h-0">
+                      <div className="flex justify-center flex-shrink-0">
+                        <svg viewBox="0 0 100 100" className="w-24 h-24">
                           {(() => {
                             let cum = 0;
                             return vendorSpending.map(({ vendor, percent }) => {
@@ -1071,20 +1047,18 @@ const PartsTab = ({
                             });
                           })()}
                         </svg>
-                        <div className="flex flex-col gap-0.5 overflow-y-auto flex-1 min-h-0">
-                          {vendorSpending.slice(0, 6).map(({ vendor, percent }) => (
-                            <div key={vendor} className="flex items-center gap-1.5 min-w-0">
-                              <span className="w-2 h-2 rounded-full flex-shrink-0" style={{ backgroundColor: getVendorChartColor(vendor) }} />
-                              <span className={`text-xs truncate flex-1 ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>{vendor}</span>
-                              <span className={`text-xs font-medium flex-shrink-0 ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>{percent.toFixed(0)}%</span>
-                            </div>
-                          ))}
-                          {vendorSpending.length > 6 && (
-                            <span className={`text-xs ${darkMode ? 'text-gray-500' : 'text-gray-400'}`}>+{vendorSpending.length - 6} more</span>
-                          )}
-                        </div>
                       </div>
-                    </>
+                      <div className="flex flex-col gap-0.5 overflow-y-auto flex-1 min-h-0">
+                        {vendorSpending.map(({ vendor, amount, percent }) => (
+                          <div key={vendor} className="flex items-center gap-2 min-w-0">
+                            <span className="w-2 h-2 rounded-full flex-shrink-0" style={{ backgroundColor: getVendorChartColor(vendor) }} />
+                            <span className={`text-xs truncate flex-1 ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>{vendor}</span>
+                            <span className={`text-xs font-semibold flex-shrink-0 ${darkMode ? 'text-gray-200' : 'text-gray-800'}`}>${amount.toFixed(2)}</span>
+                            <span className={`text-xs flex-shrink-0 ${darkMode ? 'text-gray-500' : 'text-gray-400'}`}>{percent.toFixed(0)}%</span>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
                   )}
                 </div>
 
