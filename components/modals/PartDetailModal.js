@@ -1021,7 +1021,7 @@ const PartDetailModal = ({
                                     darkMode
                                       ? 'hover:bg-gray-600 text-gray-400'
                                       : 'hover:bg-gray-200 text-gray-500'
-                                  } ${viewingPart.tracking_courier ? (darkMode ? 'text-blue-400' : 'text-blue-600') : ''}`}
+                                  } ${viewingPart.tracking_courier ? (darkMode ? 'text-green-400' : 'text-green-600') : ''}`}
                                 >
                                   {isSavingCourier ? (
                                     <RefreshCw className="w-3 h-3 animate-spin" />
@@ -1052,7 +1052,7 @@ const PartDetailModal = ({
                                             : 'hover:bg-gray-100 text-gray-800'
                                         } ${
                                           viewingPart.tracking_courier === option.code
-                                            ? darkMode ? 'text-blue-400 font-medium' : 'text-blue-600 font-medium'
+                                            ? darkMode ? 'text-green-400 font-medium' : 'text-green-600 font-medium'
                                             : ''
                                         }`}
                                       >
