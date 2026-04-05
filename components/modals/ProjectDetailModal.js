@@ -270,9 +270,9 @@ const ProjectDetailModal = ({
                 vehicles={vehicles}
                 darkMode={darkMode}
                 updateProject={(projectId, updates) => {
-                  // Auto-calculate status based on todos (same logic as in useProjects hook)
+                  // Auto-calculate status based on todos only when status is not explicitly set
                   let finalUpdates = { ...updates };
-                  if (updates.todos && updates.status !== 'on_hold') {
+                  if (updates.todos && updates.status === undefined) {
                     finalUpdates.status = calculateProjectStatus(updates.todos, viewingProject?.status);
                   }
                   // Optimistic update: update viewingProject immediately for snappy UI
@@ -518,6 +518,7 @@ const ProjectDetailModal = ({
                     description: viewingProject.description,
                     budget: parseFloat(viewingProject.budget),
                     priority: viewingProject.priority,
+                    status: viewingProject.status,
                     vehicle_id: viewingProject.vehicle_id || null,
                     todos: viewingProject.todos || []
                   });

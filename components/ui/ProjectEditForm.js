@@ -177,7 +177,7 @@ const ProjectEditForm = ({
           </div>
         </div>
 
-        {/* Budget Row */}
+        {/* Budget and Status Row */}
         <div className="grid grid-cols-2 gap-4">
           <div>
             <label className={`block text-sm font-medium mb-2 ${
@@ -197,6 +197,27 @@ const ProjectEditForm = ({
                   : 'bg-slate-50 border-slate-300 text-slate-800'
               }`}
             />
+          </div>
+          <div>
+            <label className={`block text-sm font-medium mb-2 ${
+              darkMode ? 'text-gray-300' : 'text-slate-700'
+            }`}>
+              Status
+            </label>
+            <select
+              value={project.status || 'planning'}
+              onChange={(e) => onProjectChange({ ...project, status: e.target.value })}
+              className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent appearance-none ${
+                darkMode
+                  ? 'bg-gray-700 border-gray-600 text-gray-100'
+                  : 'bg-slate-50 border-slate-300 text-slate-800'
+              }`}
+            >
+              <option value="planning">Planning</option>
+              <option value="in_progress">In Progress</option>
+              <option value="completed">Completed</option>
+              <option value="on_hold">On Hold</option>
+            </select>
           </div>
         </div>
       </div>

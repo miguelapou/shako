@@ -140,8 +140,8 @@ const useProjects = (userId, toast, isDemo = false) => {
    * Update a project with optimistic updates for snappy UI
    */
   const updateProject = async (projectId, updates) => {
-    // Auto-calculate status based on todos unless it's being set to on_hold
-    if (updates.todos && updates.status !== 'on_hold') {
+    // Auto-calculate status based on todos only when status is not explicitly set
+    if (updates.todos && updates.status === undefined) {
       const currentProject = projects.find(p => p.id === projectId);
       updates.status = calculateProjectStatus(updates.todos, currentProject?.status);
     }
