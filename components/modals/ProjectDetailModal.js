@@ -518,6 +518,7 @@ const ProjectDetailModal = ({
                     description: viewingProject.description,
                     budget: parseFloat(viewingProject.budget),
                     priority: viewingProject.priority,
+                    status: viewingProject.status,
                     vehicle_id: viewingProject.vehicle_id || null,
                     todos: viewingProject.todos || []
                   });
