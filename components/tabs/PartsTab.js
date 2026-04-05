@@ -942,7 +942,6 @@ const PartsTab = ({
                   }`}>
                     <Receipt className="w-4 h-4" />
                     Cost Breakdown
-                    <Receipt className={`w-3 h-3 ml-auto opacity-40 ${darkMode ? 'text-gray-400' : 'text-gray-500'}`} />
                   </h3>
                   <div className="flex gap-4 flex-1">
                     {/* Circular Progress - Desktop Only */}
@@ -1020,7 +1019,6 @@ const PartsTab = ({
                   }`}>
                     <BarChart2 className="w-4 h-4" />
                     Spending by Vendor
-                    <BarChart2 className={`w-3 h-3 ml-auto opacity-40 ${darkMode ? 'text-gray-400' : 'text-gray-500'}`} />
                   </h3>
 
                   {vendorSpending.length === 0 ? (
