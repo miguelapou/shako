@@ -1,5 +1,5 @@
 import React, { useEffect, useCallback, useMemo, useRef, useState } from 'react';
-import { X, Edit2, Trash2, Archive, ArchiveRestore, Pause, Play, ChevronDown, ChevronLeft, ChevronRight, SquareGantt } from 'lucide-react';
+import { X, Edit2, Trash2, Archive, ArchiveRestore, Pause, Play, ChevronDown, ChevronLeft, ChevronRight, SquareGantt, Package } from 'lucide-react';
 import ProjectDetailView from '../ui/ProjectDetailView';
 import ProjectEditForm from '../ui/ProjectEditForm';
 import LinkedPartsSection from '../ui/LinkedPartsSection';
@@ -43,6 +43,7 @@ const ProjectDetailModal = ({
   setConfirmDialog,
   setActiveTab,
   archivePart,
+  onAddPart,
   onClose
 }) => {
   const [showNotesModal, setShowNotesModal] = useState(false);
@@ -568,6 +569,20 @@ const ProjectDetailModal = ({
               )}
               {/* Notes and Edit buttons on the right */}
               <div className="ml-auto flex items-center gap-2">
+                {onAddPart && !viewingProject.archived && (
+                  <button
+                    onClick={() => onAddPart(viewingProject)}
+                    title="Add Part to this Project"
+                    className={`px-4 py-2 rounded-lg font-medium transition-colors flex items-center gap-2 text-sm ${
+                      darkMode
+                        ? 'bg-gray-700 hover:bg-gray-600 text-gray-100 border border-gray-600'
+                        : 'bg-gray-200 hover:bg-gray-300 text-gray-800 border border-gray-300'
+                    }`}
+                  >
+                    <Package className="w-4 h-4" />
+                    <span>Add Part</span>
+                  </button>
+                )}
                 <button
                   onClick={() => setShowNotesModal(true)}
                   title="Project Notes"

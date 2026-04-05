@@ -175,7 +175,7 @@ const useParts = (userId, toast, isDemo = false) => {
   /**
    * Add a new part
    */
-  const addNewPart = async (setShowAddModal) => {
+  const addNewPart = async (setShowAddModal, onSuccess) => {
     if (!userId) return;
 
     // Validate cost fields
@@ -236,6 +236,7 @@ const useParts = (userId, toast, isDemo = false) => {
           projectId: null,
           vehicleId: null
         });
+        if (onSuccess) onSuccess();
         return;
       }
 
@@ -287,6 +288,7 @@ const useParts = (userId, toast, isDemo = false) => {
         projectId: null,
         vehicleId: null
       });
+      if (onSuccess) onSuccess();
     } catch (error) {
       toast?.error('Error adding part. Please try again.');
     }

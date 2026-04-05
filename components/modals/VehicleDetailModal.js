@@ -132,7 +132,8 @@ const VehicleDetailModal = ({
   calculateProjectStatus,
   toast,
   setActiveTab,
-  archivePart
+  archivePart,
+  onAddPartFromProject
 }) => {
   // State for image gallery navigation
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
@@ -3553,6 +3554,20 @@ const VehicleDetailModal = ({
                 <ChevronDown className="w-5 h-5 rotate-90" />
               </button>
               <div className="flex items-center gap-2">
+                {onAddPartFromProject && !vehicleModalProjectView?.archived && (
+                  <button
+                    onClick={() => onAddPartFromProject(vehicleModalProjectView)}
+                    title="Add Part to this Project"
+                    className={`px-4 py-2 rounded-lg font-medium transition-colors flex items-center gap-2 text-sm ${
+                      darkMode
+                        ? 'bg-gray-700 hover:bg-gray-600 text-gray-100 border border-gray-600'
+                        : 'bg-gray-200 hover:bg-gray-300 text-gray-800 border border-gray-300'
+                    }`}
+                  >
+                    <Package className="w-4 h-4" />
+                    <span>Add Part</span>
+                  </button>
+                )}
                 <button
                   onClick={() => setShowVehicleNotesModal(true)}
                   title="Project Notes"
