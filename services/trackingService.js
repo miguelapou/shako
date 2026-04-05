@@ -26,10 +26,9 @@ const getHeaders = () => {
  * Create a new tracking in Ship24 and get results synchronously
  * @param {string} trackingNumber - The tracking number
  * @param {string} title - Optional title (part name)
- * @param {string} courierCode - Optional Ship24 courier code override
  * @returns {Promise<Object>} Ship24 tracking response
  */
-export const createShip24Tracking = async (trackingNumber, title = null, courierCode = null) => {
+export const createShip24Tracking = async (trackingNumber, title = null) => {
   try {
     const body = {
       trackingNumber
@@ -37,10 +36,6 @@ export const createShip24Tracking = async (trackingNumber, title = null, courier
 
     if (title) {
       body.shipmentReference = title;
-    }
-
-    if (courierCode) {
-      body.courierCode = courierCode;
     }
 
     const response = await fetch(`${SHIP24_API_BASE}/trackers/track`, {
@@ -90,18 +85,14 @@ export const getShip24Tracking = async (trackerId) => {
 /**
  * Get tracking by tracking number using the sync track endpoint
  * @param {string} trackingNumber - Tracking number
- * @param {string} courierCode - Optional Ship24 courier code override
  * @returns {Promise<Object>} Tracking data
  */
-export const getShip24TrackingByNumber = async (trackingNumber, courierCode = null) => {
+export const getShip24TrackingByNumber = async (trackingNumber) => {
   try {
-    const body = { trackingNumber };
-    if (courierCode) body.courierCode = courierCode;
-
     const response = await fetch(`${SHIP24_API_BASE}/trackers/track`, {
       method: 'POST',
       headers: getHeaders(),
-      body: JSON.stringify(body)
+      body: JSON.stringify({ trackingNumber })
     });
 
     if (!response.ok) {
@@ -244,7 +235,7 @@ export const syncPartTracking = async (part, supabaseClient = null) => {
   // Always use the tracking number to fetch fresh data from Ship24
   // The POST /trackers/track endpoint queries carriers for new updates
   // while GET /trackers/{id}/results only returns cached data
-  const trackingData = await getShip24TrackingByNumber(part.tracking, part.tracking_courier || null);
+  const trackingData = await getShip24TrackingByNumber(part.tracking);
 
   const normalizedData = normalizeTrackingData(trackingData);
   await updatePartTracking(part.id, normalizedData, supabaseClient);
