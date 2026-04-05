@@ -1027,26 +1027,14 @@ const PartsTab = ({
                     <p className={`text-xs ${darkMode ? 'text-gray-500' : 'text-gray-400'}`}>No spending data</p>
                   ) : (
                     <div className="flex flex-col gap-2 flex-1 min-h-0">
-                      <div className="flex justify-center flex-shrink-0">
-                        <svg viewBox="0 0 100 100" className="w-24 h-24">
-                          {(() => {
-                            let cum = 0;
-                            return vendorSpending.map(({ vendor, percent }) => {
-                              const start = cum;
-                              const slice = (percent / 100) * 360;
-                              cum += slice;
-                              return (
-                                <path
-                                  key={vendor}
-                                  d={pieSlicePath(50, 50, 46, 24, start, cum)}
-                                  fill={getVendorChartColor(vendor)}
-                                  stroke={darkMode ? '#1f2937' : '#f1f5f9'}
-                                  strokeWidth="1.5"
-                                />
-                              );
-                            });
-                          })()}
-                        </svg>
+                      <div className="flex w-full rounded-full overflow-hidden h-3 flex-shrink-0">
+                        {vendorSpending.map(({ vendor, percent }) => (
+                          <div
+                            key={vendor}
+                            className="h-full transition-all duration-500"
+                            style={{ width: `${percent}%`, backgroundColor: getVendorChartColor(vendor) }}
+                          />
+                        ))}
                       </div>
                       <div className="flex flex-col gap-0.5 overflow-y-auto flex-1 min-h-0">
                         {vendorSpending.map(({ vendor, amount, percent }) => (
