@@ -4,6 +4,7 @@ import {
   Car,
   Edit2,
   Trash2,
+  Copy,
   ChevronDown,
   ChevronLeft,
   ChevronRight,
@@ -16,6 +17,7 @@ import {
   Archive,
   ArchiveRestore
 } from 'lucide-react';
+import DuplicatePartModal from './DuplicatePartModal';
 import PrimaryButton from '../ui/PrimaryButton';
 import VendorSelect from '../ui/VendorSelect';
 import TrackingTimeline from '../ui/TrackingTimeline';
@@ -58,7 +60,8 @@ const PartDetailModal = ({
   setShowTrackingModal,
   setTrackingModalPartId,
   hasUnsavedPartChanges,
-  onCourierChange
+  onCourierChange,
+  createPartDirectly
 }) => {
   const [isRefreshingTracking, setIsRefreshingTracking] = useState(false);
   const [trackingError, setTrackingError] = useState(null);
@@ -83,6 +86,8 @@ const PartDetailModal = ({
   const [showQuantityDropdown, setShowQuantityDropdown] = useState(false);
   const [isQuantityDropdownClosing, setIsQuantityDropdownClosing] = useState(false);
   const quantityInputRef = useRef(null);
+
+  const [showDuplicateModal, setShowDuplicateModal] = useState(false);
 
   const closeVehicleDropdownWithAnimation = useCallback(() => {
     setIsVehicleDropdownClosing(true);
@@ -1925,6 +1930,20 @@ const PartDetailModal = ({
               >
                 <Trash2 className="w-5 h-5" />
               </button>
+              {createPartDirectly && (
+                <button
+                  onClick={() => setShowDuplicateModal(true)}
+                  title="Duplicate part"
+                  className={`px-4 py-2 rounded-lg font-medium transition-colors flex items-center justify-center gap-1.5 text-sm ${
+                    darkMode
+                      ? 'bg-gray-700 hover:bg-gray-600 text-gray-200 border border-gray-600'
+                      : 'bg-gray-100 hover:bg-gray-200 text-gray-700 border border-gray-300'
+                  }`}
+                >
+                  <Copy className="w-4 h-4" />
+                  <span className="hidden sm:inline">Duplicate</span>
+                </button>
+              )}
               <button
                 onClick={async () => {
                   const trackingChanged = editingPart.tracking &&
@@ -1994,6 +2013,18 @@ const PartDetailModal = ({
         )}
 
       </div>
+
+      {/* Duplicate Part Modal */}
+      <DuplicatePartModal
+        isOpen={showDuplicateModal}
+        darkMode={darkMode}
+        part={editingPart || viewingPart}
+        projects={projects}
+        vehicles={vehicles}
+        createPartDirectly={createPartDirectly}
+        onClose={() => setShowDuplicateModal(false)}
+        onDuplicated={() => {}}
+      />
     </div>
   );
 };

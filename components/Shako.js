@@ -1922,6 +1922,7 @@ const Shako = ({ isDemo = false }) => {
           setShowTrackingModal={setShowTrackingModal}
           setTrackingModalPartId={setTrackingModalPartId}
           hasUnsavedPartChanges={hasUnsavedPartChanges}
+          createPartDirectly={createPartDirectly}
         />
 
         {/* PARTS TAB CONTENT */}
