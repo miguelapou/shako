@@ -1078,7 +1078,7 @@ body.dark-scrollbar *::-webkit-scrollbar-thumb:hover {
 }
 
 .cost-breakdown-flip-inner.is-flipped {
-  transform: rotateY(180deg);
+  transform: rotateX(180deg);
 }
 
 .cost-breakdown-face {
@@ -1090,6 +1090,6 @@ body.dark-scrollbar *::-webkit-scrollbar-thumb:hover {
 }
 
 .cost-breakdown-face-back {
-  transform: rotateY(180deg);
+  transform: rotateX(180deg);
 }
 
