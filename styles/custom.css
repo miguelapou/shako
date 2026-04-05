@@ -1086,7 +1086,6 @@ body.dark-scrollbar *::-webkit-scrollbar-thumb:hover {
   inset: 0;
   backface-visibility: hidden;
   -webkit-backface-visibility: hidden;
-  overflow: hidden;
 }
 
 .cost-breakdown-face-back {

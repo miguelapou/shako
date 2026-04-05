@@ -932,8 +932,8 @@ const PartsTab = ({
 
                 {/* Front Face - Cost Breakdown */}
                 <div
-                  className={`cost-breakdown-face rounded-lg shadow-md py-3 px-4 pb-2 flex flex-col cursor-pointer transition-colors duration-150 ${
-                    darkMode ? 'bg-gray-800 hover:bg-gray-700' : 'bg-slate-100 hover:bg-slate-200'
+                  className={`cost-breakdown-face rounded-lg shadow-md py-3 px-4 pb-2 flex flex-col cursor-pointer transition-all duration-200 hover:shadow-lg hover:scale-[1.02] ${
+                    darkMode ? 'bg-gray-800' : 'bg-slate-100'
                   }`}
                   onClick={() => setIsCardFlipped(true)}
                 >
@@ -1010,8 +1010,8 @@ const PartsTab = ({
 
                 {/* Back Face - Spending by Vendor */}
                 <div
-                  className={`cost-breakdown-face cost-breakdown-face-back rounded-lg shadow-md py-3 px-4 pb-2 flex flex-col cursor-pointer transition-colors duration-150 ${
-                    darkMode ? 'bg-gray-800 hover:bg-gray-700' : 'bg-slate-100 hover:bg-slate-200'
+                  className={`cost-breakdown-face cost-breakdown-face-back rounded-lg shadow-md py-3 px-4 pb-2 flex flex-col cursor-pointer transition-all duration-200 hover:shadow-lg hover:scale-[1.02] ${
+                    darkMode ? 'bg-gray-800' : 'bg-slate-100'
                   }`}
                   onClick={() => setIsCardFlipped(false)}
                 >
