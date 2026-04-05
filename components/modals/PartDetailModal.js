@@ -1018,10 +1018,10 @@ const PartDetailModal = ({
                                   onClick={() => setShowCourierDropdown(v => !v)}
                                   title="Change courier"
                                   className={`flex items-center gap-1.5 rounded border px-2.5 py-1 text-sm transition-colors ${
-                                    darkMode
-                                      ? 'border-gray-600 bg-gray-700 hover:bg-gray-600 text-gray-300'
-                                      : 'border-gray-300 bg-white hover:bg-gray-50 text-gray-600'
-                                  } ${viewingPart.tracking_courier ? (darkMode ? 'text-green-400 border-green-600' : 'text-green-700 border-green-400') : ''}`}
+                                    viewingPart.tracking_courier
+                                      ? darkMode ? 'text-green-400 border-green-600 bg-gray-700 hover:bg-gray-600' : 'text-green-700 border-green-400 bg-white hover:bg-gray-50'
+                                      : darkMode ? 'text-blue-400 border-blue-600 bg-gray-700 hover:bg-gray-600' : 'text-blue-600 border-blue-400 bg-white hover:bg-gray-50'
+                                  }`}
                                 >
                                   {isSavingCourier ? (
                                     <RefreshCw className="w-3 h-3 animate-spin" />
