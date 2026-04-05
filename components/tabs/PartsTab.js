@@ -927,12 +927,12 @@ const PartsTab = ({
           <div className="cost-progress-wrapper-800">
           {/* Cost Breakdown */}
           <div className="cost-breakdown-800">
-            <div className="cost-breakdown-flip-container h-full">
+            <div className="cost-breakdown-flip-container h-full transition-all duration-200 hover:shadow-lg hover:scale-[1.02]">
               <div className={`cost-breakdown-flip-inner${isCardFlipped ? ' is-flipped' : ''}`}>
 
                 {/* Front Face - Cost Breakdown */}
                 <div
-                  className={`cost-breakdown-face rounded-lg shadow-md py-3 px-4 pb-2 flex flex-col cursor-pointer transition-all duration-200 hover:shadow-lg hover:scale-[1.02] ${
+                  className={`cost-breakdown-face rounded-lg shadow-md py-3 px-4 pb-2 flex flex-col cursor-pointer ${
                     darkMode ? 'bg-gray-800' : 'bg-slate-100'
                   }`}
                   onClick={() => setIsCardFlipped(true)}
@@ -1009,7 +1009,7 @@ const PartsTab = ({
 
                 {/* Back Face - Spending by Vendor */}
                 <div
-                  className={`cost-breakdown-face cost-breakdown-face-back rounded-lg shadow-md py-3 px-4 pb-2 flex flex-col cursor-pointer transition-all duration-200 hover:shadow-lg hover:scale-[1.02] ${
+                  className={`cost-breakdown-face cost-breakdown-face-back rounded-lg shadow-md py-3 px-4 pb-2 flex flex-col cursor-pointer ${
                     darkMode ? 'bg-gray-800' : 'bg-slate-100'
                   }`}
                   onClick={() => setIsCardFlipped(false)}
