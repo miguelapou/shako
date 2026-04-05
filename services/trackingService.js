@@ -46,8 +46,16 @@ export const createShip24Tracking = async (trackingNumber, title = null, courier
     });
 
     if (!response.ok) {
-      const errorData = await response.json().catch(() => ({}));
-      throw new Error(errorData.message || `Ship24 API error: ${response.status}`);
+      const rawText = await response.text();
+      let errorMsg = `Ship24 API error: ${response.status}`;
+      try {
+        const errorData = JSON.parse(rawText);
+        errorMsg = errorData.message || errorData.error || JSON.stringify(errorData) || errorMsg;
+      } catch {
+        if (rawText) errorMsg += ` — ${rawText}`;
+      }
+      console.error('[Ship24] createShip24Tracking failed:', response.status, rawText);
+      throw new Error(errorMsg);
     }
 
     const data = await response.json();
@@ -101,8 +109,16 @@ export const getShip24TrackingByNumber = async (trackingNumber, courierCode = nu
     });
 
     if (!response.ok) {
-      const errorData = await response.json().catch(() => ({}));
-      throw new Error(errorData.message || `Ship24 API error: ${response.status}`);
+      const rawText = await response.text();
+      let errorMsg = `Ship24 API error: ${response.status}`;
+      try {
+        const errorData = JSON.parse(rawText);
+        errorMsg = errorData.message || errorData.error || JSON.stringify(errorData) || errorMsg;
+      } catch {
+        if (rawText) errorMsg += ` — ${rawText}`;
+      }
+      console.error('[Ship24] getShip24TrackingByNumber failed:', response.status, rawText);
+      throw new Error(errorMsg);
     }
 
     const data = await response.json();
