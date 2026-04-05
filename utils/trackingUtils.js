@@ -3,6 +3,40 @@
 // ========================================
 
 /**
+ * List of couriers supported for manual override with Ship24
+ * code: Ship24 courierCode value (null = auto-detect)
+ * name: Display name shown in UI
+ */
+export const COURIER_OPTIONS = [
+  { code: null, name: 'Auto-detect' },
+  { code: 'usps', name: 'USPS' },
+  { code: 'ups', name: 'UPS' },
+  { code: 'fedex', name: 'FedEx' },
+  { code: 'dhl', name: 'DHL' },
+  { code: 'dhl-ecommerce', name: 'DHL eCommerce' },
+  { code: 'ontrac', name: 'OnTrac' },
+  { code: 'lasership', name: 'LaserShip' },
+  { code: 'japan-post', name: 'Japan Post' },
+  { code: 'australia-post', name: 'Australia Post' },
+  { code: 'royal-mail', name: 'Royal Mail' },
+  { code: 'canada-post', name: 'Canada Post' },
+  { code: 'cainiao', name: 'Cainiao' },
+  { code: 'yanwen', name: 'Yanwen' },
+  { code: 'sfexpress', name: 'SF Express' },
+];
+
+/**
+ * Get the display name for a courier code
+ * @param {string|null} courierCode - Ship24 courier code
+ * @returns {string|null} Display name, or null if not found
+ */
+export const getCourierDisplayName = (courierCode) => {
+  if (!courierCode) return null;
+  const option = COURIER_OPTIONS.find(o => o.code === courierCode);
+  return option ? option.name : courierCode;
+};
+
+/**
  * Get fields to purge when tracking is removed or changed
  * Returns an object with all tracking-related fields set to null
  */
@@ -13,7 +47,8 @@ export const getTrackingPurgeFields = () => ({
   tracking_location: null,
   tracking_eta: null,
   tracking_updated_at: null,
-  tracking_checkpoints: null
+  tracking_checkpoints: null,
+  tracking_courier: null
 });
 
 /**

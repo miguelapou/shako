@@ -24,7 +24,7 @@ import {
   getVendorDisplayColor
 } from '../../utils/colorUtils';
 import { selectDropdownStyle, toTitleCase, toSentenceCase, toAllCaps } from '../../utils/styleUtils';
-import { getTrackingUrl, shouldSkipShip24, getCarrierName } from '../../utils/trackingUtils';
+import { getTrackingUrl, shouldSkipShip24, getCarrierName, COURIER_OPTIONS, getCourierDisplayName } from '../../utils/trackingUtils';
 import { fetchWithAuth } from '../../utils/fetchWithAuth';
 
 const PartDetailModal = ({
@@ -57,10 +57,14 @@ const PartDetailModal = ({
   filteredParts = [],
   setShowTrackingModal,
   setTrackingModalPartId,
-  hasUnsavedPartChanges
+  hasUnsavedPartChanges,
+  onCourierChange
 }) => {
   const [isRefreshingTracking, setIsRefreshingTracking] = useState(false);
   const [trackingError, setTrackingError] = useState(null);
+  const [showCourierDropdown, setShowCourierDropdown] = useState(false);
+  const [isSavingCourier, setIsSavingCourier] = useState(false);
+  const courierDropdownRef = useRef(null);
   const [statusDropdownOpen, setStatusDropdownOpen] = useState(false);
   const [statusDropdownClosing, setStatusDropdownClosing] = useState(false);
   const statusButtonRef = useRef(null);
@@ -117,6 +121,7 @@ const PartDetailModal = ({
     if (hasPrev) {
       checkedPartsRef.current.clear(); // Reset tracking check for new part
       setStatusDropdownOpen(false); // Close status dropdown
+      setShowCourierDropdown(false);
       setViewingPart(filteredParts[currentIndex - 1]);
     }
   }, [hasPrev, filteredParts, currentIndex, setViewingPart]);
@@ -125,6 +130,7 @@ const PartDetailModal = ({
     if (hasNext) {
       checkedPartsRef.current.clear(); // Reset tracking check for new part
       setStatusDropdownOpen(false); // Close status dropdown
+      setShowCourierDropdown(false);
       setViewingPart(filteredParts[currentIndex + 1]);
     }
   }, [hasNext, filteredParts, currentIndex, setViewingPart]);
@@ -268,6 +274,33 @@ const PartDetailModal = ({
       setTrackingError('Failed to refresh tracking data.');
     } finally {
       setIsRefreshingTracking(false);
+    }
+  };
+
+  // Close courier dropdown when clicking outside
+  useEffect(() => {
+    if (!showCourierDropdown) return;
+    const handleClickOutside = (e) => {
+      if (courierDropdownRef.current && !courierDropdownRef.current.contains(e.target)) {
+        setShowCourierDropdown(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, [showCourierDropdown]);
+
+  const handleCourierChange = async (courierCode) => {
+    setShowCourierDropdown(false);
+    if (!viewingPart?.id || !onCourierChange) return;
+    setIsSavingCourier(true);
+    try {
+      await onCourierChange(viewingPart.id, courierCode);
+      // Update viewingPart locally so the display reflects the change immediately
+      setViewingPart({ ...viewingPart, tracking_courier: courierCode || null });
+      // Trigger a tracking refresh with the new courier
+      handleRefreshTracking();
+    } finally {
+      setIsSavingCourier(false);
     }
   };
 
@@ -979,7 +1012,59 @@ const PartDetailModal = ({
                                   ETA: {formatETA(viewingPart.tracking_eta)}
                                 </span>
                               )}
-                              <span>{getCarrierName(viewingPart.tracking)}</span>
+                              {/* Courier name with override dropdown */}
+                              <div className="relative" ref={courierDropdownRef}>
+                                <button
+                                  onClick={() => setShowCourierDropdown(v => !v)}
+                                  title="Change courier"
+                                  className={`flex items-center gap-1 rounded px-1.5 py-0.5 transition-colors ${
+                                    darkMode
+                                      ? 'hover:bg-gray-600 text-gray-400'
+                                      : 'hover:bg-gray-200 text-gray-500'
+                                  } ${viewingPart.tracking_courier ? (darkMode ? 'text-blue-400' : 'text-blue-600') : ''}`}
+                                >
+                                  {isSavingCourier ? (
+                                    <RefreshCw className="w-3 h-3 animate-spin" />
+                                  ) : (
+                                    <>
+                                      <span>
+                                        {viewingPart.tracking_courier
+                                          ? getCourierDisplayName(viewingPart.tracking_courier)
+                                          : getCarrierName(viewingPart.tracking)}
+                                      </span>
+                                      <Edit2 className="w-3 h-3 opacity-60" />
+                                    </>
+                                  )}
+                                </button>
+                                {showCourierDropdown && (
+                                  <div className={`absolute right-0 top-full mt-1 z-50 rounded-lg shadow-lg border py-1 min-w-[150px] max-h-64 overflow-y-auto ${
+                                    darkMode
+                                      ? 'bg-gray-800 border-gray-600'
+                                      : 'bg-white border-gray-200'
+                                  }`}>
+                                    {COURIER_OPTIONS.map(option => (
+                                      <button
+                                        key={option.code ?? '__auto__'}
+                                        onClick={() => handleCourierChange(option.code)}
+                                        className={`w-full text-left px-3 py-1.5 text-sm transition-colors flex items-center justify-between ${
+                                          darkMode
+                                            ? 'hover:bg-gray-700 text-gray-200'
+                                            : 'hover:bg-gray-100 text-gray-800'
+                                        } ${
+                                          viewingPart.tracking_courier === option.code
+                                            ? darkMode ? 'text-blue-400 font-medium' : 'text-blue-600 font-medium'
+                                            : ''
+                                        }`}
+                                      >
+                                        <span>{option.name}</span>
+                                        {viewingPart.tracking_courier === option.code && (
+                                          <CheckCircle className="w-3.5 h-3.5 ml-2 shrink-0" />
+                                        )}
+                                      </button>
+                                    ))}
+                                  </div>
+                                )}
+                              </div>
                             </div>
                           )}
                         </div>
