@@ -2010,6 +2010,7 @@ const Shako = ({ isDemo = false }) => {
             tabContentRef={tabContentRef}
             stats={stats}
             filteredStats={filteredStats}
+            parts={parts}
             filteredParts={filteredParts}
             darkMode={darkMode}
             searchTerm={searchTerm}

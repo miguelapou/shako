@@ -14,6 +14,7 @@ const PartsTab = ({
   tabContentRef,
   stats,
   filteredStats,
+  parts,
   filteredParts,
   darkMode,
   searchTerm,
@@ -208,11 +209,13 @@ const PartsTab = ({
 
   // Flip state for cost breakdown card
   const [isCardFlipped, setIsCardFlipped] = useState(false);
+  const [includeArchived, setIncludeArchived] = useState(false);
 
-  // Vendor spending breakdown computed from filtered parts
+  // Vendor spending breakdown computed from filtered parts (or all parts when includeArchived)
   const vendorSpending = useMemo(() => {
+    const source = includeArchived ? parts : filteredParts;
     const vendorMap = {};
-    filteredParts.forEach(part => {
+    source.forEach(part => {
       const vendor = part.vendor || 'Unknown';
       vendorMap[vendor] = (vendorMap[vendor] || 0) + (part.total || 0);
     });
@@ -224,7 +227,7 @@ const PartsTab = ({
         percent: total > 0 ? (amount / total) * 100 : 0
       }))
       .sort((a, b) => b.amount - a.amount);
-  }, [filteredParts]);
+  }, [parts, filteredParts, includeArchived]);
 
   const getVendorChartColor = (vendor) => {
     if (vendorColors && vendorColors[vendor]) return vendorColors[vendor];
@@ -1014,12 +1017,24 @@ const PartsTab = ({
                   }`}
                   onClick={() => setIsCardFlipped(false)}
                 >
-                  <h3 className={`text-sm font-semibold mb-2 flex items-center gap-2 flex-shrink-0 ${
-                    darkMode ? 'text-gray-100' : 'text-gray-800'
-                  }`}>
-                    <BarChart2 className="w-4 h-4" />
-                    Spending by Vendor
-                  </h3>
+                  <div className="flex items-center justify-between mb-2 flex-shrink-0">
+                    <h3 className={`text-sm font-semibold flex items-center gap-2 ${
+                      darkMode ? 'text-gray-100' : 'text-gray-800'
+                    }`}>
+                      <BarChart2 className="w-4 h-4" />
+                      Spending by Vendor
+                    </h3>
+                    <button
+                      onClick={(e) => { e.stopPropagation(); setIncludeArchived(v => !v); }}
+                      className={`text-xs px-2 py-0.5 rounded-full border transition-colors duration-150 flex-shrink-0 ${
+                        includeArchived
+                          ? (darkMode ? 'bg-amber-500/20 border-amber-500/40 text-amber-400' : 'bg-amber-100 border-amber-300 text-amber-700')
+                          : (darkMode ? 'border-gray-600 text-gray-500 hover:text-gray-300' : 'border-gray-300 text-gray-400 hover:text-gray-600')
+                      }`}
+                    >
+                      All time
+                    </button>
+                  </div>
 
                   {vendorSpending.length === 0 ? (
                     <p className={`text-xs ${darkMode ? 'text-gray-500' : 'text-gray-400'}`}>No spending data</p>
