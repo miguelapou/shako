@@ -91,7 +91,8 @@ const useParts = (userId, toast, isDemo = false) => {
           tracking_location: part.tracking_location || null,
           tracking_eta: part.tracking_eta || null,
           tracking_updated_at: part.tracking_updated_at || null,
-          tracking_checkpoints: part.tracking_checkpoints || null
+          tracking_checkpoints: part.tracking_checkpoints || null,
+          tracking_courier: part.tracking_courier || null
         }));
         setParts(formattedParts);
       } else {
@@ -611,6 +612,7 @@ const useParts = (userId, toast, isDemo = false) => {
             updatedPart.tracking_eta = null;
             updatedPart.tracking_updated_at = null;
             updatedPart.tracking_checkpoints = null;
+            updatedPart.tracking_courier = null;
           }
 
           return updatedPart;
@@ -816,6 +818,22 @@ const useParts = (userId, toast, isDemo = false) => {
   };
 
   /**
+   * Update the manual courier override for a part
+   * @param {number} partId - Part ID
+   * @param {string|null} courierCode - Ship24 courier code, or null to clear override
+   */
+  const updateCourierOverride = async (partId, courierCode) => {
+    try {
+      await partsService.updatePart(partId, { tracking_courier: courierCode || null });
+      setParts(prevParts => prevParts.map(part =>
+        part.id === partId ? { ...part, tracking_courier: courierCode || null } : part
+      ));
+    } catch (error) {
+      toast?.error('Error saving courier override. Please try again.');
+    }
+  };
+
+  /**
    * Get unique vendors from parts
    */
   const getUniqueVendors = () => {
@@ -921,6 +939,7 @@ const useParts = (userId, toast, isDemo = false) => {
     unlinkPartFromProject,
     updatePartProject,
     updatePartTrackingData,
+    updateCourierOverride,
     getUniqueVendors,
     importPartsFromCSV
   };

@@ -26,16 +26,17 @@ const getHeaders = () => {
  * Create a new tracking in Ship24 and get results synchronously
  * @param {string} trackingNumber - The tracking number
  * @param {string} title - Optional title (part name)
+ * @param {string} courierCode - Optional courier code override (passed as array per Ship24 API)
  * @returns {Promise<Object>} Ship24 tracking response
  */
-export const createShip24Tracking = async (trackingNumber, title = null) => {
+export const createShip24Tracking = async (trackingNumber, title = null, courierCode = null) => {
   try {
-    const body = {
-      trackingNumber
-    };
+    // /trackers/track only supports: trackingNumber, originCountryCode,
+    // destinationCountryCode, destinationPostCode, shippingDate, courierCode
+    const body = { trackingNumber };
 
-    if (title) {
-      body.shipmentReference = title;
+    if (courierCode) {
+      body.courierCode = [courierCode];
     }
 
     const response = await fetch(`${SHIP24_API_BASE}/trackers/track`, {
@@ -45,8 +46,20 @@ export const createShip24Tracking = async (trackingNumber, title = null) => {
     });
 
     if (!response.ok) {
-      const errorData = await response.json().catch(() => ({}));
-      throw new Error(errorData.message || `Ship24 API error: ${response.status}`);
+      const rawText = await response.text();
+      let errorMsg = `Ship24 API error: ${response.status}`;
+      try {
+        const errorData = JSON.parse(rawText);
+        const firstError = errorData.errors?.[0];
+        if (firstError?.code === 'quota_limit_reached') {
+          errorMsg = 'quota_limit_reached';
+        } else {
+          errorMsg = firstError?.message || errorData.message || errorData.error || errorMsg;
+        }
+      } catch {
+        if (rawText) errorMsg += ` — ${rawText}`;
+      }
+      throw new Error(errorMsg);
     }
 
     const data = await response.json();
@@ -85,19 +98,35 @@ export const getShip24Tracking = async (trackerId) => {
 /**
  * Get tracking by tracking number using the sync track endpoint
  * @param {string} trackingNumber - Tracking number
+ * @param {string} courierCode - Optional courier code override (passed as array per Ship24 API)
  * @returns {Promise<Object>} Tracking data
  */
-export const getShip24TrackingByNumber = async (trackingNumber) => {
+export const getShip24TrackingByNumber = async (trackingNumber, courierCode = null) => {
   try {
+    const body = { trackingNumber };
+    if (courierCode) body.courierCode = [courierCode];
+
     const response = await fetch(`${SHIP24_API_BASE}/trackers/track`, {
       method: 'POST',
       headers: getHeaders(),
-      body: JSON.stringify({ trackingNumber })
+      body: JSON.stringify(body)
     });
 
     if (!response.ok) {
-      const errorData = await response.json().catch(() => ({}));
-      throw new Error(errorData.message || `Ship24 API error: ${response.status}`);
+      const rawText = await response.text();
+      let errorMsg = `Ship24 API error: ${response.status}`;
+      try {
+        const errorData = JSON.parse(rawText);
+        const firstError = errorData.errors?.[0];
+        if (firstError?.code === 'quota_limit_reached') {
+          errorMsg = 'quota_limit_reached';
+        } else {
+          errorMsg = firstError?.message || errorData.message || errorData.error || errorMsg;
+        }
+      } catch {
+        if (rawText) errorMsg += ` — ${rawText}`;
+      }
+      throw new Error(errorMsg);
     }
 
     const data = await response.json();
@@ -235,7 +264,7 @@ export const syncPartTracking = async (part, supabaseClient = null) => {
   // Always use the tracking number to fetch fresh data from Ship24
   // The POST /trackers/track endpoint queries carriers for new updates
   // while GET /trackers/{id}/results only returns cached data
-  const trackingData = await getShip24TrackingByNumber(part.tracking);
+  const trackingData = await getShip24TrackingByNumber(part.tracking, part.tracking_courier || null);
 
   const normalizedData = normalizeTrackingData(trackingData);
   await updatePartTracking(part.id, normalizedData, supabaseClient);

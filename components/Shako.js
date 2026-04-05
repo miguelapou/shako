@@ -167,6 +167,7 @@ const Shako = ({ isDemo = false }) => {
     unlinkPartFromProject,
     updatePartProject,
     updatePartTrackingData,
+    updateCourierOverride,
     getUniqueVendors,
     importPartsFromCSV
   } = useParts(userId, toast, isDemo);
@@ -1915,6 +1916,7 @@ const Shako = ({ isDemo = false }) => {
           getStatusIcon={getStatusIcon}
           getStatusText={getStatusText}
           onRefreshTracking={updatePartTrackingData}
+          onCourierChange={updateCourierOverride}
           onStatusChange={handlePartDetailStatusChange}
           filteredParts={filteredParts}
           setShowTrackingModal={setShowTrackingModal}
