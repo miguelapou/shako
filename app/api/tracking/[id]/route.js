@@ -122,11 +122,16 @@ export async function GET(request, { params }) {
         .eq('id', partId)
         .single();
 
+      const resetDate = new Date();
+      resetDate.setMonth(resetDate.getMonth() + 1, 1);
+      resetDate.setHours(0, 0, 0, 0);
+      const resetStr = resetDate.toLocaleDateString('en-US', { month: 'long', day: 'numeric' });
+
       const limitMessage = isQuota
-        ? 'Ship24 monthly quota reached. Showing cached data.'
+        ? `Ship24 monthly quota reached. Resets ${resetStr}. Showing cached data.`
         : 'API rate limit reached. Showing cached data.';
       const limitError = isQuota
-        ? 'Ship24 monthly quota reached. Upgrade your plan at dashboard.ship24.com.'
+        ? `Ship24 monthly quota reached. Resets ${resetStr}. Upgrade your plan at dashboard.ship24.com.`
         : 'API rate limit reached. Please try again later.';
 
       if (part?.tracking_status) {
