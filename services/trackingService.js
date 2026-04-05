@@ -31,13 +31,9 @@ const getHeaders = () => {
  */
 export const createShip24Tracking = async (trackingNumber, title = null, courierCode = null) => {
   try {
-    const body = {
-      trackingNumber
-    };
-
-    if (title) {
-      body.shipmentReference = title;
-    }
+    // /trackers/track only supports: trackingNumber, originCountryCode,
+    // destinationCountryCode, destinationPostCode, shippingDate, courierCode
+    const body = { trackingNumber };
 
     if (courierCode) {
       body.courierCode = [courierCode];
