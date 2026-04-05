@@ -1041,8 +1041,8 @@ const PartsTab = ({
                           <div key={vendor} className="flex items-center gap-2 min-w-0">
                             <span className="w-2 h-2 rounded-full flex-shrink-0" style={{ backgroundColor: getVendorChartColor(vendor) }} />
                             <span className={`text-xs truncate flex-1 ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>{vendor}</span>
-                            <span className={`text-xs font-semibold flex-shrink-0 ${darkMode ? 'text-gray-200' : 'text-gray-800'}`}>${amount.toFixed(2)}</span>
-                            <span className={`text-xs flex-shrink-0 ${darkMode ? 'text-gray-500' : 'text-gray-400'}`}>{percent.toFixed(0)}%</span>
+                            <span className={`text-xs font-semibold text-right w-16 flex-shrink-0 ${darkMode ? 'text-gray-200' : 'text-gray-800'}`}>${amount.toFixed(2)}</span>
+                            <span className={`text-xs text-right w-7 flex-shrink-0 ${darkMode ? 'text-gray-500' : 'text-gray-400'}`}>{percent.toFixed(0)}%</span>
                           </div>
                         ))}
                       </div>
