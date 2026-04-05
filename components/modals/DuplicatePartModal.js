@@ -130,7 +130,7 @@ const DuplicatePartModal = ({
       />
 
       {/* Modal */}
-      <div className={`relative w-full max-w-sm rounded-xl shadow-2xl border ${bg} ${border} flex flex-col`}>
+      <div className={`relative w-full max-w-sm rounded-xl shadow-2xl border ${bg} ${border} flex flex-col`} onClick={e => e.stopPropagation()}>
         {/* Header */}
         <div className={`flex items-center justify-between px-5 py-4 border-b ${border}`}>
           <div className="flex items-center gap-2">
