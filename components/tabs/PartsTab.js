@@ -1,6 +1,6 @@
-import React, { useState, useRef, useEffect, useLayoutEffect, useCallback } from 'react';
+import React, { useState, useRef, useEffect, useLayoutEffect, useCallback, useMemo } from 'react';
 import {
-  Search, Package, Receipt, Truck, CheckCircle, Clock,
+  Search, Package, Receipt, Truck, CheckCircle, Clock, BarChart2,
   ChevronDown, Plus, X, ExternalLink, ShoppingCart, Car,
   ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight,
   PackageCheck, PackageSearch, PackageX, BadgeCheck, Archive,
@@ -14,6 +14,7 @@ const PartsTab = ({
   tabContentRef,
   stats,
   filteredStats,
+  parts,
   filteredParts,
   darkMode,
   searchTerm,
@@ -204,6 +205,59 @@ const PartsTab = ({
 
   const handleProgressMouseLeave = () => {
     setProgressTooltipVisible(false);
+  };
+
+  // Flip state for cost breakdown card
+  const [isCardFlipped, setIsCardFlipped] = useState(false);
+  const [includeArchived, setIncludeArchived] = useState(false);
+
+  // Vendor spending breakdown computed from filtered parts (or all parts when includeArchived)
+  const vendorSpending = useMemo(() => {
+    const source = includeArchived ? parts : filteredParts;
+    const vendorMap = {};
+    source.forEach(part => {
+      const vendor = part.vendor || 'Unknown';
+      vendorMap[vendor] = (vendorMap[vendor] || 0) + (part.total || 0);
+    });
+    const total = Object.values(vendorMap).reduce((sum, v) => sum + v, 0);
+    return Object.entries(vendorMap)
+      .map(([vendor, amount]) => ({
+        vendor,
+        amount,
+        percent: total > 0 ? (amount / total) * 100 : 0
+      }))
+      .sort((a, b) => b.amount - a.amount);
+  }, [parts, filteredParts, includeArchived]);
+
+  const getVendorChartColor = (vendor) => {
+    if (vendorColors && vendorColors[vendor]) return vendorColors[vendor];
+    const v = (vendor || '').toLowerCase();
+    if (v === 'toyota') return '#ef4444';
+    if (v === 'ebay') return '#22c55e';
+    if (v === 'etsy') return '#f97316';
+    if (v === 'partsnext') return '#eab308';
+    if (v === 'best buy') return '#a855f7';
+    if (v === 'amazon') return '#3b82f6';
+    if (v === 'jauce') return '#d946ef';
+    const hash = (vendor || '').split('').reduce((acc, c) => acc + c.charCodeAt(0), 0);
+    return ['#6366f1', '#14b8a6', '#f43f5e', '#8b5cf6', '#06b6d4', '#84cc16', '#fb923c'][hash % 7];
+  };
+
+  const polarToCartesian = (cx, cy, r, angleDeg) => {
+    const rad = ((angleDeg - 90) * Math.PI) / 180;
+    return { x: cx + r * Math.cos(rad), y: cy + r * Math.sin(rad) };
+  };
+
+  const pieSlicePath = (cx, cy, outerR, innerR, startAngle, endAngle) => {
+    if (endAngle - startAngle >= 359.9) {
+      return `M ${cx} ${cy - outerR} A ${outerR} ${outerR} 0 1 1 ${cx - 0.001} ${cy - outerR} L ${cx - 0.001} ${cy - innerR} A ${innerR} ${innerR} 0 1 0 ${cx} ${cy - innerR} Z`;
+    }
+    const os = polarToCartesian(cx, cy, outerR, startAngle);
+    const oe = polarToCartesian(cx, cy, outerR, endAngle);
+    const is_ = polarToCartesian(cx, cy, innerR, startAngle);
+    const ie = polarToCartesian(cx, cy, innerR, endAngle);
+    const la = endAngle - startAngle > 180 ? 1 : 0;
+    return `M ${os.x} ${os.y} A ${outerR} ${outerR} 0 ${la} 1 ${oe.x} ${oe.y} L ${ie.x} ${ie.y} A ${innerR} ${innerR} 0 ${la} 0 ${is_.x} ${is_.y} Z`;
   };
 
   // Reset to page 1 when filters change
@@ -876,125 +930,141 @@ const PartsTab = ({
           <div className="cost-progress-wrapper-800">
           {/* Cost Breakdown */}
           <div className="cost-breakdown-800">
-            <div className={`rounded-lg shadow-md py-3 px-4 pb-2 h-full flex flex-col ${
-              darkMode ? 'bg-gray-800' : 'bg-slate-100'
-            }`}>
-            <h3 className={`text-sm font-semibold mb-2 flex items-center gap-2 ${
-              darkMode ? 'text-gray-100' : 'text-gray-800'
-            }`}>
-              <Receipt className="w-4 h-4" />
-              Cost Breakdown
-            </h3>
-            <div className="flex gap-4 flex-1">
-              {/* Circular Progress - Desktop Only */}
-              <div
-                ref={progressBarRef}
-                className="hidden circular-progress-800 items-center justify-center relative cursor-pointer"
-                onMouseEnter={handleProgressMouseEnter}
-                onMouseLeave={handleProgressMouseLeave}
-                onMouseMove={handleProgressMouseMove}
-              >
-                {/* Floating tooltip */}
+            <div className="cost-breakdown-flip-container h-full transition-all duration-200 hover:shadow-lg hover:scale-[1.02]">
+              <div className={`cost-breakdown-flip-inner${isCardFlipped ? ' is-flipped' : ''}`}>
+
+                {/* Front Face - Cost Breakdown */}
                 <div
-                  className={`progress-tooltip pointer-events-none absolute z-10 px-2 py-1 text-xs font-medium rounded shadow-lg whitespace-nowrap ${
-                    darkMode ? 'bg-gray-700 text-gray-100' : 'bg-gray-800 text-white'
-                  } ${progressTooltipVisible ? 'progress-tooltip-visible' : 'progress-tooltip-hidden'}`}
-                  style={{
-                    left: `${progressTooltipPos.x}px`,
-                    top: `${progressTooltipPos.y}px`,
-                    transform: 'translateX(-50%)'
-                  }}
+                  className={`cost-breakdown-face rounded-lg shadow-md py-3 px-4 pb-2 flex flex-col cursor-pointer ${
+                    darkMode ? 'bg-gray-800' : 'bg-slate-100'
+                  }`}
+                  onClick={() => setIsCardFlipped(true)}
                 >
-                  Delivery Progress
-                </div>
-                <div className="relative w-24 h-24">
-                  <svg className="w-24 h-24 transform -rotate-90">
-                    <circle
-                      cx="48"
-                      cy="48"
-                      r="40"
-                      stroke="currentColor"
-                      strokeWidth="8"
-                      fill="none"
-                      className={darkMode ? 'text-gray-700' : 'text-gray-200'}
-                    />
-                    <circle
-                      cx="48"
-                      cy="48"
-                      r="40"
-                      stroke="currentColor"
-                      strokeWidth="8"
-                      fill="none"
-                      strokeDasharray={`${2 * Math.PI * 40}`}
-                      strokeDashoffset={`${2 * Math.PI * 40 * (1 - (filteredStats.total > 0 ? filteredStats.delivered / filteredStats.total : 0))}`}
-                      className="text-green-500 transition-all duration-500"
-                      strokeLinecap="round"
-                    />
-                  </svg>
-                  <div className="absolute inset-0 flex items-center justify-center">
-                    <span className={`text-lg font-bold ${darkMode ? 'text-gray-100' : 'text-gray-800'}`}>
-                      {filteredStats.total > 0 ? Math.round((filteredStats.delivered / filteredStats.total) * 100) : 0}%
-                    </span>
+                  <h3 className={`text-sm font-semibold mb-2 flex items-center gap-2 ${
+                    darkMode ? 'text-gray-100' : 'text-gray-800'
+                  }`}>
+                    <Receipt className="w-4 h-4" />
+                    Cost Breakdown
+                  </h3>
+                  <div className="flex gap-4 flex-1">
+                    {/* Circular Progress - Desktop Only */}
+                    <div
+                      ref={progressBarRef}
+                      className="hidden circular-progress-800 items-center justify-center relative"
+                      onMouseEnter={handleProgressMouseEnter}
+                      onMouseLeave={handleProgressMouseLeave}
+                      onMouseMove={handleProgressMouseMove}
+                    >
+                      {/* Floating tooltip */}
+                      <div
+                        className={`progress-tooltip pointer-events-none absolute z-10 px-2 py-1 text-xs font-medium rounded shadow-lg whitespace-nowrap ${
+                          darkMode ? 'bg-gray-700 text-gray-100' : 'bg-gray-800 text-white'
+                        } ${progressTooltipVisible ? 'progress-tooltip-visible' : 'progress-tooltip-hidden'}`}
+                        style={{
+                          left: `${progressTooltipPos.x}px`,
+                          top: `${progressTooltipPos.y}px`,
+                          transform: 'translateX(-50%)'
+                        }}
+                      >
+                        Delivery Progress
+                      </div>
+                      <div className="relative w-24 h-24">
+                        <svg className="w-24 h-24 transform -rotate-90">
+                          <circle cx="48" cy="48" r="40" stroke="currentColor" strokeWidth="8" fill="none" className={darkMode ? 'text-gray-700' : 'text-gray-200'} />
+                          <circle
+                            cx="48" cy="48" r="40"
+                            stroke="currentColor" strokeWidth="8" fill="none"
+                            strokeDasharray={`${2 * Math.PI * 40}`}
+                            strokeDashoffset={`${2 * Math.PI * 40 * (1 - (filteredStats.total > 0 ? filteredStats.delivered / filteredStats.total : 0))}`}
+                            className="text-green-500 transition-all duration-500"
+                            strokeLinecap="round"
+                          />
+                        </svg>
+                        <div className="absolute inset-0 flex items-center justify-center">
+                          <span className={`text-lg font-bold ${darkMode ? 'text-gray-100' : 'text-gray-800'}`}>
+                            {filteredStats.total > 0 ? Math.round((filteredStats.delivered / filteredStats.total) * 100) : 0}%
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Line Items */}
+                    <div className="grid grid-cols-1 gap-0.5 flex-1">
+                      <div className="flex items-center justify-between py-0.5">
+                        <p className={`text-xs ${darkMode ? 'text-gray-400' : 'text-slate-600'}`}>Parts</p>
+                        <PriceDisplay amount={filteredStats.totalPrice} className={`text-sm font-semibold truncate ${darkMode ? 'text-gray-100' : 'text-gray-800'}`} darkMode={darkMode} />
+                      </div>
+                      <div className="flex items-center justify-between py-0.5">
+                        <p className={`text-xs ${darkMode ? 'text-gray-400' : 'text-slate-600'}`}>Shipping</p>
+                        <PriceDisplay amount={filteredStats.totalShipping} className={`text-sm font-semibold truncate ${darkMode ? 'text-gray-100' : 'text-gray-800'}`} darkMode={darkMode} />
+                      </div>
+                      <div className={`flex items-center justify-between py-0.5 border-b ${darkMode ? 'border-gray-700' : 'border-gray-300'}`}>
+                        <p className={`text-xs ${darkMode ? 'text-gray-400' : 'text-slate-600'}`}>Import Duties</p>
+                        <PriceDisplay amount={filteredStats.totalDuties} className={`text-sm font-semibold truncate ${darkMode ? 'text-gray-100' : 'text-gray-800'}`} darkMode={darkMode} />
+                      </div>
+                      <div className="flex items-center justify-between">
+                        <p className={`text-sm font-bold ${darkMode ? 'text-gray-200' : 'text-slate-800'}`}>Total</p>
+                        <PriceDisplay amount={filteredStats.totalCost} className={`text-base font-bold truncate ${darkMode ? 'text-gray-100' : 'text-gray-800'}`} darkMode={darkMode} />
+                      </div>
+                    </div>
                   </div>
                 </div>
-              </div>
 
-              {/* Line Items */}
-              <div className="grid grid-cols-1 gap-0.5 flex-1">
-                <div className={`flex items-center justify-between py-0.5`}>
-                  <p className={`text-xs ${
-                    darkMode ? 'text-gray-400' : 'text-slate-600'
-                  }`}>Parts</p>
-                  <PriceDisplay
-                    amount={filteredStats.totalPrice}
-                    className={`text-sm font-semibold truncate ${
+                {/* Back Face - Spending by Vendor */}
+                <div
+                  className={`cost-breakdown-face cost-breakdown-face-back rounded-lg shadow-md py-3 px-4 pb-2 flex flex-col cursor-pointer ${
+                    darkMode ? 'bg-gray-800' : 'bg-slate-100'
+                  }`}
+                  onClick={() => setIsCardFlipped(false)}
+                >
+                  <div className="flex items-center justify-between mb-2 flex-shrink-0">
+                    <h3 className={`text-sm font-semibold flex items-center gap-2 ${
                       darkMode ? 'text-gray-100' : 'text-gray-800'
-                    }`}
-                    darkMode={darkMode}
-                  />
-                </div>
-                <div className={`flex items-center justify-between py-0.5`}>
-                  <p className={`text-xs ${
-                    darkMode ? 'text-gray-400' : 'text-slate-600'
-                  }`}>Shipping</p>
-                  <PriceDisplay
-                    amount={filteredStats.totalShipping}
-                    className={`text-sm font-semibold truncate ${
-                      darkMode ? 'text-gray-100' : 'text-gray-800'
-                    }`}
-                    darkMode={darkMode}
-                  />
-                </div>
-                <div className={`flex items-center justify-between py-0.5 border-b ${
-                  darkMode ? 'border-gray-700' : 'border-gray-300'
-                }`}>
-                  <p className={`text-xs ${
-                    darkMode ? 'text-gray-400' : 'text-slate-600'
-                  }`}>Import Duties</p>
-                  <PriceDisplay
-                    amount={filteredStats.totalDuties}
-                    className={`text-sm font-semibold truncate ${
-                      darkMode ? 'text-gray-100' : 'text-gray-800'
-                    }`}
-                    darkMode={darkMode}
-                  />
-                </div>
-                <div className={`flex items-center justify-between`}>
-                  <p className={`text-sm font-bold ${
-                    darkMode ? 'text-gray-200' : 'text-slate-800'
-                  }`}>Total</p>
-                  <PriceDisplay
-                    amount={filteredStats.totalCost}
-                    className={`text-base font-bold truncate ${
-                      darkMode ? 'text-gray-100' : 'text-gray-800'
-                    }`}
-                    darkMode={darkMode}
-                  />
+                    }`}>
+                      <BarChart2 className="w-4 h-4" />
+                      Spending by Vendor
+                    </h3>
+                    <button
+                      onClick={(e) => { e.stopPropagation(); setIncludeArchived(v => !v); }}
+                      className={`text-xs px-2 py-0.5 rounded-full border transition-colors duration-150 flex-shrink-0 ${
+                        includeArchived
+                          ? (darkMode ? 'bg-amber-500/20 border-amber-500/40 text-amber-400' : 'bg-amber-100 border-amber-300 text-amber-700')
+                          : (darkMode ? 'border-gray-600 text-gray-500 hover:text-gray-300' : 'border-gray-300 text-gray-400 hover:text-gray-600')
+                      }`}
+                    >
+                      + Archived
+                    </button>
+                  </div>
+
+                  {vendorSpending.length === 0 ? (
+                    <p className={`text-xs ${darkMode ? 'text-gray-500' : 'text-gray-400'}`}>No spending data</p>
+                  ) : (
+                    <div className="flex flex-col gap-2 flex-1 min-h-0">
+                      <div className="flex w-full rounded-full overflow-hidden h-3 flex-shrink-0">
+                        {vendorSpending.map(({ vendor, percent }) => (
+                          <div
+                            key={vendor}
+                            className="h-full transition-all duration-500"
+                            style={{ width: `${percent}%`, backgroundColor: getVendorChartColor(vendor) }}
+                          />
+                        ))}
+                      </div>
+                      <div className="flex flex-col gap-0.5 overflow-y-auto flex-1 min-h-0 pr-2">
+                        {vendorSpending.map(({ vendor, amount, percent }) => (
+                          <div key={vendor} className="flex items-center gap-2 min-w-0">
+                            <span className="w-2 h-2 rounded-full flex-shrink-0" style={{ backgroundColor: getVendorChartColor(vendor) }} />
+                            <span className={`text-xs truncate flex-1 ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>{vendor}</span>
+                            <span className={`text-xs font-semibold text-right w-16 flex-shrink-0 ${darkMode ? 'text-gray-200' : 'text-gray-800'}`}>${amount.toFixed(2)}</span>
+                            <span className={`text-xs text-right w-7 flex-shrink-0 ${darkMode ? 'text-gray-500' : 'text-gray-400'}`}>{percent.toFixed(0)}%</span>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
                 </div>
 
               </div>
             </div>
-          </div>
           </div>
 
           {/* Progress Bar - Separate container on mobile */}
