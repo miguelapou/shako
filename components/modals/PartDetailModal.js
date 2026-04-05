@@ -1017,7 +1017,7 @@ const PartDetailModal = ({
                                 <button
                                   onClick={() => setShowCourierDropdown(v => !v)}
                                   title="Change courier"
-                                  className={`flex items-center gap-1 rounded border px-2 py-0.5 text-xs transition-colors ${
+                                  className={`flex items-center gap-1.5 rounded border px-2.5 py-1 text-sm transition-colors ${
                                     darkMode
                                       ? 'border-gray-600 bg-gray-700 hover:bg-gray-600 text-gray-300'
                                       : 'border-gray-300 bg-white hover:bg-gray-50 text-gray-600'
@@ -1032,7 +1032,7 @@ const PartDetailModal = ({
                                           ? getCourierDisplayName(viewingPart.tracking_courier)
                                           : getCarrierName(viewingPart.tracking)}
                                       </span>
-                                      <ChevronDown className="w-3 h-3 opacity-60" />
+                                      <ChevronDown className="w-3.5 h-3.5 opacity-60" />
                                     </>
                                   )}
                                 </button>
