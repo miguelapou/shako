@@ -122,9 +122,14 @@ export async function GET(request, { params }) {
         .eq('id', partId)
         .single();
 
+      const now = new Date();
       const resetDate = new Date();
-      resetDate.setMonth(resetDate.getMonth() + 1, 1);
+      // Ship24 quota resets on the 10th of each month (billing anniversary)
+      resetDate.setDate(10);
       resetDate.setHours(0, 0, 0, 0);
+      if (resetDate <= now) {
+        resetDate.setMonth(resetDate.getMonth() + 1);
+      }
       const resetStr = resetDate.toLocaleDateString('en-US', { month: 'long', day: 'numeric' });
 
       const limitMessage = isQuota
