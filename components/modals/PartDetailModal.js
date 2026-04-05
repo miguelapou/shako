@@ -1012,16 +1012,16 @@ const PartDetailModal = ({
                                   ETA: {formatETA(viewingPart.tracking_eta)}
                                 </span>
                               )}
-                              {/* Courier name with override dropdown */}
+                              {/* Courier selector */}
                               <div className="relative" ref={courierDropdownRef}>
                                 <button
                                   onClick={() => setShowCourierDropdown(v => !v)}
                                   title="Change courier"
-                                  className={`flex items-center gap-1 rounded px-1.5 py-0.5 transition-colors ${
+                                  className={`flex items-center gap-1 rounded border px-2 py-0.5 text-xs transition-colors ${
                                     darkMode
-                                      ? 'hover:bg-gray-600 text-gray-400'
-                                      : 'hover:bg-gray-200 text-gray-500'
-                                  } ${viewingPart.tracking_courier ? (darkMode ? 'text-green-400' : 'text-green-600') : ''}`}
+                                      ? 'border-gray-600 bg-gray-700 hover:bg-gray-600 text-gray-300'
+                                      : 'border-gray-300 bg-white hover:bg-gray-50 text-gray-600'
+                                  } ${viewingPart.tracking_courier ? (darkMode ? 'text-green-400 border-green-600' : 'text-green-700 border-green-400') : ''}`}
                                 >
                                   {isSavingCourier ? (
                                     <RefreshCw className="w-3 h-3 animate-spin" />
@@ -1032,7 +1032,7 @@ const PartDetailModal = ({
                                           ? getCourierDisplayName(viewingPart.tracking_courier)
                                           : getCarrierName(viewingPart.tracking)}
                                       </span>
-                                      <Edit2 className="w-3 h-3 opacity-60" />
+                                      <ChevronDown className="w-3 h-3 opacity-60" />
                                     </>
                                   )}
                                 </button>
