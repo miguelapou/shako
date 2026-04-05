@@ -104,7 +104,8 @@ const VehiclesTab = ({
   calculateProjectStatus,
   toast,
   setActiveTab,
-  archivePart
+  archivePart,
+  onAddPartFromProject
   // Document and service event props removed - now handled via context in VehicleDetailModal
 }) => {
   // Track layout transitions for animation
@@ -867,6 +868,7 @@ const VehiclesTab = ({
           toast={toast}
           setActiveTab={setActiveTab}
           archivePart={archivePart}
+          onAddPartFromProject={onAddPartFromProject}
         />
       </>
     </div>

@@ -488,12 +488,64 @@ const Shako = ({ isDemo = false }) => {
   // ========================================
 
   // Wrapper functions that provide state setters to hook functions
-  const handleAddNewPart = () => addNewPart(setShowAddModal);
+
+  // Context for returning to a project/vehicle-project view after adding a part
+  // Shape: { type: 'project', project } | { type: 'vehicleProject', vehicle, project }
+  const [addPartReturnContext, setAddPartReturnContext] = React.useState(null);
+
+  const returnToAddPartContext = (ctx) => {
+    if (!ctx) return;
+    if (ctx.type === 'project') {
+      setViewingProject(ctx.project);
+      setOriginalProjectData({ ...ctx.project });
+      setProjectModalEditMode(false);
+      setShowProjectDetailModal(true);
+    } else if (ctx.type === 'vehicleProject') {
+      setViewingVehicle(ctx.vehicle);
+      setOriginalVehicleData({ ...ctx.vehicle });
+      setVehicleModalProjectView(ctx.project);
+      setVehicleModalEditMode(null);
+      setShowVehicleDetailModal(true);
+    }
+  };
+
+  const handleAddNewPart = () => {
+    const ctx = addPartReturnContext;
+    addNewPart(setShowAddModal, ctx ? () => {
+      setAddPartReturnContext(null);
+      returnToAddPartContext(ctx);
+    } : undefined);
+  };
 
   const handleAddPartFromProject = (project) => {
     handleCloseModal(() => {
       setShowProjectDetailModal(false);
       setViewingProject(null);
+      setAddPartReturnContext({ type: 'project', project });
+      setNewPart({
+        part: '',
+        partNumber: '',
+        vendor: '',
+        price: '',
+        shipping: '',
+        duties: '',
+        quantity: 1,
+        tracking: '',
+        status: 'pending',
+        projectId: project.id,
+        vehicleId: project.vehicle_id || null
+      });
+      setShowAddModal(true);
+    });
+  };
+
+  const handleAddPartFromVehicleProject = (project) => {
+    handleCloseModal(() => {
+      setShowVehicleDetailModal(false);
+      setViewingVehicle(null);
+      setVehicleModalProjectView(null);
+      setVehicleModalEditMode(null);
+      setAddPartReturnContext({ type: 'vehicleProject', vehicle: viewingVehicle, project });
       setNewPart({
         part: '',
         partNumber: '',
@@ -1891,6 +1943,12 @@ const Shako = ({ isDemo = false }) => {
               projectId: null,
               vehicleId: null
             });
+            // Return to originating project view if this was opened from one
+            const ctx = addPartReturnContext;
+            if (ctx) {
+              setAddPartReturnContext(null);
+              returnToAddPartContext(ctx);
+            }
           }}
           setConfirmDialog={setConfirmDialog}
         />
@@ -2164,6 +2222,7 @@ const Shako = ({ isDemo = false }) => {
             toast={toast}
             setActiveTab={setActiveTab}
             archivePart={archivePart}
+            onAddPartFromProject={handleAddPartFromVehicleProject}
           />
         )}
 

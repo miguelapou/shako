@@ -1,5 +1,5 @@
 import React, { useEffect, useCallback, useMemo, useRef, useState } from 'react';
-import { X, Edit2, Trash2, Archive, ArchiveRestore, Pause, Play, ChevronDown, ChevronLeft, ChevronRight, SquareGantt, Plus } from 'lucide-react';
+import { X, Edit2, Trash2, Archive, ArchiveRestore, Pause, Play, ChevronDown, ChevronLeft, ChevronRight, SquareGantt, Package } from 'lucide-react';
 import ProjectDetailView from '../ui/ProjectDetailView';
 import ProjectEditForm from '../ui/ProjectEditForm';
 import LinkedPartsSection from '../ui/LinkedPartsSection';
@@ -579,7 +579,7 @@ const ProjectDetailModal = ({
                         : 'bg-gray-200 hover:bg-gray-300 text-gray-800 border border-gray-300'
                     }`}
                   >
-                    <Plus className="w-4 h-4" />
+                    <Package className="w-4 h-4" />
                     <span>Add Part</span>
                   </button>
                 )}
