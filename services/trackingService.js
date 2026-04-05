@@ -50,11 +50,15 @@ export const createShip24Tracking = async (trackingNumber, title = null, courier
       let errorMsg = `Ship24 API error: ${response.status}`;
       try {
         const errorData = JSON.parse(rawText);
-        errorMsg = errorData.message || errorData.error || JSON.stringify(errorData) || errorMsg;
+        const firstError = errorData.errors?.[0];
+        if (firstError?.code === 'quota_limit_reached') {
+          errorMsg = 'quota_limit_reached';
+        } else {
+          errorMsg = firstError?.message || errorData.message || errorData.error || errorMsg;
+        }
       } catch {
         if (rawText) errorMsg += ` — ${rawText}`;
       }
-      console.error('[Ship24] createShip24Tracking failed:', response.status, rawText);
       throw new Error(errorMsg);
     }
 
@@ -113,11 +117,15 @@ export const getShip24TrackingByNumber = async (trackingNumber, courierCode = nu
       let errorMsg = `Ship24 API error: ${response.status}`;
       try {
         const errorData = JSON.parse(rawText);
-        errorMsg = errorData.message || errorData.error || JSON.stringify(errorData) || errorMsg;
+        const firstError = errorData.errors?.[0];
+        if (firstError?.code === 'quota_limit_reached') {
+          errorMsg = 'quota_limit_reached';
+        } else {
+          errorMsg = firstError?.message || errorData.message || errorData.error || errorMsg;
+        }
       } catch {
         if (rawText) errorMsg += ` — ${rawText}`;
       }
-      console.error('[Ship24] getShip24TrackingByNumber failed:', response.status, rawText);
       throw new Error(errorMsg);
     }
 

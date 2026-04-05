@@ -105,8 +105,10 @@ export async function GET(request, { params }) {
   } catch (error) {
     console.error('Error fetching tracking:', error);
 
-    // Handle rate limit error - return cached data if available
-    if (error.message?.includes('429') || error.message?.includes('rate limit')) {
+    // Handle rate limit or quota errors - return cached data if available
+    const isQuota = error.message?.includes('quota_limit_reached');
+    const isRateLimit = error.message?.includes('429') || error.message?.includes('rate limit');
+    if (isQuota || isRateLimit) {
       const { id } = await params;
       const partId = parseInt(id, 10);
 
@@ -120,18 +122,25 @@ export async function GET(request, { params }) {
         .eq('id', partId)
         .single();
 
+      const limitMessage = isQuota
+        ? 'Ship24 monthly quota reached. Showing cached data.'
+        : 'API rate limit reached. Showing cached data.';
+      const limitError = isQuota
+        ? 'Ship24 monthly quota reached. Upgrade your plan at dashboard.ship24.com.'
+        : 'API rate limit reached. Please try again later.';
+
       if (part?.tracking_status) {
         return NextResponse.json({
           success: true,
           tracking: part,
           rateLimited: true,
-          rateLimitMessage: 'API rate limit reached. Showing cached data.'
+          rateLimitMessage: limitMessage
         });
       }
 
       return NextResponse.json({
         success: false,
-        error: 'API rate limit reached. Please try again later.',
+        error: limitError,
         rateLimited: true
       }, { status: 429 });
     }
