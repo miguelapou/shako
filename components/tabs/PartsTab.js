@@ -932,8 +932,8 @@ const PartsTab = ({
 
                 {/* Front Face - Cost Breakdown */}
                 <div
-                  className={`cost-breakdown-face rounded-lg shadow-md py-3 px-4 pb-2 flex flex-col cursor-pointer ${
-                    darkMode ? 'bg-gray-800' : 'bg-slate-100'
+                  className={`cost-breakdown-face rounded-lg shadow-md py-3 px-4 pb-2 flex flex-col cursor-pointer transition-colors duration-150 ${
+                    darkMode ? 'bg-gray-800 hover:bg-gray-700' : 'bg-slate-100 hover:bg-slate-200'
                   }`}
                   onClick={() => setIsCardFlipped(true)}
                 >
@@ -942,7 +942,7 @@ const PartsTab = ({
                   }`}>
                     <Receipt className="w-4 h-4" />
                     Cost Breakdown
-                    <BarChart2 className={`w-3 h-3 ml-auto opacity-40 ${darkMode ? 'text-gray-400' : 'text-gray-500'}`} />
+                    <Receipt className={`w-3 h-3 ml-auto opacity-40 ${darkMode ? 'text-gray-400' : 'text-gray-500'}`} />
                   </h3>
                   <div className="flex gap-4 flex-1">
                     {/* Circular Progress - Desktop Only */}
@@ -1010,8 +1010,8 @@ const PartsTab = ({
 
                 {/* Back Face - Spending by Vendor */}
                 <div
-                  className={`cost-breakdown-face cost-breakdown-face-back rounded-lg shadow-md py-3 px-4 pb-2 flex flex-col cursor-pointer ${
-                    darkMode ? 'bg-gray-800' : 'bg-slate-100'
+                  className={`cost-breakdown-face cost-breakdown-face-back rounded-lg shadow-md py-3 px-4 pb-2 flex flex-col cursor-pointer transition-colors duration-150 ${
+                    darkMode ? 'bg-gray-800 hover:bg-gray-700' : 'bg-slate-100 hover:bg-slate-200'
                   }`}
                   onClick={() => setIsCardFlipped(false)}
                 >
@@ -1020,7 +1020,7 @@ const PartsTab = ({
                   }`}>
                     <BarChart2 className="w-4 h-4" />
                     Spending by Vendor
-                    <Receipt className={`w-3 h-3 ml-auto opacity-40 ${darkMode ? 'text-gray-400' : 'text-gray-500'}`} />
+                    <BarChart2 className={`w-3 h-3 ml-auto opacity-40 ${darkMode ? 'text-gray-400' : 'text-gray-500'}`} />
                   </h3>
 
                   {vendorSpending.length === 0 ? (
@@ -1036,7 +1036,7 @@ const PartsTab = ({
                           />
                         ))}
                       </div>
-                      <div className="flex flex-col gap-0.5 overflow-y-auto flex-1 min-h-0">
+                      <div className="flex flex-col gap-0.5 overflow-y-auto flex-1 min-h-0 pr-2">
                         {vendorSpending.map(({ vendor, amount, percent }) => (
                           <div key={vendor} className="flex items-center gap-2 min-w-0">
                             <span className="w-2 h-2 rounded-full flex-shrink-0" style={{ backgroundColor: getVendorChartColor(vendor) }} />
