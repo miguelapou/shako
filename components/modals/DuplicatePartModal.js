@@ -14,8 +14,32 @@ const DUPLICATE_FIELDS = [
   { key: 'tracking', label: 'Tracking Number' },
 ];
 
-// Fields checked by default
+// Fields checked by default (when they have a value)
 const DEFAULT_CHECKED = new Set(['vendor', 'partNumber', 'projectId', 'vehicleId', 'price', 'shipping', 'duties', 'quantity']);
+
+// Returns true if the field has a meaningful (non-blank, non-zero) value on the part
+const hasValue = (key, part, projects, vehicles) => {
+  switch (key) {
+    case 'vendor':
+    case 'partNumber':
+    case 'tracking':
+      return !!part[key] && String(part[key]).trim() !== '';
+    case 'projectId':
+      return !!part.projectId;
+    case 'vehicleId':
+      return !!part.vehicleId;
+    case 'price':
+    case 'shipping':
+    case 'duties':
+      return parseFloat(part[key]) > 0;
+    case 'quantity':
+      return parseInt(part.quantity) > 0;
+    case 'status':
+      return !!part.status;
+    default:
+      return false;
+  }
+};
 
 const DuplicatePartModal = ({
   isOpen,
@@ -30,10 +54,13 @@ const DuplicatePartModal = ({
   const [selectedFields, setSelectedFields] = useState(new Set(DEFAULT_CHECKED));
   const [isDuplicating, setIsDuplicating] = useState(false);
 
-  // Reset selections when modal opens
+  // Reset selections when modal opens, only including fields that have values
   useEffect(() => {
-    if (isOpen) {
-      setSelectedFields(new Set(DEFAULT_CHECKED));
+    if (isOpen && part) {
+      const initial = new Set(
+        [...DEFAULT_CHECKED].filter(key => hasValue(key, part, projects, vehicles))
+      );
+      setSelectedFields(initial);
     }
   }, [isOpen]);
 
@@ -135,49 +162,52 @@ const DuplicatePartModal = ({
             <span className={`ml-auto text-xs ${subtext} truncate max-w-[120px]`}>{part.part}</span>
           </div>
 
-          {/* Selectable fields */}
-          <div className={`rounded-lg border ${border} overflow-hidden`}>
-            {DUPLICATE_FIELDS.map(({ key, label }, idx) => {
-              const checked = selectedFields.has(key);
-              // Get display value for the field
-              let displayValue = null;
-              if (key === 'projectId' && part.projectId) {
-                displayValue = projects?.find(p => p.id === part.projectId)?.name || part.projectId;
-              } else if (key === 'vehicleId' && part.vehicleId) {
-                displayValue = vehicles?.find(v => v.id === part.vehicleId)?.name || part.vehicleId;
-              } else if (key === 'status') {
-                displayValue = part.status ? part.status.charAt(0).toUpperCase() + part.status.slice(1) : 'Pending';
-              } else if (key === 'price' || key === 'shipping' || key === 'duties') {
-                const val = parseFloat(part[key]);
-                displayValue = val > 0 ? `$${val.toFixed(2)}` : null;
-              } else if (key === 'quantity') {
-                displayValue = part.quantity > 1 ? `×${part.quantity}` : null;
-              } else if (part[key]) {
-                displayValue = String(part[key]);
-                if (displayValue.length > 18) displayValue = displayValue.slice(0, 18) + '…';
-              }
+          {/* Selectable fields — only show fields with meaningful values */}
+          {(() => {
+            const availableFields = DUPLICATE_FIELDS.filter(({ key }) => hasValue(key, part, projects, vehicles));
+            return (
+              <div className={`rounded-lg border ${border} overflow-hidden`}>
+                {availableFields.map(({ key, label }, idx) => {
+                  const checked = selectedFields.has(key);
+                  let displayValue = null;
+                  if (key === 'projectId') {
+                    displayValue = projects?.find(p => p.id === part.projectId)?.name || null;
+                  } else if (key === 'vehicleId') {
+                    displayValue = vehicles?.find(v => v.id === part.vehicleId)?.name || null;
+                  } else if (key === 'status') {
+                    displayValue = part.status.charAt(0).toUpperCase() + part.status.slice(1);
+                  } else if (key === 'price' || key === 'shipping' || key === 'duties') {
+                    displayValue = `$${parseFloat(part[key]).toFixed(2)}`;
+                  } else if (key === 'quantity') {
+                    displayValue = `×${parseInt(part.quantity)}`;
+                  } else if (part[key]) {
+                    displayValue = String(part[key]);
+                    if (displayValue.length > 18) displayValue = displayValue.slice(0, 18) + '…';
+                  }
 
-              return (
-                <button
-                  key={key}
-                  onClick={() => toggleField(key)}
-                  className={`w-full flex items-center gap-3 px-3 py-2.5 text-left transition-colors ${rowHover} ${idx < DUPLICATE_FIELDS.length - 1 ? `border-b ${border}` : ''}`}
-                >
-                  <div className={`w-4 h-4 rounded flex items-center justify-center flex-shrink-0 border transition-colors ${checked ? 'bg-blue-600 border-blue-600' : checkboxBorder}`}>
-                    {checked && (
-                      <svg className="w-3 h-3 text-white" fill="none" viewBox="0 0 12 12">
-                        <path d="M2 6l3 3 5-5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-                      </svg>
-                    )}
-                  </div>
-                  <span className={`text-sm ${checked ? text : subtext}`}>{label}</span>
-                  {displayValue && (
-                    <span className={`ml-auto text-xs ${subtext} truncate max-w-[100px]`}>{displayValue}</span>
-                  )}
-                </button>
-              );
-            })}
-          </div>
+                  return (
+                    <button
+                      key={key}
+                      onClick={() => toggleField(key)}
+                      className={`w-full flex items-center gap-3 px-3 py-2.5 text-left transition-colors ${rowHover} ${idx < availableFields.length - 1 ? `border-b ${border}` : ''}`}
+                    >
+                      <div className={`w-4 h-4 rounded flex items-center justify-center flex-shrink-0 border transition-colors ${checked ? 'bg-blue-600 border-blue-600' : checkboxBorder}`}>
+                        {checked && (
+                          <svg className="w-3 h-3 text-white" fill="none" viewBox="0 0 12 12">
+                            <path d="M2 6l3 3 5-5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                          </svg>
+                        )}
+                      </div>
+                      <span className={`text-sm ${checked ? text : subtext}`}>{label}</span>
+                      {displayValue && (
+                        <span className={`ml-auto text-xs ${subtext} truncate max-w-[100px]`}>{displayValue}</span>
+                      )}
+                    </button>
+                  );
+                })}
+              </div>
+            );
+          })()}
         </div>
 
         {/* Footer */}
