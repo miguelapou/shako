@@ -1064,12 +1064,10 @@ const ProjectDetailView = ({
                       }`}
                     >
                       <td className={`px-3 py-2 ${darkMode ? 'text-gray-100' : 'text-gray-800'}`}>
-                        {part.part}{(part.quantity || 1) > 1 ? ` ×${part.quantity}` : ''}
-                        {part.partNumber && part.partNumber !== '-' && (
-                          <div className={`text-xs font-mono ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>
-                            {part.partNumber}
-                          </div>
-                        )}
+                        <div>{part.part}{(part.quantity || 1) > 1 ? ` ×${part.quantity}` : ''}</div>
+                        <div className={`text-xs font-mono h-4 ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>
+                          {part.partNumber && part.partNumber !== '-' ? part.partNumber : ''}
+                        </div>
                       </td>
                       <td className="px-3 py-2">
                         {part.vendor && (
