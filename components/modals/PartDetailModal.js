@@ -1149,7 +1149,7 @@ const PartDetailModal = ({
             className={`sticky bottom-0 border-t p-4 flex justify-between items-center ${
               darkMode
                 ? 'border-gray-700 bg-gray-800'
-                : 'border-slate-200 bg-slate-100'
+                : 'border-slate-300 bg-slate-100'
             }`}
           >
             {/* Navigation and Track button on the left */}
@@ -1868,7 +1868,7 @@ const PartDetailModal = ({
             className={`sticky bottom-0 border-t p-4 flex items-center justify-between ${
               darkMode
                 ? 'border-gray-700 bg-gray-800'
-                : 'border-slate-200 bg-slate-100'
+                : 'border-slate-300 bg-slate-100'
             }`}
           >
             <div className="flex items-center gap-2">

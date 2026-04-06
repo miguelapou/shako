@@ -658,7 +658,7 @@ const AddVehicleModal = ({
           </div>
         </div>
         <div className={`p-6 border-t ${
-          darkMode ? 'border-gray-700 bg-gray-800' : 'border-slate-200 bg-slate-100'
+          darkMode ? 'border-gray-700 bg-gray-800' : 'border-slate-300 bg-slate-100'
         }`}>
           <div className="flex gap-3">
             <button

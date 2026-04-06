@@ -650,7 +650,7 @@ const AddServiceEventModal = ({
 
         {/* Footer */}
         <div className={`px-6 py-4 border-t flex justify-between gap-3 ${
-          darkMode ? 'border-gray-700 bg-gray-800' : 'border-slate-200 bg-slate-100'
+          darkMode ? 'border-gray-700 bg-gray-800' : 'border-slate-300 bg-slate-100'
         }`}>
           {/* Delete button - mobile only, edit mode only */}
           {isEditMode && onDelete ? (

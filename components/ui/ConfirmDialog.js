@@ -107,7 +107,7 @@ const ConfirmDialog = ({
           <p>{message}</p>
         </div>
         {/* Footer */}
-        <div className={`px-6 py-4 flex ${secondaryAction && secondaryText ? 'justify-between' : 'justify-end'} gap-3 border-t ${darkMode ? 'border-gray-700' : 'border-slate-200'}`}>
+        <div className={`px-6 py-4 flex ${secondaryAction && secondaryText ? 'justify-between' : 'justify-end'} gap-3 border-t ${darkMode ? 'border-gray-700' : 'border-slate-300'}`}>
           {/* Secondary action on the left */}
           {secondaryAction && secondaryText && (
             <button

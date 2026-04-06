@@ -138,7 +138,7 @@ const DeleteAccountModal = ({
         </div>
 
         {/* Footer */}
-        <div className={`px-6 py-4 flex justify-end gap-3 border-t ${darkMode ? 'border-gray-700' : 'border-slate-200'}`}>
+        <div className={`px-6 py-4 flex justify-end gap-3 border-t ${darkMode ? 'border-gray-700' : 'border-slate-300'}`}>
           <button
             onClick={handleClose}
             disabled={isDeleting}
