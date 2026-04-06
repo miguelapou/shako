@@ -983,7 +983,7 @@ const PartDetailModal = ({
             {/* Status & Tracking Section - Always shows status */}
             <div
               className={`pt-4 border-t ${
-                darkMode ? 'border-gray-700' : 'border-slate-200'
+                darkMode ? 'border-gray-700' : 'border-slate-300'
               }`}
             >
               <h3
