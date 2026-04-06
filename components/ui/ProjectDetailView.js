@@ -993,7 +993,7 @@ const ProjectDetailView = ({
               <div
                 key={part.id}
                 className={`p-4 rounded-lg border flex flex-col ${
-                  darkMode ? 'bg-gray-700 border-gray-600' : 'bg-gray-50 border-gray-200'
+                  darkMode ? 'bg-gray-700 border-gray-600' : 'bg-gray-50 border-gray-300'
                 }`}
               >
                 <div className="flex justify-between items-start mb-3">
@@ -1112,7 +1112,7 @@ const ProjectDetailView = ({
             onMouseEnter={() => setIsPartsHovered(true)}
             onMouseLeave={() => setIsPartsHovered(false)}
             className={`text-center py-8 rounded-lg border w-full cursor-pointer transition-colors ${
-              darkMode ? 'bg-gray-700/30 border-gray-600' : 'bg-gray-50 border-gray-200'
+              darkMode ? 'bg-gray-700/30 border-gray-600' : 'bg-gray-50 border-gray-300'
             }`}
             style={{ color: isPartsHovered ? (darkMode ? '#60a5fa' : '#2563eb') : (darkMode ? '#9ca3af' : '#6b7280') }}
           >
