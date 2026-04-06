@@ -1334,7 +1334,7 @@ const VehicleDetailModal = ({
                               <div className={`relative rounded-lg p-3 pb-2 border transition-colors h-[4.5rem] overflow-hidden ${
                                 darkMode
                                   ? `bg-gray-700/50 border-gray-600 ${selectedEventId !== event.id ? 'can-hover:group-hover:border-white' : ''}`
-                                  : `bg-gray-50 border-gray-200 ${selectedEventId !== event.id ? 'can-hover:group-hover:border-gray-400' : ''}`
+                                  : `bg-gray-50 border-gray-300 ${selectedEventId !== event.id ? 'can-hover:group-hover:border-gray-400' : ''}`
                               }`}>
                                 {/* Indicators for notes and linked parts */}
                                 <div className="absolute top-2 right-2 flex items-center gap-1.5">
@@ -1587,7 +1587,7 @@ const VehicleDetailModal = ({
                         className={`group relative rounded-lg p-3 pb-2 border cursor-pointer transition-colors h-[4.5rem] overflow-hidden ${
                           darkMode
                             ? `bg-gray-700 border-gray-600 ${selectedDocId !== doc.id ? 'can-hover:hover:border-white' : ''}`
-                            : `bg-gray-50 border-gray-200 ${selectedDocId !== doc.id ? 'can-hover:hover:border-gray-400' : ''}`
+                            : `bg-gray-50 border-gray-300 ${selectedDocId !== doc.id ? 'can-hover:hover:border-gray-400' : ''}`
                         }`}
                         onClick={(e) => {
                           e.stopPropagation();
