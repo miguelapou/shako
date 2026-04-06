@@ -1535,6 +1535,9 @@ const VehicleDetailModal = ({
                         linked_part_ids: newEventLinkedParts.length > 0 ? newEventLinkedParts : null,
                         cost: newEventCost ? parseFloat(newEventCost) : null
                       });
+                      if (result && newEventLinkedParts.length > 0) {
+                        await Promise.all(newEventLinkedParts.map(partId => archivePart(partId, true)));
+                      }
                       return result;
                     } else {
                       const result = await addServiceEvent(
@@ -1546,6 +1549,9 @@ const VehicleDetailModal = ({
                         newEventLinkedParts,
                         newEventCost
                       );
+                      if (result && newEventLinkedParts.length > 0) {
+                        await Promise.all(newEventLinkedParts.map(partId => archivePart(partId, true)));
+                      }
                       return result;
                     }
                   }}
@@ -3632,6 +3638,9 @@ const VehicleDetailModal = ({
                       );
                     }
                     if (result) {
+                      if (newEventLinkedParts.length > 0) {
+                        await Promise.all(newEventLinkedParts.map(partId => archivePart(partId, true)));
+                      }
                       handleCloseServiceEventModal();
                     }
                   }}
