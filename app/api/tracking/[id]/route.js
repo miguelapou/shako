@@ -122,15 +122,8 @@ export async function GET(request, { params }) {
         .eq('id', partId)
         .single();
 
-      // Use Ship24-provided reset date if available, else fall back to 1st of next month
-      const quotaParts = error.message?.split('quota_limit_reached|');
-      const apiResetDate = quotaParts?.[1] ? new Date(quotaParts[1]) : null;
-      const resetDate = (apiResetDate && !isNaN(apiResetDate)) ? apiResetDate : (() => {
-        const d = new Date();
-        d.setMonth(d.getMonth() + 1, 1);
-        d.setHours(0, 0, 0, 0);
-        return d;
-      })();
+      const now = new Date();
+      const resetDate = new Date(now.getFullYear(), now.getDate() < 10 ? now.getMonth() : now.getMonth() + 1, 10);
       const resetStr = resetDate.toLocaleDateString('en-US', { month: 'long', day: 'numeric' });
 
       const limitMessage = isQuota
