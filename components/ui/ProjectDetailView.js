@@ -1007,7 +1007,7 @@ const ProjectDetailView = ({
             </h3>
             <div
               onClick={togglePartsViewMode}
-              className={`relative flex items-center rounded-lg border cursor-pointer ${
+              className={`hidden md:relative md:flex items-center rounded-lg border cursor-pointer ${
                 darkMode ? 'bg-gray-800 border-gray-600' : 'bg-slate-100 border-slate-300'
               }`}
             >
@@ -1037,8 +1037,8 @@ const ProjectDetailView = ({
               </div>
             </div>
           </div>
-          {partsViewMode === 'table' ? (
-            <div className={`rounded-lg border overflow-hidden ${
+          {partsViewMode === 'table' && (
+            <div className={`hidden md:block rounded-lg border overflow-hidden ${
               darkMode ? 'border-gray-600' : 'border-gray-300'
             }`}>
               <table className="w-full text-sm">
@@ -1110,8 +1110,8 @@ const ProjectDetailView = ({
                 </tbody>
               </table>
             </div>
-          ) : (
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          )}
+          <div className={`grid grid-cols-1 md:grid-cols-3 gap-4 ${partsViewMode === 'table' ? 'md:hidden' : ''}`}>
             {linkedParts.map((part) => (
               <div
                 key={part.id}
@@ -1214,7 +1214,6 @@ const ProjectDetailView = ({
               </div>
             ))}
           </div>
-          )}
         </div>
       )}
 
