@@ -1211,38 +1211,22 @@ const VehicleDetailModal = ({
                   }`}>
                     Service History
                   </h3>
-                  {(() => {
-                    const servicePartsTotal = calculateServicePartsTotal(viewingVehicle.id, parts, serviceEvents);
-                    if (servicePartsTotal === 0) return null;
-                    return (
-                      <span className={`px-2 py-1 rounded-md text-xs font-semibold flex items-center gap-1 ${
-                        darkMode ? 'bg-green-900/40 text-green-300' : 'bg-green-100 text-green-700'
-                      }`}>
-                        <Wrench className="w-3 h-3" />
-                        ${servicePartsTotal.toFixed(2)}
-                      </span>
-                    );
-                  })()}
-                </div>
-                <div className={`relative ${!loadingServiceEvents ? 'animate-fade-in' : ''}`} onClick={() => setSelectedEventId(null)}>
-                    {/* Show more/less toggle button */}
+                  <div className="flex items-center gap-2">
                     {serviceEventsHiddenCount > 0 && (
                       <button
                         onClick={(e) => {
                           e.stopPropagation();
                           if (serviceHistoryExpanded) {
-                            // Collapsing: trigger animation first, then collapse after delay
                             setIsServiceHistoryCollapsing(true);
                             setTimeout(() => {
                               setServiceHistoryExpanded(false);
                               setIsServiceHistoryCollapsing(false);
                             }, 250);
                           } else {
-                            // Expanding: just expand (animation handled via CSS class)
                             setServiceHistoryExpanded(true);
                           }
                         }}
-                        className={`flex items-center gap-1 text-sm font-medium mb-2 ${
+                        className={`flex items-center gap-1 text-sm font-medium ${
                           darkMode
                             ? 'text-blue-400 hover:text-blue-300'
                             : 'text-blue-600 hover:text-blue-700'
@@ -1261,6 +1245,22 @@ const VehicleDetailModal = ({
                         )}
                       </button>
                     )}
+                    {(() => {
+                      const servicePartsTotal = calculateServicePartsTotal(viewingVehicle.id, parts, serviceEvents);
+                      if (servicePartsTotal === 0) return null;
+                      return (
+                        <span className={`px-2 py-1 rounded-md text-xs font-semibold flex items-center gap-1 ${
+                          darkMode ? 'bg-green-900/40 text-green-300' : 'bg-green-100 text-green-700'
+                        }`}>
+                          <Wrench className="w-3 h-3" />
+                          ${servicePartsTotal.toFixed(2)}
+                        </span>
+                      );
+                    })()}
+                  </div>
+                </div>
+                <div className={`relative ${!loadingServiceEvents ? 'animate-fade-in' : ''}`} onClick={() => setSelectedEventId(null)}>
+                    {/* list starts here, toggle moved to header */}
 
                     {/* Service events container */}
                     <div className="flex flex-col gap-4">
@@ -1578,13 +1578,13 @@ const VehicleDetailModal = ({
                     </h3>
                   </div>
                   <div
-                    className={`grid grid-cols-2 gap-3 ${!loadingDocuments ? 'animate-fade-in' : ''}`}
+                    className={`grid grid-cols-2 gap-4 ${!loadingDocuments ? 'animate-fade-in' : ''}`}
                     onClick={() => setSelectedDocId(null)}
                   >
                     {documents.map((doc) => (
                       <div
                         key={doc.id}
-                        className={`group relative rounded-lg p-3 border cursor-pointer transition-colors ${
+                        className={`group relative rounded-lg p-3 border cursor-pointer transition-colors min-h-[4rem] ${
                           darkMode
                             ? `bg-gray-700 border-gray-600 ${selectedDocId !== doc.id ? 'can-hover:hover:border-white' : ''}`
                             : `bg-gray-50 border-gray-200 ${selectedDocId !== doc.id ? 'can-hover:hover:border-gray-400' : ''}`
@@ -1663,7 +1663,7 @@ const VehicleDetailModal = ({
                     {/* Add new document card */}
                     <div
                       onClick={() => setShowAddDocumentModal(true)}
-                      className={`group relative rounded-lg p-3 border-2 border-dashed transition-all cursor-pointer can-hover:hover:shadow-md ${
+                      className={`group relative rounded-lg p-3 border-2 border-dashed transition-all cursor-pointer can-hover:hover:shadow-md min-h-[4rem] ${
                         darkMode
                           ? 'border-gray-600 can-hover:hover:border-blue-500 can-hover:hover:bg-gray-700/50'
                           : 'border-gray-300 can-hover:hover:border-blue-500 can-hover:hover:bg-blue-50/50'
