@@ -35,8 +35,9 @@ const ProjectViewActions = ({
           title="Add Part to this Project"
           className={secondaryBtn}
         >
+          <span className="sm:hidden">+</span>
           <Package className="w-4 h-4" />
-          <span>Add Part</span>
+          <span className="hidden sm:inline">Add Part</span>
         </button>
       )}
       <button
@@ -44,8 +45,9 @@ const ProjectViewActions = ({
         title="Project Notes"
         className={secondaryBtn}
       >
+        <span className="sm:hidden">+</span>
         <SquareGantt className="w-4 h-4" />
-        <span>{hasNotes ? 'Notes' : '+ Notes'}</span>
+        <span className="hidden sm:inline">{hasNotes ? 'Notes' : '+ Notes'}</span>
       </button>
       <PrimaryButton onClick={onEditClick} icon={Edit2}>
         {editLabel}
