@@ -1331,7 +1331,7 @@ const VehicleDetailModal = ({
 
                             {/* Event content */}
                             <div className="flex-1 min-w-0 pb-0">
-                              <div className={`relative rounded-lg p-3 border transition-colors ${
+                              <div className={`relative rounded-lg p-3 border transition-colors h-[4.5rem] overflow-hidden ${
                                 darkMode
                                   ? `bg-gray-700/50 border-gray-600 ${selectedEventId !== event.id ? 'can-hover:group-hover:border-white' : ''}`
                                   : `bg-gray-50 border-gray-200 ${selectedEventId !== event.id ? 'can-hover:group-hover:border-gray-400' : ''}`
@@ -1584,7 +1584,7 @@ const VehicleDetailModal = ({
                     {documents.map((doc) => (
                       <div
                         key={doc.id}
-                        className={`group relative rounded-lg p-3 border cursor-pointer transition-colors min-h-[4rem] ${
+                        className={`group relative rounded-lg p-3 border cursor-pointer transition-colors h-[4.5rem] overflow-hidden ${
                           darkMode
                             ? `bg-gray-700 border-gray-600 ${selectedDocId !== doc.id ? 'can-hover:hover:border-white' : ''}`
                             : `bg-gray-50 border-gray-200 ${selectedDocId !== doc.id ? 'can-hover:hover:border-gray-400' : ''}`
@@ -1663,7 +1663,7 @@ const VehicleDetailModal = ({
                     {/* Add new document card */}
                     <div
                       onClick={() => setShowAddDocumentModal(true)}
-                      className={`group relative rounded-lg p-3 border-2 border-dashed transition-all cursor-pointer can-hover:hover:shadow-md min-h-[4rem] ${
+                      className={`group relative rounded-lg p-3 border-2 border-dashed transition-all cursor-pointer can-hover:hover:shadow-md h-[4.5rem] overflow-hidden ${
                         darkMode
                           ? 'border-gray-600 can-hover:hover:border-blue-500 can-hover:hover:bg-gray-700/50'
                           : 'border-gray-300 can-hover:hover:border-blue-500 can-hover:hover:bg-blue-50/50'
