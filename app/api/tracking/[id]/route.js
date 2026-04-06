@@ -122,9 +122,8 @@ export async function GET(request, { params }) {
         .eq('id', partId)
         .single();
 
-      const resetDate = new Date();
-      resetDate.setMonth(resetDate.getMonth() + 1, 1);
-      resetDate.setHours(0, 0, 0, 0);
+      const now = new Date();
+      const resetDate = new Date(now.getFullYear(), now.getDate() < 10 ? now.getMonth() : now.getMonth() + 1, 10);
       const resetStr = resetDate.toLocaleDateString('en-US', { month: 'long', day: 'numeric' });
 
       const limitMessage = isQuota
