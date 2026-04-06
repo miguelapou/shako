@@ -268,15 +268,16 @@ const VehiclesTab = ({
                 setOriginalVehicleData({ ...vehicle }); // Save original data for unsaved changes check
                 setShowVehicleDetailModal(true);
               }}
-              className={`relative flex flex-col rounded-lg shadow-lg pt-3 ${vehicle.archived ? 'pb-3' : 'pb-4'} px-6 transition-[transform,box-shadow] duration-200 hover:shadow-2xl hover:scale-[1.03] cursor-pointer border-t-4 ${
+              className={`relative flex flex-col rounded-lg shadow-lg pt-4 ${vehicle.archived ? 'pb-3' : 'pb-4'} px-6 transition-[transform,box-shadow] duration-200 hover:shadow-2xl hover:scale-[1.03] cursor-pointer overflow-hidden ${
                 draggedVehicle?.id === vehicle.id
                   ? 'ring-2 ring-blue-500 ring-offset-2'
                   : dragOverVehicle?.id === vehicle.id
                     ? (darkMode ? 'ring-2 ring-blue-500' : 'ring-2 ring-blue-400')
                     : ''
               } ${cardBg(darkMode)}`}
-              style={{ borderTopColor: borderColor }}
             >
+              {/* Top accent bar */}
+              <div className="absolute top-0 left-0 right-0 h-1" style={{ backgroundColor: borderColor }} />
               {/* Drag Handle - Hidden on touch devices */}
               <div
                 draggable
@@ -677,9 +678,10 @@ const VehiclesTab = ({
                     setOriginalVehicleData({ ...vehicle }); // Save original data for unsaved changes check
                     setShowVehicleDetailModal(true);
                   }}
-                  className={`relative rounded-lg shadow-lg pt-2 pb-2 px-3 transition-[transform,box-shadow] duration-200 hover:shadow-2xl hover:scale-[1.03] cursor-pointer border-t-4 ${cardBg(darkMode)}`}
-                  style={{ borderTopColor: borderColor }}
+                  className={`relative rounded-lg shadow-lg pt-3 pb-2 px-3 transition-[transform,box-shadow] duration-200 hover:shadow-2xl hover:scale-[1.03] cursor-pointer overflow-hidden ${cardBg(darkMode)}`}
                 >
+                  {/* Top accent bar */}
+                  <div className="absolute top-0 left-0 right-0 h-1" style={{ backgroundColor: borderColor }} />
                   {/* Vehicle Image */}
                   {(vehicle.image_url_resolved || vehicle.image_url) ? (
                     <div className="mb-2 mt-1 relative">
