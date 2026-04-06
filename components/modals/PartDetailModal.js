@@ -690,8 +690,8 @@ const PartDetailModal = ({
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
               {/* Left Column */}
               <div
-                className={`rounded-lg p-4 ${
-                  darkMode ? 'bg-gray-700' : 'bg-gray-50'
+                className={`rounded-lg p-4 border ${
+                  darkMode ? 'bg-gray-700 border-gray-600' : 'bg-gray-50 border-gray-300'
                 }`}
               >
                 <h3
@@ -867,8 +867,8 @@ const PartDetailModal = ({
 
               {/* Right Column - Cost Breakdown */}
               <div
-                className={`rounded-lg p-4 ${
-                  darkMode ? 'bg-gray-700' : 'bg-gray-50'
+                className={`rounded-lg p-4 border ${
+                  darkMode ? 'bg-gray-700 border-gray-600' : 'bg-gray-50 border-gray-300'
                 }`}
               >
                 <h3
@@ -1080,8 +1080,8 @@ const PartDetailModal = ({
                   {/* Tracking timeline or loading state */}
                   {viewingPart.tracking_checkpoints && viewingPart.tracking_checkpoints.length > 0 ? (
                     <div
-                      className={`rounded-lg p-4 ${
-                        darkMode ? 'bg-gray-700' : 'bg-gray-50'
+                      className={`rounded-lg p-4 border ${
+                        darkMode ? 'bg-gray-700 border-gray-600' : 'bg-gray-50 border-gray-300'
                       }`}
                     >
                       <TrackingTimeline
@@ -1094,8 +1094,8 @@ const PartDetailModal = ({
                     </div>
                   ) : isRefreshingTracking ? (
                     <div
-                      className={`rounded-lg p-4 ${
-                        darkMode ? 'bg-gray-700' : 'bg-gray-50'
+                      className={`rounded-lg p-4 border ${
+                        darkMode ? 'bg-gray-700 border-gray-600' : 'bg-gray-50 border-gray-300'
                       }`}
                     >
                       <div className="flex items-center gap-3">

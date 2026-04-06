@@ -19,7 +19,7 @@ const LinkedPartsSection = ({
 
   return (
     <div className={`mt-6 pt-6 border-t ${
-      darkMode ? 'border-gray-600' : 'border-gray-200'
+      darkMode ? 'border-gray-600' : 'border-gray-300'
     }`}>
       <h3 className={`text-lg font-semibold mb-3 ${
         darkMode ? 'text-gray-200' : 'text-gray-800'
@@ -41,7 +41,7 @@ const LinkedPartsSection = ({
           onMouseEnter={() => setIsHovered(true)}
           onMouseLeave={() => setIsHovered(false)}
           className={`text-center py-8 rounded-lg border w-full cursor-pointer transition-colors ${
-            darkMode ? 'bg-gray-700/30 border-gray-600' : 'bg-gray-50 border-gray-200'
+            darkMode ? 'bg-gray-700/30 border-gray-600' : 'bg-gray-50 border-gray-300'
           }`}
           style={{ color: isHovered ? (darkMode ? '#60a5fa' : '#2563eb') : (darkMode ? '#9ca3af' : '#6b7280') }}
         >
@@ -54,7 +54,7 @@ const LinkedPartsSection = ({
             <div
               key={part.id}
               className={`p-3 rounded-lg border flex items-center justify-between gap-3 ${
-                darkMode ? 'bg-gray-700 border-gray-600' : 'bg-gray-50 border-gray-200'
+                darkMode ? 'bg-gray-700 border-gray-600' : 'bg-gray-50 border-gray-300'
               }`}
             >
               <div className="flex-1 min-w-0">
