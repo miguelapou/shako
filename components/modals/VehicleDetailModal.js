@@ -1359,7 +1359,7 @@ const VehicleDetailModal = ({
                                   }`}>
                                     {event.description}
                                   </p>
-                                  <div className="flex flex-wrap items-center gap-x-3 gap-y-1 mt-1">
+                                  <div className="flex flex-wrap items-center gap-x-3 gap-y-1 mt-1.5">
                                     <span className={`text-xs flex items-center gap-1 whitespace-nowrap ${
                                       darkMode ? 'text-gray-400' : 'text-gray-500'
                                     }`}>
@@ -1606,7 +1606,7 @@ const VehicleDetailModal = ({
                             }`} title={doc.title}>
                               {doc.title}
                             </p>
-                            <p className={`text-xs truncate ${
+                            <p className={`text-xs truncate mt-0.5 ${
                               darkMode ? 'text-gray-500' : 'text-gray-500'
                             }`} title={doc.file_name}>
                               {doc.file_name}
