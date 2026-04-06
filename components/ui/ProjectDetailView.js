@@ -1005,17 +1005,37 @@ const ProjectDetailView = ({
                 <span>Linked Parts ({linkedParts.length})</span>
               </div>
             </h3>
-            <button
+            <div
               onClick={togglePartsViewMode}
-              title={partsViewMode === 'cards' ? 'Switch to table view' : 'Switch to card view'}
-              className={`p-1.5 rounded-md transition-colors ${
-                darkMode
-                  ? 'text-gray-400 hover:text-gray-200 hover:bg-gray-700'
-                  : 'text-gray-500 hover:text-gray-700 hover:bg-gray-200'
+              className={`relative flex items-center rounded-lg border cursor-pointer ${
+                darkMode ? 'bg-gray-800 border-gray-600' : 'bg-slate-100 border-slate-300'
               }`}
             >
-              {partsViewMode === 'cards' ? <Table className="w-4 h-4" /> : <LayoutGrid className="w-4 h-4" />}
-            </button>
+              {/* Sliding background indicator */}
+              <div
+                className={`absolute top-0.5 bottom-0.5 left-0.5 w-[calc(50%-2px)] rounded-md transition-all duration-200 ease-in-out ${
+                  darkMode ? 'bg-green-600' : 'bg-green-500'
+                } ${
+                  partsViewMode === 'table' ? 'translate-x-full' : 'translate-x-0'
+                }`}
+              />
+              {/* Cards icon */}
+              <div
+                className={`relative z-10 p-1.5 flex items-center justify-center rounded-md transition-colors duration-200 ${
+                  partsViewMode === 'cards' ? 'text-white' : darkMode ? 'text-gray-400' : 'text-slate-500'
+                }`}
+              >
+                <LayoutGrid className="w-4 h-4" />
+              </div>
+              {/* Table icon */}
+              <div
+                className={`relative z-10 p-1.5 flex items-center justify-center rounded-md transition-colors duration-200 ${
+                  partsViewMode === 'table' ? 'text-white' : darkMode ? 'text-gray-400' : 'text-slate-500'
+                }`}
+              >
+                <Table className="w-4 h-4" />
+              </div>
+            </div>
           </div>
           {partsViewMode === 'table' ? (
             <div className={`rounded-lg border overflow-hidden ${
