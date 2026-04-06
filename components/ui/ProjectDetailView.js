@@ -978,7 +978,7 @@ const ProjectDetailView = ({
       {/* Linked Parts List - Full Width Below */}
       {linkedParts.length > 0 && (
         <div className={`pt-6 border-t ${
-          darkMode ? 'border-gray-700' : 'border-slate-200'
+          darkMode ? 'border-gray-700' : 'border-slate-300'
         }`}>
           <h3 className={`text-lg font-semibold mb-3 ${
             darkMode ? 'text-gray-200' : 'text-gray-800'
@@ -1039,7 +1039,7 @@ const ProjectDetailView = ({
                   </p>
                 )}
                 <div className={`border-t flex-1 flex flex-col justify-end ${
-                  darkMode ? 'border-gray-600' : 'border-gray-200'
+                  darkMode ? 'border-gray-600' : 'border-gray-300'
                 }`}>
                   <div className="pt-3 space-y-2">
                     <div className="flex justify-between text-sm">
@@ -1077,7 +1077,7 @@ const ProjectDetailView = ({
                       </div>
                     )}
                     <div className={`flex justify-between text-base font-bold pt-2 border-t ${
-                      darkMode ? 'border-gray-600' : 'border-gray-200'
+                      darkMode ? 'border-gray-600' : 'border-gray-300'
                     }`}>
                       <span className={darkMode ? 'text-gray-100' : 'text-slate-800'}>
                         Total:
@@ -1097,7 +1097,7 @@ const ProjectDetailView = ({
       {/* Empty State for Linked Parts */}
       {linkedParts.length === 0 && (
         <div className={`pt-6 border-t ${
-          darkMode ? 'border-gray-700' : 'border-slate-200'
+          darkMode ? 'border-gray-700' : 'border-slate-300'
         }`}>
           <h3 className={`text-lg font-semibold mb-3 ${
             darkMode ? 'text-gray-200' : 'text-gray-800'

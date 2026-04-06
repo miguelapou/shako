@@ -1797,7 +1797,7 @@ const PartsTab = ({
 
                 {/* Divider */}
                 <div className={`my-3 border-t ${
-                  darkMode ? 'border-gray-700' : 'border-slate-200'
+                  darkMode ? 'border-gray-700' : 'border-slate-300'
                 }`}></div>
 
                 {/* Tracking and Total Price Row (Mobile Only) */}
