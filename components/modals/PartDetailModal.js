@@ -687,7 +687,7 @@ const PartDetailModal = ({
             className="p-4 sm:p-6 modal-scrollable animate-fade-in"
           >
             {/* Part Details Grid */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-4">
               {/* Left Column */}
               <div
                 className={`rounded-lg p-4 border ${
@@ -982,7 +982,7 @@ const PartDetailModal = ({
 
             {/* Status & Tracking Section - Always shows status */}
             <div
-              className={`pt-6 border-t ${
+              className={`pt-4 border-t ${
                 darkMode ? 'border-gray-700' : 'border-slate-200'
               }`}
             >
