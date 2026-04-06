@@ -589,7 +589,7 @@ const VehicleDetailModal = ({
       >
         {/* Header */}
         <div className={`sticky top-0 z-10 px-6 py-4 border-b ${
-          darkMode ? 'bg-gray-800 border-gray-700' : 'bg-slate-50 border-slate-200'
+          darkMode ? 'bg-gray-700 border-gray-600' : 'bg-slate-50 border-slate-300'
         }`}>
           <div className="flex items-center justify-between gap-4">
             <div className="flex flex-col min-w-0 flex-1">
@@ -3236,7 +3236,7 @@ const VehicleDetailModal = ({
 
         {/* Footer with Edit Button */}
         <div className={`sticky bottom-0 z-10 border-t p-4 flex items-center justify-between ${
-          darkMode ? 'border-gray-700 bg-gray-800' : 'border-slate-200 bg-slate-100'
+          darkMode ? 'border-gray-600 bg-gray-700' : 'border-slate-300 bg-slate-100'
         }`}>
           {vehicleModalEditMode ? (
             <div className="flex items-center justify-between sm:justify-start w-full gap-2">

@@ -266,7 +266,7 @@ const AddServiceEventModal = ({
       >
         {/* Header */}
         <div className={`px-6 py-4 border-b flex items-center justify-between ${
-          darkMode ? 'border-gray-700 bg-gray-800' : 'border-slate-200 bg-slate-50'
+          darkMode ? 'border-gray-600 bg-gray-700' : 'border-slate-300 bg-slate-50'
         }`}>
           <h3 className={`text-lg font-semibold ${
             darkMode ? 'text-gray-100' : 'text-gray-800'
@@ -650,7 +650,7 @@ const AddServiceEventModal = ({
 
         {/* Footer */}
         <div className={`px-6 py-4 border-t flex justify-between gap-3 ${
-          darkMode ? 'border-gray-700 bg-gray-800' : 'border-slate-200 bg-slate-100'
+          darkMode ? 'border-gray-600 bg-gray-700' : 'border-slate-300 bg-slate-100'
         }`}>
           {/* Delete button - mobile only, edit mode only */}
           {isEditMode && onDelete ? (

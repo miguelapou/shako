@@ -94,7 +94,7 @@ const ConfirmDialog = ({
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header */}
-        <div className={`px-6 py-4 border-b ${darkMode ? 'border-gray-700' : 'border-slate-200'}`}>
+        <div className={`px-6 py-4 border-b ${darkMode ? 'bg-gray-700 border-gray-600' : 'border-slate-300'}`}>
           <h3
             className={`text-lg font-semibold ${darkMode ? 'text-gray-100' : 'text-slate-800'}`}
             style={{ fontFamily: "'FoundationOne', 'Courier New', monospace" }}
@@ -107,7 +107,7 @@ const ConfirmDialog = ({
           <p>{message}</p>
         </div>
         {/* Footer */}
-        <div className={`px-6 py-4 flex ${secondaryAction && secondaryText ? 'justify-between' : 'justify-end'} gap-3 border-t ${darkMode ? 'border-gray-700' : 'border-slate-200'}`}>
+        <div className={`px-6 py-4 flex ${secondaryAction && secondaryText ? 'justify-between' : 'justify-end'} gap-3 border-t ${darkMode ? 'bg-gray-700 border-gray-600' : 'border-slate-300'}`}>
           {/* Secondary action on the left */}
           {secondaryAction && secondaryText && (
             <button

@@ -623,7 +623,7 @@ const PartDetailModal = ({
         {/* HEADER */}
         <div
           className={`sticky top-0 z-10 border-b px-6 py-4 rounded-t-lg ${
-            darkMode ? 'bg-gray-800 border-gray-700' : 'bg-slate-50 border-slate-200'
+            darkMode ? 'bg-gray-700 border-gray-600' : 'bg-slate-50 border-slate-300'
           }`}
         >
           <div className="flex items-center justify-between gap-3">
@@ -687,11 +687,11 @@ const PartDetailModal = ({
             className="p-4 sm:p-6 modal-scrollable animate-fade-in"
           >
             {/* Part Details Grid */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-4">
               {/* Left Column */}
               <div
-                className={`rounded-lg p-4 ${
-                  darkMode ? 'bg-gray-700' : 'bg-gray-50'
+                className={`rounded-lg p-4 border ${
+                  darkMode ? 'bg-gray-700 border-gray-600' : 'bg-gray-50 border-gray-300'
                 }`}
               >
                 <h3
@@ -867,8 +867,8 @@ const PartDetailModal = ({
 
               {/* Right Column - Cost Breakdown */}
               <div
-                className={`rounded-lg p-4 ${
-                  darkMode ? 'bg-gray-700' : 'bg-gray-50'
+                className={`rounded-lg p-4 border ${
+                  darkMode ? 'bg-gray-700 border-gray-600' : 'bg-gray-50 border-gray-300'
                 }`}
               >
                 <h3
@@ -982,8 +982,8 @@ const PartDetailModal = ({
 
             {/* Status & Tracking Section - Always shows status */}
             <div
-              className={`pt-6 border-t ${
-                darkMode ? 'border-gray-700' : 'border-slate-200'
+              className={`pt-4 border-t ${
+                darkMode ? 'border-gray-700' : 'border-slate-300'
               }`}
             >
               <h3
@@ -1080,8 +1080,8 @@ const PartDetailModal = ({
                   {/* Tracking timeline or loading state */}
                   {viewingPart.tracking_checkpoints && viewingPart.tracking_checkpoints.length > 0 ? (
                     <div
-                      className={`rounded-lg p-4 ${
-                        darkMode ? 'bg-gray-700' : 'bg-gray-50'
+                      className={`rounded-lg p-4 border ${
+                        darkMode ? 'bg-gray-700 border-gray-600' : 'bg-gray-50 border-gray-300'
                       }`}
                     >
                       <TrackingTimeline
@@ -1094,8 +1094,8 @@ const PartDetailModal = ({
                     </div>
                   ) : isRefreshingTracking ? (
                     <div
-                      className={`rounded-lg p-4 ${
-                        darkMode ? 'bg-gray-700' : 'bg-gray-50'
+                      className={`rounded-lg p-4 border ${
+                        darkMode ? 'bg-gray-700 border-gray-600' : 'bg-gray-50 border-gray-300'
                       }`}
                     >
                       <div className="flex items-center gap-3">
@@ -1148,8 +1148,8 @@ const PartDetailModal = ({
           <div
             className={`sticky bottom-0 border-t p-4 flex justify-between items-center ${
               darkMode
-                ? 'border-gray-700 bg-gray-800'
-                : 'border-slate-200 bg-slate-100'
+                ? 'border-gray-600 bg-gray-700'
+                : 'border-slate-300 bg-slate-100'
             }`}
           >
             {/* Navigation and Track button on the left */}
@@ -1867,8 +1867,8 @@ const PartDetailModal = ({
           <div
             className={`sticky bottom-0 border-t p-4 flex items-center justify-between ${
               darkMode
-                ? 'border-gray-700 bg-gray-800'
-                : 'border-slate-200 bg-slate-100'
+                ? 'border-gray-600 bg-gray-700'
+                : 'border-slate-300 bg-slate-100'
             }`}
           >
             <div className="flex items-center gap-2">

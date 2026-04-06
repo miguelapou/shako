@@ -66,7 +66,7 @@ const ManageVendorsModal = ({
         {/* HEADER */}
         <div
           className={`sticky top-0 z-10 border-b px-6 py-4 rounded-t-lg ${
-            darkMode ? 'bg-gray-800 border-gray-700' : 'bg-slate-50 border-slate-200'
+            darkMode ? 'bg-gray-700 border-gray-600' : 'bg-slate-50 border-slate-300'
           }`}
         >
           <div className="flex items-center justify-between gap-3">
@@ -378,8 +378,8 @@ const ManageVendorsModal = ({
         <div
           className={`sticky bottom-0 border-t p-4 flex items-center justify-end ${
             darkMode
-              ? 'border-gray-700 bg-gray-800'
-              : 'border-slate-200 bg-slate-100'
+              ? 'border-gray-600 bg-gray-700'
+              : 'border-slate-300 bg-slate-100'
           }`}
         >
           <PrimaryButton

@@ -78,7 +78,7 @@ const AddPartOptionsModal = ({
         onClick={(e) => e.stopPropagation()}
       >
         <div className={`sticky top-0 border-b px-6 py-4 flex items-center justify-between ${
-          darkMode ? 'bg-gray-800 border-gray-700' : 'bg-slate-50 border-slate-200'
+          darkMode ? 'bg-gray-700 border-gray-600' : 'bg-slate-50 border-slate-300'
         }`}>
           <h2 className={`text-2xl font-bold ${
             darkMode ? 'text-gray-100' : 'text-gray-800'
@@ -185,7 +185,7 @@ const AddPartOptionsModal = ({
         </div>
 
         <div className={`p-6 border-t ${
-          darkMode ? 'border-gray-700 bg-gray-800' : 'border-slate-200 bg-slate-100'
+          darkMode ? 'border-gray-600 bg-gray-700' : 'border-slate-300 bg-slate-100'
         }`}>
           <button
             onClick={() => handleCloseModal(onClose)}

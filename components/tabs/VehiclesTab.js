@@ -384,7 +384,7 @@ const VehiclesTab = ({
 
                   {/* Bottom: Vehicle name/badge separated by horizontal line */}
                   <div className={`mt-4 pt-3 border-t ${
-                    darkMode ? 'border-gray-700' : 'border-slate-200'
+                    darkMode ? 'border-gray-700' : 'border-slate-300'
                   }`}>
                     <div className="flex items-center justify-between gap-2">
                       <h3 className={`text-lg font-bold truncate ${
@@ -469,7 +469,7 @@ const VehiclesTab = ({
                           const vehicleProjects = getVehicleProjects(vehicle.id);
                           return (
                             <div className={`mt-4 pt-4 border-t ${
-                              darkMode ? 'border-gray-700' : 'border-slate-200'
+                              darkMode ? 'border-gray-700' : 'border-slate-300'
                             }`}>
                               <h4 className={`text-xs font-semibold mb-2 uppercase tracking-wider ${
                                 darkMode ? 'text-gray-400' : 'text-slate-600'

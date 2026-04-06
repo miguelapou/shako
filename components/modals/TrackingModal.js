@@ -68,7 +68,7 @@ const TrackingModal = ({
         onClick={(e) => e.stopPropagation()}
       >
         <div className={`sticky top-0 z-10 border-b px-6 py-4 flex items-center justify-between rounded-t-lg ${
-          darkMode ? 'bg-gray-800 border-gray-700' : 'bg-slate-50 border-slate-200'
+          darkMode ? 'bg-gray-700 border-gray-600' : 'bg-slate-50 border-slate-300'
         }`}>
           <h2 className={`text-xl font-bold ${
             darkMode ? 'text-gray-100' : 'text-gray-800'
