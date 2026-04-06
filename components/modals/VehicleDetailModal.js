@@ -1719,8 +1719,102 @@ const VehicleDetailModal = ({
 
               {/* Projects Section */}
               {(() => {
-                const vehicleProjects = getVehicleProjects(viewingVehicle.id)
-                  .sort((a, b) => (a.archived === b.archived ? 0 : a.archived ? 1 : -1));
+                const allVehicleProjects = getVehicleProjects(viewingVehicle.id);
+                const activeProjects = allVehicleProjects.filter(p => !p.archived);
+                const archivedProjects = allVehicleProjects.filter(p => p.archived);
+
+                const renderProjectCard = (project) => {
+                  const projectParts = parts.filter(p => p.projectId === project.id);
+                  const projectTotal = projectParts.reduce((sum, part) => sum + part.total, 0);
+                  const completedTodos = project.todos ? project.todos.filter(t => t.completed).length : 0;
+                  const uncompletedTodos = project.todos ? project.todos.filter(t => !t.completed).length : 0;
+                  const statusColors = getStatusColors(darkMode);
+                  return (
+                    <button
+                      key={project.id}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setVehicleModalProjectView(project);
+                      }}
+                      className={`relative flex flex-col rounded-lg p-4 border-l-4 text-left transition-all duration-200 cursor-pointer can-hover:hover:shadow-2xl can-hover:hover:scale-[1.03] ${
+                        darkMode ? 'bg-gray-700' : 'bg-gray-50'
+                      }`}
+                      style={{ borderLeftColor: getPriorityBorderColor(project.priority) }}
+                    >
+                      {/* Status Badge with optional Archive icon */}
+                      <div className="absolute top-2 right-2 flex items-center gap-1.5">
+                        {project.archived && (
+                          <span data-tooltip="Archived" className="instant-tooltip flex items-center">
+                            <Archive className={`w-4 h-4 ${darkMode ? 'text-gray-500' : 'text-gray-400'}`} />
+                          </span>
+                        )}
+                        <span className={`px-2 py-0.5 rounded-full text-xs font-medium ${
+                          statusColors[project.status]
+                        } ${!darkMode ? 'ring-1 ring-inset ring-current' : ''}`}>
+                          {project.status === 'in_progress' ? 'IN PROGRESS' :
+                           project.status === 'on_hold' ? 'ON HOLD' :
+                           project.status?.toUpperCase() || 'PLANNING'}
+                        </span>
+                      </div>
+                      <h4 className={`font-semibold mb-2 pr-20 ${
+                        darkMode ? 'text-gray-200' : 'text-gray-800'
+                      }`}>
+                        {project.name}
+                      </h4>
+                      <p className={`text-sm mb-3 line-clamp-3 overflow-hidden ${
+                        project.description
+                          ? (darkMode ? 'text-gray-400' : 'text-slate-600')
+                          : (darkMode ? 'text-gray-500 italic' : 'text-gray-500 italic')
+                      }`}
+                      style={{ height: '3.75rem', display: '-webkit-box', WebkitLineClamp: 3, WebkitBoxOrient: 'vertical' }}>
+                        {project.description || 'No description added'}
+                      </p>
+                      <div className="flex flex-wrap gap-4 text-xs mt-auto">
+                        <div className="flex items-center gap-1">
+                          <Package className={`w-3 h-3 ${
+                            darkMode ? 'text-gray-500' : 'text-gray-400'
+                          }`} />
+                          <span className={darkMode ? 'text-gray-400' : 'text-slate-600'}>
+                            {projectParts.length} parts
+                          </span>
+                        </div>
+                        <span className={darkMode ? 'text-gray-600' : 'text-gray-400'}>•</span>
+                        <div className="flex items-center gap-1">
+                          <BadgeDollarSign className={`w-3 h-3 ${
+                            darkMode ? 'text-gray-500' : 'text-gray-400'
+                          }`} />
+                          <span className={darkMode ? 'text-gray-400' : 'text-slate-600'}>
+                            ${projectTotal.toFixed(2)}
+                          </span>
+                        </div>
+                        {project.todos && project.todos.length > 0 && (
+                          <>
+                            <span className={darkMode ? 'text-gray-600' : 'text-gray-400'}>•</span>
+                            <div className="flex items-center gap-2">
+                              <div className="flex items-center gap-1">
+                                <CheckCircle className={`w-3 h-3 ${
+                                  darkMode ? 'text-green-400' : 'text-green-600'
+                                }`} />
+                                <span className={darkMode ? 'text-gray-400' : 'text-slate-600'}>
+                                  {completedTodos}
+                                </span>
+                              </div>
+                              <div className="flex items-center gap-1">
+                                <Clock className={`w-3 h-3 ${
+                                  darkMode ? 'text-gray-400' : 'text-gray-500'
+                                }`} />
+                                <span className={darkMode ? 'text-gray-400' : 'text-slate-600'}>
+                                  {uncompletedTodos}
+                                </span>
+                              </div>
+                            </div>
+                          </>
+                        )}
+                      </div>
+                    </button>
+                  );
+                };
+
                 return (
                   <div className={`pt-6 border-t ${
                     darkMode ? 'border-gray-700' : 'border-slate-200'
@@ -1733,100 +1827,30 @@ const VehicleDetailModal = ({
                         <span>Projects</span>
                       </div>
                     </h3>
-                    {vehicleProjects.length > 0 ? (
-                      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                        {vehicleProjects.map((project) => {
-                          const projectParts = parts.filter(p => p.projectId === project.id);
-                          const projectTotal = projectParts.reduce((sum, part) => sum + part.total, 0);
-                          const completedTodos = project.todos ? project.todos.filter(t => t.completed).length : 0;
-                          const uncompletedTodos = project.todos ? project.todos.filter(t => !t.completed).length : 0;
-
-                          const statusColors = getStatusColors(darkMode);
-                          return (
-                            <button
-                              key={project.id}
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                setVehicleModalProjectView(project);
-                              }}
-                              className={`relative flex flex-col rounded-lg p-4 border-l-4 text-left transition-all duration-200 cursor-pointer can-hover:hover:shadow-2xl can-hover:hover:scale-[1.03] ${
-                                darkMode ? 'bg-gray-700' : 'bg-gray-50'
-                              }`}
-                              style={{ borderLeftColor: getPriorityBorderColor(project.priority) }}
-                            >
-                              {/* Status Badge with optional Archive icon */}
-                              <div className="absolute top-2 right-2 flex items-center gap-1.5">
-                                {project.archived && (
-                                  <span data-tooltip="Archived" className="instant-tooltip flex items-center">
-                                    <Archive className={`w-4 h-4 ${darkMode ? 'text-gray-500' : 'text-gray-400'}`} />
-                                  </span>
-                                )}
-                                <span className={`px-2 py-0.5 rounded-full text-xs font-medium ${
-                                  statusColors[project.status]
-                                } ${!darkMode ? 'ring-1 ring-inset ring-current' : ''}`}>
-                                  {project.status === 'in_progress' ? 'IN PROGRESS' :
-                                   project.status === 'on_hold' ? 'ON HOLD' :
-                                   project.status?.toUpperCase() || 'PLANNING'}
-                                </span>
-                              </div>
-                              <h4 className={`font-semibold mb-2 pr-20 ${
-                                darkMode ? 'text-gray-200' : 'text-gray-800'
-                              }`}>
-                                {project.name}
-                              </h4>
-                              <p className={`text-sm mb-3 line-clamp-3 overflow-hidden ${
-                                project.description
-                                  ? (darkMode ? 'text-gray-400' : 'text-slate-600')
-                                  : (darkMode ? 'text-gray-500 italic' : 'text-gray-500 italic')
-                              }`}
-                              style={{ height: '3.75rem', display: '-webkit-box', WebkitLineClamp: 3, WebkitBoxOrient: 'vertical' }}>
-                                {project.description || 'No description added'}
-                              </p>
-                              <div className="flex flex-wrap gap-4 text-xs mt-auto">
-                                <div className="flex items-center gap-1">
-                                  <Package className={`w-3 h-3 ${
-                                    darkMode ? 'text-gray-500' : 'text-gray-400'
-                                  }`} />
-                                  <span className={darkMode ? 'text-gray-400' : 'text-slate-600'}>
-                                    {projectParts.length} parts
-                                  </span>
+                    {allVehicleProjects.length > 0 ? (
+                      <div className="space-y-4">
+                        {activeProjects.length > 0 && (
+                          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                            {activeProjects.map(renderProjectCard)}
+                          </div>
+                        )}
+                        {archivedProjects.length > 0 && (
+                          <>
+                            {activeProjects.length > 0 && (
+                              <div className={`flex items-center gap-3 py-1`}>
+                                <div className={`flex-1 h-px ${darkMode ? 'bg-gray-700' : 'bg-slate-200'}`} />
+                                <div className={`flex items-center gap-1.5 text-xs font-medium ${darkMode ? 'text-gray-500' : 'text-gray-400'}`}>
+                                  <Archive className="w-3 h-3" />
+                                  <span>Archived</span>
                                 </div>
-                                <span className={darkMode ? 'text-gray-600' : 'text-gray-400'}>•</span>
-                                <div className="flex items-center gap-1">
-                                  <BadgeDollarSign className={`w-3 h-3 ${
-                                    darkMode ? 'text-gray-500' : 'text-gray-400'
-                                  }`} />
-                                  <span className={darkMode ? 'text-gray-400' : 'text-slate-600'}>
-                                    ${projectTotal.toFixed(2)}
-                                  </span>
-                                </div>
-                                {project.todos && project.todos.length > 0 && (
-                                  <>
-                                    <span className={darkMode ? 'text-gray-600' : 'text-gray-400'}>•</span>
-                                    <div className="flex items-center gap-2">
-                                      <div className="flex items-center gap-1">
-                                        <CheckCircle className={`w-3 h-3 ${
-                                          darkMode ? 'text-green-400' : 'text-green-600'
-                                        }`} />
-                                        <span className={darkMode ? 'text-gray-400' : 'text-slate-600'}>
-                                          {completedTodos}
-                                        </span>
-                                      </div>
-                                      <div className="flex items-center gap-1">
-                                        <Clock className={`w-3 h-3 ${
-                                          darkMode ? 'text-gray-400' : 'text-gray-500'
-                                        }`} />
-                                        <span className={darkMode ? 'text-gray-400' : 'text-slate-600'}>
-                                          {uncompletedTodos}
-                                        </span>
-                                      </div>
-                                    </div>
-                                  </>
-                                )}
+                                <div className={`flex-1 h-px ${darkMode ? 'bg-gray-700' : 'bg-slate-200'}`} />
                               </div>
-                            </button>
-                          );
-                        })}
+                            )}
+                            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 opacity-60">
+                              {archivedProjects.map(renderProjectCard)}
+                            </div>
+                          </>
+                        )}
                       </div>
                     ) : (
                       <button
