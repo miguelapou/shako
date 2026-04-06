@@ -710,7 +710,7 @@ const VehicleDetailModal = ({
           >
             <div
               key={viewingVehicle.id}
-              className="p-6 pb-12 space-y-6 max-h-[calc(85vh-120px)] overflow-y-auto sm:max-h-[calc(90vh-164px)] animate-fade-in"
+              className="p-6 pb-14 space-y-6 max-h-[calc(85vh-120px)] overflow-y-auto sm:max-h-[calc(90vh-164px)] animate-fade-in"
             >
               {/* Top Section: Image (3/5) and Basic Info (2/5) side by side */}
               <div className="grid grid-cols-1 md:grid-cols-[3fr_2fr] gap-4 md:items-start">
@@ -1886,7 +1886,7 @@ const VehicleDetailModal = ({
             }`}
           >
             {vehicleModalProjectView && !vehicleModalEditMode && (
-              <div className="p-6 space-y-6 max-h-[calc(85vh-120px)] overflow-y-auto sm:max-h-[calc(85vh-164px)]">
+              <div className="p-6 pb-14 space-y-6 max-h-[calc(85vh-120px)] overflow-y-auto sm:max-h-[calc(90vh-164px)]">
                 <ProjectDetailView
                   project={vehicleModalProjectView}
                   parts={parts}

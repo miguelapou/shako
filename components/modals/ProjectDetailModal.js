@@ -264,7 +264,7 @@ const ProjectDetailModal = ({
           >
             <div
               key={viewingProject.id}
-              className="p-6 space-y-6 max-h-[calc(85vh-120px)] overflow-y-auto sm:max-h-[calc(90vh-180px)] animate-fade-in"
+              className="p-6 pb-12 space-y-6 max-h-[calc(85vh-120px)] overflow-y-auto sm:max-h-[calc(90vh-180px)] animate-fade-in"
             >
               <ProjectDetailView
                 project={viewingProject}
@@ -313,7 +313,7 @@ const ProjectDetailModal = ({
                 : 'absolute opacity-0 pointer-events-none'
             }`}
           >
-            <div className="p-6 space-y-6 max-h-[calc(85vh-120px)] overflow-y-auto sm:max-h-[calc(90vh-180px)]">
+            <div className="p-6 pb-12 space-y-6 max-h-[calc(85vh-120px)] overflow-y-auto sm:max-h-[calc(90vh-180px)]">
               <ProjectEditForm
                 project={viewingProject}
                 onProjectChange={setViewingProject}
