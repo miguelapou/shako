@@ -1736,7 +1736,7 @@ const VehicleDetailModal = ({
                         e.stopPropagation();
                         setVehicleModalProjectView(project);
                       }}
-                      className={`relative flex flex-col rounded-lg p-4 border-l-4 text-left transition-all duration-200 cursor-pointer can-hover:hover:shadow-2xl can-hover:hover:scale-[1.03] ${
+                      className={`relative flex flex-col rounded-lg p-4 border-l-4 border-transparent text-left transition-all duration-200 cursor-pointer can-hover:hover:shadow-2xl can-hover:hover:scale-[1.03] ${
                         darkMode ? 'bg-gray-700/50' : 'bg-gray-50'
                       }`}
                       style={{ borderLeftColor: getPriorityBorderColor(project.priority) }}
