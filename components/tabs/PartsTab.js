@@ -1032,7 +1032,7 @@ const PartsTab = ({
                           : (darkMode ? 'border-gray-600 text-gray-500 hover:text-gray-300' : 'border-gray-300 text-gray-400 hover:text-gray-600')
                       }`}
                     >
-                      + Archived
+                      {showArchivedParts ? '+ Unarchived' : '+ Archived'}
                     </button>
                   </div>
 
