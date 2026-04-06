@@ -343,11 +343,14 @@ const VehiclesTab = ({
                                 {vehicleProjects.slice(0, compactBadgeLimit).map((project) => (
                                   <span
                                     key={project.id}
-                                    className={`relative inline-flex items-center pl-[11px] pr-2 py-1 rounded text-xs font-medium border overflow-hidden ${
+                                    className={`inline-flex items-center px-2 py-1 rounded text-xs font-medium border ${
                                       darkMode ? 'bg-gray-700 text-gray-300 border-gray-600' : 'bg-gray-100 text-gray-700 border-gray-300'
                                     }`}
+                                    style={{
+                                      borderLeftWidth: '3px',
+                                      borderLeftColor: getPriorityBorderColor(project.priority)
+                                    }}
                                   >
-                                    <span className="absolute left-0 top-0 bottom-0 w-[3px]" style={{ backgroundColor: getPriorityBorderColor(project.priority) }} />
                                     <ListChecks className="w-3 h-3 mr-1 flex-shrink-0" />
                                     <span className="truncate">{project.name}</span>
                                   </span>
@@ -477,12 +480,15 @@ const VehiclesTab = ({
                                   {vehicleProjects.slice(0, 4).map((project) => (
                                     <span
                                       key={project.id}
-                                      className={`relative inline-flex items-center pl-[11px] pr-2 py-1 rounded text-xs font-medium border overflow-hidden ${
+                                      className={`inline-flex items-center px-2 py-1 rounded text-xs font-medium border ${
                                         darkMode ? 'bg-gray-700 text-gray-300 border-gray-600' : 'bg-gray-100 text-gray-700 border-gray-300'
                                       }`}
-                                      style={{ width: 'calc(50% - 4px)' }}
+                                      style={{
+                                        borderLeftWidth: '3px',
+                                        borderLeftColor: getPriorityBorderColor(project.priority),
+                                        width: 'calc(50% - 4px)'
+                                      }}
                                     >
-                                      <span className="absolute left-0 top-0 bottom-0 w-[3px]" style={{ backgroundColor: getPriorityBorderColor(project.priority) }} />
                                       <ListChecks className="w-3 h-3 mr-1 flex-shrink-0" />
                                       <span className="truncate">{project.name}</span>
                                     </span>
