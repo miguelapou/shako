@@ -1736,11 +1736,12 @@ const VehicleDetailModal = ({
                         e.stopPropagation();
                         setVehicleModalProjectView(project);
                       }}
-                      className={`relative flex flex-col rounded-lg p-4 border-l-4 border-transparent text-left transition-all duration-200 cursor-pointer can-hover:hover:shadow-2xl can-hover:hover:scale-[1.03] ${
+                      className={`relative flex flex-col rounded-lg pl-5 pr-4 pt-4 pb-4 overflow-hidden text-left transition-all duration-200 cursor-pointer can-hover:hover:shadow-2xl can-hover:hover:scale-[1.03] ${
                         darkMode ? 'bg-gray-700/50' : 'bg-gray-50'
                       }`}
-                      style={{ borderLeftColor: getPriorityBorderColor(project.priority) }}
                     >
+                      {/* Priority accent bar */}
+                      <div className="absolute left-0 top-0 bottom-0 w-1" style={{ backgroundColor: getPriorityBorderColor(project.priority) }} />
                       {/* Status Badge with optional Archive icon */}
                       <div className="absolute top-2 right-2 flex items-center gap-1.5">
                         <span className={`px-2 py-0.5 rounded-full text-xs font-medium ${
