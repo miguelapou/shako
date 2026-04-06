@@ -1833,12 +1833,12 @@ const VehicleDetailModal = ({
                           <>
                             {activeProjects.length > 0 && (
                               <div className={`flex items-center gap-3 py-1`}>
-                                <div className={`flex-1 h-px ${darkMode ? 'bg-gray-700' : 'bg-slate-200'}`} />
+                                <div className={`flex-1 h-px ${darkMode ? 'bg-gray-700' : 'bg-slate-300'}`} />
                                 <div className={`flex items-center gap-1.5 text-xs font-medium ${darkMode ? 'text-gray-500' : 'text-gray-400'}`}>
                                   <Archive className="w-3 h-3" />
                                   <span>Archived</span>
                                 </div>
-                                <div className={`flex-1 h-px ${darkMode ? 'bg-gray-700' : 'bg-slate-200'}`} />
+                                <div className={`flex-1 h-px ${darkMode ? 'bg-gray-700' : 'bg-slate-300'}`} />
                               </div>
                             )}
                             <div className="grid grid-cols-1 md:grid-cols-3 gap-4 opacity-60">
