@@ -699,7 +699,7 @@ const VehicleDetailModal = ({
         </div>
 
         {/* Content - with slide animation */}
-        <div className="relative min-h-0 h-full sm:min-h-[calc(90vh-180px)] overflow-hidden sm:overflow-visible modal-content-wrapper">
+        <div className="relative min-h-0 sm:min-h-[calc(90vh-180px)] overflow-hidden sm:overflow-visible modal-content-wrapper">
           {/* Vehicle Details View */}
           <div
             className={`w-full transition-all duration-500 ease-in-out ${
@@ -1879,14 +1879,14 @@ const VehicleDetailModal = ({
 
           {/* Project Details View - Slides in from right */}
           <div
-            className={`w-full h-full transition-all duration-500 ease-in-out ${
+            className={`w-full transition-all duration-500 ease-in-out ${
               vehicleModalProjectView && !vehicleModalEditMode
                 ? 'relative opacity-100'
                 : 'absolute opacity-0 pointer-events-none'
             }`}
           >
             {vehicleModalProjectView && !vehicleModalEditMode && (
-              <div className="p-6 space-y-6 h-full overflow-y-auto">
+              <div className="p-6 space-y-6 max-h-[calc(85vh-120px)] overflow-y-auto sm:max-h-[calc(90vh-164px)]">
                 <ProjectDetailView
                   project={vehicleModalProjectView}
                   parts={parts}
