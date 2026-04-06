@@ -1,5 +1,5 @@
 import React, { useState, useMemo, useEffect, useLayoutEffect, useRef } from 'react';
-import { Package, CheckCircle, CheckSquare, ChevronDown, X, Archive, Car } from 'lucide-react';
+import { Package, CheckCircle, CheckSquare, ChevronDown, X, Archive, Car, LayoutGrid, Table } from 'lucide-react';
 import { getVendorDisplayColor } from '../../utils/colorUtils';
 import { toSentenceCase } from '../../utils/styleUtils';
 import ConfirmDialog from './ConfirmDialog';
@@ -47,6 +47,22 @@ const ProjectDetailView = ({
   const [showTodoProgress, setShowTodoProgress] = useState(false);
   const [isPartsHovered, setIsPartsHovered] = useState(false);
   const descriptionRef = useRef(null);
+
+  const localStorageKey = `partsViewMode_${project.id}`;
+  const [partsViewMode, setPartsViewMode] = useState(() => {
+    if (typeof window !== 'undefined') {
+      return localStorage.getItem(localStorageKey) || 'cards';
+    }
+    return 'cards';
+  });
+
+  const togglePartsViewMode = () => {
+    const newMode = partsViewMode === 'cards' ? 'table' : 'cards';
+    setPartsViewMode(newMode);
+    if (typeof window !== 'undefined') {
+      localStorage.setItem(localStorageKey, newMode);
+    }
+  };
 
   // Refs and state for animated progress bar height
   const progressGridRef = useRef(null);
@@ -980,14 +996,103 @@ const ProjectDetailView = ({
         <div className={`pt-6 border-t ${
           darkMode ? 'border-gray-700' : 'border-slate-300'
         }`}>
-          <h3 className={`text-lg font-semibold mb-3 ${
-            darkMode ? 'text-gray-200' : 'text-gray-800'
-          }`}>
-            <div className="flex items-center gap-2">
-              <Package className="w-5 h-5" />
-              <span>Linked Parts ({linkedParts.length})</span>
+          <div className="flex items-center justify-between mb-3">
+            <h3 className={`text-lg font-semibold ${
+              darkMode ? 'text-gray-200' : 'text-gray-800'
+            }`}>
+              <div className="flex items-center gap-2">
+                <Package className="w-5 h-5" />
+                <span>Linked Parts ({linkedParts.length})</span>
+              </div>
+            </h3>
+            <button
+              onClick={togglePartsViewMode}
+              title={partsViewMode === 'cards' ? 'Switch to table view' : 'Switch to card view'}
+              className={`p-1.5 rounded-md transition-colors ${
+                darkMode
+                  ? 'text-gray-400 hover:text-gray-200 hover:bg-gray-700'
+                  : 'text-gray-500 hover:text-gray-700 hover:bg-gray-200'
+              }`}
+            >
+              {partsViewMode === 'cards' ? <Table className="w-4 h-4" /> : <LayoutGrid className="w-4 h-4" />}
+            </button>
+          </div>
+          {partsViewMode === 'table' ? (
+            <div className={`rounded-lg border overflow-hidden ${
+              darkMode ? 'border-gray-600' : 'border-gray-300'
+            }`}>
+              <table className="w-full text-sm">
+                <thead>
+                  <tr className={darkMode ? 'bg-gray-700' : 'bg-gray-100'}>
+                    <th className={`text-left px-3 py-2 font-medium ${darkMode ? 'text-gray-300' : 'text-gray-600'}`}>Part</th>
+                    <th className={`text-left px-3 py-2 font-medium ${darkMode ? 'text-gray-300' : 'text-gray-600'}`}>Vendor</th>
+                    <th className={`text-left px-3 py-2 font-medium ${darkMode ? 'text-gray-300' : 'text-gray-600'}`}>Status</th>
+                    <th className={`text-right px-3 py-2 font-medium ${darkMode ? 'text-gray-300' : 'text-gray-600'}`}>Price</th>
+                    <th className={`text-right px-3 py-2 font-medium ${darkMode ? 'text-gray-300' : 'text-gray-600'}`}>Shipping</th>
+                    <th className={`text-right px-3 py-2 font-medium ${darkMode ? 'text-gray-300' : 'text-gray-600'}`}>Duties</th>
+                    <th className={`text-right px-3 py-2 font-medium ${darkMode ? 'text-gray-300' : 'text-gray-600'}`}>Total</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {linkedParts.map((part, index) => (
+                    <tr
+                      key={part.id}
+                      className={`border-t ${
+                        darkMode
+                          ? `border-gray-600 ${index % 2 === 0 ? 'bg-gray-800' : 'bg-gray-750'}`
+                          : `border-gray-200 ${index % 2 === 0 ? 'bg-white' : 'bg-gray-50'}`
+                      }`}
+                    >
+                      <td className={`px-3 py-2 ${darkMode ? 'text-gray-100' : 'text-gray-800'}`}>
+                        {part.part}{(part.quantity || 1) > 1 ? ` ×${part.quantity}` : ''}
+                        {part.partNumber && part.partNumber !== '-' && (
+                          <div className={`text-xs font-mono ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>
+                            {part.partNumber}
+                          </div>
+                        )}
+                      </td>
+                      <td className="px-3 py-2">
+                        {part.vendor && (
+                          vendorColors[part.vendor] ? (
+                            (() => {
+                              const colors = getVendorDisplayColor(vendorColors[part.vendor], darkMode);
+                              return (
+                                <span
+                                  className="inline-block px-2 py-0.5 rounded-full text-xs font-medium border"
+                                  style={{ backgroundColor: colors.bg, color: colors.text, borderColor: colors.border }}
+                                >
+                                  {part.vendor}
+                                </span>
+                              );
+                            })()
+                          ) : (
+                            <span className={`inline-block px-2 py-0.5 rounded-full text-xs font-medium ${getVendorColor(part.vendor, vendorColors)}`}>
+                              {part.vendor}
+                            </span>
+                          )
+                        )}
+                      </td>
+                      <td className={`px-3 py-2 text-xs font-medium ${getStatusTextColor(part)}`}>
+                        {getStatusText(part)}
+                      </td>
+                      <td className={`px-3 py-2 text-right ${darkMode ? 'text-gray-200' : 'text-gray-800'}`}>
+                        ${part.price.toFixed(2)}
+                      </td>
+                      <td className={`px-3 py-2 text-right ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>
+                        {part.shipping > 0 ? `$${part.shipping.toFixed(2)}` : '—'}
+                      </td>
+                      <td className={`px-3 py-2 text-right ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>
+                        {part.duties > 0 ? `$${part.duties.toFixed(2)}` : '—'}
+                      </td>
+                      <td className={`px-3 py-2 text-right font-semibold ${darkMode ? 'text-gray-100' : 'text-gray-800'}`}>
+                        ${part.total.toFixed(2)}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
             </div>
-          </h3>
+          ) : (
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             {linkedParts.map((part) => (
               <div
@@ -1091,6 +1196,7 @@ const ProjectDetailView = ({
               </div>
             ))}
           </div>
+          )}
         </div>
       )}
 
