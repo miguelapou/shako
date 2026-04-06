@@ -379,6 +379,7 @@ const Shako = ({ isDemo = false }) => {
     handleVehicleDragEnd,
     handleArchiveZoneDrop
   } = useDragDrop({
+    parts,
     projects,
     setProjects,
     updateProjectsOrder,
