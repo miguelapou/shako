@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import * as partsService from '../services/partsService';
 
 /**
  * Custom hook for managing drag and drop state and handlers
@@ -24,6 +25,7 @@ import { useState } from 'react';
  * @returns {Object} Drag and drop state and handlers
  */
 const useDragDrop = ({
+  parts,
   projects,
   setProjects,
   updateProjectsOrder,
@@ -108,16 +110,43 @@ const useDragDrop = ({
     }
 
     // Show confirmation dialog
+    const linkedPartsToArchive = (parts || []).filter(p => p.projectId === draggedProject.id && !p.archived);
+    const linkedPartsToRestore = (parts || []).filter(p => p.projectId === draggedProject.id && p.archived);
+    const archiveCount = linkedPartsToArchive.length;
+    const restoreCount = linkedPartsToRestore.length;
+
+    const archiveMessage = archiveCount > 0
+      ? `Are you sure you want to archive "${draggedProject.name}"? It will remain visible with limited information, and ${archiveCount} linked part${archiveCount > 1 ? 's' : ''} will also be archived.`
+      : `Are you sure you want to archive "${draggedProject.name}"? It will still be visible but with limited information.`;
+
+    const unarchiveMessage = restoreCount > 0
+      ? `Are you sure you want to unarchive "${draggedProject.name}"? It has ${restoreCount} archived part${restoreCount > 1 ? 's' : ''} that can be restored.`
+      : `Are you sure you want to unarchive "${draggedProject.name}"?`;
+
     setConfirmDialog({
       isOpen: true,
       title: shouldArchive ? 'Archive Project' : 'Unarchive Project',
-      message: shouldArchive
-        ? `Are you sure you want to archive "${draggedProject.name}"? It will still be visible but with limited information.`
-        : `Are you sure you want to unarchive "${draggedProject.name}"?`,
+      message: shouldArchive ? archiveMessage : unarchiveMessage,
       confirmText: shouldArchive ? 'Archive' : 'Unarchive',
       isDangerous: false,
+      ...(!shouldArchive && restoreCount > 0 ? {
+        secondaryText: 'Restore All',
+        secondaryDangerous: false,
+        secondaryAction: async () => {
+          await updateProject(draggedProject.id, { archived: false });
+          await Promise.all(linkedPartsToRestore.map(part =>
+            partsService.updatePart(part.id, { archived: false })
+          ));
+          await loadProjects();
+        }
+      } : {}),
       onConfirm: async () => {
         await updateProject(draggedProject.id, { archived: shouldArchive });
+        if (shouldArchive && archiveCount > 0) {
+          await Promise.all(linkedPartsToArchive.map(part =>
+            partsService.updatePart(part.id, { archived: true })
+          ));
+        }
         await loadProjects();
       }
     });

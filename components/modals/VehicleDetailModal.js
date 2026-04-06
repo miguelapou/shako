@@ -3441,38 +3441,127 @@ const VehicleDetailModal = ({
                   </>
                 )}
                 {vehicleModalEditMode === 'project' && (
-                  <button
-                    onClick={async () => {
-                      // Toggle on_hold status
-                      const newStatus = vehicleModalProjectView.status === 'on_hold' ? 'in_progress' : 'on_hold';
-                      const updatedProject = { ...vehicleModalProjectView, status: newStatus };
-                      await updateProject(vehicleModalProjectView.id, {
-                        status: newStatus
-                      });
-                      setVehicleModalProjectView(updatedProject);
-                    }}
-                    className={`h-10 px-4 py-2 rounded-lg font-medium transition-colors flex items-center gap-2 text-sm ${
-                      vehicleModalProjectView.status === 'on_hold'
-                        ? darkMode
-                          ? 'bg-green-900/30 hover:bg-green-900/50 text-green-400 border border-green-700'
-                          : 'bg-green-50 hover:bg-green-100 text-green-600 border border-green-300'
-                        : darkMode
-                          ? 'bg-gray-700 hover:bg-gray-600 text-gray-100 border border-gray-600'
-                          : 'bg-gray-200 hover:bg-gray-300 text-gray-800 border border-gray-300'
-                    }`}
-                  >
-                    {vehicleModalProjectView.status === 'on_hold' ? (
-                      <>
-                        <Play className="w-5 h-5 sm:w-4 sm:h-4" />
-                        <span className="hidden sm:inline">Resume</span>
-                      </>
-                    ) : (
-                      <>
-                        <Pause className="w-5 h-5 sm:w-4 sm:h-4" />
-                        <span className="hidden sm:inline">Pause</span>
-                      </>
-                    )}
-                  </button>
+                  <>
+                    <button
+                      onClick={() => {
+                        const partsForProject = parts.filter(p => p.projectId === vehicleModalProjectView.id);
+                        const hasParts = partsForProject.length > 0;
+                        setConfirmDialog({
+                          isOpen: true,
+                          title: 'Delete Project',
+                          message: hasParts
+                            ? `This project has ${partsForProject.length} part(s) linked to it. Deleting it will unlink these parts. This action cannot be undone.`
+                            : 'Are you sure you want to permanently delete this project? This action cannot be undone.',
+                          confirmText: 'Delete',
+                          onConfirm: async () => {
+                            await deleteProject(vehicleModalProjectView.id);
+                            setVehicleModalProjectView(null);
+                            setVehicleModalEditMode(null);
+                          }
+                        });
+                      }}
+                      className={`h-10 px-4 py-2 rounded-lg font-medium transition-colors flex items-center gap-2 text-sm ${
+                        darkMode
+                          ? 'bg-red-900/30 hover:bg-red-900/50 text-red-400 border border-red-700'
+                          : 'bg-red-50 hover:bg-red-100 text-red-600 border border-red-300'
+                      }`}
+                    >
+                      <Trash2 className="w-4 h-4" />
+                      <span className="hidden sm:inline">Delete</span>
+                    </button>
+                    <button
+                      onClick={async () => {
+                        const linkedPartsToArchive = parts.filter(p => p.projectId === vehicleModalProjectView.id && !p.archived);
+                        const linkedPartsToRestore = parts.filter(p => p.projectId === vehicleModalProjectView.id && p.archived);
+                        const archiveCount = linkedPartsToArchive.length;
+                        const restoreCount = linkedPartsToRestore.length;
+
+                        const archiveMessage = archiveCount > 0
+                          ? `Are you sure you want to archive this project? It will remain visible with limited information, and ${archiveCount} linked part${archiveCount > 1 ? 's' : ''} will also be archived.`
+                          : 'Are you sure you want to archive this project? It will still be visible but with limited information.';
+
+                        const unarchiveMessage = restoreCount > 0
+                          ? `Are you sure you want to unarchive this project? It has ${restoreCount} archived part${restoreCount > 1 ? 's' : ''} that can be restored.`
+                          : 'Are you sure you want to unarchive this project?';
+
+                        setConfirmDialog({
+                          isOpen: true,
+                          title: vehicleModalProjectView.archived ? 'Unarchive Project' : 'Archive Project',
+                          message: vehicleModalProjectView.archived ? unarchiveMessage : archiveMessage,
+                          confirmText: vehicleModalProjectView.archived ? 'Unarchive' : 'Archive',
+                          isDangerous: false,
+                          ...(vehicleModalProjectView.archived && restoreCount > 0 ? {
+                            secondaryText: 'Restore All',
+                            secondaryDangerous: false,
+                            secondaryAction: async () => {
+                              const updatedProject = { ...vehicleModalProjectView, archived: false };
+                              await updateProject(vehicleModalProjectView.id, { archived: false });
+                              await Promise.all(linkedPartsToRestore.map(part =>
+                                partsService.updatePart(part.id, { archived: false })
+                              ));
+                              await loadParts();
+                              setVehicleModalProjectView(updatedProject);
+                            }
+                          } : {}),
+                          onConfirm: async () => {
+                            const updatedProject = { ...vehicleModalProjectView, archived: !vehicleModalProjectView.archived };
+                            await updateProject(vehicleModalProjectView.id, { archived: !vehicleModalProjectView.archived });
+                            if (!vehicleModalProjectView.archived && archiveCount > 0) {
+                              await Promise.all(linkedPartsToArchive.map(part =>
+                                partsService.updatePart(part.id, { archived: true })
+                              ));
+                              await loadParts();
+                            }
+                            setVehicleModalProjectView(updatedProject);
+                          }
+                        });
+                      }}
+                      className={`h-10 px-4 py-2 rounded-lg font-medium transition-colors flex items-center gap-2 text-sm ${
+                        vehicleModalProjectView.archived
+                          ? darkMode
+                            ? 'bg-green-900/30 hover:bg-green-900/50 text-green-400 border border-green-700'
+                            : 'bg-green-50 hover:bg-green-100 text-green-600 border border-green-300'
+                          : darkMode
+                            ? 'bg-amber-900/30 hover:bg-amber-900/50 text-amber-400 border border-amber-700'
+                            : 'bg-amber-50 hover:bg-amber-100 text-amber-600 border border-amber-300'
+                      }`}
+                    >
+                      {vehicleModalProjectView.archived ? <ArchiveRestore className="w-5 h-5 sm:w-4 sm:h-4" /> : <Archive className="w-5 h-5 sm:w-4 sm:h-4" />}
+                      <span className="hidden sm:inline">{vehicleModalProjectView.archived ? 'Unarchive' : 'Archive'}</span>
+                    </button>
+                    <button
+                      onClick={async () => {
+                        // Toggle on_hold status
+                        const newStatus = vehicleModalProjectView.status === 'on_hold' ? 'in_progress' : 'on_hold';
+                        const updatedProject = { ...vehicleModalProjectView, status: newStatus };
+                        await updateProject(vehicleModalProjectView.id, {
+                          status: newStatus
+                        });
+                        setVehicleModalProjectView(updatedProject);
+                      }}
+                      className={`h-10 px-4 py-2 rounded-lg font-medium transition-colors flex items-center gap-2 text-sm ${
+                        vehicleModalProjectView.status === 'on_hold'
+                          ? darkMode
+                            ? 'bg-green-900/30 hover:bg-green-900/50 text-green-400 border border-green-700'
+                            : 'bg-green-50 hover:bg-green-100 text-green-600 border border-green-300'
+                          : darkMode
+                            ? 'bg-gray-700 hover:bg-gray-600 text-gray-100 border border-gray-600'
+                            : 'bg-gray-200 hover:bg-gray-300 text-gray-800 border border-gray-300'
+                      }`}
+                    >
+                      {vehicleModalProjectView.status === 'on_hold' ? (
+                        <>
+                          <Play className="w-5 h-5 sm:w-4 sm:h-4" />
+                          <span className="hidden sm:inline">Resume</span>
+                        </>
+                      ) : (
+                        <>
+                          <Pause className="w-5 h-5 sm:w-4 sm:h-4" />
+                          <span className="hidden sm:inline">Pause</span>
+                        </>
+                      )}
+                    </button>
+                  </>
                 )}
               </div>
               <button
