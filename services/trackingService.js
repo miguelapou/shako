@@ -52,7 +52,10 @@ export const createShip24Tracking = async (trackingNumber, title = null, courier
         const errorData = JSON.parse(rawText);
         const firstError = errorData.errors?.[0];
         if (firstError?.code === 'quota_limit_reached') {
-          errorMsg = 'quota_limit_reached';
+          console.log('[Ship24] quota_limit_reached error data:', JSON.stringify(firstError));
+          const resetAt = firstError?.resetAt || firstError?.reset_at || firstError?.quotaResetAt
+            || firstError?.quota_reset_at || firstError?.details?.resetAt || null;
+          errorMsg = resetAt ? `quota_limit_reached|${resetAt}` : 'quota_limit_reached';
         } else {
           errorMsg = firstError?.message || errorData.message || errorData.error || errorMsg;
         }
@@ -119,7 +122,10 @@ export const getShip24TrackingByNumber = async (trackingNumber, courierCode = nu
         const errorData = JSON.parse(rawText);
         const firstError = errorData.errors?.[0];
         if (firstError?.code === 'quota_limit_reached') {
-          errorMsg = 'quota_limit_reached';
+          console.log('[Ship24] quota_limit_reached error data:', JSON.stringify(firstError));
+          const resetAt = firstError?.resetAt || firstError?.reset_at || firstError?.quotaResetAt
+            || firstError?.quota_reset_at || firstError?.details?.resetAt || null;
+          errorMsg = resetAt ? `quota_limit_reached|${resetAt}` : 'quota_limit_reached';
         } else {
           errorMsg = firstError?.message || errorData.message || errorData.error || errorMsg;
         }
