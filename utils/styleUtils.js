@@ -23,14 +23,45 @@ export const inputClasses = (darkMode, additionalClasses = '') => {
 // TEXT CASE FORMATTING UTILITIES
 // ========================================
 
-// Title Case - capitalizes first letter of each word
-// e.g., "hello world" -> "Hello World"
+// Acronyms that should remain fully uppercase even when typed lowercase
+const TITLE_CASE_ACRONYMS = new Set([
+  // Automotive brands & markets
+  'BMW', 'VW', 'GMC', 'JDM', 'USDM', 'EUDM', 'OEM', 'OE', 'NOS',
+  // Chassis/drivetrain systems
+  'ABS', 'ESP', 'ESC', 'EPS', 'TCS', 'VSC', 'LSD', 'AWD', 'FWD', 'RWD', '4WD', '4X4',
+  // Electronics
+  'ECU', 'ECM', 'TCU', 'TCM', 'PCM', 'BCM', 'AEM',
+  // Engine/emissions parts
+  'EGR', 'PCV', 'MAF', 'MAP', 'IAT', 'TPS', 'IAC', 'CAT',
+  // Lighting
+  'LED', 'HID',
+  // HVAC
+  'AC', 'HVAC',
+  // General
+  'VIN', 'SKU', 'ID', 'USA', 'UK', 'EU', 'HP', 'RPM', 'MPH', 'KPH', 'DIY',
+]);
+
+// Title Case - capitalizes first letter of each word, preserving acronyms
+// - All-caps words of 2+ letters from original input are kept as-is (e.g. "BMW", "M3")
+// - Known acronyms are uppercased even if typed lowercase (e.g. "oem" -> "OEM")
+// - All other words get standard title case
 export const toTitleCase = (str) => {
   if (!str) return str;
   return str
-    .toLowerCase()
     .split(' ')
-    .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+    .map(word => {
+      if (!word) return word;
+      // Preserve all-caps words (2+ chars starting with a letter) as typed, e.g. "OEM", "BMW", "M3", "E46"
+      if (word.length > 1 && word === word.toUpperCase() && /^[A-Z]/i.test(word) && /[A-Z]/.test(word)) {
+        return word;
+      }
+      // Uppercase known acronyms even when typed lowercase
+      if (TITLE_CASE_ACRONYMS.has(word.toUpperCase())) {
+        return word.toUpperCase();
+      }
+      // Standard title case
+      return word.charAt(0).toUpperCase() + word.slice(1).toLowerCase();
+    })
     .join(' ');
 };
 
