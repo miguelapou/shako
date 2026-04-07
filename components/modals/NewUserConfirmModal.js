@@ -23,13 +23,15 @@ const NewUserConfirmModal = ({
       onClick={onCancel}
     >
       <div
-        className={`rounded-lg shadow-xl max-w-md w-full p-6 modal-content modal-popup-enter ${
-          darkMode ? 'bg-gray-800' : 'bg-white'
+        className={`rounded-lg shadow-xl max-w-md w-full modal-content modal-popup-enter ${
+          darkMode ? 'bg-gray-800' : 'bg-slate-200'
         }`}
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header */}
-        <div className="flex items-center gap-3 mb-4">
+        <div className={`px-6 py-4 border-b flex items-center gap-3 ${
+          darkMode ? 'border-gray-600 bg-gray-700' : 'border-slate-300 bg-slate-50'
+        }`}>
           <div className={`p-2 rounded-full ${darkMode ? 'bg-green-900/50' : 'bg-green-100'}`}>
             <HandMetal className={`w-6 h-6 ${darkMode ? 'text-green-400' : 'text-green-600'}`} />
           </div>
@@ -39,7 +41,7 @@ const NewUserConfirmModal = ({
         </div>
 
         {/* Content */}
-        <div className={`mb-6 ${darkMode ? 'text-gray-300' : 'text-gray-600'}`}>
+        <div className={`px-6 py-4 ${darkMode ? 'text-gray-300' : 'text-gray-600'}`}>
           <p className="mb-4">
             You're signing in with a new email:
           </p>
@@ -55,14 +57,16 @@ const NewUserConfirmModal = ({
           </p>
         </div>
 
-        {/* Actions */}
-        <div className="flex gap-3">
+        {/* Footer */}
+        <div className={`px-6 py-4 border-t flex gap-3 ${
+          darkMode ? 'border-gray-600 bg-gray-700' : 'border-slate-300 bg-slate-50'
+        }`}>
           <button
             onClick={onCancel}
             disabled={isLoading}
             className={`flex-1 flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg font-medium transition-colors
               ${darkMode
-                ? 'bg-gray-700 hover:bg-gray-600 text-gray-200'
+                ? 'bg-gray-600 hover:bg-gray-500 text-gray-200'
                 : 'bg-gray-200 hover:bg-gray-300 text-gray-700'
               } ${isLoading ? 'opacity-50 cursor-not-allowed' : ''}`}
           >

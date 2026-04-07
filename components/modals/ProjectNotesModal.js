@@ -241,7 +241,7 @@ const ProjectNotesModal = ({ isOpen, onClose, project, onSave, darkMode, handleC
       >
         {/* Header */}
         <div className={`flex items-center justify-between px-5 py-4 border-b flex-shrink-0 ${
-          darkMode ? 'border-gray-700' : 'border-slate-200'
+          darkMode ? 'border-gray-600' : 'border-slate-300'
         }`}>
           <h2 className={`text-base font-semibold truncate pr-4 ${darkMode ? 'text-gray-100' : 'text-gray-900'}`}>
             Notes — {project?.name}
@@ -371,7 +371,7 @@ const ProjectNotesModal = ({ isOpen, onClose, project, onSave, darkMode, handleC
 
         {/* Footer */}
         <div className={`flex items-center justify-between px-5 py-4 border-t flex-shrink-0 ${
-          darkMode ? 'border-gray-700 bg-gray-800' : 'border-slate-200 bg-slate-100'
+          darkMode ? 'border-gray-600 bg-gray-700' : 'border-slate-300 bg-slate-50'
         }`}>
           {isEditing ? (
             <>

@@ -115,7 +115,7 @@ const DuplicatePartModal = ({
   };
 
   const bg = darkMode ? 'bg-gray-900' : 'bg-white';
-  const border = darkMode ? 'border-gray-700' : 'border-slate-200';
+  const border = darkMode ? 'border-gray-600' : 'border-slate-300';
   const text = darkMode ? 'text-gray-100' : 'text-gray-900';
   const subtext = darkMode ? 'text-gray-400' : 'text-gray-500';
   const rowHover = darkMode ? 'hover:bg-gray-800' : 'hover:bg-slate-50';

@@ -186,7 +186,7 @@ const AddDocumentModal = ({
 
         {/* Footer */}
         <div className={`px-6 py-4 border-t flex justify-end gap-3 ${
-          darkMode ? 'border-gray-700 bg-gray-800' : 'border-slate-200 bg-slate-100'
+          darkMode ? 'border-gray-600 bg-gray-700' : 'border-slate-300 bg-slate-50'
         }`}>
           <button
             onClick={handleClose}
