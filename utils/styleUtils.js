@@ -65,11 +65,32 @@ export const toTitleCase = (str) => {
     .join(' ');
 };
 
-// Sentence Case - capitalizes only the first letter of the string
-// e.g., "hello world" -> "Hello world"
+// Sentence Case - capitalizes only the first letter of the sentence, preserving acronyms
+// - All-caps words (2+ letters) from original input are kept as-is (e.g. "OEM", "BMW")
+// - Known acronyms are uppercased even if typed lowercase (e.g. "oem" -> "OEM")
+// - All other non-first words are lowercased
 export const toSentenceCase = (str) => {
   if (!str) return str;
-  return str.charAt(0).toUpperCase() + str.slice(1).toLowerCase();
+  return str
+    .split(' ')
+    .map((word, index) => {
+      if (!word) return word;
+      // Preserve all-caps words (2+ chars starting with a letter)
+      if (word.length > 1 && word === word.toUpperCase() && /^[A-Z]/i.test(word) && /[A-Z]/.test(word)) {
+        return word;
+      }
+      // Uppercase known acronyms even when typed lowercase
+      if (TITLE_CASE_ACRONYMS.has(word.toUpperCase())) {
+        return word.toUpperCase();
+      }
+      // First word: capitalize first letter, lowercase rest
+      if (index === 0) {
+        return word.charAt(0).toUpperCase() + word.slice(1).toLowerCase();
+      }
+      // All other words: lowercase
+      return word.toLowerCase();
+    })
+    .join(' ');
 };
 
 // All Caps - converts entire string to uppercase
