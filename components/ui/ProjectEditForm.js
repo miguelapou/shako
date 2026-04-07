@@ -214,6 +214,8 @@ const ProjectEditForm = ({
               }`}
             >
               <option value="planning">Planning</option>
+              <option value="sourcing">Sourcing</option>
+              <option value="ready">Ready</option>
               <option value="in_progress">In Progress</option>
               <option value="completed">Completed</option>
               <option value="on_hold">On Hold</option>
