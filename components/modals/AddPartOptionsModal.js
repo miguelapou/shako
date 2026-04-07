@@ -184,12 +184,12 @@ const AddPartOptionsModal = ({
           </div>
         </div>
 
-        <div className={`p-6 border-t ${
+        <div className={`px-6 py-4 border-t flex justify-end ${
           darkMode ? 'border-gray-600 bg-gray-700' : 'border-slate-300 bg-slate-50'
         }`}>
           <button
             onClick={() => handleCloseModal(onClose)}
-            className={`w-full px-6 py-3 rounded-lg font-medium transition-colors ${
+            className={`px-4 py-2 rounded-lg font-medium transition-colors ${
               darkMode
                 ? 'bg-gray-700 hover:bg-gray-600 text-gray-100'
                 : 'bg-gray-200 hover:bg-gray-300 text-gray-800'
