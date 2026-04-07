@@ -1205,11 +1205,11 @@ const PartDetailModal = ({
                   className={`inline-flex items-center justify-center gap-2 px-3 sm:px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
                     isRefreshingTracking
                       ? darkMode
-                        ? 'bg-gray-700 text-gray-500 cursor-not-allowed'
-                        : 'bg-gray-200 text-gray-400 cursor-not-allowed'
+                        ? 'bg-gray-700 text-gray-500 cursor-not-allowed border border-gray-600'
+                        : 'bg-gray-100 text-gray-400 cursor-not-allowed border border-gray-300'
                       : darkMode
-                        ? 'bg-gray-700 hover:bg-gray-600 text-gray-300'
-                        : 'bg-gray-200 hover:bg-gray-300 text-gray-700'
+                        ? 'bg-gray-700 hover:bg-gray-600 text-gray-200 border border-gray-600'
+                        : 'bg-gray-100 hover:bg-gray-200 text-gray-700 border border-gray-300'
                   }`}
                 >
                   <RefreshCw className={`w-5 h-5 sm:w-4 sm:h-4 ${isRefreshingTracking ? 'animate-spin' : ''}`} />
