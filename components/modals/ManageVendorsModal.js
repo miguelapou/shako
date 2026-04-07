@@ -117,7 +117,7 @@ const ManageVendorsModal = ({
                 >
                   <th className="text-left pb-2 font-medium">Vendor</th>
                   <th className="text-center pb-2 font-medium px-4">Parts</th>
-                  <th className="text-right pb-2 font-medium">Actions</th>
+                  <th className="text-center pb-2 font-medium">Actions</th>
                 </tr>
               </thead>
               <tbody>
@@ -272,23 +272,6 @@ const ManageVendorsModal = ({
                               </div>
                               <button
                                 onClick={() =>
-                                  setEditingVendor({
-                                    oldName: vendor,
-                                    newName: vendor
-                                  })
-                                }
-                                className={`p-2 rounded-lg transition-colors flex items-center gap-1.5 ${
-                                  darkMode
-                                    ? 'text-gray-400 hover:bg-gray-700 hover:text-gray-200'
-                                    : 'text-gray-500 hover:bg-gray-100 hover:text-gray-700'
-                                }`}
-                                title="Edit vendor name"
-                              >
-                                <Edit2 className="w-4 h-4" />
-                                <span className="text-sm hidden sm:inline">Edit</span>
-                              </button>
-                              <button
-                                onClick={() =>
                                   setConfirmDialog({
                                     isOpen: true,
                                     title: 'Delete Vendor',
@@ -307,6 +290,23 @@ const ManageVendorsModal = ({
                                 title="Delete vendor"
                               >
                                 <Trash2 className="w-4 h-4" />
+                              </button>
+                              <button
+                                onClick={() =>
+                                  setEditingVendor({
+                                    oldName: vendor,
+                                    newName: vendor
+                                  })
+                                }
+                                className={`p-2 rounded-lg transition-colors flex items-center gap-1.5 ${
+                                  darkMode
+                                    ? 'text-gray-400 hover:bg-gray-700 hover:text-gray-200'
+                                    : 'text-gray-500 hover:bg-gray-100 hover:text-gray-700'
+                                }`}
+                                title="Edit vendor name"
+                              >
+                                <Edit2 className="w-4 h-4" />
+                                <span className="text-sm hidden sm:inline">Edit</span>
                               </button>
                             </>
                           )}
