@@ -117,7 +117,7 @@ const ManageVendorsModal = ({
                 >
                   <th className="text-left pb-2 font-medium">Vendor</th>
                   <th className="text-center pb-2 font-medium px-4">Parts</th>
-                  <th className="text-center pb-2 font-medium">Actions</th>
+                  <th className="text-right pb-2 font-medium">Actions</th>
                 </tr>
               </thead>
               <tbody>
@@ -245,6 +245,28 @@ const ManageVendorsModal = ({
                             </>
                           ) : (
                             <>
+                              {/* Delete button */}
+                              <button
+                                onClick={() =>
+                                  setConfirmDialog({
+                                    isOpen: true,
+                                    title: 'Delete Vendor',
+                                    message: `Are you sure you want to delete "${vendor}"? This will remove the vendor from ${partCount} ${
+                                      partCount === 1 ? 'part' : 'parts'
+                                    }.`,
+                                    confirmText: 'Delete',
+                                    onConfirm: () => deleteVendor(vendor)
+                                  })
+                                }
+                                className={`p-2 rounded-lg transition-colors ${
+                                  darkMode
+                                    ? 'text-red-400 hover:bg-red-900/50'
+                                    : 'text-red-600 hover:bg-red-100'
+                                }`}
+                                title="Delete vendor"
+                              >
+                                <Trash2 className="w-4 h-4" />
+                              </button>
                               {/* Color picker button */}
                               <div
                                 className={`relative p-2 rounded-lg transition-colors flex items-center cursor-pointer ${
@@ -270,27 +292,7 @@ const ManageVendorsModal = ({
                                   tabIndex={-1}
                                 />
                               </div>
-                              <button
-                                onClick={() =>
-                                  setConfirmDialog({
-                                    isOpen: true,
-                                    title: 'Delete Vendor',
-                                    message: `Are you sure you want to delete "${vendor}"? This will remove the vendor from ${partCount} ${
-                                      partCount === 1 ? 'part' : 'parts'
-                                    }.`,
-                                    confirmText: 'Delete',
-                                    onConfirm: () => deleteVendor(vendor)
-                                  })
-                                }
-                                className={`p-2 rounded-lg transition-colors ${
-                                  darkMode
-                                    ? 'text-red-400 hover:bg-red-900/50'
-                                    : 'text-red-600 hover:bg-red-100'
-                                }`}
-                                title="Delete vendor"
-                              >
-                                <Trash2 className="w-4 h-4" />
-                              </button>
+                              {/* Edit button */}
                               <button
                                 onClick={() =>
                                   setEditingVendor({
