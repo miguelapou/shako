@@ -4,7 +4,7 @@ import {
   ChevronDown, Plus, X, ExternalLink, ShoppingCart, Car,
   ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight,
   PackageCheck, PackageSearch, PackageX, BadgeCheck, Archive,
-  SlidersHorizontal
+  SlidersHorizontal, ArrowUpDown
 } from 'lucide-react';
 import PriceDisplay from '../ui/PriceDisplay';
 import { getVendorDisplayColor } from '../../utils/colorUtils';
@@ -939,12 +939,15 @@ const PartsTab = ({
                   }`}
                   onClick={() => setIsCardFlipped(true)}
                 >
-                  <h3 className={`text-sm font-semibold mb-2 flex items-center gap-2 ${
-                    darkMode ? 'text-gray-100' : 'text-gray-800'
-                  }`}>
-                    <Receipt className="w-4 h-4" />
-                    Cost Breakdown
-                  </h3>
+                  <div className="flex items-center justify-between mb-2">
+                    <h3 className={`text-sm font-semibold flex items-center gap-2 ${
+                      darkMode ? 'text-gray-100' : 'text-gray-800'
+                    }`}>
+                      <Receipt className="w-4 h-4" />
+                      Cost Breakdown
+                    </h3>
+                    <ArrowUpDown className={`w-3.5 h-3.5 flex-shrink-0 ${darkMode ? 'text-gray-500' : 'text-gray-400'}`} />
+                  </div>
                   <div className="flex gap-4 flex-1">
                     {/* Circular Progress - Desktop Only */}
                     <div
