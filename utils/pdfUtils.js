@@ -428,6 +428,8 @@ export const generateVehicleReportPDF = async (vehicle, projects, parts, service
         doc.setFont('helvetica', 'normal');
         const statusColors = {
           planning: { text: [100, 100, 100] },
+          sourcing: { text: [234, 88, 12] },
+          ready: { text: [13, 148, 136] },
           in_progress: { text: [37, 99, 235] },
           completed: { text: [22, 163, 74] },
           on_hold: { text: [202, 138, 4] }

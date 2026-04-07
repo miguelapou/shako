@@ -63,20 +63,20 @@ const useProjects = (userId, toast, isDemo = false) => {
   /**
    * Helper function to calculate project status based on todos
    */
-  const calculateProjectStatus = (todos, currentStatus) => {
+  const calculateProjectStatus = (todos, currentStatus, linkedParts = []) => {
     // If status is manually set to "on_hold", keep it
     if (currentStatus === 'on_hold') return 'on_hold';
-    if (!todos || todos.length === 0) {
-      return 'planning';
+    const completedCount = todos && todos.length > 0 ? todos.filter(todo => todo.completed).length : 0;
+    const totalCount = todos ? todos.length : 0;
+    // Todo-based transitions take priority once work has started
+    if (completedCount > 0) {
+      return completedCount === totalCount ? 'completed' : 'in_progress';
     }
-    const completedCount = todos.filter(todo => todo.completed).length;
-    if (completedCount === 0) {
-      return 'planning';
-    } else if (completedCount === todos.length) {
-      return 'completed';
-    } else {
-      return 'in_progress';
+    // No todos started — derive status from linked parts
+    if (linkedParts.length > 0) {
+      return linkedParts.every(p => p.delivered) ? 'ready' : 'sourcing';
     }
+    return 'planning';
   };
 
   /**

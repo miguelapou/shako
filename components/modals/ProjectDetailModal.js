@@ -275,7 +275,8 @@ const ProjectDetailModal = ({
                   // Auto-calculate status based on todos only when status is not explicitly set
                   let finalUpdates = { ...updates };
                   if (updates.todos && updates.status === undefined) {
-                    finalUpdates.status = calculateProjectStatus(updates.todos, viewingProject?.status);
+                    const linkedParts = parts.filter(p => p.projectId === viewingProject?.id);
+                    finalUpdates.status = calculateProjectStatus(updates.todos, viewingProject?.status, linkedParts);
                   }
                   // Optimistic update: update viewingProject immediately for snappy UI
                   setViewingProject(prev => ({ ...prev, ...finalUpdates }));
@@ -483,7 +484,13 @@ const ProjectDetailModal = ({
                 <button
                   onClick={async () => {
                     // Toggle on_hold status
-                    const newStatus = viewingProject.status === 'on_hold' ? 'in_progress' : 'on_hold';
+                    let newStatus;
+                    if (viewingProject.status === 'on_hold') {
+                      const linkedParts = parts.filter(p => p.projectId === viewingProject?.id);
+                      newStatus = calculateProjectStatus(viewingProject.todos, null, linkedParts);
+                    } else {
+                      newStatus = 'on_hold';
+                    }
                     const updatedProject = { ...viewingProject, status: newStatus };
                     await updateProject(viewingProject.id, {
                       status: newStatus

@@ -754,6 +754,23 @@ const Shako = ({ isDemo = false }) => {
     // Don't load vehicles on initial mount, only when tab is accessed
   }, [userId]);
 
+  // Auto-update project status to sourcing/ready/planning based on linked parts delivery state.
+  // Only affects projects that haven't started work (not in_progress, completed, or on_hold).
+  useEffect(() => {
+    if (!projects.length) return;
+    projects.forEach(project => {
+      if (project.archived) return;
+      if (['on_hold', 'in_progress', 'completed'].includes(project.status)) return;
+      const linkedParts = parts.filter(p => p.projectId === project.id);
+      const expectedStatus = linkedParts.length === 0
+        ? 'planning'
+        : linkedParts.every(p => p.delivered) ? 'ready' : 'sourcing';
+      if (project.status !== expectedStatus) {
+        updateProject(project.id, { status: expectedStatus });
+      }
+    });
+  }, [parts, projects]);
+
   // Load vehicles when the vehicles tab is accessed and user is authenticated
   useEffect(() => {
     if (userId && activeTab === 'vehicles' && !vehiclesLoadedRef.current) {
