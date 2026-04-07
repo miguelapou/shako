@@ -37,6 +37,11 @@
     margin: 0;
   }
 
+  /* Push footer to bottom when content is short */
+  .modal-content > *:last-child {
+    margin-top: auto;
+  }
+
   /* PWA standalone mode */
   html.pwa-standalone .modal-backdrop {
     top: 0;
