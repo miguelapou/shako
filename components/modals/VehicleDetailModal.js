@@ -3939,7 +3939,7 @@ const VehicleDetailModal = ({
             onClick={(e) => e.stopPropagation()}
           >
             <div className={`px-5 py-4 border-b flex items-center justify-between ${
-              darkMode ? 'border-gray-700' : 'border-gray-200'
+              darkMode ? 'bg-gray-700 border-gray-600' : 'bg-slate-50 border-slate-300'
             }`}>
               <div>
                 <h3 className={`text-base font-semibold ${
