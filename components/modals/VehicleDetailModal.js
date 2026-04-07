@@ -1895,7 +1895,8 @@ const VehicleDetailModal = ({
                     // Auto-calculate status based on todos (same logic as in useProjects hook)
                     let finalUpdates = { ...updates };
                     if (updates.todos && updates.status !== 'on_hold') {
-                      finalUpdates.status = calculateProjectStatus(updates.todos, vehicleModalProjectView?.status);
+                      const linkedParts = parts.filter(p => p.projectId === vehicleModalProjectView?.id);
+                      finalUpdates.status = calculateProjectStatus(updates.todos, vehicleModalProjectView?.status, linkedParts);
                     }
                     // Optimistic update: update vehicleModalProjectView immediately for snappy UI
                     setVehicleModalProjectView(prev => ({ ...prev, ...finalUpdates }));
@@ -3532,7 +3533,13 @@ const VehicleDetailModal = ({
                     <button
                       onClick={async () => {
                         // Toggle on_hold status
-                        const newStatus = vehicleModalProjectView.status === 'on_hold' ? 'in_progress' : 'on_hold';
+                        let newStatus;
+                        if (vehicleModalProjectView.status === 'on_hold') {
+                          const linkedParts = parts.filter(p => p.projectId === vehicleModalProjectView?.id);
+                          newStatus = calculateProjectStatus(vehicleModalProjectView.todos, null, linkedParts);
+                        } else {
+                          newStatus = 'on_hold';
+                        }
                         const updatedProject = { ...vehicleModalProjectView, status: newStatus };
                         await updateProject(vehicleModalProjectView.id, {
                           status: newStatus
