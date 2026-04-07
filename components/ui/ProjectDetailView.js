@@ -1059,8 +1059,8 @@ const ProjectDetailView = ({
                       key={part.id}
                       className={`border-t ${
                         darkMode
-                          ? `border-gray-600 ${index % 2 === 0 ? 'bg-gray-800' : 'bg-gray-750'}`
-                          : `border-gray-200 ${index % 2 === 0 ? 'bg-white' : 'bg-gray-50'}`
+                          ? `border-gray-600 ${index % 2 === 0 ? 'bg-gray-800' : 'bg-gray-900'}`
+                          : `border-gray-200 ${index % 2 === 0 ? 'bg-white' : 'bg-slate-50'}`
                       }`}
                     >
                       <td className={`px-3 py-2 ${darkMode ? 'text-gray-100' : 'text-gray-800'}`}>
