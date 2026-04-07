@@ -589,7 +589,7 @@ const VehicleDetailModal = ({
       >
         {/* Header */}
         <div className={`sticky top-0 z-10 px-6 py-4 border-b ${
-          darkMode ? 'bg-gray-800 border-gray-700' : 'bg-slate-50 border-slate-200'
+          darkMode ? 'bg-gray-700 border-gray-600' : 'bg-slate-50 border-slate-300'
         }`}>
           <div className="flex items-center justify-between gap-4">
             <div className="flex flex-col min-w-0 flex-1">
@@ -710,7 +710,7 @@ const VehicleDetailModal = ({
           >
             <div
               key={viewingVehicle.id}
-              className="p-6 pb-12 space-y-6 max-h-[calc(85vh-120px)] overflow-y-auto sm:max-h-[calc(90vh-164px)] animate-fade-in"
+              className="p-6 pb-14 space-y-6 max-h-[calc(85vh-120px)] overflow-y-auto sm:max-h-[calc(90vh-164px)] animate-fade-in"
             >
               {/* Top Section: Image (3/5) and Basic Info (2/5) side by side */}
               <div className="grid grid-cols-1 md:grid-cols-[3fr_2fr] gap-4 md:items-start">
@@ -1211,38 +1211,22 @@ const VehicleDetailModal = ({
                   }`}>
                     Service History
                   </h3>
-                  {(() => {
-                    const servicePartsTotal = calculateServicePartsTotal(viewingVehicle.id, parts, serviceEvents);
-                    if (servicePartsTotal === 0) return null;
-                    return (
-                      <span className={`px-2 py-1 rounded-md text-xs font-semibold flex items-center gap-1 ${
-                        darkMode ? 'bg-green-900/40 text-green-300' : 'bg-green-100 text-green-700'
-                      }`}>
-                        <Wrench className="w-3 h-3" />
-                        ${servicePartsTotal.toFixed(2)}
-                      </span>
-                    );
-                  })()}
-                </div>
-                <div className={`relative ${!loadingServiceEvents ? 'animate-fade-in' : ''}`} onClick={() => setSelectedEventId(null)}>
-                    {/* Show more/less toggle button */}
+                  <div className="flex items-center gap-2">
                     {serviceEventsHiddenCount > 0 && (
                       <button
                         onClick={(e) => {
                           e.stopPropagation();
                           if (serviceHistoryExpanded) {
-                            // Collapsing: trigger animation first, then collapse after delay
                             setIsServiceHistoryCollapsing(true);
                             setTimeout(() => {
                               setServiceHistoryExpanded(false);
                               setIsServiceHistoryCollapsing(false);
                             }, 250);
                           } else {
-                            // Expanding: just expand (animation handled via CSS class)
                             setServiceHistoryExpanded(true);
                           }
                         }}
-                        className={`flex items-center gap-1 text-sm font-medium mb-2 ${
+                        className={`flex items-center gap-1 text-sm font-medium ${
                           darkMode
                             ? 'text-blue-400 hover:text-blue-300'
                             : 'text-blue-600 hover:text-blue-700'
@@ -1261,6 +1245,22 @@ const VehicleDetailModal = ({
                         )}
                       </button>
                     )}
+                    {(() => {
+                      const servicePartsTotal = calculateServicePartsTotal(viewingVehicle.id, parts, serviceEvents);
+                      if (servicePartsTotal === 0) return null;
+                      return (
+                        <span className={`px-2 py-1 rounded-md text-xs font-semibold flex items-center gap-1 ${
+                          darkMode ? 'bg-green-900/40 text-green-300' : 'bg-green-100 text-green-700'
+                        }`}>
+                          <Wrench className="w-3 h-3" />
+                          ${servicePartsTotal.toFixed(2)}
+                        </span>
+                      );
+                    })()}
+                  </div>
+                </div>
+                <div className={`relative ${!loadingServiceEvents ? 'animate-fade-in' : ''}`} onClick={() => setSelectedEventId(null)}>
+                    {/* list starts here, toggle moved to header */}
 
                     {/* Service events container */}
                     <div className="flex flex-col gap-4">
@@ -1331,10 +1331,10 @@ const VehicleDetailModal = ({
 
                             {/* Event content */}
                             <div className="flex-1 min-w-0 pb-0">
-                              <div className={`relative rounded-lg p-3 border transition-colors ${
+                              <div className={`relative rounded-lg p-3 pb-2 border transition-colors h-[4.5rem] overflow-hidden ${
                                 darkMode
                                   ? `bg-gray-700/50 border-gray-600 ${selectedEventId !== event.id ? 'can-hover:group-hover:border-white' : ''}`
-                                  : `bg-gray-50 border-gray-200 ${selectedEventId !== event.id ? 'can-hover:group-hover:border-gray-400' : ''}`
+                                  : `bg-gray-50 border-gray-300 ${selectedEventId !== event.id ? 'can-hover:group-hover:border-gray-400' : ''}`
                               }`}>
                                 {/* Indicators for notes and linked parts */}
                                 <div className="absolute top-2 right-2 flex items-center gap-1.5">
@@ -1359,7 +1359,7 @@ const VehicleDetailModal = ({
                                   }`}>
                                     {event.description}
                                   </p>
-                                  <div className="flex flex-wrap items-center gap-x-3 gap-y-1 mt-1">
+                                  <div className="flex flex-wrap items-center gap-x-3 gap-y-1 mt-1.5">
                                     <span className={`text-xs flex items-center gap-1 whitespace-nowrap ${
                                       darkMode ? 'text-gray-400' : 'text-gray-500'
                                     }`}>
@@ -1578,16 +1578,16 @@ const VehicleDetailModal = ({
                     </h3>
                   </div>
                   <div
-                    className={`grid grid-cols-2 gap-3 ${!loadingDocuments ? 'animate-fade-in' : ''}`}
+                    className={`grid grid-cols-2 gap-4 ${!loadingDocuments ? 'animate-fade-in' : ''}`}
                     onClick={() => setSelectedDocId(null)}
                   >
                     {documents.map((doc) => (
                       <div
                         key={doc.id}
-                        className={`group relative rounded-lg p-3 border cursor-pointer transition-colors ${
+                        className={`group relative rounded-lg p-3 pb-2 border cursor-pointer transition-colors h-[4.5rem] overflow-hidden ${
                           darkMode
-                            ? `bg-gray-700 border-gray-600 ${selectedDocId !== doc.id ? 'can-hover:hover:border-white' : ''}`
-                            : `bg-gray-50 border-gray-200 ${selectedDocId !== doc.id ? 'can-hover:hover:border-gray-400' : ''}`
+                            ? `bg-gray-700/50 border-gray-600 ${selectedDocId !== doc.id ? 'can-hover:hover:border-white' : ''}`
+                            : `bg-gray-50 border-gray-300 ${selectedDocId !== doc.id ? 'can-hover:hover:border-gray-400' : ''}`
                         }`}
                         onClick={(e) => {
                           e.stopPropagation();
@@ -1606,7 +1606,7 @@ const VehicleDetailModal = ({
                             }`} title={doc.title}>
                               {doc.title}
                             </p>
-                            <p className={`text-xs truncate ${
+                            <p className={`text-xs truncate mt-0.5 ${
                               darkMode ? 'text-gray-500' : 'text-gray-500'
                             }`} title={doc.file_name}>
                               {doc.file_name}
@@ -1663,7 +1663,7 @@ const VehicleDetailModal = ({
                     {/* Add new document card */}
                     <div
                       onClick={() => setShowAddDocumentModal(true)}
-                      className={`group relative rounded-lg p-3 border-2 border-dashed transition-all cursor-pointer can-hover:hover:shadow-md ${
+                      className={`group relative rounded-lg p-3 pb-2 border-2 border-dashed transition-all cursor-pointer can-hover:hover:shadow-md h-[4.5rem] overflow-hidden ${
                         darkMode
                           ? 'border-gray-600 can-hover:hover:border-blue-500 can-hover:hover:bg-gray-700/50'
                           : 'border-gray-300 can-hover:hover:border-blue-500 can-hover:hover:bg-blue-50/50'
@@ -1719,8 +1719,98 @@ const VehicleDetailModal = ({
 
               {/* Projects Section */}
               {(() => {
-                const vehicleProjects = getVehicleProjects(viewingVehicle.id)
-                  .sort((a, b) => (a.archived === b.archived ? 0 : a.archived ? 1 : -1));
+                const allVehicleProjects = getVehicleProjects(viewingVehicle.id);
+                const activeProjects = allVehicleProjects.filter(p => !p.archived);
+                const archivedProjects = allVehicleProjects.filter(p => p.archived);
+
+                const renderProjectCard = (project) => {
+                  const projectParts = parts.filter(p => p.projectId === project.id);
+                  const projectTotal = projectParts.reduce((sum, part) => sum + part.total, 0);
+                  const completedTodos = project.todos ? project.todos.filter(t => t.completed).length : 0;
+                  const uncompletedTodos = project.todos ? project.todos.filter(t => !t.completed).length : 0;
+                  const statusColors = getStatusColors(darkMode);
+                  return (
+                    <button
+                      key={project.id}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setVehicleModalProjectView(project);
+                      }}
+                      className={`relative flex flex-col rounded-lg pl-5 pr-4 pt-4 pb-4 overflow-hidden text-left transition-all duration-200 cursor-pointer can-hover:hover:shadow-2xl can-hover:hover:scale-[1.03] ${
+                        darkMode ? 'bg-gray-700/50' : 'bg-gray-50'
+                      }`}
+                    >
+                      {/* Priority accent bar */}
+                      <div className="absolute left-0 top-0 bottom-0 w-1" style={{ backgroundColor: getPriorityBorderColor(project.priority) }} />
+                      {/* Status Badge with optional Archive icon */}
+                      <div className="absolute top-2 right-2 flex items-center gap-1.5">
+                        <span className={`px-2 py-0.5 rounded-full text-xs font-medium ${
+                          statusColors[project.status]
+                        } ${!darkMode ? 'ring-1 ring-inset ring-current' : ''}`}>
+                          {project.status === 'in_progress' ? 'IN PROGRESS' :
+                           project.status === 'on_hold' ? 'ON HOLD' :
+                           project.status?.toUpperCase() || 'PLANNING'}
+                        </span>
+                      </div>
+                      <h4 className={`font-semibold mb-2 pr-20 ${
+                        darkMode ? 'text-gray-200' : 'text-gray-800'
+                      }`}>
+                        {project.name}
+                      </h4>
+                      <p className={`text-sm mb-3 line-clamp-3 overflow-hidden ${
+                        project.description
+                          ? (darkMode ? 'text-gray-400' : 'text-slate-600')
+                          : (darkMode ? 'text-gray-500 italic' : 'text-gray-500 italic')
+                      }`}
+                      style={{ height: '3.75rem', display: '-webkit-box', WebkitLineClamp: 3, WebkitBoxOrient: 'vertical' }}>
+                        {project.description || 'No description added'}
+                      </p>
+                      <div className="flex flex-wrap gap-4 text-xs mt-auto">
+                        <div className="flex items-center gap-1">
+                          <Package className={`w-3 h-3 ${
+                            darkMode ? 'text-gray-500' : 'text-gray-400'
+                          }`} />
+                          <span className={darkMode ? 'text-gray-400' : 'text-slate-600'}>
+                            {projectParts.length} parts
+                          </span>
+                        </div>
+                        <span className={darkMode ? 'text-gray-600' : 'text-gray-400'}>•</span>
+                        <div className="flex items-center gap-1">
+                          <BadgeDollarSign className={`w-3 h-3 ${
+                            darkMode ? 'text-gray-500' : 'text-gray-400'
+                          }`} />
+                          <span className={darkMode ? 'text-gray-400' : 'text-slate-600'}>
+                            ${projectTotal.toFixed(2)}
+                          </span>
+                        </div>
+                        {project.todos && project.todos.length > 0 && (
+                          <>
+                            <span className={darkMode ? 'text-gray-600' : 'text-gray-400'}>•</span>
+                            <div className="flex items-center gap-2">
+                              <div className="flex items-center gap-1">
+                                <CheckCircle className={`w-3 h-3 ${
+                                  darkMode ? 'text-green-400' : 'text-green-600'
+                                }`} />
+                                <span className={darkMode ? 'text-gray-400' : 'text-slate-600'}>
+                                  {completedTodos}
+                                </span>
+                              </div>
+                              <div className="flex items-center gap-1">
+                                <Clock className={`w-3 h-3 ${
+                                  darkMode ? 'text-gray-400' : 'text-gray-500'
+                                }`} />
+                                <span className={darkMode ? 'text-gray-400' : 'text-slate-600'}>
+                                  {uncompletedTodos}
+                                </span>
+                              </div>
+                            </div>
+                          </>
+                        )}
+                      </div>
+                    </button>
+                  );
+                };
+
                 return (
                   <div className={`pt-6 border-t ${
                     darkMode ? 'border-gray-700' : 'border-slate-200'
@@ -1733,100 +1823,30 @@ const VehicleDetailModal = ({
                         <span>Projects</span>
                       </div>
                     </h3>
-                    {vehicleProjects.length > 0 ? (
-                      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                        {vehicleProjects.map((project) => {
-                          const projectParts = parts.filter(p => p.projectId === project.id);
-                          const projectTotal = projectParts.reduce((sum, part) => sum + part.total, 0);
-                          const completedTodos = project.todos ? project.todos.filter(t => t.completed).length : 0;
-                          const uncompletedTodos = project.todos ? project.todos.filter(t => !t.completed).length : 0;
-
-                          const statusColors = getStatusColors(darkMode);
-                          return (
-                            <button
-                              key={project.id}
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                setVehicleModalProjectView(project);
-                              }}
-                              className={`relative flex flex-col rounded-lg p-4 border-l-4 text-left transition-all duration-200 cursor-pointer can-hover:hover:shadow-2xl can-hover:hover:scale-[1.03] ${
-                                darkMode ? 'bg-gray-700' : 'bg-gray-50'
-                              }`}
-                              style={{ borderLeftColor: getPriorityBorderColor(project.priority) }}
-                            >
-                              {/* Status Badge with optional Archive icon */}
-                              <div className="absolute top-2 right-2 flex items-center gap-1.5">
-                                {project.archived && (
-                                  <span data-tooltip="Archived" className="instant-tooltip flex items-center">
-                                    <Archive className={`w-4 h-4 ${darkMode ? 'text-gray-500' : 'text-gray-400'}`} />
-                                  </span>
-                                )}
-                                <span className={`px-2 py-0.5 rounded-full text-xs font-medium ${
-                                  statusColors[project.status]
-                                } ${!darkMode ? 'ring-1 ring-inset ring-current' : ''}`}>
-                                  {project.status === 'in_progress' ? 'IN PROGRESS' :
-                                   project.status === 'on_hold' ? 'ON HOLD' :
-                                   project.status?.toUpperCase() || 'PLANNING'}
-                                </span>
-                              </div>
-                              <h4 className={`font-semibold mb-2 pr-20 ${
-                                darkMode ? 'text-gray-200' : 'text-gray-800'
-                              }`}>
-                                {project.name}
-                              </h4>
-                              <p className={`text-sm mb-3 line-clamp-3 overflow-hidden ${
-                                project.description
-                                  ? (darkMode ? 'text-gray-400' : 'text-slate-600')
-                                  : (darkMode ? 'text-gray-500 italic' : 'text-gray-500 italic')
-                              }`}
-                              style={{ height: '3.75rem', display: '-webkit-box', WebkitLineClamp: 3, WebkitBoxOrient: 'vertical' }}>
-                                {project.description || 'No description added'}
-                              </p>
-                              <div className="flex flex-wrap gap-4 text-xs mt-auto">
-                                <div className="flex items-center gap-1">
-                                  <Package className={`w-3 h-3 ${
-                                    darkMode ? 'text-gray-500' : 'text-gray-400'
-                                  }`} />
-                                  <span className={darkMode ? 'text-gray-400' : 'text-slate-600'}>
-                                    {projectParts.length} parts
-                                  </span>
+                    {allVehicleProjects.length > 0 ? (
+                      <div className="space-y-4">
+                        {activeProjects.length > 0 && (
+                          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                            {activeProjects.map(renderProjectCard)}
+                          </div>
+                        )}
+                        {archivedProjects.length > 0 && (
+                          <>
+                            {activeProjects.length > 0 && (
+                              <div className={`flex items-center gap-3 py-1`}>
+                                <div className={`flex-1 h-px ${darkMode ? 'bg-gray-700' : 'bg-slate-300'}`} />
+                                <div className={`flex items-center gap-1.5 text-xs font-medium ${darkMode ? 'text-gray-500' : 'text-gray-400'}`}>
+                                  <Archive className="w-3 h-3" />
+                                  <span>Archived</span>
                                 </div>
-                                <span className={darkMode ? 'text-gray-600' : 'text-gray-400'}>•</span>
-                                <div className="flex items-center gap-1">
-                                  <BadgeDollarSign className={`w-3 h-3 ${
-                                    darkMode ? 'text-gray-500' : 'text-gray-400'
-                                  }`} />
-                                  <span className={darkMode ? 'text-gray-400' : 'text-slate-600'}>
-                                    ${projectTotal.toFixed(2)}
-                                  </span>
-                                </div>
-                                {project.todos && project.todos.length > 0 && (
-                                  <>
-                                    <span className={darkMode ? 'text-gray-600' : 'text-gray-400'}>•</span>
-                                    <div className="flex items-center gap-2">
-                                      <div className="flex items-center gap-1">
-                                        <CheckCircle className={`w-3 h-3 ${
-                                          darkMode ? 'text-green-400' : 'text-green-600'
-                                        }`} />
-                                        <span className={darkMode ? 'text-gray-400' : 'text-slate-600'}>
-                                          {completedTodos}
-                                        </span>
-                                      </div>
-                                      <div className="flex items-center gap-1">
-                                        <Clock className={`w-3 h-3 ${
-                                          darkMode ? 'text-gray-400' : 'text-gray-500'
-                                        }`} />
-                                        <span className={darkMode ? 'text-gray-400' : 'text-slate-600'}>
-                                          {uncompletedTodos}
-                                        </span>
-                                      </div>
-                                    </div>
-                                  </>
-                                )}
+                                <div className={`flex-1 h-px ${darkMode ? 'bg-gray-700' : 'bg-slate-300'}`} />
                               </div>
-                            </button>
-                          );
-                        })}
+                            )}
+                            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 opacity-60">
+                              {archivedProjects.map(renderProjectCard)}
+                            </div>
+                          </>
+                        )}
                       </div>
                     ) : (
                       <button
@@ -1866,7 +1886,7 @@ const VehicleDetailModal = ({
             }`}
           >
             {vehicleModalProjectView && !vehicleModalEditMode && (
-              <div className="p-6 space-y-6 max-h-[calc(85vh-120px)] overflow-y-auto sm:max-h-[calc(85vh-164px)]">
+              <div className="p-6 pb-14 space-y-6 max-h-[calc(85vh-120px)] overflow-y-auto sm:max-h-[calc(90vh-164px)]">
                 <ProjectDetailView
                   project={vehicleModalProjectView}
                   parts={parts}
@@ -3216,7 +3236,7 @@ const VehicleDetailModal = ({
 
         {/* Footer with Edit Button */}
         <div className={`sticky bottom-0 z-10 border-t p-4 flex items-center justify-between ${
-          darkMode ? 'border-gray-700 bg-gray-800' : 'border-slate-200 bg-slate-100'
+          darkMode ? 'border-gray-600 bg-gray-700' : 'border-slate-300 bg-slate-100'
         }`}>
           {vehicleModalEditMode ? (
             <div className="flex items-center justify-between sm:justify-start w-full gap-2">
@@ -3421,38 +3441,127 @@ const VehicleDetailModal = ({
                   </>
                 )}
                 {vehicleModalEditMode === 'project' && (
-                  <button
-                    onClick={async () => {
-                      // Toggle on_hold status
-                      const newStatus = vehicleModalProjectView.status === 'on_hold' ? 'in_progress' : 'on_hold';
-                      const updatedProject = { ...vehicleModalProjectView, status: newStatus };
-                      await updateProject(vehicleModalProjectView.id, {
-                        status: newStatus
-                      });
-                      setVehicleModalProjectView(updatedProject);
-                    }}
-                    className={`h-10 px-4 py-2 rounded-lg font-medium transition-colors flex items-center gap-2 text-sm ${
-                      vehicleModalProjectView.status === 'on_hold'
-                        ? darkMode
-                          ? 'bg-green-900/30 hover:bg-green-900/50 text-green-400 border border-green-700'
-                          : 'bg-green-50 hover:bg-green-100 text-green-600 border border-green-300'
-                        : darkMode
-                          ? 'bg-gray-700 hover:bg-gray-600 text-gray-100 border border-gray-600'
-                          : 'bg-gray-200 hover:bg-gray-300 text-gray-800 border border-gray-300'
-                    }`}
-                  >
-                    {vehicleModalProjectView.status === 'on_hold' ? (
-                      <>
-                        <Play className="w-5 h-5 sm:w-4 sm:h-4" />
-                        <span className="hidden sm:inline">Resume</span>
-                      </>
-                    ) : (
-                      <>
-                        <Pause className="w-5 h-5 sm:w-4 sm:h-4" />
-                        <span className="hidden sm:inline">Pause</span>
-                      </>
-                    )}
-                  </button>
+                  <>
+                    <button
+                      onClick={() => {
+                        const partsForProject = parts.filter(p => p.projectId === vehicleModalProjectView.id);
+                        const hasParts = partsForProject.length > 0;
+                        setConfirmDialog({
+                          isOpen: true,
+                          title: 'Delete Project',
+                          message: hasParts
+                            ? `This project has ${partsForProject.length} part(s) linked to it. Deleting it will unlink these parts. This action cannot be undone.`
+                            : 'Are you sure you want to permanently delete this project? This action cannot be undone.',
+                          confirmText: 'Delete',
+                          onConfirm: async () => {
+                            await deleteProject(vehicleModalProjectView.id);
+                            setVehicleModalProjectView(null);
+                            setVehicleModalEditMode(null);
+                          }
+                        });
+                      }}
+                      className={`h-10 px-4 py-2 rounded-lg font-medium transition-colors flex items-center gap-2 text-sm ${
+                        darkMode
+                          ? 'bg-red-900/30 hover:bg-red-900/50 text-red-400 border border-red-700'
+                          : 'bg-red-50 hover:bg-red-100 text-red-600 border border-red-300'
+                      }`}
+                    >
+                      <Trash2 className="w-4 h-4" />
+                      <span className="hidden sm:inline">Delete</span>
+                    </button>
+                    <button
+                      onClick={async () => {
+                        const linkedPartsToArchive = parts.filter(p => p.projectId === vehicleModalProjectView.id && !p.archived);
+                        const linkedPartsToRestore = parts.filter(p => p.projectId === vehicleModalProjectView.id && p.archived);
+                        const archiveCount = linkedPartsToArchive.length;
+                        const restoreCount = linkedPartsToRestore.length;
+
+                        const archiveMessage = archiveCount > 0
+                          ? `Are you sure you want to archive this project? It will remain visible with limited information, and ${archiveCount} linked part${archiveCount > 1 ? 's' : ''} will also be archived.`
+                          : 'Are you sure you want to archive this project? It will still be visible but with limited information.';
+
+                        const unarchiveMessage = restoreCount > 0
+                          ? `Are you sure you want to unarchive this project? It has ${restoreCount} archived part${restoreCount > 1 ? 's' : ''} that can be restored.`
+                          : 'Are you sure you want to unarchive this project?';
+
+                        setConfirmDialog({
+                          isOpen: true,
+                          title: vehicleModalProjectView.archived ? 'Unarchive Project' : 'Archive Project',
+                          message: vehicleModalProjectView.archived ? unarchiveMessage : archiveMessage,
+                          confirmText: vehicleModalProjectView.archived ? 'Unarchive' : 'Archive',
+                          isDangerous: false,
+                          ...(vehicleModalProjectView.archived && restoreCount > 0 ? {
+                            secondaryText: 'Restore All',
+                            secondaryDangerous: false,
+                            secondaryAction: async () => {
+                              const updatedProject = { ...vehicleModalProjectView, archived: false };
+                              await updateProject(vehicleModalProjectView.id, { archived: false });
+                              await Promise.all(linkedPartsToRestore.map(part =>
+                                partsService.updatePart(part.id, { archived: false })
+                              ));
+                              await loadParts();
+                              setVehicleModalProjectView(updatedProject);
+                            }
+                          } : {}),
+                          onConfirm: async () => {
+                            const updatedProject = { ...vehicleModalProjectView, archived: !vehicleModalProjectView.archived };
+                            await updateProject(vehicleModalProjectView.id, { archived: !vehicleModalProjectView.archived });
+                            if (!vehicleModalProjectView.archived && archiveCount > 0) {
+                              await Promise.all(linkedPartsToArchive.map(part =>
+                                partsService.updatePart(part.id, { archived: true })
+                              ));
+                              await loadParts();
+                            }
+                            setVehicleModalProjectView(updatedProject);
+                          }
+                        });
+                      }}
+                      className={`h-10 px-4 py-2 rounded-lg font-medium transition-colors flex items-center gap-2 text-sm ${
+                        vehicleModalProjectView.archived
+                          ? darkMode
+                            ? 'bg-green-900/30 hover:bg-green-900/50 text-green-400 border border-green-700'
+                            : 'bg-green-50 hover:bg-green-100 text-green-600 border border-green-300'
+                          : darkMode
+                            ? 'bg-amber-900/30 hover:bg-amber-900/50 text-amber-400 border border-amber-700'
+                            : 'bg-amber-50 hover:bg-amber-100 text-amber-600 border border-amber-300'
+                      }`}
+                    >
+                      {vehicleModalProjectView.archived ? <ArchiveRestore className="w-5 h-5 sm:w-4 sm:h-4" /> : <Archive className="w-5 h-5 sm:w-4 sm:h-4" />}
+                      <span className="hidden sm:inline">{vehicleModalProjectView.archived ? 'Unarchive' : 'Archive'}</span>
+                    </button>
+                    <button
+                      onClick={async () => {
+                        // Toggle on_hold status
+                        const newStatus = vehicleModalProjectView.status === 'on_hold' ? 'in_progress' : 'on_hold';
+                        const updatedProject = { ...vehicleModalProjectView, status: newStatus };
+                        await updateProject(vehicleModalProjectView.id, {
+                          status: newStatus
+                        });
+                        setVehicleModalProjectView(updatedProject);
+                      }}
+                      className={`h-10 px-4 py-2 rounded-lg font-medium transition-colors flex items-center gap-2 text-sm ${
+                        vehicleModalProjectView.status === 'on_hold'
+                          ? darkMode
+                            ? 'bg-green-900/30 hover:bg-green-900/50 text-green-400 border border-green-700'
+                            : 'bg-green-50 hover:bg-green-100 text-green-600 border border-green-300'
+                          : darkMode
+                            ? 'bg-gray-700 hover:bg-gray-600 text-gray-100 border border-gray-600'
+                            : 'bg-gray-200 hover:bg-gray-300 text-gray-800 border border-gray-300'
+                      }`}
+                    >
+                      {vehicleModalProjectView.status === 'on_hold' ? (
+                        <>
+                          <Play className="w-5 h-5 sm:w-4 sm:h-4" />
+                          <span className="hidden sm:inline">Resume</span>
+                        </>
+                      ) : (
+                        <>
+                          <Pause className="w-5 h-5 sm:w-4 sm:h-4" />
+                          <span className="hidden sm:inline">Pause</span>
+                        </>
+                      )}
+                    </button>
+                  </>
                 )}
               </div>
               <button

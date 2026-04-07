@@ -247,7 +247,7 @@ const ProjectsTab = ({
                   const linkedParts = parts.filter(part => part.projectId === project.id);
                   return (
                     <div className={`mt-4 pt-4 border-t flex items-center justify-between ${
-                      darkMode ? 'border-gray-600' : 'border-gray-200'
+                      darkMode ? 'border-gray-600' : 'border-gray-300'
                     }`}>
                       {/* Parts Counter */}
                       <div className="flex items-center gap-1.5">

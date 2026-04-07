@@ -1,5 +1,5 @@
 import React, { useState, useMemo, useEffect, useLayoutEffect, useRef } from 'react';
-import { Package, CheckCircle, CheckSquare, ChevronDown, X, Archive, Car } from 'lucide-react';
+import { Package, CheckCircle, CheckSquare, ChevronDown, X, Archive, Car, LayoutGrid, Table } from 'lucide-react';
 import { getVendorDisplayColor } from '../../utils/colorUtils';
 import { toSentenceCase } from '../../utils/styleUtils';
 import ConfirmDialog from './ConfirmDialog';
@@ -47,6 +47,22 @@ const ProjectDetailView = ({
   const [showTodoProgress, setShowTodoProgress] = useState(false);
   const [isPartsHovered, setIsPartsHovered] = useState(false);
   const descriptionRef = useRef(null);
+
+  const localStorageKey = `partsViewMode_${project.id}`;
+  const [partsViewMode, setPartsViewMode] = useState(() => {
+    if (typeof window !== 'undefined') {
+      return localStorage.getItem(localStorageKey) || 'cards';
+    }
+    return 'cards';
+  });
+
+  const togglePartsViewMode = () => {
+    const newMode = partsViewMode === 'cards' ? 'table' : 'cards';
+    setPartsViewMode(newMode);
+    if (typeof window !== 'undefined') {
+      localStorage.setItem(localStorageKey, newMode);
+    }
+  };
 
   // Refs and state for animated progress bar height
   const progressGridRef = useRef(null);
@@ -334,7 +350,7 @@ const ProjectDetailView = ({
             : 'bg-gray-50 border-blue-500'
           : darkMode
             ? 'bg-gray-700 border-gray-600 hover:border-white'
-            : 'bg-gray-50 border-gray-200 hover:border-gray-400'
+            : 'bg-gray-50 border-gray-300 hover:border-gray-400'
       }`}
     >
       {/* Checkbox */}
@@ -885,7 +901,7 @@ const ProjectDetailView = ({
                     : 'bg-gray-50 border-blue-500'
                   : darkMode
                     ? 'bg-gray-700 border-gray-600 hover:border-white'
-                    : 'bg-gray-50 border-gray-200 hover:border-gray-400'
+                    : 'bg-gray-50 border-gray-300 hover:border-gray-400'
               }`}
             >
               {/* Empty checkbox placeholder */}
@@ -978,22 +994,129 @@ const ProjectDetailView = ({
       {/* Linked Parts List - Full Width Below */}
       {linkedParts.length > 0 && (
         <div className={`pt-6 border-t ${
-          darkMode ? 'border-gray-700' : 'border-slate-200'
+          darkMode ? 'border-gray-700' : 'border-slate-300'
         }`}>
-          <h3 className={`text-lg font-semibold mb-3 ${
-            darkMode ? 'text-gray-200' : 'text-gray-800'
-          }`}>
-            <div className="flex items-center gap-2">
-              <Package className="w-5 h-5" />
-              <span>Linked Parts ({linkedParts.length})</span>
+          <div className="flex items-center justify-between mb-3">
+            <h3 className={`text-lg font-semibold ${
+              darkMode ? 'text-gray-200' : 'text-gray-800'
+            }`}>
+              <div className="flex items-center gap-2">
+                <Package className="w-5 h-5" />
+                <span>Linked Parts ({linkedParts.length})</span>
+              </div>
+            </h3>
+            <div
+              onClick={togglePartsViewMode}
+              className={`hidden md:relative md:flex items-center rounded-lg border cursor-pointer ${
+                darkMode ? 'bg-gray-800 border-gray-600' : 'bg-slate-100 border-slate-300'
+              }`}
+            >
+              {/* Sliding background indicator */}
+              <div
+                className={`absolute top-0.5 bottom-0.5 left-0.5 w-[calc(50%-2px)] rounded-md transition-all duration-200 ease-in-out ${
+                  darkMode ? 'bg-blue-600' : 'bg-blue-500'
+                } ${
+                  partsViewMode === 'table' ? 'translate-x-full' : 'translate-x-0'
+                }`}
+              />
+              {/* Cards icon */}
+              <div
+                className={`relative z-10 p-1.5 flex items-center justify-center rounded-md transition-colors duration-200 ${
+                  partsViewMode === 'cards' ? 'text-white' : darkMode ? 'text-gray-400' : 'text-slate-500'
+                }`}
+              >
+                <LayoutGrid className="w-4 h-4" />
+              </div>
+              {/* Table icon */}
+              <div
+                className={`relative z-10 p-1.5 flex items-center justify-center rounded-md transition-colors duration-200 ${
+                  partsViewMode === 'table' ? 'text-white' : darkMode ? 'text-gray-400' : 'text-slate-500'
+                }`}
+              >
+                <Table className="w-4 h-4" />
+              </div>
             </div>
-          </h3>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          </div>
+          {partsViewMode === 'table' && (
+            <div className={`hidden md:block rounded-lg border overflow-hidden ${
+              darkMode ? 'border-gray-600' : 'border-gray-300'
+            }`}>
+              <table className="w-full text-sm">
+                <thead>
+                  <tr className={darkMode ? 'bg-gray-700' : 'bg-gray-100'}>
+                    <th className={`text-left px-3 py-2 font-medium ${darkMode ? 'text-gray-300' : 'text-gray-600'}`}>Part</th>
+                    <th className={`text-left px-3 py-2 font-medium ${darkMode ? 'text-gray-300' : 'text-gray-600'}`}>Vendor</th>
+                    <th className={`text-left px-3 py-2 font-medium ${darkMode ? 'text-gray-300' : 'text-gray-600'}`}>Status</th>
+                    <th className={`text-right px-3 py-2 font-medium ${darkMode ? 'text-gray-300' : 'text-gray-600'}`}>Price</th>
+                    <th className={`text-right px-3 py-2 font-medium ${darkMode ? 'text-gray-300' : 'text-gray-600'}`}>Shipping</th>
+                    <th className={`text-right px-3 py-2 font-medium ${darkMode ? 'text-gray-300' : 'text-gray-600'}`}>Duties</th>
+                    <th className={`text-right px-3 py-2 font-medium ${darkMode ? 'text-gray-300' : 'text-gray-600'}`}>Total</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {linkedParts.map((part, index) => (
+                    <tr
+                      key={part.id}
+                      className={`border-t ${
+                        darkMode
+                          ? `border-gray-600 ${index % 2 === 0 ? 'bg-gray-800' : 'bg-gray-750'}`
+                          : `border-gray-200 ${index % 2 === 0 ? 'bg-white' : 'bg-gray-50'}`
+                      }`}
+                    >
+                      <td className={`px-3 py-2 ${darkMode ? 'text-gray-100' : 'text-gray-800'}`}>
+                        <div>{part.part}{(part.quantity || 1) > 1 ? ` ×${part.quantity}` : ''}</div>
+                        <div className={`text-xs font-mono h-4 ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>
+                          {part.partNumber && part.partNumber !== '-' ? part.partNumber : '-'}
+                        </div>
+                      </td>
+                      <td className="px-3 py-2">
+                        {part.vendor && (
+                          vendorColors[part.vendor] ? (
+                            (() => {
+                              const colors = getVendorDisplayColor(vendorColors[part.vendor], darkMode);
+                              return (
+                                <span
+                                  className="inline-block px-2 py-0.5 rounded-full text-xs font-medium border"
+                                  style={{ backgroundColor: colors.bg, color: colors.text, borderColor: colors.border }}
+                                >
+                                  {part.vendor}
+                                </span>
+                              );
+                            })()
+                          ) : (
+                            <span className={`inline-block px-2 py-0.5 rounded-full text-xs font-medium ${getVendorColor(part.vendor, vendorColors)}`}>
+                              {part.vendor}
+                            </span>
+                          )
+                        )}
+                      </td>
+                      <td className={`px-3 py-2 text-xs font-medium ${getStatusTextColor(part)}`}>
+                        {getStatusText(part)}
+                      </td>
+                      <td className={`px-3 py-2 text-right ${darkMode ? 'text-gray-200' : 'text-gray-800'}`}>
+                        ${part.price.toFixed(2)}
+                      </td>
+                      <td className={`px-3 py-2 text-right ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>
+                        {part.shipping > 0 ? `$${part.shipping.toFixed(2)}` : '—'}
+                      </td>
+                      <td className={`px-3 py-2 text-right ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>
+                        {part.duties > 0 ? `$${part.duties.toFixed(2)}` : '—'}
+                      </td>
+                      <td className={`px-3 py-2 text-right font-semibold ${darkMode ? 'text-gray-100' : 'text-gray-800'}`}>
+                        ${part.total.toFixed(2)}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
+          <div className={`grid grid-cols-1 md:grid-cols-3 gap-4 ${partsViewMode === 'table' ? 'md:hidden' : ''}`}>
             {linkedParts.map((part) => (
               <div
                 key={part.id}
                 className={`p-4 rounded-lg border flex flex-col ${
-                  darkMode ? 'bg-gray-700 border-gray-600' : 'bg-gray-50 border-gray-200'
+                  darkMode ? 'bg-gray-700 border-gray-600' : 'bg-gray-50 border-gray-300'
                 }`}
               >
                 <div className="flex justify-between items-start mb-3">
@@ -1039,7 +1162,7 @@ const ProjectDetailView = ({
                   </p>
                 )}
                 <div className={`border-t flex-1 flex flex-col justify-end ${
-                  darkMode ? 'border-gray-600' : 'border-gray-200'
+                  darkMode ? 'border-gray-600' : 'border-gray-300'
                 }`}>
                   <div className="pt-3 space-y-2">
                     <div className="flex justify-between text-sm">
@@ -1077,7 +1200,7 @@ const ProjectDetailView = ({
                       </div>
                     )}
                     <div className={`flex justify-between text-base font-bold pt-2 border-t ${
-                      darkMode ? 'border-gray-600' : 'border-gray-200'
+                      darkMode ? 'border-gray-600' : 'border-gray-300'
                     }`}>
                       <span className={darkMode ? 'text-gray-100' : 'text-slate-800'}>
                         Total:
@@ -1097,7 +1220,7 @@ const ProjectDetailView = ({
       {/* Empty State for Linked Parts */}
       {linkedParts.length === 0 && (
         <div className={`pt-6 border-t ${
-          darkMode ? 'border-gray-700' : 'border-slate-200'
+          darkMode ? 'border-gray-700' : 'border-slate-300'
         }`}>
           <h3 className={`text-lg font-semibold mb-3 ${
             darkMode ? 'text-gray-200' : 'text-gray-800'
@@ -1112,7 +1235,7 @@ const ProjectDetailView = ({
             onMouseEnter={() => setIsPartsHovered(true)}
             onMouseLeave={() => setIsPartsHovered(false)}
             className={`text-center py-8 rounded-lg border w-full cursor-pointer transition-colors ${
-              darkMode ? 'bg-gray-700/30 border-gray-600' : 'bg-gray-50 border-gray-200'
+              darkMode ? 'bg-gray-700/30 border-gray-600' : 'bg-gray-50 border-gray-300'
             }`}
             style={{ color: isPartsHovered ? (darkMode ? '#60a5fa' : '#2563eb') : (darkMode ? '#9ca3af' : '#6b7280') }}
           >

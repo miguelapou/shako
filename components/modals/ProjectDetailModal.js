@@ -211,7 +211,7 @@ const ProjectDetailModal = ({
       >
         {/* Header */}
         <div className={`sticky top-0 z-10 px-6 py-4 border-b ${
-          darkMode ? 'bg-gray-800 border-gray-700' : 'bg-slate-50 border-slate-200'
+          darkMode ? 'bg-gray-700 border-gray-600' : 'bg-slate-50 border-slate-300'
         }`}>
           <div className="flex items-center justify-between gap-4">
             <h2 className={`text-2xl font-bold ${
@@ -264,7 +264,7 @@ const ProjectDetailModal = ({
           >
             <div
               key={viewingProject.id}
-              className="p-6 space-y-6 max-h-[calc(85vh-120px)] overflow-y-auto sm:max-h-[calc(90vh-180px)] animate-fade-in"
+              className="p-6 pb-12 space-y-6 max-h-[calc(85vh-120px)] overflow-y-auto sm:max-h-[calc(90vh-180px)] animate-fade-in"
             >
               <ProjectDetailView
                 project={viewingProject}
@@ -313,7 +313,7 @@ const ProjectDetailModal = ({
                 : 'absolute opacity-0 pointer-events-none'
             }`}
           >
-            <div className="p-6 space-y-6 max-h-[calc(85vh-120px)] overflow-y-auto sm:max-h-[calc(90vh-180px)]">
+            <div className="p-6 pb-12 space-y-6 max-h-[calc(85vh-120px)] overflow-y-auto sm:max-h-[calc(90vh-180px)]">
               <ProjectEditForm
                 project={viewingProject}
                 onProjectChange={setViewingProject}
@@ -346,7 +346,7 @@ const ProjectDetailModal = ({
 
         {/* Footer with conditional buttons */}
         <div className={`sticky bottom-0 border-t p-4 flex items-center justify-between ${
-          darkMode ? 'border-gray-700 bg-gray-800' : 'border-slate-200 bg-slate-100'
+          darkMode ? 'border-gray-600 bg-gray-700' : 'border-slate-300 bg-slate-100'
         }`}>
           {projectModalEditMode ? (
             <div className="flex items-center justify-between sm:justify-start w-full gap-2">

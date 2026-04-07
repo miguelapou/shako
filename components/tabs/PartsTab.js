@@ -717,15 +717,14 @@ const PartsTab = ({
                     setTimeout(() => setContainerMinHeight('auto'), 50);
                   }
                 }}
-                className={`rounded-lg shadow-md p-4 border-l-4 ${
-                  statusFilter === 'pending' ? 'border-gray-400' : 'border-yellow-500'
-                } relative overflow-hidden cursor-pointer transition-all duration-200 hover:shadow-lg hover:scale-[1.02] ${
+                className={`rounded-lg shadow-md p-4 pl-5 relative overflow-hidden cursor-pointer transition-all duration-200 hover:shadow-lg hover:scale-[1.02] ${
                   statusFilter === 'pending'
                     ? (darkMode ? 'bg-gray-900' : 'bg-slate-300')
                     : (darkMode ? 'bg-gray-800 hover:bg-gray-750' : 'bg-slate-100 hover:bg-slate-200')
                 } ${(statusFilter === 'purchased' || statusFilter === 'pending') ? `ring-2 ${statusFilter === 'pending' ? 'ring-gray-400' : 'ring-yellow-500'}` : ''}`}
                 style={{ touchAction: 'manipulation' }}
               >
+                <div className={`absolute left-0 top-0 bottom-0 w-1 ${statusFilter === 'pending' ? 'bg-gray-400' : 'bg-yellow-500'}`} />
                 <span key={statusFilter === 'pending' ? 'icon-clock' : 'icon-cart'} className={`${hasClickedStatusCard ? 'status-card-icon' : ''} absolute top-2 right-2`}>
                   {statusFilter === 'pending' ? (
                     <Clock className={`w-6 h-6 text-gray-400 transition-opacity ${statusFilter === 'pending' ? 'opacity-70' : 'opacity-20'}`} />
@@ -771,11 +770,12 @@ const PartsTab = ({
                     setTimeout(() => setContainerMinHeight('auto'), 50);
                   }
                 }}
-                className={`rounded-lg shadow-md p-4 border-l-4 border-blue-500 relative overflow-hidden cursor-pointer transition-all duration-200 hover:shadow-lg hover:scale-[1.02] ${
+                className={`rounded-lg shadow-md p-4 pl-5 relative overflow-hidden cursor-pointer transition-all duration-200 hover:shadow-lg hover:scale-[1.02] ${
                   darkMode ? 'bg-gray-800 hover:bg-gray-750' : 'bg-slate-100 hover:bg-slate-200'
                 } ${statusFilter === 'shipped' ? 'ring-2 ring-blue-500' : ''}`}
                 style={{ touchAction: 'manipulation' }}
               >
+                <div className="absolute left-0 top-0 bottom-0 w-1 bg-blue-500" />
                 <Truck className={`w-6 h-6 text-blue-500 absolute top-2 right-2 transition-opacity ${statusFilter === 'shipped' ? 'opacity-70' : 'opacity-20'}`} />
                 <div>
                   <p className={`text-xs mb-1 ${
@@ -819,15 +819,14 @@ const PartsTab = ({
                     setTimeout(() => setContainerMinHeight('auto'), 50);
                   }
                 }}
-                className={`rounded-lg shadow-md p-4 border-l-4 ${
-                  deliveredFilter === 'hide' ? 'border-red-500' : 'border-green-500'
-                } relative overflow-hidden cursor-pointer transition-all duration-200 hover:shadow-lg hover:scale-[1.02] ${
+                className={`rounded-lg shadow-md p-4 pl-5 relative overflow-hidden cursor-pointer transition-all duration-200 hover:shadow-lg hover:scale-[1.02] ${
                   deliveredFilter === 'hide'
                     ? (darkMode ? 'bg-gray-900' : 'bg-slate-300')
                     : (darkMode ? 'bg-gray-800 hover:bg-gray-750' : 'bg-slate-100 hover:bg-slate-200')
                 } ${deliveredFilter !== 'all' ? `ring-2 ${deliveredFilter === 'hide' ? 'ring-red-500' : 'ring-green-500'}` : ''}`}
                 style={{ touchAction: 'manipulation' }}
               >
+                <div className={`absolute left-0 top-0 bottom-0 w-1 ${deliveredFilter === 'hide' ? 'bg-red-500' : 'bg-green-500'}`} />
                 <span key={deliveredFilter === 'hide' ? 'icon-clock' : 'icon-check'} className={`${hasClickedStatusCard ? 'status-card-icon' : ''} absolute top-2 right-2`}>
                   {deliveredFilter === 'hide' ? (
                     <Clock className={`w-6 h-6 text-red-500 transition-opacity ${deliveredFilter !== 'all' ? 'opacity-70' : 'opacity-20'}`} />
@@ -1035,7 +1034,7 @@ const PartsTab = ({
                           : (darkMode ? 'border-gray-600 text-gray-500 hover:text-gray-300' : 'border-gray-300 text-gray-400 hover:text-gray-600')
                       }`}
                     >
-                      + Archived
+                      {showArchivedParts ? '+ Unarchived' : '+ Archived'}
                     </button>
                   </div>
 
@@ -1801,7 +1800,7 @@ const PartsTab = ({
 
                 {/* Divider */}
                 <div className={`my-3 border-t ${
-                  darkMode ? 'border-gray-700' : 'border-slate-200'
+                  darkMode ? 'border-gray-700' : 'border-slate-300'
                 }`}></div>
 
                 {/* Tracking and Total Price Row (Mobile Only) */}

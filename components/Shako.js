@@ -379,6 +379,7 @@ const Shako = ({ isDemo = false }) => {
     handleVehicleDragEnd,
     handleArchiveZoneDrop
   } = useDragDrop({
+    parts,
     projects,
     setProjects,
     updateProjectsOrder,
@@ -1837,7 +1838,7 @@ const Shako = ({ isDemo = false }) => {
             {hoverTab && tabRefs.current[hoverTab] && (
               <div
                 className={`absolute top-0 bottom-1 rounded-lg transition-all duration-300 ease-out ${
-                  darkMode ? 'bg-gray-700/50' : 'bg-slate-200/50'
+                  darkMode ? 'bg-gray-700/50' : 'bg-slate-300/60'
                 }`}
                 style={{
                   left: `${tabRefs.current[hoverTab].offsetLeft}px`,
