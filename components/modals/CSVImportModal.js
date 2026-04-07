@@ -460,7 +460,7 @@ const CSVImportModal = ({
 
         {/* Footer */}
         <div className={`p-6 border-t ${
-          darkMode ? 'border-gray-600 bg-gray-700' : 'border-slate-300 bg-slate-100'
+          darkMode ? 'border-gray-600 bg-gray-700' : 'border-slate-300 bg-slate-50'
         }`}>
           <div className="flex gap-3">
             <button

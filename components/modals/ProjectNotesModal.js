@@ -234,14 +234,14 @@ const ProjectNotesModal = ({ isOpen, onClose, project, onSave, darkMode, handleC
       <div className="absolute inset-0 bg-black/60" />
       <div
         className={`relative w-full max-w-2xl rounded-xl shadow-2xl flex flex-col overflow-hidden modal-content ${
-          darkMode ? 'bg-gray-800' : 'bg-white'
+          darkMode ? 'bg-gray-800' : 'bg-slate-200'
         }`}
         style={{ maxHeight: '85vh' }}
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header */}
         <div className={`flex items-center justify-between px-5 py-4 border-b flex-shrink-0 ${
-          darkMode ? 'border-gray-700' : 'border-slate-200'
+          darkMode ? 'bg-gray-700 border-gray-600' : 'bg-slate-50 border-slate-300'
         }`}>
           <h2 className={`text-base font-semibold truncate pr-4 ${darkMode ? 'text-gray-100' : 'text-gray-900'}`}>
             Notes — {project?.name}
@@ -371,7 +371,7 @@ const ProjectNotesModal = ({ isOpen, onClose, project, onSave, darkMode, handleC
 
         {/* Footer */}
         <div className={`flex items-center justify-between px-5 py-4 border-t flex-shrink-0 ${
-          darkMode ? 'border-gray-700 bg-gray-800' : 'border-slate-200 bg-slate-100'
+          darkMode ? 'border-gray-600 bg-gray-700' : 'border-slate-300 bg-slate-50'
         }`}>
           {isEditing ? (
             <>

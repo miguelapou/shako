@@ -55,11 +55,11 @@ const UpdateLoginEmailModal = ({
       <div
         className={`w-full max-w-md rounded-xl shadow-2xl overflow-hidden modal-content ${
           isClosing ? 'modal-popup-exit' : 'modal-popup-enter'
-        } ${darkMode ? 'bg-gray-800 border border-gray-700' : 'bg-slate-50 border border-slate-200'}`}
+        } ${darkMode ? 'bg-gray-800 border border-gray-700' : 'bg-slate-200 border border-slate-200'}`}
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header */}
-        <div className={`px-6 py-4 border-b ${darkMode ? 'bg-gray-700 border-gray-600' : 'border-slate-300'}`}>
+        <div className={`px-6 py-4 border-b ${darkMode ? 'bg-gray-700 border-gray-600' : 'bg-slate-50 border-slate-300'}`}>
           <div className="flex items-center gap-3">
             <div className={`p-2 rounded-full ${darkMode ? 'bg-blue-900/50' : 'bg-blue-100'}`}>
               <Mail className="w-5 h-5 text-blue-500" />
@@ -114,7 +114,7 @@ const UpdateLoginEmailModal = ({
         </div>
 
         {/* Footer */}
-        <div className={`px-6 py-4 flex justify-end gap-3 border-t ${darkMode ? 'bg-gray-700 border-gray-600' : 'border-slate-300'}`}>
+        <div className={`px-6 py-4 flex justify-end gap-3 border-t ${darkMode ? 'bg-gray-700 border-gray-600' : 'bg-slate-50 border-slate-300'}`}>
           <button
             onClick={handleClose}
             disabled={isInitiating}

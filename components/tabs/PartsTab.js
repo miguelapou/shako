@@ -1268,7 +1268,7 @@ const PartsTab = ({
                       setShowPartDetailModal(true);
                     }}
                     className={`transition-colors cursor-pointer parts-table-row ${
-                      darkMode ? 'dark' : 'light'
+                      darkMode ? 'dark bg-gray-800' : 'light bg-white'
                     }${resizeAnimationStart !== null && index >= resizeAnimationStart ? ' row-resize-fade-in' : ''}`}
                   >
                     <td className="px-6 py-4 whitespace-nowrap">

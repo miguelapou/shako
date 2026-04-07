@@ -114,8 +114,9 @@ const DuplicatePartModal = ({
     }
   };
 
-  const bg = darkMode ? 'bg-gray-900' : 'bg-white';
-  const border = darkMode ? 'border-gray-700' : 'border-slate-200';
+  const bg = darkMode ? 'bg-gray-800' : 'bg-slate-200';
+  const headerBg = darkMode ? 'bg-gray-700' : 'bg-slate-50';
+  const border = darkMode ? 'border-gray-600' : 'border-slate-300';
   const text = darkMode ? 'text-gray-100' : 'text-gray-900';
   const subtext = darkMode ? 'text-gray-400' : 'text-gray-500';
   const rowHover = darkMode ? 'hover:bg-gray-800' : 'hover:bg-slate-50';
@@ -132,7 +133,7 @@ const DuplicatePartModal = ({
       {/* Modal */}
       <div className={`relative w-full max-w-sm rounded-xl shadow-2xl border ${bg} ${border} flex flex-col`} onClick={e => e.stopPropagation()}>
         {/* Header */}
-        <div className={`flex items-center justify-between px-5 py-4 border-b ${border}`}>
+        <div className={`flex items-center justify-between px-5 py-4 border-b ${headerBg} ${border}`}>
           <div className="flex items-center gap-2">
             <Copy className={`w-4 h-4 ${subtext}`} />
             <h2 className={`font-semibold text-base ${text}`}>Duplicate Part</h2>
@@ -152,7 +153,7 @@ const DuplicatePartModal = ({
           </p>
 
           {/* Always-on: part name */}
-          <div className={`flex items-center gap-3 px-3 py-2 rounded-lg ${darkMode ? 'bg-gray-800' : 'bg-slate-100'}`}>
+          <div className={`flex items-center gap-3 px-3 py-2 rounded-lg ${darkMode ? 'bg-gray-700' : 'bg-white'}`}>
             <div className={`w-4 h-4 rounded flex items-center justify-center flex-shrink-0 bg-blue-600 border border-blue-600`}>
               <svg className="w-3 h-3 text-white" fill="none" viewBox="0 0 12 12">
                 <path d="M2 6l3 3 5-5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
@@ -166,7 +167,7 @@ const DuplicatePartModal = ({
           {(() => {
             const availableFields = DUPLICATE_FIELDS.filter(({ key }) => hasValue(key, part, projects, vehicles));
             return (
-              <div className={`rounded-lg border ${border} overflow-hidden`}>
+              <div className={`rounded-lg border ${border} overflow-hidden ${darkMode ? 'bg-gray-700' : 'bg-white'}`}>
                 {availableFields.map(({ key, label }, idx) => {
                   const checked = selectedFields.has(key);
                   let displayValue = null;
@@ -211,7 +212,7 @@ const DuplicatePartModal = ({
         </div>
 
         {/* Footer */}
-        <div className={`flex items-center justify-end gap-2 px-5 py-4 border-t ${border}`}>
+        <div className={`flex items-center justify-end gap-2 px-5 py-4 border-t ${headerBg} ${border}`}>
           <button
             onClick={onClose}
             className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${darkMode ? 'bg-gray-700 hover:bg-gray-600 text-gray-200' : 'bg-gray-100 hover:bg-gray-200 text-gray-700'}`}

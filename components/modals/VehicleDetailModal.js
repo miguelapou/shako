@@ -3935,11 +3935,11 @@ const VehicleDetailModal = ({
           <div
             className={`rounded-lg shadow-xl max-w-lg w-full mx-4 modal-content ${
               isInfoModalClosing ? 'modal-popup-exit' : 'modal-popup-enter'
-            } ${darkMode ? 'bg-gray-800' : 'bg-white'}`}
+            } ${darkMode ? 'bg-gray-800' : 'bg-slate-200'}`}
             onClick={(e) => e.stopPropagation()}
           >
             <div className={`px-5 py-4 border-b flex items-center justify-between ${
-              darkMode ? 'border-gray-700' : 'border-gray-200'
+              darkMode ? 'bg-gray-700 border-gray-600' : 'bg-slate-50 border-slate-300'
             }`}>
               <div>
                 <h3 className={`text-base font-semibold ${

@@ -49,11 +49,11 @@ const ExportReportModal = ({
       <div
         className={`w-full max-w-md rounded-xl shadow-2xl overflow-hidden modal-content ${
           isClosing ? 'modal-popup-exit' : 'modal-popup-enter'
-        } ${darkMode ? 'bg-gray-800 border border-gray-700' : 'bg-slate-50 border border-slate-200'}`}
+        } ${darkMode ? 'bg-gray-800 border border-gray-700' : 'bg-slate-200 border border-slate-200'}`}
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header */}
-        <div className={`px-6 py-4 border-b ${darkMode ? 'bg-gray-700 border-gray-600' : 'border-slate-300'}`}>
+        <div className={`px-6 py-4 border-b ${darkMode ? 'bg-gray-700 border-gray-600' : 'bg-slate-50 border-slate-300'}`}>
           <h3
             className={`text-lg font-semibold flex items-center gap-2 ${darkMode ? 'text-gray-100' : 'text-slate-800'}`}
             style={{ fontFamily: "'FoundationOne', 'Courier New', monospace" }}
@@ -94,7 +94,7 @@ const ExportReportModal = ({
         </div>
 
         {/* Footer */}
-        <div className={`px-6 py-4 flex justify-end gap-3 border-t ${darkMode ? 'bg-gray-700 border-gray-600' : 'border-slate-300'}`}>
+        <div className={`px-6 py-4 flex justify-end gap-3 border-t ${darkMode ? 'bg-gray-700 border-gray-600' : 'bg-slate-50 border-slate-300'}`}>
           <button
             onClick={handleClose}
             disabled={generating}
