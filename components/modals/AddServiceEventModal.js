@@ -261,7 +261,7 @@ const AddServiceEventModal = ({
       <div
         className={`rounded-lg shadow-xl max-w-md w-full mx-4 modal-content ${
           isClosing ? 'modal-popup-exit' : 'modal-popup-enter'
-        } ${darkMode ? 'bg-gray-800' : 'bg-white'}`}
+        } ${darkMode ? 'bg-gray-800' : 'bg-slate-200'}`}
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header */}

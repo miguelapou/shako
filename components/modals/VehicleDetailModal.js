@@ -3935,7 +3935,7 @@ const VehicleDetailModal = ({
           <div
             className={`rounded-lg shadow-xl max-w-lg w-full mx-4 modal-content ${
               isInfoModalClosing ? 'modal-popup-exit' : 'modal-popup-enter'
-            } ${darkMode ? 'bg-gray-800' : 'bg-white'}`}
+            } ${darkMode ? 'bg-gray-800' : 'bg-slate-200'}`}
             onClick={(e) => e.stopPropagation()}
           >
             <div className={`px-5 py-4 border-b flex items-center justify-between ${
