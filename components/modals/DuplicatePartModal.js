@@ -153,7 +153,7 @@ const DuplicatePartModal = ({
           </p>
 
           {/* Always-on: part name */}
-          <div className={`flex items-center gap-3 px-3 py-2 rounded-lg ${darkMode ? 'bg-gray-800' : 'bg-slate-100'}`}>
+          <div className={`flex items-center gap-3 px-3 py-2 rounded-lg ${darkMode ? 'bg-gray-700' : 'bg-white'}`}>
             <div className={`w-4 h-4 rounded flex items-center justify-center flex-shrink-0 bg-blue-600 border border-blue-600`}>
               <svg className="w-3 h-3 text-white" fill="none" viewBox="0 0 12 12">
                 <path d="M2 6l3 3 5-5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
@@ -167,7 +167,7 @@ const DuplicatePartModal = ({
           {(() => {
             const availableFields = DUPLICATE_FIELDS.filter(({ key }) => hasValue(key, part, projects, vehicles));
             return (
-              <div className={`rounded-lg border ${border} overflow-hidden`}>
+              <div className={`rounded-lg border ${border} overflow-hidden ${darkMode ? 'bg-gray-700' : 'bg-white'}`}>
                 {availableFields.map(({ key, label }, idx) => {
                   const checked = selectedFields.has(key);
                   let displayValue = null;
