@@ -462,10 +462,10 @@ const CSVImportModal = ({
         <div className={`p-6 border-t ${
           darkMode ? 'border-gray-600 bg-gray-700' : 'border-slate-300 bg-slate-50'
         }`}>
-          <div className="flex gap-3">
+          <div className="flex gap-3 justify-end">
             <button
               onClick={() => handleCloseModal(onClose)}
-              className={`flex-1 px-6 py-3 rounded-lg font-medium transition-colors ${
+              className={`px-4 py-2 rounded-lg font-medium transition-colors ${
                 darkMode
                   ? 'bg-gray-700 hover:bg-gray-600 text-gray-100'
                   : 'bg-gray-200 hover:bg-gray-300 text-gray-800'
@@ -476,7 +476,7 @@ const CSVImportModal = ({
             <button
               onClick={handleImport}
               disabled={!isPartNameMapped || validRowsCount === 0 || isImporting}
-              className={`flex-1 px-6 py-3 rounded-lg font-medium transition-colors ${
+              className={`px-4 py-2 rounded-lg font-medium transition-colors ${
                 !isPartNameMapped || validRowsCount === 0 || isImporting
                   ? darkMode
                     ? 'bg-gray-700 text-gray-500 cursor-not-allowed'
