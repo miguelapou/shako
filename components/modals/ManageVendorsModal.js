@@ -91,7 +91,7 @@ const ManageVendorsModal = ({
 
         {/* CONTENT */}
         <div
-          className="p-6 modal-scrollable"
+          className="px-6 pt-6 pb-2 modal-scrollable"
           style={{ maxHeight: 'calc(100vh - 12rem)', overflowY: 'auto', overscrollBehavior: 'contain' }}
         >
           {uniqueVendors.length === 0 ? (
