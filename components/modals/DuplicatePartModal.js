@@ -114,7 +114,8 @@ const DuplicatePartModal = ({
     }
   };
 
-  const bg = darkMode ? 'bg-gray-900' : 'bg-white';
+  const bg = darkMode ? 'bg-gray-800' : 'bg-slate-200';
+  const headerBg = darkMode ? 'bg-gray-700' : 'bg-slate-50';
   const border = darkMode ? 'border-gray-600' : 'border-slate-300';
   const text = darkMode ? 'text-gray-100' : 'text-gray-900';
   const subtext = darkMode ? 'text-gray-400' : 'text-gray-500';
@@ -132,7 +133,7 @@ const DuplicatePartModal = ({
       {/* Modal */}
       <div className={`relative w-full max-w-sm rounded-xl shadow-2xl border ${bg} ${border} flex flex-col`} onClick={e => e.stopPropagation()}>
         {/* Header */}
-        <div className={`flex items-center justify-between px-5 py-4 border-b ${border}`}>
+        <div className={`flex items-center justify-between px-5 py-4 border-b ${headerBg} ${border}`}>
           <div className="flex items-center gap-2">
             <Copy className={`w-4 h-4 ${subtext}`} />
             <h2 className={`font-semibold text-base ${text}`}>Duplicate Part</h2>
@@ -211,7 +212,7 @@ const DuplicatePartModal = ({
         </div>
 
         {/* Footer */}
-        <div className={`flex items-center justify-end gap-2 px-5 py-4 border-t ${border}`}>
+        <div className={`flex items-center justify-end gap-2 px-5 py-4 border-t ${headerBg} ${border}`}>
           <button
             onClick={onClose}
             className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${darkMode ? 'bg-gray-700 hover:bg-gray-600 text-gray-200' : 'bg-gray-100 hover:bg-gray-200 text-gray-700'}`}

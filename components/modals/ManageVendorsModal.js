@@ -327,7 +327,7 @@ const ManageVendorsModal = ({
           className={`sticky bottom-0 border-t p-4 flex items-center justify-end ${
             darkMode
               ? 'border-gray-600 bg-gray-700'
-              : 'border-slate-300 bg-slate-100'
+              : 'border-slate-300 bg-slate-50'
           }`}
         >
           <PrimaryButton
