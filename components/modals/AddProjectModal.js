@@ -327,8 +327,8 @@ const AddProjectModal = ({
               onClick={handleClose}
               className={`px-4 py-2 rounded-lg font-medium transition-colors ${
                 darkMode
-                  ? 'bg-gray-700 hover:bg-gray-600 text-gray-100'
-                  : 'bg-gray-200 hover:bg-gray-300 text-gray-800'
+                  ? 'bg-gray-700 hover:bg-gray-600 text-gray-200 border border-gray-600'
+                  : 'bg-gray-100 hover:bg-gray-200 text-gray-700 border border-gray-300'
               }`}
             >
               Cancel
