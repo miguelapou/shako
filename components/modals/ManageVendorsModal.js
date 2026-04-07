@@ -117,7 +117,6 @@ const ManageVendorsModal = ({
                 >
                   <th className="text-left pb-2 font-medium">Vendor</th>
                   <th className="text-center pb-2 font-medium px-4">Parts</th>
-                  <th className="text-center pb-2 font-medium px-4">Color</th>
                   <th className="text-right pb-2 font-medium">Actions</th>
                 </tr>
               </thead>
@@ -208,34 +207,6 @@ const ManageVendorsModal = ({
                         </span>
                       </td>
 
-                      {/* Color picker cell */}
-                      <td className="py-3 px-4 text-center">
-                        <div
-                          className={`relative inline-flex p-2 rounded-lg transition-colors cursor-pointer ${
-                            darkMode
-                              ? 'hover:bg-gray-600 text-gray-400 hover:text-gray-200'
-                              : 'hover:bg-gray-200 text-gray-500 hover:text-gray-700'
-                          }`}
-                          title="Choose vendor color"
-                        >
-                          <Palette className="w-4 h-4" />
-                          <input
-                            type="color"
-                            value={vendorColors[vendor] || '#6B7280'}
-                            onChange={(e) => {
-                              const newColor = e.target.value;
-                              if (colorDebounceRef.current) clearTimeout(colorDebounceRef.current);
-                              colorDebounceRef.current = setTimeout(() => {
-                                updateVendorColor(vendor, newColor);
-                              }, 300);
-                            }}
-                            className="absolute inset-0 opacity-0 cursor-pointer"
-                            style={{ width: '100%', height: '100%' }}
-                            tabIndex={-1}
-                          />
-                        </div>
-                      </td>
-
                       {/* Actions cell */}
                       <td className="py-3 text-right">
                         <div className="flex items-center justify-end gap-1">
@@ -274,6 +245,31 @@ const ManageVendorsModal = ({
                             </>
                           ) : (
                             <>
+                              {/* Color picker button */}
+                              <div
+                                className={`relative p-2 rounded-lg transition-colors flex items-center cursor-pointer ${
+                                  darkMode
+                                    ? 'text-gray-400 hover:bg-gray-700 hover:text-gray-200'
+                                    : 'text-gray-500 hover:bg-gray-100 hover:text-gray-700'
+                                }`}
+                                title="Choose vendor color"
+                              >
+                                <Palette className="w-4 h-4" />
+                                <input
+                                  type="color"
+                                  value={vendorColors[vendor] || '#6B7280'}
+                                  onChange={(e) => {
+                                    const newColor = e.target.value;
+                                    if (colorDebounceRef.current) clearTimeout(colorDebounceRef.current);
+                                    colorDebounceRef.current = setTimeout(() => {
+                                      updateVendorColor(vendor, newColor);
+                                    }, 300);
+                                  }}
+                                  className="absolute inset-0 opacity-0 cursor-pointer"
+                                  style={{ width: '100%', height: '100%' }}
+                                  tabIndex={-1}
+                                />
+                              </div>
                               <button
                                 onClick={() =>
                                   setEditingVendor({
