@@ -33,8 +33,9 @@ A comprehensive web application for tracking vehicle restoration parts, managing
 
 ### Service History
 - Log service events with date, description, and odometer reading
-- Add notes to service events for additional details
+- Rich text notes editor for service events (rendered as formatted HTML in detail view)
 - Link parts to service events for cost tracking
+- Live cost calculation preview when adding parts to a service event
 - Automatic cost calculation from linked parts
 - Timeline view of all service history per vehicle
 - Edit and delete service events
@@ -45,35 +46,47 @@ A comprehensive web application for tracking vehicle restoration parts, managing
 - Set project priority (low, medium, high) with color-coded badges
 - Budget tracking with spent vs. budget comparison
 - Auto-calculated project status: Planning → In Progress → Completed
+- Smart status badges: **Sourcing** (parts pending/purchased) and **Ready** (all parts delivered) driven by linked parts delivery state
+- Explicit status selector in project edit form
+- Rich text notes editor for projects with unsaved changes protection
 - Built-in todo list with:
   - Add, edit, and delete tasks
   - Mark tasks complete with timestamps
   - Smooth animations for task changes
   - Show/hide completed tasks toggle
 - Pause and resume projects
-- Archive projects when complete
+- Archive projects when complete (auto-archives linked parts)
 - Drag-and-drop reordering
 - Filter projects by vehicle
 - Navigate between projects with keyboard arrows or swipe gestures
+- Archived and active projects visually separated in vehicle detail view
+- Add parts directly from within project and vehicle views
 
 ### Parts Tracking
 - Add parts individually or bulk import via CSV
 - Track part details: name, part number, vendor, price, shipping, duties
+- **Quantity field** with automatic price multiplication for multi-unit orders
+- Duplicate parts with field selection modal to copy specific attributes
 - Automatic total cost calculation
 - Status workflow: Pending → Purchased → Shipped → Delivered
 - Real-time package tracking with Ship24 integration:
   - Automatic carrier detection
+  - Manual courier override when auto-detection is incorrect
   - Live tracking timeline with dynamic status icons
+  - ETA display in part detail when available
   - Tracking status column in parts table
   - Auto-refresh stale tracking data (24+ hours)
   - Manual refresh option
-  - Support for UPS, FedEx, USPS, DHL, and more
+  - Sync tracking across all parts sharing the same tracking number
+  - Support for UPS, FedEx, USPS, DHL, Japan Post, Australia Post, and more
 - Link parts to projects for organized tracking
+- Auto-archive parts when linked to a service event
 - Navigate between parts with keyboard arrows or swipe gestures
 - Statistics dashboard showing:
   - Part counts by status
   - Progress bar visualization
   - Cost breakdown (price, shipping, duties, total)
+  - **Vendor spending analytics**: flip card with donut chart showing spend by vendor, with option to include archived parts
 
 ### Vendor Management
 - Automatic vendor extraction from parts
@@ -82,6 +95,8 @@ A comprehensive web application for tracking vehicle restoration parts, managing
 - Delete vendors (removes all associated parts)
 - View part counts per vendor
 - Color-coded vendor badges throughout the app
+- Click any vendor badge to open vendor management directly
+- Table layout for managing vendors with color, edit, and delete actions in one view
 
 ### Search, Filter & Sort
 - Full-text search across parts, projects, and vehicles
